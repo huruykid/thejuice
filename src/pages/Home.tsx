@@ -4,7 +4,7 @@ import StoryCard from "@/components/StoryCard";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Sparkles, TrendingUp, Clock } from "lucide-react";
-import juiceLogo from "@/assets/juice-logo.png";
+// import juiceLogo from "@/assets/juice-logo.png";
 import { useStories } from "@/hooks/useStories";
 import { formatDistanceToNow } from "date-fns";
 
@@ -43,7 +43,7 @@ const Home = ({ onCreateStory }: HomeProps) => {
       <div className="sticky top-0 bg-white/80 backdrop-blur-lg border-b border-juice-blue/10 z-40">
         <div className="flex items-center justify-between p-4 max-w-md mx-auto">
           <div className="flex items-center gap-3">
-            <img src={juiceLogo} alt="Juice" className="h-8 w-8" />
+            <img src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" alt="Juice" className="h-8 w-8" />
             <h1 className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
               Juice
             </h1>
