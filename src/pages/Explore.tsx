@@ -4,11 +4,16 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import StoryCard from "@/components/StoryCard";
+import Navigation from "@/components/Navigation";
 import { useSearchStories } from "@/hooks/useSearchStories";
 import { useTopTags } from "@/hooks/useTopTags";
 import { formatDistanceToNow } from "date-fns";
 
-const Explore = () => {
+interface ExploreProps {
+  onCreateStory?: () => void;
+}
+
+const Explore = ({ onCreateStory }: ExploreProps = {}) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [location, setLocation] = useState("");
   const [selectedTag, setSelectedTag] = useState("");
@@ -188,6 +193,8 @@ const Explore = () => {
           )}
         </div>
       </div>
+
+      <Navigation onCreateStory={onCreateStory} />
     </div>
   );
 };
