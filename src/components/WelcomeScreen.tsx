@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Heart, Shield, Users, Sparkles } from "lucide-react";
-import juiceLogo from "@/assets/juice-logo.png";
+// import juiceLogo from "@/assets/juice-logo.png";
 interface WelcomeScreenProps {
   onComplete: () => void;
 }
@@ -40,7 +40,7 @@ const WelcomeScreen = ({
       {/* Logo */}
       <div className="flex items-center justify-center pt-16 pb-8">
         <div className="flex items-center gap-3">
-          <img src={juiceLogo} alt="Juice" className="h-16 w-16" />
+          <img src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" alt="Juice" className="h-16 w-16" />
           <h1 className="text-4xl font-bold bg-gradient-primary bg-clip-text text-transparent">
             Juice
           </h1>
