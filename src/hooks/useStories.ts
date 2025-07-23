@@ -124,6 +124,7 @@ export const useCreateStory = () => {
       content,
       tags,
       ratings,
+      location,
     }: {
       codenameId: string;
       content: string;
@@ -134,6 +135,7 @@ export const useCreateStory = () => {
         emotionalSafety: number;
         overallVibe: number;
       };
+      location?: string;
     }) => {
       // Create the story
       const { data: story, error: storyError } = await supabase
@@ -145,6 +147,7 @@ export const useCreateStory = () => {
           loyalty_rating: ratings.loyalty,
           emotional_safety_rating: ratings.emotionalSafety,
           overall_vibe_rating: ratings.overallVibe,
+          location: location || null,
         })
         .select()
         .single();

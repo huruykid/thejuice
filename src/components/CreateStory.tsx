@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Star, X, Plus } from "lucide-react";
+import { Star, X, Plus, Sparkles } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import CodenameSelector from "./CodenameSelector";
 import { useCreateStory } from "@/hooks/useStories";
@@ -11,6 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 const CreateStory = ({ onClose }: { onClose: () => void }) => {
   const [step, setStep] = useState(0);
   const [selectedCodenameId, setSelectedCodenameId] = useState<string | null>(null);
+  const [showSuccess, setShowSuccess] = useState(false);
   const [storyData, setStoryData] = useState({
     content: "",
     selectedTags: [] as string[],
@@ -19,6 +22,11 @@ const CreateStory = ({ onClose }: { onClose: () => void }) => {
       loyalty: 0,
       emotionalSafety: 0,
       overallVibe: 0,
+    },
+    metadata: {
+      city: "",
+      app: "",
+      stage: "",
     },
   });
 
@@ -29,6 +37,16 @@ const CreateStory = ({ onClose }: { onClose: () => void }) => {
     "🚩Red Flag", "💯Loyal", "🫠Ghosted", "💸Gold Digger", "✨Thoughtful",
     "📱Phone Addict", "🤷‍♀️Mixed Signals", "🎭Fake", "🔥Chemistry", "❄️Cold",
     "🎵Music Lover", "🍕Foodie", "💼Career Focused", "🏃‍♂️Active", "🎨Creative"
+  ];
+
+  const datingApps = [
+    "Tinder", "Bumble", "Hinge", "Instagram", "IRL", "Raya", "Facebook Dating", 
+    "Coffee Meets Bagel", "OkCupid", "Match", "eHarmony", "Other"
+  ];
+
+  const relationshipStages = [
+    "First Date", "Hookup", "Casual Dating", "Talking Stage", "Exclusive", 
+    "LTR", "Situationship", "Friends with Benefits", "One Night Stand"
   ];
 
   const prompts = [
@@ -58,7 +76,7 @@ const CreateStory = ({ onClose }: { onClose: () => void }) => {
   };
 
   const handleNext = () => {
-    if (step < 3) setStep(step + 1);
+    if (step < 4) setStep(step + 1); // Updated to include metadata step
   };
 
   const handleBack = () => {
@@ -81,14 +99,17 @@ const CreateStory = ({ onClose }: { onClose: () => void }) => {
         content: storyData.content,
         tags: storyData.selectedTags,
         ratings: storyData.ratings,
+        location: storyData.metadata.city,
       });
       
-      toast({
-        title: "Success",
-        description: "Your story has been published!",
-      });
+      // Show success animation
+      setShowSuccess(true);
       
-      onClose();
+      // Close after animation
+      setTimeout(() => {
+        onClose();
+      }, 2500);
+      
     } catch (error) {
       toast({
         title: "Error",
@@ -97,6 +118,26 @@ const CreateStory = ({ onClose }: { onClose: () => void }) => {
       });
     }
   };
+
+  // Success Animation Component
+  if (showSuccess) {
+    return (
+      <div className="fixed inset-0 bg-gradient-to-br from-juice-blue/20 to-juice-coral/20 backdrop-blur-sm z-50 flex items-center justify-center">
+        <div className="text-center animate-scale-in">
+          <div className="text-8xl mb-6 animate-bounce">🧃</div>
+          <div className="text-6xl mb-4">
+            <Sparkles className="h-16 w-16 text-juice-coral animate-pulse mx-auto" />
+          </div>
+          <h2 className="text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-2">
+            Story Published!
+          </h2>
+          <p className="text-lg text-muted-foreground">
+            Your tea has been spilled! ☕✨
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-4">
@@ -250,6 +291,92 @@ const CreateStory = ({ onClose }: { onClose: () => void }) => {
               </div>
             </div>
           )}
+
+          {/* Step 4: Optional Metadata */}
+          {step === 4 && (
+            <div className="p-6 space-y-6">
+              <div className="space-y-3">
+                <h3 className="font-semibold text-foreground">
+                  Add some context 📍
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  Optional details to help others relate (all anonymous)
+                </p>
+              </div>
+
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-foreground">
+                    City (optional)
+                  </label>
+                  <Input
+                    value={storyData.metadata.city}
+                    onChange={(e) => setStoryData(prev => ({
+                      ...prev,
+                      metadata: { ...prev.metadata, city: e.target.value }
+                    }))}
+                    placeholder="e.g., Los Angeles, NYC, Miami..."
+                    className="rounded-2xl border-juice-blue/20"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-foreground">
+                    Where you met (optional)
+                  </label>
+                  <Select 
+                    value={storyData.metadata.app} 
+                    onValueChange={(value) => setStoryData(prev => ({
+                      ...prev,
+                      metadata: { ...prev.metadata, app: value }
+                    }))}
+                  >
+                    <SelectTrigger className="rounded-2xl border-juice-blue/20">
+                      <SelectValue placeholder="Select an app or method" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-white border border-juice-blue/20 rounded-2xl shadow-lg">
+                      {datingApps.map((app) => (
+                        <SelectItem key={app} value={app.toLowerCase()}>
+                          {app}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-foreground">
+                    Relationship stage (optional)
+                  </label>
+                  <Select 
+                    value={storyData.metadata.stage} 
+                    onValueChange={(value) => setStoryData(prev => ({
+                      ...prev,
+                      metadata: { ...prev.metadata, stage: value }
+                    }))}
+                  >
+                    <SelectTrigger className="rounded-2xl border-juice-blue/20">
+                      <SelectValue placeholder="What stage were you at?" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-white border border-juice-blue/20 rounded-2xl shadow-lg">
+                      {relationshipStages.map((stage) => (
+                        <SelectItem key={stage} value={stage.toLowerCase()}>
+                          {stage}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="bg-juice-lavender/30 rounded-2xl p-4">
+                <p className="text-sm text-muted-foreground">
+                  💡 <strong>Privacy Note:</strong> All stories are posted anonymously. 
+                  This metadata helps others find relatable experiences but never reveals your identity.
+                </p>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Footer */}
@@ -259,7 +386,7 @@ const CreateStory = ({ onClose }: { onClose: () => void }) => {
               Back
             </Button>
           )}
-          {step < 3 ? (
+          {step < 4 ? (
             <Button
               variant="juice"
               onClick={handleNext}
@@ -269,16 +396,23 @@ const CreateStory = ({ onClose }: { onClose: () => void }) => {
               }
               className="flex-1"
             >
-              Next
+              {step === 3 ? "Add Details (Optional)" : "Next"}
             </Button>
           ) : (
             <Button
               variant="juice"
               onClick={handlePublish}
               disabled={createStory.isPending}
-              className="flex-1"
+              className="flex-1 relative overflow-hidden"
             >
-              {createStory.isPending ? "Publishing..." : "Publish Story"}
+              {createStory.isPending ? (
+                <span className="flex items-center gap-2">
+                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                  Publishing...
+                </span>
+              ) : (
+                "🧃 Spill the Tea!"
+              )}
             </Button>
           )}
         </div>
