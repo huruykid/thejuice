@@ -4,9 +4,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Star, X, Plus } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import CodenameSelector from "./CodenameSelector";
+import { useCreateStory } from "@/hooks/useStories";
+import { useToast } from "@/hooks/use-toast";
 
 const CreateStory = ({ onClose }: { onClose: () => void }) => {
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(0);
+  const [selectedCodenameId, setSelectedCodenameId] = useState<string | null>(null);
   const [storyData, setStoryData] = useState({
     content: "",
     selectedTags: [] as string[],
@@ -17,6 +21,9 @@ const CreateStory = ({ onClose }: { onClose: () => void }) => {
       overallVibe: 0,
     },
   });
+
+  const createStory = useCreateStory();
+  const { toast } = useToast();
 
   const availableTags = [
     "🚩Red Flag", "💯Loyal", "🫠Ghosted", "💸Gold Digger", "✨Thoughtful",
@@ -55,13 +62,40 @@ const CreateStory = ({ onClose }: { onClose: () => void }) => {
   };
 
   const handleBack = () => {
-    if (step > 1) setStep(step - 1);
+    if (step > 0) setStep(step - 1);
   };
 
-  const handlePublish = () => {
-    // Here you would typically send the story to your backend
-    console.log("Publishing story:", storyData);
-    onClose();
+  const handlePublish = async () => {
+    if (!selectedCodenameId) {
+      toast({
+        title: "Error",
+        description: "Please select a codename",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      await createStory.mutateAsync({
+        codenameId: selectedCodenameId,
+        content: storyData.content,
+        tags: storyData.selectedTags,
+        ratings: storyData.ratings,
+      });
+      
+      toast({
+        title: "Success",
+        description: "Your story has been published!",
+      });
+      
+      onClose();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to publish story. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -76,6 +110,16 @@ const CreateStory = ({ onClose }: { onClose: () => void }) => {
         </div>
 
         <div className="overflow-y-auto max-h-[calc(90vh-200px)]">
+          {/* Step 0: Codename Selection */}
+          {step === 0 && (
+            <div className="p-6 space-y-6">
+              <CodenameSelector
+                selectedCodenameId={selectedCodenameId}
+                onSelect={setSelectedCodenameId}
+              />
+            </div>
+          )}
+
           {/* Step 1: Story Content */}
           {step === 1 && (
             <div className="p-6 space-y-6">
@@ -210,7 +254,7 @@ const CreateStory = ({ onClose }: { onClose: () => void }) => {
 
         {/* Footer */}
         <div className="p-6 border-t border-juice-blue/10 flex gap-3">
-          {step > 1 && (
+          {step > 0 && (
             <Button variant="juice-outline" onClick={handleBack} className="flex-1">
               Back
             </Button>
@@ -219,7 +263,10 @@ const CreateStory = ({ onClose }: { onClose: () => void }) => {
             <Button
               variant="juice"
               onClick={handleNext}
-              disabled={step === 1 && !storyData.content.trim()}
+              disabled={
+                (step === 0 && !selectedCodenameId) ||
+                (step === 1 && !storyData.content.trim())
+              }
               className="flex-1"
             >
               Next
@@ -228,9 +275,10 @@ const CreateStory = ({ onClose }: { onClose: () => void }) => {
             <Button
               variant="juice"
               onClick={handlePublish}
+              disabled={createStory.isPending}
               className="flex-1"
             >
-              Publish Story
+              {createStory.isPending ? "Publishing..." : "Publish Story"}
             </Button>
           )}
         </div>

@@ -1,6 +1,7 @@
 import { Heart, MessageCircle, Flag, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import CodenameCard from "./CodenameCard";
 
 interface StoryCardProps {
   story: {
@@ -16,6 +17,12 @@ interface StoryCardProps {
     reactions: number;
     comments: number;
     timeAgo: string;
+    codename?: {
+      id: string;
+      display_name: string;
+      emoji: string | null;
+      description?: string | null;
+    };
   };
 }
 
@@ -45,6 +52,16 @@ const StoryCard = ({ story }: StoryCardProps) => {
           {averageRating.toFixed(1)}
         </span>
       </div>
+
+      {/* Codename */}
+      {story.codename && (
+        <div className="mb-3">
+          <CodenameCard 
+            codename={story.codename} 
+            size="sm" 
+          />
+        </div>
+      )}
 
       {/* Story Content */}
       <p className="text-foreground leading-relaxed mb-4 text-base">
