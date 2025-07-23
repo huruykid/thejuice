@@ -60,8 +60,8 @@ const WelcomeScreen = ({
 
               <div className="grid grid-cols-2 gap-4">
                 {features.map((feature, index) => <div key={index} className="text-center space-y-2">
-                    <div className="mx-auto w-12 h-12 bg-juice-lavender rounded-2xl flex items-center justify-center">
-                      <feature.icon className="h-6 w-6 text-juice-blue" />
+                  <div className="mx-auto w-12 h-12 bg-juice-peach rounded-2xl flex items-center justify-center">
+                    <feature.icon className="h-6 w-6 text-juice-orange" />
                     </div>
                     <h3 className="font-semibold text-sm text-foreground">{feature.title}</h3>
                     <p className="text-xs text-muted-foreground">{feature.description}</p>
@@ -85,7 +85,7 @@ const WelcomeScreen = ({
               </div>
 
               <div className="space-y-4">
-                <Input value={inviteCode} onChange={e => setInviteCode(e.target.value.toUpperCase())} placeholder="INVITE-CODE" className="text-center text-lg tracking-wider rounded-2xl border-juice-blue/30 focus:border-juice-blue" maxLength={12} />
+                <Input value={inviteCode} onChange={e => setInviteCode(e.target.value.toUpperCase())} placeholder="INVITE-CODE" className="text-center text-lg tracking-wider rounded-2xl border-juice-orange/30 focus:border-juice-orange" maxLength={12} />
                 <p className="text-xs text-muted-foreground text-center">
                   Don't have a code? Ask a friend who's already on Juice!
                 </p>
@@ -114,8 +114,8 @@ const WelcomeScreen = ({
 
               <div className="space-y-4 text-sm">
                 <div className="flex gap-3">
-                  <div className="w-6 h-6 bg-juice-sage rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <span className="text-xs">✓</span>
+                  <div className="w-6 h-6 bg-juice-green rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="text-xs text-white">✓</span>
                   </div>
                   <div>
                     <p className="font-medium text-foreground">Use codenames, initials, or emojis</p>
@@ -124,8 +124,8 @@ const WelcomeScreen = ({
                 </div>
                 
                 <div className="flex gap-3">
-                  <div className="w-6 h-6 bg-juice-sage rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <span className="text-xs">✓</span>
+                  <div className="w-6 h-6 bg-juice-green rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="text-xs text-white">✓</span>
                   </div>
                   <div>
                     <p className="font-medium text-foreground">Be respectful and honest</p>
@@ -134,8 +134,8 @@ const WelcomeScreen = ({
                 </div>
                 
                 <div className="flex gap-3">
-                  <div className="w-6 h-6 bg-juice-sage rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <span className="text-xs">✓</span>
+                  <div className="w-6 h-6 bg-juice-green rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="text-xs text-white">✓</span>
                   </div>
                   <div>
                     <p className="font-medium text-foreground">Report inappropriate content</p>
@@ -158,7 +158,7 @@ const WelcomeScreen = ({
 
       {/* Step Indicator */}
       <div className="flex justify-center gap-2 pb-8">
-        {[0, 1, 2].map(index => <div key={index} className={`w-2 h-2 rounded-full transition-smooth ${index === step ? "bg-juice-blue" : "bg-juice-blue/30"}`} />)}
+        {[0, 1, 2].map(index => <div key={index} className={`w-2 h-2 rounded-full transition-smooth ${index === step ? "bg-juice-orange" : "bg-juice-orange/30"}`} />)}
       </div>
     </div>;
 };

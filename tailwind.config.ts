@@ -54,12 +54,12 @@ export default {
 					foreground: 'hsl(var(--card-foreground))'
 				},
 				juice: {
-					blue: 'hsl(var(--juice-blue))',
-					'blue-light': 'hsl(var(--juice-blue-light))',
-					'blue-dark': 'hsl(var(--juice-blue-dark))',
-					lavender: 'hsl(var(--juice-lavender))',
+					orange: 'hsl(var(--juice-orange))',
+					'orange-light': 'hsl(var(--juice-orange-light))',
+					'orange-dark': 'hsl(var(--juice-orange-dark))',
 					peach: 'hsl(var(--juice-peach))',
-					sage: 'hsl(var(--juice-sage))',
+					green: 'hsl(var(--juice-green))',
+					cream: 'hsl(var(--juice-cream))',
 					coral: 'hsl(var(--juice-coral))'
 				},
 				sidebar: {

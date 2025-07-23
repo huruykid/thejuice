@@ -19,8 +19,8 @@ const buttonVariants = cva(
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
         juice: "bg-gradient-primary text-white hover:shadow-glow hover:scale-105 transition-bounce rounded-2xl",
-        "juice-soft": "bg-juice-lavender text-juice-blue hover:bg-juice-peach transition-smooth rounded-xl",
-        "juice-outline": "border-2 border-juice-blue text-juice-blue bg-background hover:bg-juice-blue hover:text-white transition-smooth rounded-xl",
+        "juice-soft": "bg-juice-peach text-juice-orange hover:bg-juice-cream transition-smooth rounded-xl",
+        "juice-outline": "border-2 border-juice-orange text-juice-orange bg-background hover:bg-juice-orange hover:text-white transition-smooth rounded-xl",
       },
       size: {
         default: "h-10 px-4 py-2",

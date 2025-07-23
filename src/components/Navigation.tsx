@@ -7,10 +7,10 @@ interface NavigationProps {
 
 const Navigation = ({ onCreateStory }: NavigationProps) => {
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-lg border-t border-juice-blue/10 z-50">
+    <nav className="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-lg border-t border-juice-orange/10 z-50">
       <div className="flex items-center justify-around py-2 px-4 max-w-md mx-auto">
         <Button variant="ghost" size="icon" className="flex-col h-auto py-2 rounded-xl">
-          <Home className="h-5 w-5 text-juice-blue" />
+          <Home className="h-5 w-5 text-juice-orange" />
           <span className="text-xs text-muted-foreground mt-1">Home</span>
         </Button>
         

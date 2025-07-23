@@ -45,24 +45,24 @@ All colors MUST be HSL.
 
     --radius: 1rem;
 
-    /* Juice-specific Design Tokens */
-    --juice-blue: 210 85% 55%;
-    --juice-blue-light: 210 85% 70%;
-    --juice-blue-dark: 210 85% 45%;
-    --juice-lavender: 250 35% 85%;
-    --juice-peach: 35 85% 85%;
-    --juice-sage: 155 25% 85%;
+    /* Juice-specific Design Tokens - Orange Theme */
+    --juice-orange: 33 100% 60%;
+    --juice-orange-light: 33 100% 75%;
+    --juice-orange-dark: 33 100% 45%;
+    --juice-peach: 33 100% 92%;
+    --juice-green: 100 40% 60%;
+    --juice-cream: 45 100% 96%;
     --juice-coral: 15 75% 75%;
 
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(var(--juice-blue)), hsl(var(--juice-blue-light)));
-    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%), hsl(215 25% 98%));
-    --gradient-soft: linear-gradient(180deg, hsl(var(--juice-lavender)), hsl(var(--juice-peach)));
+    --gradient-primary: linear-gradient(135deg, hsl(var(--juice-orange)), hsl(var(--juice-orange-light)));
+    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%), hsl(var(--juice-cream)));
+    --gradient-soft: linear-gradient(180deg, hsl(var(--juice-cream)), hsl(var(--juice-peach)));
 
     /* Shadows */
-    --shadow-soft: 0 4px 20px -4px hsl(var(--juice-blue) / 0.15);
+    --shadow-soft: 0 4px 20px -4px hsl(var(--juice-orange) / 0.15);
     --shadow-card: 0 2px 16px -2px hsl(220 25% 50% / 0.08);
-    --shadow-glow: 0 0 30px hsl(var(--juice-blue) / 0.3);
+    --shadow-glow: 0 0 30px hsl(var(--juice-orange) / 0.3);
 
     /* Animations */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
