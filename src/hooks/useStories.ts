@@ -12,6 +12,7 @@ export interface Story {
   reactions_count: number;
   comments_count: number;
   created_at: string;
+  image_url?: string;
   codenames: {
     id: string;
     display_name: string;
@@ -125,6 +126,7 @@ export const useCreateStory = () => {
       tags,
       ratings,
       location,
+      imageUrl,
     }: {
       codenameId: string;
       content: string;
@@ -136,6 +138,7 @@ export const useCreateStory = () => {
         overallVibe: number;
       };
       location?: string;
+      imageUrl?: string;
     }) => {
       // Create the story
       const { data: story, error: storyError } = await supabase
@@ -148,6 +151,7 @@ export const useCreateStory = () => {
           emotional_safety_rating: ratings.emotionalSafety,
           overall_vibe_rating: ratings.overallVibe,
           location: location || null,
+          image_url: imageUrl || null,
         })
         .select()
         .single();

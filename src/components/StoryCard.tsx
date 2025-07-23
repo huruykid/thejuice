@@ -30,6 +30,7 @@ interface StoryCardProps {
     reactions: number;
     comments: number;
     timeAgo: string;
+    imageUrl?: string;
     codename?: {
       id: string;
       display_name: string;
@@ -62,6 +63,17 @@ const StoryCard = ({ story }: StoryCardProps) => {
           <CodenameCard 
             codename={story.codename} 
             size="sm" 
+          />
+        </div>
+      )}
+
+      {/* Story Image */}
+      {story.imageUrl && (
+        <div className="mb-4">
+          <img 
+            src={story.imageUrl} 
+            alt="Story image" 
+            className="w-full h-48 object-cover rounded-lg border border-juice-blue/10"
           />
         </div>
       )}
