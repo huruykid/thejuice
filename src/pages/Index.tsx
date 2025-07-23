@@ -1,13 +1,23 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState } from "react";
+import Home from "./Home";
+import CreateStory from "@/components/CreateStory";
+import WelcomeScreen from "@/components/WelcomeScreen";
 
 const Index = () => {
+  const [showCreateStory, setShowCreateStory] = useState(false);
+  const [showWelcome, setShowWelcome] = useState(true);
+
+  if (showWelcome) {
+    return <WelcomeScreen onComplete={() => setShowWelcome(false)} />;
+  }
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
-    </div>
+    <>
+      <Home onCreateStory={() => setShowCreateStory(true)} />
+      {showCreateStory && (
+        <CreateStory onClose={() => setShowCreateStory(false)} />
+      )}
+    </>
   );
 };
 
