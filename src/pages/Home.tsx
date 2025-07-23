@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Sparkles, TrendingUp, Clock } from "lucide-react";
 // import juiceLogo from "@/assets/juice-logo.png";
 import { useStories } from "@/hooks/useStories";
+import { useTrendingStories } from "@/hooks/useTrendingStories";
 import { formatDistanceToNow } from "date-fns";
 
 interface HomeProps {
@@ -14,9 +15,10 @@ interface HomeProps {
 
 const Home = ({ onCreateStory }: HomeProps) => {
   const { data: stories = [], isLoading } = useStories();
+  const { data: trendingStories = [], isLoading: isTrendingLoading } = useTrendingStories();
 
   // Transform stories for StoryCard component
-  const transformedStories = stories.map(story => ({
+  const transformStories = (storyList: any[]) => storyList.map(story => ({
     id: story.id,
     content: story.content,
     tags: story.story_tags.map(tag => tag.tag),
@@ -36,6 +38,9 @@ const Home = ({ onCreateStory }: HomeProps) => {
       description: story.codenames.description,
     },
   }));
+
+  const transformedStories = transformStories(stories);
+  const transformedTrendingStories = transformStories(trendingStories);
 
   return (
     <div className="min-h-screen bg-background pb-20">
@@ -105,15 +110,25 @@ const Home = ({ onCreateStory }: HomeProps) => {
           </TabsContent>
 
           <TabsContent value="trending" className="mt-6">
-            <div className="text-center py-12">
-              <Sparkles className="h-12 w-12 text-juice-blue mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-foreground mb-2">
-                Trending Stories
-              </h3>
-              <p className="text-muted-foreground">
-                The hottest tea is brewing... Check back soon!
-              </p>
-            </div>
+            {isTrendingLoading ? (
+              <div className="text-center py-12">
+                <div className="text-lg">Loading trending stories...</div>
+              </div>
+            ) : transformedTrendingStories.length === 0 ? (
+              <div className="text-center py-12">
+                <TrendingUp className="h-12 w-12 text-juice-blue mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-foreground mb-2">
+                  No trending stories yet
+                </h3>
+                <p className="text-muted-foreground">
+                  Stories need reactions to start trending!
+                </p>
+              </div>
+            ) : (
+              transformedTrendingStories.map((story) => (
+                <StoryCard key={story.id} story={story} />
+              ))
+            )}
           </TabsContent>
 
           <TabsContent value="curated" className="mt-6">

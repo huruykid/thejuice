@@ -108,6 +108,7 @@ export type Database = {
           created_at: string
           emotional_safety_rating: number
           id: string
+          location: string | null
           loyalty_rating: number
           overall_vibe_rating: number
           reactions_count: number
@@ -121,6 +122,7 @@ export type Database = {
           created_at?: string
           emotional_safety_rating: number
           id?: string
+          location?: string | null
           loyalty_rating: number
           overall_vibe_rating: number
           reactions_count?: number
@@ -134,6 +136,7 @@ export type Database = {
           created_at?: string
           emotional_safety_rating?: number
           id?: string
+          location?: string | null
           loyalty_rating?: number
           overall_vibe_rating?: number
           reactions_count?: number

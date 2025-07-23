@@ -3,6 +3,19 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import CodenameCard from "./CodenameCard";
 
+const tagEmojis: { [key: string]: string } = {
+  'red flag': '🚩',
+  'ghosted': '🫠', 
+  'loyal': '💯',
+  'golddigger': '💰',
+  'clingy': '🤗',
+  'toxic': '☠️',
+  'sweet': '🍭',
+  'funny': '😂',
+  'boring': '😴',
+  'crazy': '🤪'
+};
+
 interface StoryCardProps {
   story: {
     id: string;
@@ -27,32 +40,22 @@ interface StoryCardProps {
 }
 
 const StoryCard = ({ story }: StoryCardProps) => {
-  const averageRating = (
-    story.ratings.communication +
-    story.ratings.loyalty +
-    story.ratings.emotionalSafety +
-    story.ratings.overallVibe
-  ) / 4;
+  const vibeScore = Math.round(story.ratings.overallVibe * 20); // Convert 1-5 to 1-100
+  
+  // Get first 2 lines of content
+  const getPreviewText = (text: string) => {
+    const lines = text.split('\n');
+    const preview = lines.slice(0, 2).join('\n');
+    return preview.length < text.length ? preview + '...' : preview;
+  };
+
+  const getTagWithEmoji = (tag: string) => {
+    const emoji = tagEmojis[tag.toLowerCase()] || '';
+    return emoji ? `${emoji} ${tag}` : tag;
+  };
 
   return (
     <div className="bg-gradient-card border border-juice-blue/10 rounded-3xl p-6 shadow-card hover:shadow-soft transition-smooth mb-4">
-      {/* Rating Stars */}
-      <div className="flex items-center gap-1 mb-3">
-        {[...Array(5)].map((_, i) => (
-          <Star
-            key={i}
-            className={`h-4 w-4 ${
-              i < Math.round(averageRating)
-                ? "fill-juice-coral text-juice-coral"
-                : "text-muted-foreground"
-            }`}
-          />
-        ))}
-        <span className="text-sm text-muted-foreground ml-2">
-          {averageRating.toFixed(1)}
-        </span>
-      </div>
-
       {/* Codename */}
       {story.codename && (
         <div className="mb-3">
@@ -63,9 +66,9 @@ const StoryCard = ({ story }: StoryCardProps) => {
         </div>
       )}
 
-      {/* Story Content */}
+      {/* Story Preview */}
       <p className="text-foreground leading-relaxed mb-4 text-base">
-        {story.content}
+        {getPreviewText(story.content)}
       </p>
 
       {/* Tags */}
@@ -76,72 +79,18 @@ const StoryCard = ({ story }: StoryCardProps) => {
             variant="secondary"
             className="bg-juice-lavender text-juice-blue rounded-full px-3 py-1 text-sm font-medium"
           >
-            {tag}
+            {getTagWithEmoji(tag)}
           </Badge>
         ))}
       </div>
 
-      {/* Detailed Ratings */}
-      <div className="grid grid-cols-2 gap-2 mb-4 text-sm">
-        <div className="flex justify-between">
-          <span className="text-muted-foreground">Communication</span>
-          <div className="flex">
-            {[...Array(5)].map((_, i) => (
-              <Star
-                key={i}
-                className={`h-3 w-3 ${
-                  i < story.ratings.communication
-                    ? "fill-juice-blue text-juice-blue"
-                    : "text-muted-foreground"
-                }`}
-              />
-            ))}
-          </div>
-        </div>
-        <div className="flex justify-between">
-          <span className="text-muted-foreground">Loyalty</span>
-          <div className="flex">
-            {[...Array(5)].map((_, i) => (
-              <Star
-                key={i}
-                className={`h-3 w-3 ${
-                  i < story.ratings.loyalty
-                    ? "fill-juice-sage text-juice-sage"
-                    : "text-muted-foreground"
-                }`}
-              />
-            ))}
-          </div>
-        </div>
-        <div className="flex justify-between">
-          <span className="text-muted-foreground">Emotional Safety</span>
-          <div className="flex">
-            {[...Array(5)].map((_, i) => (
-              <Star
-                key={i}
-                className={`h-3 w-3 ${
-                  i < story.ratings.emotionalSafety
-                    ? "fill-juice-peach text-juice-peach"
-                    : "text-muted-foreground"
-                }`}
-              />
-            ))}
-          </div>
-        </div>
-        <div className="flex justify-between">
-          <span className="text-muted-foreground">Overall Vibe</span>
-          <div className="flex">
-            {[...Array(5)].map((_, i) => (
-              <Star
-                key={i}
-                className={`h-3 w-3 ${
-                  i < story.ratings.overallVibe
-                    ? "fill-juice-coral text-juice-coral"
-                    : "text-muted-foreground"
-                }`}
-              />
-            ))}
-          </div>
+      {/* Vibe Score */}
+      <div className="flex items-center gap-2 mb-4">
+        <div className="flex items-center gap-1">
+          <Star className="h-4 w-4 fill-juice-coral text-juice-coral" />
+          <span className="text-sm font-medium text-foreground">
+            Vibe Score: {vibeScore}%
+          </span>
         </div>
       </div>
 

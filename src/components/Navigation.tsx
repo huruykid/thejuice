@@ -1,11 +1,14 @@
 import { Home, Plus, Search, User, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 interface NavigationProps {
   onCreateStory?: () => void;
 }
 
 const Navigation = ({ onCreateStory }: NavigationProps) => {
+  const navigate = useNavigate();
+
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-lg border-t border-juice-orange/10 z-50">
       <div className="flex items-center justify-around py-2 px-4 max-w-md mx-auto">
@@ -14,7 +17,12 @@ const Navigation = ({ onCreateStory }: NavigationProps) => {
           <span className="text-xs text-muted-foreground mt-1">Home</span>
         </Button>
         
-        <Button variant="ghost" size="icon" className="flex-col h-auto py-2 rounded-xl">
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className="flex-col h-auto py-2 rounded-xl"
+          onClick={() => navigate('/explore')}
+        >
           <Search className="h-5 w-5 text-muted-foreground" />
           <span className="text-xs text-muted-foreground mt-1">Explore</span>
         </Button>
