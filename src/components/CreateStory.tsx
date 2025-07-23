@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -19,6 +20,7 @@ const CreateStory = ({ onClose }: { onClose: () => void }) => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [storyData, setStoryData] = useState({
+    personName: "",
     content: "",
     selectedTags: [] as string[],
     ratings: {
@@ -80,7 +82,7 @@ const CreateStory = ({ onClose }: { onClose: () => void }) => {
   };
 
   const handleNext = () => {
-    if (step < 4) setStep(step + 1); // Updated to include metadata step
+    if (step < 5) setStep(step + 1); // Updated to include person name step
   };
 
   const handleBack = () => {
@@ -252,8 +254,40 @@ const CreateStory = ({ onClose }: { onClose: () => void }) => {
             </div>
           )}
 
-          {/* Step 1: Story Content */}
+          {/* Step 1: Person Name */}
           {step === 1 && (
+            <div className="p-6 space-y-6">
+              <div className="space-y-3">
+                <h3 className="font-semibold text-foreground">
+                  Who's this story about? 👤
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  Enter their name, username, or how you know them (keep it anonymous!)
+                </p>
+              </div>
+              
+              <Input
+                value={storyData.personName}
+                onChange={(e) => setStoryData(prev => ({ ...prev, personName: e.target.value }))}
+                placeholder="e.g., Alex, @username, gym guy, coffee shop girl..."
+                className="rounded-2xl border-juice-blue/20 focus:border-juice-blue"
+                maxLength={50}
+              />
+              
+              <div className="text-right text-xs text-muted-foreground">
+                {storyData.personName.length}/50 characters
+              </div>
+
+              <div className="bg-juice-lavender/30 rounded-2xl p-4">
+                <p className="text-sm text-muted-foreground">
+                  💡 <strong>Privacy Tip:</strong> Use initials, nicknames, or descriptive names instead of real names to keep things anonymous.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Step 2: Story Content */}
+          {step === 2 && (
             <div className="p-6 space-y-6">
               <div className="space-y-3">
                 <h3 className="font-semibold text-foreground">
@@ -342,8 +376,8 @@ const CreateStory = ({ onClose }: { onClose: () => void }) => {
             </div>
           )}
 
-          {/* Step 2: Tags */}
-          {step === 2 && (
+          {/* Step 3: Tags */}
+          {step === 3 && (
             <div className="p-6 space-y-6">
               <div className="space-y-3">
                 <h3 className="font-semibold text-foreground">
@@ -385,8 +419,8 @@ const CreateStory = ({ onClose }: { onClose: () => void }) => {
             </div>
           )}
 
-          {/* Step 3: Ratings */}
-          {step === 3 && (
+          {/* Step 4: Ratings */}
+          {step === 4 && (
             <div className="p-6 space-y-6">
               <div className="space-y-3">
                 <h3 className="font-semibold text-foreground">
@@ -427,8 +461,8 @@ const CreateStory = ({ onClose }: { onClose: () => void }) => {
             </div>
           )}
 
-          {/* Step 4: Optional Metadata */}
-          {step === 4 && (
+          {/* Step 5: Optional Metadata */}
+          {step === 5 && (
             <div className="p-6 space-y-6">
               <div className="space-y-3">
                 <h3 className="font-semibold text-foreground">
@@ -521,17 +555,18 @@ const CreateStory = ({ onClose }: { onClose: () => void }) => {
               Back
             </Button>
           )}
-          {step < 4 ? (
+          {step < 5 ? (
             <Button
               variant="juice"
               onClick={handleNext}
               disabled={
                 (step === 0 && !selectedCodenameId) ||
-                (step === 1 && !storyData.content.trim())
+                (step === 1 && !storyData.personName.trim()) ||
+                (step === 2 && !storyData.content.trim())
               }
               className="flex-1"
             >
-              {step === 3 ? "Add Details (Optional)" : "Next"}
+              {step === 4 ? "Add Details (Optional)" : "Next"}
             </Button>
           ) : (
             <Button
