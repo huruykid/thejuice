@@ -4,38 +4,31 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Heart, Shield, Users, Sparkles } from "lucide-react";
 import juiceLogo from "@/assets/juice-logo.png";
-
 interface WelcomeScreenProps {
   onComplete: () => void;
 }
-
-const WelcomeScreen = ({ onComplete }: WelcomeScreenProps) => {
+const WelcomeScreen = ({
+  onComplete
+}: WelcomeScreenProps) => {
   const [step, setStep] = useState(0);
   const [inviteCode, setInviteCode] = useState("");
-
-  const features = [
-    {
-      icon: Shield,
-      title: "Anonymous & Safe",
-      description: "Share your dating stories without revealing your identity"
-    },
-    {
-      icon: Heart,
-      title: "Real Experiences",
-      description: "Rate and review dating experiences to help the community"
-    },
-    {
-      icon: Users,
-      title: "Invite Only",
-      description: "Join a trusted community of people sharing authentic stories"
-    },
-    {
-      icon: Sparkles,
-      title: "Express Yourself",
-      description: "Use emojis, tags, and codenames to tell your story your way"
-    }
-  ];
-
+  const features = [{
+    icon: Shield,
+    title: "Anonymous & Safe",
+    description: "Share your dating stories without revealing your identity"
+  }, {
+    icon: Heart,
+    title: "Real Experiences",
+    description: "Rate and review dating experiences to help the community"
+  }, {
+    icon: Users,
+    title: "Invite Only",
+    description: "Join a trusted community of people sharing authentic stories"
+  }, {
+    icon: Sparkles,
+    title: "Express Yourself",
+    description: "Use emojis, tags, and codenames to tell your story your way"
+  }];
   const handleNext = () => {
     if (step < 2) {
       setStep(step + 1);
@@ -43,9 +36,7 @@ const WelcomeScreen = ({ onComplete }: WelcomeScreenProps) => {
       onComplete();
     }
   };
-
-  return (
-    <div className="min-h-screen bg-gradient-soft flex flex-col">
+  return <div className="min-h-screen bg-gradient-soft flex flex-col">
       {/* Logo */}
       <div className="flex items-center justify-center pt-16 pb-8">
         <div className="flex items-center gap-3">
@@ -59,38 +50,31 @@ const WelcomeScreen = ({ onComplete }: WelcomeScreenProps) => {
       <div className="flex-1 flex items-center justify-center px-6">
         <Card className="w-full max-w-md bg-white/90 backdrop-blur-sm rounded-3xl shadow-soft border-0">
           {/* Step 0: Welcome */}
-          {step === 0 && (
-            <div className="p-8 text-center space-y-6">
+          {step === 0 && <div className="p-8 text-center space-y-6">
               <div className="space-y-3">
-                <h2 className="text-2xl font-bold text-foreground">
-                  Welcome to the Tea Party ☕
-                </h2>
+                <h2 className="text-2xl font-bold text-foreground">Welcome to the Juice App</h2>
                 <p className="text-muted-foreground">
                   Share anonymous dating stories, rate experiences, and discover what others are saying about their dating adventures.
                 </p>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                {features.map((feature, index) => (
-                  <div key={index} className="text-center space-y-2">
+                {features.map((feature, index) => <div key={index} className="text-center space-y-2">
                     <div className="mx-auto w-12 h-12 bg-juice-lavender rounded-2xl flex items-center justify-center">
                       <feature.icon className="h-6 w-6 text-juice-blue" />
                     </div>
                     <h3 className="font-semibold text-sm text-foreground">{feature.title}</h3>
                     <p className="text-xs text-muted-foreground">{feature.description}</p>
-                  </div>
-                ))}
+                  </div>)}
               </div>
 
               <Button variant="juice" size="lg" onClick={handleNext} className="w-full">
                 Get Started
               </Button>
-            </div>
-          )}
+            </div>}
 
           {/* Step 1: Invite Code */}
-          {step === 1 && (
-            <div className="p-8 space-y-6">
+          {step === 1 && <div className="p-8 space-y-6">
               <div className="text-center space-y-3">
                 <h2 className="text-2xl font-bold text-foreground">
                   You're Invited! 💌
@@ -101,41 +85,24 @@ const WelcomeScreen = ({ onComplete }: WelcomeScreenProps) => {
               </div>
 
               <div className="space-y-4">
-                <Input
-                  value={inviteCode}
-                  onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
-                  placeholder="INVITE-CODE"
-                  className="text-center text-lg tracking-wider rounded-2xl border-juice-blue/30 focus:border-juice-blue"
-                  maxLength={12}
-                />
+                <Input value={inviteCode} onChange={e => setInviteCode(e.target.value.toUpperCase())} placeholder="INVITE-CODE" className="text-center text-lg tracking-wider rounded-2xl border-juice-blue/30 focus:border-juice-blue" maxLength={12} />
                 <p className="text-xs text-muted-foreground text-center">
                   Don't have a code? Ask a friend who's already on Juice!
                 </p>
               </div>
 
               <div className="flex gap-3">
-                <Button 
-                  variant="juice-outline" 
-                  onClick={() => setStep(0)}
-                  className="flex-1"
-                >
+                <Button variant="juice-outline" onClick={() => setStep(0)} className="flex-1">
                   Back
                 </Button>
-                <Button 
-                  variant="juice" 
-                  onClick={handleNext}
-                  disabled={inviteCode.length < 6}
-                  className="flex-1"
-                >
+                <Button variant="juice" onClick={handleNext} disabled={inviteCode.length < 6} className="flex-1">
                   Verify Code
                 </Button>
               </div>
-            </div>
-          )}
+            </div>}
 
           {/* Step 2: Community Guidelines */}
-          {step === 2 && (
-            <div className="p-8 space-y-6">
+          {step === 2 && <div className="p-8 space-y-6">
               <div className="text-center space-y-3">
                 <h2 className="text-2xl font-bold text-foreground">
                   Community Guidelines 📋
@@ -178,39 +145,21 @@ const WelcomeScreen = ({ onComplete }: WelcomeScreenProps) => {
               </div>
 
               <div className="flex gap-3">
-                <Button 
-                  variant="juice-outline" 
-                  onClick={() => setStep(1)}
-                  className="flex-1"
-                >
+                <Button variant="juice-outline" onClick={() => setStep(1)} className="flex-1">
                   Back
                 </Button>
-                <Button 
-                  variant="juice" 
-                  onClick={handleNext}
-                  className="flex-1"
-                >
+                <Button variant="juice" onClick={handleNext} className="flex-1">
                   I Agree, Let's Go!
                 </Button>
               </div>
-            </div>
-          )}
+            </div>}
         </Card>
       </div>
 
       {/* Step Indicator */}
       <div className="flex justify-center gap-2 pb-8">
-        {[0, 1, 2].map((index) => (
-          <div
-            key={index}
-            className={`w-2 h-2 rounded-full transition-smooth ${
-              index === step ? "bg-juice-blue" : "bg-juice-blue/30"
-            }`}
-          />
-        ))}
+        {[0, 1, 2].map(index => <div key={index} className={`w-2 h-2 rounded-full transition-smooth ${index === step ? "bg-juice-blue" : "bg-juice-blue/30"}`} />)}
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default WelcomeScreen;
