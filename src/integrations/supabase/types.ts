@@ -14,7 +14,170 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      codenames: {
+        Row: {
+          created_at: string
+          description: string | null
+          display_name: string
+          emoji: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          display_name: string
+          emoji?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          display_name?: string
+          emoji?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      comments: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          story_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          story_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          story_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comments_story_id_fkey"
+            columns: ["story_id"]
+            isOneToOne: false
+            referencedRelation: "stories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reactions: {
+        Row: {
+          created_at: string
+          id: string
+          reaction_type: string
+          story_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          reaction_type?: string
+          story_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          reaction_type?: string
+          story_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reactions_story_id_fkey"
+            columns: ["story_id"]
+            isOneToOne: false
+            referencedRelation: "stories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      stories: {
+        Row: {
+          codename_id: string
+          comments_count: number
+          communication_rating: number
+          content: string
+          created_at: string
+          emotional_safety_rating: number
+          id: string
+          loyalty_rating: number
+          overall_vibe_rating: number
+          reactions_count: number
+          updated_at: string
+        }
+        Insert: {
+          codename_id: string
+          comments_count?: number
+          communication_rating: number
+          content: string
+          created_at?: string
+          emotional_safety_rating: number
+          id?: string
+          loyalty_rating: number
+          overall_vibe_rating: number
+          reactions_count?: number
+          updated_at?: string
+        }
+        Update: {
+          codename_id?: string
+          comments_count?: number
+          communication_rating?: number
+          content?: string
+          created_at?: string
+          emotional_safety_rating?: number
+          id?: string
+          loyalty_rating?: number
+          overall_vibe_rating?: number
+          reactions_count?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stories_codename_id_fkey"
+            columns: ["codename_id"]
+            isOneToOne: false
+            referencedRelation: "codenames"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      story_tags: {
+        Row: {
+          created_at: string
+          id: string
+          story_id: string
+          tag: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          story_id: string
+          tag: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          story_id?: string
+          tag?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "story_tags_story_id_fkey"
+            columns: ["story_id"]
+            isOneToOne: false
+            referencedRelation: "stories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
