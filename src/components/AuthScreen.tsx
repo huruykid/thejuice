@@ -101,7 +101,7 @@ const AuthScreen = ({ onAuthSuccess }: AuthScreenProps) => {
         <div className="flex items-center gap-3">
           <img src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" alt="Juice" className="h-16 w-16" />
           <h1 className="text-4xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-            Juice
+            The Juice App
           </h1>
         </div>
       </div>
