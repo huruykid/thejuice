@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { useApproveUser } from '@/hooks/useApproveUser';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -10,7 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { CheckCircle, XCircle, Clock, Search, Filter } from 'lucide-react';
+import { CheckCircle, XCircle, Clock, Search, Filter, Mail } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface VerificationWithProfile {
@@ -30,6 +31,7 @@ interface VerificationWithProfile {
 }
 
 const AdminVerifications = () => {
+  const approveUser = useApproveUser();
   // Admin email check
   const ADMIN_EMAILS = ['huruykid@gmail.com', 'huruydesigns@gmail.com'];
   
@@ -110,7 +112,10 @@ const AdminVerifications = () => {
       queryClient.invalidateQueries({ queryKey: ['admin-verifications'] });
       setSelectedVerification(null);
       setNotes('');
-      toast.success('Verification status updated successfully');
+      // Toast is handled in the useApproveUser hook or will show default success
+      if (!approveUser.isSuccess) {
+        toast.success('Verification status updated successfully');
+      }
     },
     onError: (error) => {
       console.error('Error updating verification:', error);
@@ -118,14 +123,37 @@ const AdminVerifications = () => {
     },
   });
 
-  const handleStatusUpdate = async (status: 'approved' | 'rejected') => {
+  const handleApprove = async () => {
+    if (!selectedVerification) return;
+    
+    setIsProcessing(true);
+    try {
+      // Get user email for sending approval notification
+      const { data: authUser } = await supabase.auth.admin.getUserById(selectedVerification.user_id);
+      
+      await approveUser.mutateAsync({
+        userId: selectedVerification.user_id,
+        email: authUser.user?.email || '',
+        username: selectedVerification.profile?.anonymous_username,
+        notes: notes || undefined
+      });
+      
+      // Reset form
+      setSelectedVerification(null);
+      setNotes('');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleReject = async () => {
     if (!selectedVerification) return;
 
     setIsProcessing(true);
     try {
       await updateVerificationMutation.mutateAsync({
         id: selectedVerification.id,
-        status,
+        status: 'rejected',
         notes
       });
     } finally {
@@ -338,15 +366,15 @@ const AdminVerifications = () => {
 
                 <div className="flex gap-3">
                   <Button
-                    onClick={() => handleStatusUpdate('approved')}
-                    disabled={isProcessing}
+                    onClick={handleApprove}
+                    disabled={isProcessing || approveUser.isPending}
                     className="flex-1 bg-green-600 hover:bg-green-700"
                   >
-                    <CheckCircle className="w-4 h-4 mr-2" />
-                    Approve
+                    <Mail className="w-4 h-4 mr-2" />
+                    {isProcessing || approveUser.isPending ? 'Approving...' : 'Approve & Email'}
                   </Button>
                   <Button
-                    onClick={() => handleStatusUpdate('rejected')}
+                    onClick={handleReject}
                     disabled={isProcessing}
                     variant="destructive"
                     className="flex-1"
