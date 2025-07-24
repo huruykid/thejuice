@@ -183,11 +183,16 @@ const CreateStory = ({ onClose }: { onClose: () => void }) => {
   };
 
   const handlePublish = async () => {
+    console.log('Starting story publish process...');
+    console.log('Story data:', storyData);
+    console.log('Uploaded images:', uploadedImages);
+    
     try {
       let imageUrls: string[] = [];
       
       // Upload all images if any were selected
       if (uploadedImages.length > 0) {
+        console.log('Uploading images...');
         setUploading(true);
         for (const image of uploadedImages) {
           const url = await uploadImageToStorage(image);
@@ -196,16 +201,23 @@ const CreateStory = ({ onClose }: { onClose: () => void }) => {
           }
         }
         setUploading(false);
+        console.log('Images uploaded:', imageUrls);
       }
 
-      await createStory.mutateAsync({
+      const storyPayload = {
         content: storyData.content,
         tags: storyData.selectedTags,
         ratings: storyData.ratings,
         location: storyData.metadata.city,
         imageUrl: imageUrls.length > 0 ? JSON.stringify(imageUrls) : undefined,
         subjectName: storyData.personName,
-      });
+      };
+
+      console.log('Story payload:', storyPayload);
+
+      await createStory.mutateAsync(storyPayload);
+      
+      console.log('Story creation successful!');
       
       // Show success animation
       setShowSuccess(true);
@@ -216,6 +228,7 @@ const CreateStory = ({ onClose }: { onClose: () => void }) => {
       }, 2500);
       
     } catch (error) {
+      console.error('Detailed error publishing story:', error);
       toast({
         title: "Error",
         description: "Failed to publish story. Please try again.",
