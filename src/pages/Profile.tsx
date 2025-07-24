@@ -113,7 +113,11 @@ const Profile = () => {
             Privacy Settings
           </Button>
           
-          <Button variant="ghost" className="w-full text-muted-foreground">
+          <Button 
+            variant="ghost" 
+            className="w-full text-muted-foreground"
+            onClick={() => window.open('mailto:support@sipjuice.app?subject=Help%20%26%20Support%20Request', '_blank')}
+          >
             Help & Support
           </Button>
           
