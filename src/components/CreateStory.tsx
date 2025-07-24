@@ -394,7 +394,7 @@ const CreateStory = ({ onClose }: { onClose: () => void }) => {
               <Textarea
                 value={storyData.content}
                 onChange={(e) => setStoryData(prev => ({ ...prev, content: e.target.value }))}
-                placeholder="Spill the tea... Use initials, codenames, or emojis instead of real names"
+                placeholder="Pour the juice... Use initials, codenames, or emojis instead of real names"
                 className="min-h-32 rounded-2xl border-juice-blue/20 focus:border-juice-blue"
                 maxLength={500}
               />
