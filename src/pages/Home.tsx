@@ -148,7 +148,6 @@ const Home = ({ onCreateStory }: HomeProps) => {
             onClick={handleInviteFriends}
             disabled={generatingInvite || (inviteStats?.invites_remaining || 0) <= 0}
           >
-            <Share2 className="h-4 w-4 mr-2" />
             {generatingInvite ? "Generating..." : "Invite Friends"}
           </Button>
         </div>
