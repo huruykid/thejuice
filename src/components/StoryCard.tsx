@@ -8,6 +8,7 @@ import { useToggleReaction } from "@/hooks/useReactions";
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 const tagEmojis: { [key: string]: string } = {
   'red flag': '🚩',
@@ -37,6 +38,7 @@ interface StoryCardProps {
     user_id?: string;
     image_url?: string;
     subject_name?: string;
+    profile_id?: string;
     story_tags: Array<{
       tag: string;
     }>;
@@ -58,6 +60,7 @@ const StoryCard = ({
   const [isLiked, setIsLiked] = useState(false);
   const [currentLikes, setCurrentLikes] = useState(story.reactions_count);
   const { toast } = useToast();
+  const navigate = useNavigate();
   const deleteStory = useDeleteStory();
   const toggleReaction = useToggleReaction();
 
@@ -152,6 +155,12 @@ const StoryCard = ({
           variant: "destructive"
         });
       }
+    }
+  };
+
+  const handleAuthorClick = () => {
+    if (story.profile_id) {
+      navigate(`/author/${story.profile_id}`);
     }
   };
 
@@ -339,7 +348,12 @@ const StoryCard = ({
           
           {/* Author attribution */}
           <div className="pt-2 border-t border-juice-orange/5 mt-2">
-            <span className="text-xs text-muted-foreground">Posted by: {authorName}</span>
+            <button 
+              onClick={handleAuthorClick}
+              className="text-xs text-muted-foreground hover:text-juice-blue transition-smooth cursor-pointer"
+            >
+              Posted by: {authorName}
+            </button>
           </div>
         </div>
       </div>

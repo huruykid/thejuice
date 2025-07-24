@@ -12,6 +12,7 @@ import Profile from "./pages/Profile";
 import Activity from "./pages/Activity";
 import AdminVerifications from "./pages/AdminVerifications";
 import PrivacySettings from "./pages/PrivacySettings";
+import AuthorStories from "./pages/AuthorStories";
 import CreateStory from "./components/CreateStory";
 import { useAuth } from "./hooks/useAuth";
 
@@ -87,6 +88,11 @@ const App = () => (
           <Route path="/privacy-settings" element={
             <ProtectedRoute>
               <PrivacySettings />
+            </ProtectedRoute>
+          } />
+          <Route path="/author/:profileId" element={
+            <ProtectedRoute>
+              <AuthorStories />
             </ProtectedRoute>
           } />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
