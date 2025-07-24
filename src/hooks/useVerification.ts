@@ -14,7 +14,7 @@ export interface UserVerification {
 export const useVerification = (userId?: string) => {
   const queryClient = useQueryClient();
 
-  // Get user's verification status
+  // Get user's verification status (always get the most recent one)
   const { data: verification, isLoading, error } = useQuery({
     queryKey: ['user-verification', userId],
     queryFn: async () => {
@@ -24,6 +24,7 @@ export const useVerification = (userId?: string) => {
         .from('user_verifications')
         .select('*')
         .eq('user_id', userId)
+        .order('created_at', { ascending: false })
         .maybeSingle();
 
       if (error) throw error;
@@ -32,18 +33,40 @@ export const useVerification = (userId?: string) => {
     enabled: !!userId,
   });
 
-  // Create verification record
+  // Create verification record (only if none exists)
   const createVerification = useMutation({
     mutationFn: async (data: {
       user_id: string;
       selfie_url: string;
       verification_status?: string;
     }) => {
-      const { error } = await supabase
+      // Check if verification already exists
+      const { data: existing } = await supabase
         .from('user_verifications')
-        .insert(data);
+        .select('id')
+        .eq('user_id', data.user_id)
+        .maybeSingle();
 
-      if (error) throw error;
+      if (existing) {
+        // Update existing verification instead of creating new one
+        const { error } = await supabase
+          .from('user_verifications')
+          .update({
+            selfie_url: data.selfie_url,
+            verification_status: data.verification_status || 'pending',
+            updated_at: new Date().toISOString()
+          })
+          .eq('user_id', data.user_id);
+
+        if (error) throw error;
+      } else {
+        // Create new verification
+        const { error } = await supabase
+          .from('user_verifications')
+          .insert(data);
+
+        if (error) throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['user-verification'] });

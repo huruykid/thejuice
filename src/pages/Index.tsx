@@ -98,37 +98,52 @@ const Index = () => {
 
   // Handle verification flow
   if (hasProfile) {
-    // Check verification status
-    if (isRejected) {
-      return (
-        <div>
-          <div className="p-4">
-            <OnboardingProgress 
-              currentStep={5} 
-              totalSteps={5} 
-              steps={onboardingSteps} 
-            />
+    // If user has ANY verification record, they should stay at step 5
+    if (hasVerification) {
+      if (isRejected) {
+        return (
+          <div>
+            <div className="p-4">
+              <OnboardingProgress 
+                currentStep={5} 
+                totalSteps={5} 
+                steps={onboardingSteps} 
+              />
+            </div>
+            <VerificationRejected notes={verification?.notes} />
           </div>
-          <VerificationRejected notes={verification?.notes} />
-        </div>
-      );
+        );
+      }
+      
+      if (isPending) {
+        return (
+          <div>
+            <div className="p-4">
+              <OnboardingProgress 
+                currentStep={5} 
+                totalSteps={5} 
+                steps={onboardingSteps} 
+              />
+            </div>
+            <VerificationPending onRefresh={refreshVerificationStatus} />
+          </div>
+        );
+      }
+      
+      // Has verification and it's approved - show main app
+      if (isVerified) {
+        return (
+          <>
+            <Home onCreateStory={() => setShowCreateStory(true)} />
+            {showCreateStory && (
+              <CreateStory onClose={() => setShowCreateStory(false)} />
+            )}
+          </>
+        );
+      }
     }
     
-    if (isPending) {
-      return (
-        <div>
-          <div className="p-4">
-            <OnboardingProgress 
-              currentStep={5} 
-              totalSteps={5} 
-              steps={onboardingSteps} 
-            />
-          </div>
-          <VerificationPending onRefresh={refreshVerificationStatus} />
-        </div>
-      );
-    }
-    
+    // Only show steps 3-4 for users who have NEVER submitted verification
     if (!hasVerification) {
       // User has profile but no verification - start selfie process
       if (currentStep === 'selfie') {
@@ -189,24 +204,9 @@ const Index = () => {
       );
     }
     
-    if (!isVerified) {
-      // Has verification but not approved yet
-      return (
-        <div>
-          <div className="p-4">
-            <OnboardingProgress 
-              currentStep={5} 
-              totalSteps={5} 
-              steps={onboardingSteps} 
-            />
-          </div>
-          <VerificationPending onRefresh={refreshVerificationStatus} />
-        </div>
-      );
-    }
   }
 
-  // User is fully verified - show main app
+  // Fallback - show main app (should not reach here normally)
   return (
     <>
       <Home onCreateStory={() => setShowCreateStory(true)} />
