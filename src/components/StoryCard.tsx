@@ -1,6 +1,7 @@
 import { Heart, MessageCircle, Flag, Star, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import CommentsModal from "./CommentsModal";
 import { useDeleteStory } from "@/hooks/useStories";
 import { useToggleReaction } from "@/hooks/useReactions";
@@ -164,6 +165,19 @@ const StoryCard = ({
     return date.toLocaleDateString();
   };
 
+  // Parse image URLs from JSON string
+  const getImageUrls = (): string[] => {
+    if (!story.image_url) return [];
+    try {
+      const parsed = JSON.parse(story.image_url);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  };
+
+  const imageUrls = getImageUrls();
+
   return (
     <>
       <div className="bg-white rounded-3xl shadow-soft border border-juice-orange/10 overflow-hidden mb-4">
@@ -193,6 +207,44 @@ const StoryCard = ({
             </div>
           </div>
         </div>
+
+        {/* Image Carousel */}
+        {imageUrls.length > 0 && (
+          <div className="relative">
+            <Carousel className="w-full">
+              <CarouselContent>
+                {imageUrls.map((url, index) => (
+                  <CarouselItem key={index}>
+                    <div className="aspect-[4/3] bg-muted">
+                      <img
+                        src={url}
+                        alt={`Story image ${index + 1}`}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                      />
+                    </div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              {imageUrls.length > 1 && (
+                <>
+                  <CarouselPrevious className="left-2" />
+                  <CarouselNext className="right-2" />
+                </>
+              )}
+            </Carousel>
+            {imageUrls.length > 1 && (
+              <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex gap-1">
+                {imageUrls.map((_, index) => (
+                  <div
+                    key={index}
+                    className="w-1.5 h-1.5 rounded-full bg-white/60"
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Content */}
         <div className="p-4 space-y-3">
