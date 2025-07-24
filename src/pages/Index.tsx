@@ -15,7 +15,7 @@ const Index = () => {
   });
   
   const { user, loading } = useAuth();
-  const { profile, isLoading: profileLoading, hasProfile } = useProfile();
+  const { profile, isLoading: profileLoading, hasProfile } = useProfile(user);
 
   const handleOnboardingComplete = () => {
     localStorage.setItem('onboardingCompleted', 'true');
@@ -29,7 +29,7 @@ const Index = () => {
     }
   };
 
-  if (loading || profileLoading) {
+  if (loading || (user && profileLoading)) {
     return (
       <div className="min-h-screen bg-gradient-soft flex items-center justify-center">
         <div className="text-center space-y-4">

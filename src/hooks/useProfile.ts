@@ -9,15 +9,14 @@ export interface Profile {
   created_at: string;
 }
 
-export const useProfile = () => {
+export const useProfile = (user?: any) => {
   const queryClient = useQueryClient();
 
-  // Get current user's profile
+  // Get current user's profile - only when user exists
   const { data: profile, isLoading, error } = useQuery({
-    queryKey: ['user-profile'],
+    queryKey: ['user-profile', user?.id],
     queryFn: async () => {
-      const { data: { user } } = await (supabase as any).auth.getUser();
-      if (!user) throw new Error('User not authenticated');
+      if (!user) return null;
 
       const { data, error } = await (supabase as any)
         .from('profiles')
@@ -28,6 +27,7 @@ export const useProfile = () => {
       if (error) throw error;
       return data as Profile | null;
     },
+    enabled: !!user, // Only run when user exists
   });
 
   // Check if username is available
