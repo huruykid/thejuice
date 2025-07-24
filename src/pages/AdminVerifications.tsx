@@ -1,6 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -28,6 +30,11 @@ interface VerificationWithProfile {
 }
 
 const AdminVerifications = () => {
+  // Admin email check
+  const ADMIN_EMAILS = ['your-admin-email@example.com']; // Replace with your actual admin email(s)
+  
+  const { user, loading: authLoading } = useAuth();
+  const navigate = useNavigate();
   const [filter, setFilter] = useState<'all' | 'pending' | 'approved' | 'rejected'>('pending');
   const [search, setSearch] = useState('');
   const [selectedVerification, setSelectedVerification] = useState<VerificationWithProfile | null>(null);
@@ -35,6 +42,17 @@ const AdminVerifications = () => {
   const [isProcessing, setIsProcessing] = useState(false);
 
   const queryClient = useQueryClient();
+
+  // Check admin access
+  useEffect(() => {
+    if (!authLoading && user) {
+      const isAdmin = ADMIN_EMAILS.includes(user.email || '');
+      if (!isAdmin) {
+        navigate('/not-found');
+        return;
+      }
+    }
+  }, [user, authLoading, navigate]);
 
   // Fetch verifications with profiles
   const { data: verifications, isLoading } = useQuery({
@@ -146,7 +164,8 @@ const AdminVerifications = () => {
     return age;
   };
 
-  if (isLoading) {
+  // Show loading while checking auth or fetching data
+  if (authLoading || isLoading) {
     return (
       <div className="min-h-screen bg-gradient-soft flex items-center justify-center">
         <div className="text-center space-y-4">
@@ -155,6 +174,11 @@ const AdminVerifications = () => {
         </div>
       </div>
     );
+  }
+
+  // Don't render if not authenticated or not admin (redirect will happen in useEffect)
+  if (!user || !ADMIN_EMAILS.includes(user.email || '')) {
+    return null;
   }
 
   return (
