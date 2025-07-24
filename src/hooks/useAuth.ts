@@ -54,7 +54,7 @@ export const useAuth = () => {
       }
     });
 
-    // If signup successful, mark invite as used
+    // If signup successful, mark invite as used and send welcome email
     if (!error && data.user) {
       try {
         const { error: useError } = await (supabase as any)
@@ -65,6 +65,17 @@ export const useAuth = () => {
         
         if (useError) {
           console.error('Failed to process invite code:', useError);
+        }
+
+        // Send welcome email
+        try {
+          await supabase.functions.invoke('send-welcome-email', {
+            body: { email: data.user.email }
+          });
+          console.log('Welcome email sent successfully');
+        } catch (emailError) {
+          console.error('Failed to send welcome email:', emailError);
+          // Don't fail signup if email fails
         }
       } catch (err) {
         console.error('Error processing invite code:', err);
