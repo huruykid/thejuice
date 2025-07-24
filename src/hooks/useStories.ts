@@ -15,6 +15,7 @@ export interface Story {
   created_at: string;
   user_id?: string;
   image_url?: string;
+  subject_name?: string;
   profiles?: {
     id: string;
     anonymous_username: string;
@@ -83,6 +84,7 @@ export const useCreateStory = () => {
       ratings,
       location,
       imageUrl,
+      subjectName,
     }: {
       content: string;
       tags: string[];
@@ -94,6 +96,7 @@ export const useCreateStory = () => {
       };
       location?: string;
       imageUrl?: string;
+      subjectName?: string;
     }) => {
       // Validate and sanitize input
       const contentValidation = validateStoryContent(content);
@@ -103,6 +106,7 @@ export const useCreateStory = () => {
 
       const sanitizedContent = sanitizeText(content);
       const sanitizedLocation = location ? sanitizeText(location) : null;
+      const sanitizedSubjectName = subjectName ? sanitizeText(subjectName) : null;
 
       // Validate ratings - ensure all ratings are provided and valid
       const ratingValidations = [
@@ -159,6 +163,7 @@ export const useCreateStory = () => {
           overall_vibe_rating: ratings.overallVibe,
           location: sanitizedLocation,
           image_url: imageUrl || null,
+          subject_name: sanitizedSubjectName,
           user_id: user.id,
         })
         .select()

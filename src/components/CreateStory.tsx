@@ -204,6 +204,7 @@ const CreateStory = ({ onClose }: { onClose: () => void }) => {
         ratings: storyData.ratings,
         location: storyData.metadata.city,
         imageUrl: imageUrls.length > 0 ? JSON.stringify(imageUrls) : undefined,
+        subjectName: storyData.personName,
       });
       
       // Show success animation
