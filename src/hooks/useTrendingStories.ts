@@ -1,3 +1,4 @@
+
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -13,11 +14,9 @@ export const useTrendingStories = () => {
         .from("stories")
         .select(`
           *,
-          codenames (
+          profiles (
             id,
-            display_name,
-            emoji,
-            description
+            anonymous_username
           ),
           story_tags (
             tag

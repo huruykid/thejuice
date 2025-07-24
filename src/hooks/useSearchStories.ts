@@ -1,3 +1,4 @@
+
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -9,11 +10,9 @@ export const useSearchStories = (query: string, location?: string, tag?: string)
         .from("stories")
         .select(`
           *,
-          codenames (
+          profiles (
             id,
-            display_name,
-            emoji,
-            description
+            anonymous_username
           ),
           story_tags (
             tag
@@ -22,7 +21,7 @@ export const useSearchStories = (query: string, location?: string, tag?: string)
 
       // Add text search
       if (query.trim()) {
-        dbQuery = dbQuery.or(`content.ilike.%${query}%,codenames.display_name.ilike.%${query}%`);
+        dbQuery = dbQuery.or(`content.ilike.%${query}%,profiles.anonymous_username.ilike.%${query}%`);
       }
 
       // Add location filter with partial matching

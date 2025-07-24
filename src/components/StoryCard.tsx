@@ -1,4 +1,3 @@
-
 import { Heart, MessageCircle, Flag, Star, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -290,6 +289,7 @@ const StoryCard = ({
           isOpen={showComments}
           onClose={() => setShowComments(false)}
           storyId={story.id}
+          storyPreview={story.content.substring(0, 100) + (story.content.length > 100 ? '...' : '')}
         />
       )}
     </>
