@@ -207,7 +207,12 @@ const CreateStory = ({ onClose }: { onClose: () => void }) => {
       const storyPayload = {
         content: storyData.content,
         tags: storyData.selectedTags,
-        ratings: storyData.ratings,
+        ratings: {
+          communication: storyData.ratings.communication,
+          loyalty: storyData.ratings.loyalty,
+          emotionalSafety: storyData.ratings.emotionalSafety,
+          overallVibe: storyData.ratings.overallVibe,
+        },
         location: storyData.metadata.city,
         imageUrl: imageUrls.length > 0 ? JSON.stringify(imageUrls) : undefined,
         subjectName: storyData.personName,
