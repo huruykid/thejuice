@@ -24,9 +24,20 @@ export const useOnboardingState = (userId?: string) => {
     const saved = localStorage.getItem(storageKey);
     if (saved) {
       try {
-        setState(JSON.parse(saved));
+        const parsedState = JSON.parse(saved);
+        // Only use saved state if it's recent (within 24 hours)
+        const stateAge = Date.now() - new Date(parsedState.startedAt).getTime();
+        const maxAge = 24 * 60 * 60 * 1000; // 24 hours
+        
+        if (stateAge < maxAge) {
+          setState(parsedState);
+        } else {
+          // Clear old state
+          localStorage.removeItem(storageKey);
+        }
       } catch (error) {
         console.error('Failed to parse onboarding state:', error);
+        localStorage.removeItem(storageKey);
       }
     }
   }, [userId, storageKey]);

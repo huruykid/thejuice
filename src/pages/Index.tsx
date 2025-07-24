@@ -45,6 +45,9 @@ const Index = () => {
     if (success) {
       markStepCompleted('selfie');
       setCurrentStep('guidelines');
+    } else {
+      // Stay on selfie step if failed
+      setCurrentStep('selfie');
     }
   };
 

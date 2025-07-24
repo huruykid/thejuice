@@ -57,8 +57,7 @@ const EnhancedSelfieCapture: React.FC<EnhancedSelfieCaptureProps> = ({ onComplet
     }
   };
 
-  const checkImageQuality = (imageData: string): 'good' | 'poor' => {
-    // Simple brightness check - in production this could be more sophisticated
+  const checkImageQuality = (imageData: string): Promise<'good' | 'poor'> => {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     const img = new Image();
@@ -72,16 +71,29 @@ const EnhancedSelfieCapture: React.FC<EnhancedSelfieCaptureProps> = ({ onComplet
         const data = ctx?.getImageData(0, 0, canvas.width, canvas.height);
         if (!data) return resolve('poor');
         
-        let brightness = 0;
-        for (let i = 0; i < data.data.length; i += 4) {
-          brightness += (data.data[i] + data.data[i + 1] + data.data[i + 2]) / 3;
-        }
-        brightness = brightness / (data.data.length / 4);
+        let totalBrightness = 0;
+        let minBrightness = 255;
+        let maxBrightness = 0;
         
-        resolve(brightness > 50 && brightness < 200 ? 'good' : 'poor');
+        for (let i = 0; i < data.data.length; i += 4) {
+          const r = data.data[i];
+          const g = data.data[i + 1];
+          const b = data.data[i + 2];
+          const brightness = (r + g + b) / 3;
+          totalBrightness += brightness;
+          minBrightness = Math.min(minBrightness, brightness);
+          maxBrightness = Math.max(maxBrightness, brightness);
+        }
+        
+        const avgBrightness = totalBrightness / (data.data.length / 4);
+        const contrast = maxBrightness - minBrightness;
+        
+        // More strict quality check: good brightness range, sufficient contrast, not too dark/bright
+        const isGoodQuality = avgBrightness > 60 && avgBrightness < 180 && contrast > 50;
+        resolve(isGoodQuality ? 'good' : 'poor');
       };
       img.src = imageData;
-    }) as any;
+    });
   };
 
   const capturePhoto = async () => {
@@ -161,6 +173,16 @@ const EnhancedSelfieCapture: React.FC<EnhancedSelfieCaptureProps> = ({ onComplet
   const uploadAndSave = async () => {
     if (!capturedImage) return;
 
+    // Prevent upload of poor quality images
+    if (imageQuality === 'poor') {
+      toast({
+        title: "Photo Quality Too Low",
+        description: "Please take a clearer photo with better lighting before proceeding.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsLoading(true);
     try {
       const response = await fetch(capturedImage);
@@ -206,8 +228,7 @@ const EnhancedSelfieCapture: React.FC<EnhancedSelfieCaptureProps> = ({ onComplet
         variant: "destructive",
       });
       
-      // Offer retry
-      setRetryCount(prev => prev + 1);
+      onComplete(false);
     } finally {
       setIsLoading(false);
     }
