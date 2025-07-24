@@ -102,6 +102,33 @@ const AuthScreen = ({ onAuthSuccess }: AuthScreenProps) => {
   const handleOAuthSignIn = async (provider: 'google' | 'apple') => {
     try {
       setLoading(true);
+      
+      // For sign-up, require and validate invite code first
+      if (isSignUp) {
+        if (!inviteCode || inviteCode.length < 6) {
+          toast({
+            title: "Invite code required",
+            description: "Please enter a valid invite code to sign up.",
+            variant: "destructive"
+          });
+          return;
+        }
+        
+        // Validate invite code before OAuth
+        const isValidCode = await validateInviteCode(inviteCode);
+        if (!isValidCode) {
+          toast({
+            title: "Invalid invite code",
+            description: "This invite code is invalid or has expired.",
+            variant: "destructive"
+          });
+          return;
+        }
+        
+        // Store invite code for after OAuth redirect
+        localStorage.setItem('pending_invite_code', inviteCode);
+      }
+
       const { error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
@@ -175,13 +202,30 @@ const AuthScreen = ({ onAuthSuccess }: AuthScreenProps) => {
               </p>
             </div>
 
-            {/* OAuth Sign In Options */}
+            {/* OAuth Sign In Options - Show invite code input first for sign up */}
+            {isSignUp && (
+              <div>
+                <Input
+                  type="text"
+                  value={inviteCode}
+                  onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
+                  placeholder="INVITE-CODE"
+                  className="text-center text-lg tracking-wider rounded-2xl border-juice-orange/30 focus:border-juice-orange"
+                  maxLength={12}
+                  required
+                />
+                <p className="text-xs text-muted-foreground mt-2 text-center">
+                  Enter your invite code to continue with social sign-up
+                </p>
+              </div>
+            )}
+
             <div className="space-y-3">
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => handleOAuthSignIn('google')}
-                disabled={loading}
+                disabled={loading || (isSignUp && !inviteCode)}
                 className="w-full rounded-2xl border-juice-orange/30 hover:border-juice-orange"
               >
                 <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
@@ -197,7 +241,7 @@ const AuthScreen = ({ onAuthSuccess }: AuthScreenProps) => {
                 type="button"
                 variant="outline"
                 onClick={() => handleOAuthSignIn('apple')}
-                disabled={loading}
+                disabled={loading || (isSignUp && !inviteCode)}
                 className="w-full rounded-2xl border-juice-orange/30 hover:border-juice-orange"
               >
                 <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
