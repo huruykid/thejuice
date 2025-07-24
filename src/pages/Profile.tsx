@@ -9,12 +9,14 @@ import InviteManager from "@/components/InviteManager";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
   const [showCreateStory, setShowCreateStory] = useState(false);
   const { signOut, user } = useAuth();
   const { profile } = useProfile(user);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleLogout = async () => {
     const { error } = await signOut();
@@ -103,7 +105,11 @@ const Profile = () => {
             Share Your Story
           </Button>
           
-          <Button variant="outline" className="w-full">
+          <Button 
+            variant="outline" 
+            className="w-full"
+            onClick={() => navigate('/privacy-settings')}
+          >
             Privacy Settings
           </Button>
           

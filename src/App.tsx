@@ -11,6 +11,7 @@ import Explore from "./pages/Explore";
 import Profile from "./pages/Profile";
 import Comments from "./pages/Comments";
 import AdminVerifications from "./pages/AdminVerifications";
+import PrivacySettings from "./pages/PrivacySettings";
 import CreateStory from "./components/CreateStory";
 import { useAuth } from "./hooks/useAuth";
 
@@ -81,6 +82,11 @@ const App = () => (
           <Route path="/admin/verifications" element={
             <ProtectedRoute>
               <AdminVerifications />
+            </ProtectedRoute>
+          } />
+          <Route path="/privacy-settings" element={
+            <ProtectedRoute>
+              <PrivacySettings />
             </ProtectedRoute>
           } />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
