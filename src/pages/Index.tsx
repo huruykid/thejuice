@@ -76,19 +76,7 @@ const Index = () => {
   }
 
   if (!user) {
-    return (
-      <div>
-        <div className="p-4">
-          <EnhancedProgress 
-            currentStep={1} 
-            totalSteps={5} 
-            steps={onboardingSteps}
-            estimatedTimeRemaining="2-3 minutes"
-          />
-        </div>
-        <AuthScreen onAuthSuccess={() => {}} />
-      </div>
-    );
+    return <AuthScreen onAuthSuccess={() => {}} />;
   }
 
   // If user exists but no profile, show profile creation
