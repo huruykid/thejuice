@@ -135,13 +135,9 @@ const Explore = ({ onCreateStory }: ExploreProps) => {
                 <h3 className="text-lg font-semibold text-foreground mb-2">
                   Discover Stories
                 </h3>
-                <p className="text-muted-foreground mb-4">
+                <p className="text-muted-foreground">
                   Search for stories, tags, or topics you're interested in
                 </p>
-                <Button variant="juice-outline" size="sm">
-                  <Filter className="h-4 w-4 mr-2" />
-                  Browse Categories
-                </Button>
               </div>
             )}
           </TabsContent>
