@@ -106,7 +106,7 @@ const AuthScreen = ({ onAuthSuccess }: AuthScreenProps) => {
           </h1>
         </div>
         <p className="text-lg text-muted-foreground mt-2">
-          We Got the Juice. And So Do You.
+          We Got the Juice. Now You Do Too.
         </p>
       </div>
 
