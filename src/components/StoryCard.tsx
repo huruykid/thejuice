@@ -2,7 +2,9 @@ import { Heart, MessageCircle, Flag, Star, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import CodenameCard from "./CodenameCard";
+import CommentsModal from "./CommentsModal";
 import { useDeleteStory } from "@/hooks/useStories";
+import { useToggleReaction } from "@/hooks/useReactions";
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
@@ -47,18 +49,35 @@ interface StoryCardProps {
 
 const StoryCard = ({ story }: StoryCardProps) => {
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [showComments, setShowComments] = useState(false);
+  const [userHasLiked, setUserHasLiked] = useState(false);
+  
   const deleteStory = useDeleteStory();
+  const toggleReaction = useToggleReaction();
   const { toast } = useToast();
   const vibeScore = Math.round(story.ratings.overallVibe * 20); // Convert 1-5 to 1-100
   
-  // Check if current user owns this story
+  // Check if current user owns this story and if they've liked it
   useEffect(() => {
     const getCurrentUser = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       setCurrentUserId(user?.id || null);
+      
+      if (user) {
+        // Check if user has liked this story
+        const { data: reaction } = await supabase
+          .from('reactions')
+          .select('id')
+          .eq('story_id', story.id)
+          .eq('user_id', user.id)
+          .eq('reaction_type', 'like')
+          .maybeSingle();
+        
+        setUserHasLiked(!!reaction);
+      }
     };
     getCurrentUser();
-  }, []);
+  }, [story.id]);
 
   const isOwner = currentUserId && story.user_id === currentUserId;
   
@@ -90,6 +109,40 @@ const StoryCard = ({ story }: StoryCardProps) => {
         variant: "destructive",
       });
     }
+  };
+
+  const handleLike = async () => {
+    if (!currentUserId) {
+      toast({
+        title: "Login required",
+        description: "Please log in to like stories.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const result = await toggleReaction.mutateAsync({ storyId: story.id });
+      setUserHasLiked(result.action === 'added');
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update reaction. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleComment = () => {
+    if (!currentUserId) {
+      toast({
+        title: "Login required",
+        description: "Please log in to comment on stories.",
+        variant: "destructive",
+      });
+      return;
+    }
+    setShowComments(true);
   };
 
   return (
@@ -146,11 +199,26 @@ const StoryCard = ({ story }: StoryCardProps) => {
       {/* Actions */}
       <div className="flex items-center justify-between pt-4 border-t border-juice-blue/5">
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground">
-            <Heart className="h-4 w-4" />
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className={`gap-2 transition-colors ${
+              userHasLiked 
+                ? 'text-red-500 hover:text-red-600' 
+                : 'text-muted-foreground hover:text-red-500'
+            }`}
+            onClick={handleLike}
+            disabled={toggleReaction.isPending}
+          >
+            <Heart className={`h-4 w-4 ${userHasLiked ? 'fill-current' : ''}`} />
             {story.reactions}
           </Button>
-          <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="gap-2 text-muted-foreground hover:text-juice-blue transition-colors"
+            onClick={handleComment}
+          >
             <MessageCircle className="h-4 w-4" />
             {story.comments}
           </Button>
@@ -176,6 +244,14 @@ const StoryCard = ({ story }: StoryCardProps) => {
           </div>
         </div>
       </div>
+
+      {/* Comments Modal */}
+      <CommentsModal
+        isOpen={showComments}
+        onClose={() => setShowComments(false)}
+        storyId={story.id}
+        storyPreview={getPreviewText(story.content)}
+      />
     </div>
   );
 };
