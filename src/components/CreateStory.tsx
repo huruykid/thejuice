@@ -19,6 +19,7 @@ const CreateStory = ({ onClose }: { onClose: () => void }) => {
   const [uploading, setUploading] = useState(false);
   const [storyData, setStoryData] = useState({
     personName: "",
+    personPhone: "",
     content: "",
     selectedTags: [] as string[],
     ratings: {
@@ -262,25 +263,56 @@ const CreateStory = ({ onClose }: { onClose: () => void }) => {
                   Who's this story about? 👤
                 </h3>
                 <p className="text-sm text-muted-foreground">
-                  Enter their name, username, or how you know them (keep it anonymous!)
+                  Enter their name, username, or phone number (all kept anonymous!)
                 </p>
               </div>
               
-              <Input
-                value={storyData.personName}
-                onChange={(e) => setStoryData(prev => ({ ...prev, personName: e.target.value }))}
-                placeholder="e.g., Alex, @username, gym guy, coffee shop girl..."
-                className="rounded-2xl border-juice-blue/20 focus:border-juice-blue"
-                maxLength={50}
-              />
-              
-              <div className="text-right text-xs text-muted-foreground">
-                {storyData.personName.length}/50 characters
+              <div className="space-y-4">
+                <div>
+                  <label className="text-sm font-medium text-foreground mb-2 block">
+                    Name or Username
+                  </label>
+                  <Input
+                    value={storyData.personName}
+                    onChange={(e) => setStoryData(prev => ({ ...prev, personName: e.target.value }))}
+                    placeholder="e.g., Alex, @username, gym guy, coffee shop girl..."
+                    className="rounded-2xl border-juice-blue/20 focus:border-juice-blue"
+                    maxLength={50}
+                  />
+                  <div className="text-right text-xs text-muted-foreground mt-1">
+                    {storyData.personName.length}/50 characters
+                  </div>
+                </div>
+
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <span className="w-full border-t border-juice-blue/20" />
+                  </div>
+                  <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-white px-2 text-muted-foreground">Or</span>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium text-foreground mb-2 block">
+                    Phone Number (Optional)
+                  </label>
+                  <Input
+                    value={storyData.personPhone}
+                    onChange={(e) => setStoryData(prev => ({ ...prev, personPhone: e.target.value }))}
+                    placeholder="e.g., +1234567890, (555) 123-4567..."
+                    className="rounded-2xl border-juice-blue/20 focus:border-juice-blue"
+                    type="tel"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    📱 For users who have shared their number in their profile
+                  </p>
+                </div>
               </div>
 
               <div className="bg-juice-lavender/30 rounded-2xl p-4">
                 <p className="text-sm text-muted-foreground">
-                  💡 <strong>Privacy Tip:</strong> Use initials, nicknames, or descriptive names instead of real names to keep things anonymous.
+                  💡 <strong>Privacy Tip:</strong> Phone numbers are only used to identify users who have added their number to their profile. They're never displayed publicly and help others find stories about people they know.
                 </p>
               </div>
             </div>
@@ -587,7 +619,7 @@ const CreateStory = ({ onClose }: { onClose: () => void }) => {
               variant="juice"
               onClick={handleNext}
               disabled={
-                (step === 0 && !storyData.personName.trim()) ||
+                (step === 0 && !storyData.personName.trim() && !storyData.personPhone.trim()) ||
                 (step === 1 && !storyData.content.trim())
               }
               className="flex-1"

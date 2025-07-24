@@ -120,6 +120,7 @@ export type Database = {
           created_at: string
           date_of_birth: string | null
           id: string
+          phone_number: string | null
           relationship_status: string | null
           updated_at: string
           user_id: string
@@ -130,6 +131,7 @@ export type Database = {
           created_at?: string
           date_of_birth?: string | null
           id?: string
+          phone_number?: string | null
           relationship_status?: string | null
           updated_at?: string
           user_id: string
@@ -140,6 +142,7 @@ export type Database = {
           created_at?: string
           date_of_birth?: string | null
           id?: string
+          phone_number?: string | null
           relationship_status?: string | null
           updated_at?: string
           user_id?: string
