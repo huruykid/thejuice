@@ -639,7 +639,7 @@ const CreateStory = ({ onClose }: { onClose: () => void }) => {
                   {uploading ? "Uploading..." : "Publishing..."}
                 </span>
               ) : (
-                "🧃 Spill the Tea!"
+                "🍊 Give the Juice!"
               )}
             </Button>
           )}
