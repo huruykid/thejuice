@@ -126,7 +126,7 @@ const SelfieCapture: React.FC<SelfieCaptureProps> = ({ onComplete, userId }) => 
 
       toast({
         title: "Verification Submitted",
-        description: "Your selfie has been submitted for verification. You'll be notified once approved.",
+        description: "Please review the community guidelines next, then your account will be pending approval.",
       });
 
       onComplete(true);

@@ -28,6 +28,8 @@ const Index = () => {
   };
 
   const handleGuidelinesComplete = () => {
+    // Guidelines completed - user should now see pending verification screen
+    // The verification record should already exist from selfie upload
     setCurrentStep('complete');
   };
 
@@ -86,6 +88,10 @@ const Index = () => {
       }
       if (currentStep === 'guidelines') {
         return <EnhancedWelcomeScreen onComplete={handleGuidelinesComplete} />;
+      }
+      if (currentStep === 'complete') {
+        // Guidelines completed but verification record might not be loaded yet
+        return <VerificationPending onRefresh={refreshVerificationStatus} />;
       }
       // Default to selfie step if no verification exists
       return <SelfieCapture onComplete={(success) => success && handleSelfieComplete()} userId={user.id} />;
