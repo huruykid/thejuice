@@ -16,8 +16,8 @@ const CreateStory = ({ onClose }: { onClose: () => void }) => {
   const [step, setStep] = useState(0);
   const [selectedCodenameId, setSelectedCodenameId] = useState<string | null>(null);
   const [showSuccess, setShowSuccess] = useState(false);
-  const [uploadedImage, setUploadedImage] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [uploadedImages, setUploadedImages] = useState<File[]>([]);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
   const [storyData, setStoryData] = useState({
     personName: "",
@@ -90,12 +90,27 @@ const CreateStory = ({ onClose }: { onClose: () => void }) => {
   };
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
+    const files = event.target.files;
+    if (!files) return;
+
+    const newFiles = Array.from(files);
+    
+    // Check if adding these files would exceed the limit
+    if (uploadedImages.length + newFiles.length > 5) {
+      toast({
+        title: "Error",
+        description: "You can only upload up to 5 photos",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validate each file
+    for (const file of newFiles) {
       if (file.size > 5 * 1024 * 1024) { // 5MB limit
         toast({
           title: "Error",
-          description: "Image must be less than 5MB",
+          description: `${file.name} must be less than 5MB`,
           variant: "destructive",
         });
         return;
@@ -104,26 +119,29 @@ const CreateStory = ({ onClose }: { onClose: () => void }) => {
       if (!file.type.startsWith('image/')) {
         toast({
           title: "Error", 
-          description: "Please select an image file",
+          description: `${file.name} is not an image file`,
           variant: "destructive",
         });
         return;
       }
+    }
 
-      setUploadedImage(file);
-      
-      // Create preview
+    // Add files to state
+    setUploadedImages(prev => [...prev, ...newFiles]);
+    
+    // Create previews for all new files
+    newFiles.forEach(file => {
       const reader = new FileReader();
       reader.onload = (e) => {
-        setImagePreview(e.target?.result as string);
+        setImagePreviews(prev => [...prev, e.target?.result as string]);
       };
       reader.readAsDataURL(file);
-    }
+    });
   };
 
-  const removeImage = () => {
-    setUploadedImage(null);
-    setImagePreview(null);
+  const removeImage = (index: number) => {
+    setUploadedImages(prev => prev.filter((_, i) => i !== index));
+    setImagePreviews(prev => prev.filter((_, i) => i !== index));
   };
 
   const uploadImageToStorage = async (file: File): Promise<string | null> => {
@@ -176,14 +194,18 @@ const CreateStory = ({ onClose }: { onClose: () => void }) => {
     }
 
     try {
-      let imageUrl = null;
+      let imageUrls: string[] = [];
       
-      // Upload image if one was selected
-      if (uploadedImage) {
-        imageUrl = await uploadImageToStorage(uploadedImage);
-        if (!imageUrl) {
-          return; // Don't proceed if image upload failed
+      // Upload all images if any were selected
+      if (uploadedImages.length > 0) {
+        setUploading(true);
+        for (const image of uploadedImages) {
+          const url = await uploadImageToStorage(image);
+          if (url) {
+            imageUrls.push(url);
+          }
         }
+        setUploading(false);
       }
 
       await createStory.mutateAsync({
@@ -192,7 +214,7 @@ const CreateStory = ({ onClose }: { onClose: () => void }) => {
         tags: storyData.selectedTags,
         ratings: storyData.ratings,
         location: storyData.metadata.city,
-        imageUrl: imageUrl,
+        imageUrl: imageUrls.length > 0 ? JSON.stringify(imageUrls) : null,
       });
       
       // Show success animation
@@ -298,15 +320,16 @@ const CreateStory = ({ onClose }: { onClose: () => void }) => {
                 </p>
               </div>
 
-              {/* Add Photo Section */}
+              {/* Add Photos Section */}
               <div className="space-y-4">
-                <h4 className="text-sm font-medium">Add a Photo (Optional)</h4>
+                <h4 className="text-sm font-medium">Add Photos (Optional)</h4>
                 
-                {!imagePreview ? (
+                {imagePreviews.length === 0 ? (
                   <div className="border-2 border-dashed border-juice-blue/30 rounded-lg p-6 text-center hover:border-juice-blue/50 transition-smooth">
                     <input
                       type="file"
                       accept="image/*"
+                      multiple
                       onChange={handleImageUpload}
                       className="hidden"
                       id="image-upload"
@@ -317,27 +340,53 @@ const CreateStory = ({ onClose }: { onClose: () => void }) => {
                     >
                       <Camera className="h-8 w-8 text-muted-foreground" />
                       <div>
-                        <p className="text-sm font-medium">Upload a photo</p>
-                        <p className="text-xs text-muted-foreground">JPG, PNG up to 5MB</p>
+                        <p className="text-sm font-medium">Upload photos</p>
+                        <p className="text-xs text-muted-foreground">JPG, PNG up to 5MB each (max 5 photos)</p>
                       </div>
                     </label>
                   </div>
                 ) : (
-                  <div className="relative">
-                    <img 
-                      src={imagePreview} 
-                      alt="Story preview" 
-                      className="w-full h-48 object-cover rounded-lg"
-                    />
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="icon"
-                      className="absolute top-2 right-2 h-8 w-8 bg-white/80 hover:bg-white"
-                      onClick={removeImage}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                  <div className="space-y-3">
+                    <div className="grid grid-cols-2 gap-2">
+                      {imagePreviews.map((preview, index) => (
+                        <div key={index} className="relative">
+                          <img 
+                            src={preview} 
+                            alt={`Story preview ${index + 1}`} 
+                            className="w-full h-24 object-cover rounded-lg"
+                          />
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="icon"
+                            className="absolute top-1 right-1 h-6 w-6 bg-white/80 hover:bg-white"
+                            onClick={() => removeImage(index)}
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                    
+                    {imagePreviews.length < 5 && (
+                      <div className="border-2 border-dashed border-juice-blue/30 rounded-lg p-4 text-center hover:border-juice-blue/50 transition-smooth">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          multiple
+                          onChange={handleImageUpload}
+                          className="hidden"
+                          id="image-upload-more"
+                        />
+                        <label 
+                          htmlFor="image-upload-more" 
+                          className="cursor-pointer flex items-center justify-center gap-2"
+                        >
+                          <Plus className="h-4 w-4 text-muted-foreground" />
+                          <span className="text-sm text-muted-foreground">Add more photos ({imagePreviews.length}/5)</span>
+                        </label>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
