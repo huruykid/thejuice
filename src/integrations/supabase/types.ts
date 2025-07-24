@@ -46,6 +46,7 @@ export type Database = {
           content: string
           created_at: string
           id: string
+          profile_id: string | null
           story_id: string
           user_id: string | null
         }
@@ -53,6 +54,7 @@ export type Database = {
           content: string
           created_at?: string
           id?: string
+          profile_id?: string | null
           story_id: string
           user_id?: string | null
         }
@@ -60,10 +62,18 @@ export type Database = {
           content?: string
           created_at?: string
           id?: string
+          profile_id?: string | null
           story_id?: string
           user_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "comments_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "comments_story_id_fkey"
             columns: ["story_id"]
@@ -103,6 +113,30 @@ export type Database = {
         }
         Relationships: []
       }
+      profiles: {
+        Row: {
+          anonymous_username: string
+          created_at: string
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          anonymous_username: string
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          anonymous_username?: string
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       reactions: {
         Row: {
           created_at: string
@@ -134,7 +168,6 @@ export type Database = {
       }
       stories: {
         Row: {
-          codename_id: string
           comments_count: number
           communication_rating: number
           content: string
@@ -145,12 +178,12 @@ export type Database = {
           location: string | null
           loyalty_rating: number
           overall_vibe_rating: number
+          profile_id: string | null
           reactions_count: number
           updated_at: string
           user_id: string | null
         }
         Insert: {
-          codename_id: string
           comments_count?: number
           communication_rating: number
           content: string
@@ -161,12 +194,12 @@ export type Database = {
           location?: string | null
           loyalty_rating: number
           overall_vibe_rating: number
+          profile_id?: string | null
           reactions_count?: number
           updated_at?: string
           user_id?: string | null
         }
         Update: {
-          codename_id?: string
           comments_count?: number
           communication_rating?: number
           content?: string
@@ -177,16 +210,17 @@ export type Database = {
           location?: string | null
           loyalty_rating?: number
           overall_vibe_rating?: number
+          profile_id?: string | null
           reactions_count?: number
           updated_at?: string
           user_id?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "stories_codename_id_fkey"
-            columns: ["codename_id"]
+            foreignKeyName: "stories_profile_id_fkey"
+            columns: ["profile_id"]
             isOneToOne: false
-            referencedRelation: "codenames"
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -258,6 +292,10 @@ export type Database = {
       generate_invite_code: {
         Args: Record<PropertyKey, never>
         Returns: string
+      }
+      is_username_available: {
+        Args: { username: string }
+        Returns: boolean
       }
       use_invite_code: {
         Args: { invite_code: string; new_user_id: string }

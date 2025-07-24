@@ -3,7 +3,9 @@ import Home from "./Home";
 import CreateStory from "@/components/CreateStory";
 import WelcomeScreen from "@/components/WelcomeScreen";
 import AuthScreen from "@/components/AuthScreen";
+import UsernameCreation from "@/components/UsernameCreation";
 import { useAuth } from "@/hooks/useAuth";
+import { useProfile } from "@/hooks/useProfile";
 
 const Index = () => {
   const [showCreateStory, setShowCreateStory] = useState(false);
@@ -13,20 +15,21 @@ const Index = () => {
   });
   
   const { user, loading } = useAuth();
+  const { profile, isLoading: profileLoading, hasProfile } = useProfile();
 
   const handleOnboardingComplete = () => {
     localStorage.setItem('onboardingCompleted', 'true');
     setShowWelcome(false);
   };
 
-  const handleAuthSuccess = () => {
-    // After successful auth, check if they need onboarding
+  const handleUsernameCreated = () => {
+    // Refresh profile data and proceed to onboarding if needed
     if (!localStorage.getItem('onboardingCompleted')) {
       setShowWelcome(true);
     }
   };
 
-  if (loading) {
+  if (loading || profileLoading) {
     return (
       <div className="min-h-screen bg-gradient-soft flex items-center justify-center">
         <div className="text-center space-y-4">
@@ -38,7 +41,12 @@ const Index = () => {
   }
 
   if (!user) {
-    return <AuthScreen onAuthSuccess={handleAuthSuccess} />;
+    return <AuthScreen onAuthSuccess={handleUsernameCreated} />;
+  }
+
+  // If user exists but no profile, show username creation
+  if (!hasProfile) {
+    return <UsernameCreation onComplete={handleUsernameCreated} />;
   }
 
   if (showWelcome) {

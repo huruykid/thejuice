@@ -3,7 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 
 export interface Story {
   id: string;
-  codename_id: string;
+  profile_id: string;
   content: string;
   communication_rating: number;
   loyalty_rating: number;
@@ -14,38 +14,26 @@ export interface Story {
   created_at: string;
   user_id?: string;
   image_url?: string;
-  codenames: {
+  profiles?: {
     id: string;
-    display_name: string;
-    emoji: string | null;
-    description: string | null;
+    anonymous_username: string;
   };
   story_tags: Array<{
     tag: string;
   }>;
 }
 
-export interface Codename {
-  id: string;
-  display_name: string;
-  emoji: string | null;
-  description: string | null;
-  created_at: string;
-}
-
 export const useStories = () => {
   return useQuery({
     queryKey: ['stories'],
     queryFn: async (): Promise<Story[]> => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('stories')
         .select(`
           *,
-          codenames (
+          profiles (
             id,
-            display_name,
-            emoji,
-            description
+            anonymous_username
           ),
           story_tags (
             tag
@@ -59,60 +47,27 @@ export const useStories = () => {
   });
 };
 
-export const useStoriesByCodename = (codenameId: string) => {
+export const useStoriesByProfile = (profileId: string) => {
   return useQuery({
-    queryKey: ['stories', 'codename', codenameId],
+    queryKey: ['stories', 'profile', profileId],
     queryFn: async (): Promise<Story[]> => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('stories')
         .select(`
           *,
-          codenames (
+          profiles (
             id,
-            display_name,
-            emoji,
-            description
+            anonymous_username
           ),
           story_tags (
             tag
           )
         `)
-        .eq('codename_id', codenameId)
+        .eq('profile_id', profileId)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
       return data || [];
-    },
-  });
-};
-
-export const useCodenames = () => {
-  return useQuery({
-    queryKey: ['codenames'],
-    queryFn: async (): Promise<Codename[]> => {
-      const { data, error } = await supabase
-        .from('codenames')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      return data || [];
-    },
-  });
-};
-
-export const useCodename = (codenameId: string) => {
-  return useQuery({
-    queryKey: ['codename', codenameId],
-    queryFn: async (): Promise<Codename | null> => {
-      const { data, error } = await supabase
-        .from('codenames')
-        .select('*')
-        .eq('id', codenameId)
-        .maybeSingle();
-
-      if (error) throw error;
-      return data;
     },
   });
 };
@@ -122,14 +77,12 @@ export const useCreateStory = () => {
 
   return useMutation({
     mutationFn: async ({
-      codenameId,
       content,
       tags,
       ratings,
       location,
       imageUrl,
     }: {
-      codenameId: string;
       content: string;
       tags: string[];
       ratings: {
@@ -142,14 +95,23 @@ export const useCreateStory = () => {
       imageUrl?: string;
     }) => {
       // Get current user
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await (supabase as any).auth.getUser();
       if (!user) throw new Error('User must be authenticated');
 
+      // Get user's profile
+      const { data: profile, error: profileError } = await (supabase as any)
+        .from('profiles')
+        .select('id')
+        .eq('user_id', user.id)
+        .single();
+
+      if (profileError) throw profileError;
+
       // Create the story
-      const { data: story, error: storyError } = await supabase
+      const { data: story, error: storyError } = await (supabase as any)
         .from('stories')
         .insert({
-          codename_id: codenameId,
+          profile_id: profile.id,
           content,
           communication_rating: ratings.communication,
           loyalty_rating: ratings.loyalty,
@@ -171,7 +133,7 @@ export const useCreateStory = () => {
           tag,
         }));
 
-        const { error: tagsError } = await supabase
+        const { error: tagsError } = await (supabase as any)
           .from('story_tags')
           .insert(tagData);
 
@@ -186,44 +148,12 @@ export const useCreateStory = () => {
   });
 };
 
-export const useCreateCodename = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async ({
-      displayName,
-      emoji,
-      description,
-    }: {
-      displayName: string;
-      emoji?: string;
-      description?: string;
-    }) => {
-      const { data, error } = await supabase
-        .from('codenames')
-        .insert({
-          display_name: displayName,
-          emoji: emoji || null,
-          description: description || null,
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
-      return data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['codenames'] });
-    },
-  });
-};
-
 export const useDeleteStory = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (storyId: string) => {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('stories')
         .delete()
         .eq('id', storyId);

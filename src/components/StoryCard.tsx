@@ -1,7 +1,6 @@
 import { Heart, MessageCircle, Flag, Star, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import CodenameCard from "./CodenameCard";
 import CommentsModal from "./CommentsModal";
 import { useDeleteStory } from "@/hooks/useStories";
 import { useToggleReaction } from "@/hooks/useReactions";
@@ -26,44 +25,45 @@ interface StoryCardProps {
   story: {
     id: string;
     content: string;
-    tags: string[];
-    ratings: {
-      communication: number;
-      loyalty: number;
-      emotionalSafety: number;
-      overallVibe: number;
-    };
-    reactions: number;
-    comments: number;
-    timeAgo: string;
-    imageUrl?: string;
+    location?: string;
+    communication_rating: number;
+    loyalty_rating: number;
+    emotional_safety_rating: number;
+    overall_vibe_rating: number;
+    reactions_count: number;
+    comments_count: number;
+    created_at: string;
     user_id?: string;
-    codename?: {
-      id: string;
-      display_name: string;
-      emoji: string | null;
-      description?: string | null;
-    };
+    image_url?: string;
+    story_tags: Array<{
+      tag: string;
+    }>;
   };
+  authorName: string;
+  user_id?: string;
+  onDelete?: () => void;
 }
 
-const StoryCard = ({ story }: StoryCardProps) => {
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+const StoryCard = ({ 
+  story, 
+  authorName, 
+  user_id, 
+  onDelete 
+}: StoryCardProps) => {
   const [showComments, setShowComments] = useState(false);
-  const [userHasLiked, setUserHasLiked] = useState(false);
-  
+  const [isLiked, setIsLiked] = useState(false);
+  const [currentLikes, setCurrentLikes] = useState(story.reactions_count);
+  const { toast } = useToast();
   const deleteStory = useDeleteStory();
   const toggleReaction = useToggleReaction();
-  const { toast } = useToast();
-  const vibeScore = Math.round(story.ratings.overallVibe * 20); // Convert 1-5 to 1-100
-  
-  // Check if current user owns this story and if they've liked it
+
+  // Check if current user has liked this story
   useEffect(() => {
-    const getCurrentUser = async () => {
-      const { data: { user } } = await (supabase as any).auth.getUser();
-      setCurrentUserId(user?.id || null);
-      
-      if (user) {
+    const checkUserReaction = async () => {
+      try {
+        const { data: { user } } = await (supabase as any).auth.getUser();
+        if (!user) return;
+
         // Check if user has liked this story
         const { data: reaction } = await (supabase as any)
           .from('reactions')
@@ -72,187 +72,223 @@ const StoryCard = ({ story }: StoryCardProps) => {
           .eq('user_id', user.id)
           .eq('reaction_type', 'like')
           .maybeSingle();
-        
-        setUserHasLiked(!!reaction);
+
+        setIsLiked(!!reaction);
+      } catch (error) {
+        console.error('Error checking user reaction:', error);
       }
     };
-    getCurrentUser();
+
+    checkUserReaction();
   }, [story.id]);
 
-  const isOwner = currentUserId && story.user_id === currentUserId;
-  
-  // Get first 2 lines of content
-  const getPreviewText = (text: string) => {
-    const lines = text.split('\n');
-    const preview = lines.slice(0, 2).join('\n');
-    return preview.length < text.length ? preview + '...' : preview;
+  const handleLike = async () => {
+    try {
+      const { data: { user } } = await (supabase as any).auth.getUser();
+      if (!user) {
+        toast({
+          title: "Login required",
+          description: "Please log in to like stories.",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      const result = await toggleReaction(story.id);
+      
+      if (result?.action === 'added') {
+        setIsLiked(true);
+        setCurrentLikes(prev => prev + 1);
+      } else if (result?.action === 'removed') {
+        setIsLiked(false);
+        setCurrentLikes(prev => Math.max(0, prev - 1));
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to toggle like. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
 
-  const getTagWithEmoji = (tag: string) => {
-    const emoji = tagEmojis[tag.toLowerCase()] || '';
-    return emoji ? `${emoji} ${tag}` : tag;
+  const handleComment = async () => {
+    try {
+      const { data: { user } } = await (supabase as any).auth.getUser();
+      if (!user) {
+        toast({
+          title: "Login required",
+          description: "Please log in to comment on stories.",
+          variant: "destructive"
+        });
+        return;
+      }
+      setShowComments(true);
+    } catch (error) {
+      console.error('Error checking user auth:', error);
+    }
   };
 
   const handleDelete = async () => {
-    if (!isOwner) return;
+    if (window.confirm('Are you sure you want to delete this story?')) {
+      try {
+        await deleteStory.mutateAsync(story.id);
+        toast({
+          title: "Story deleted",
+          description: "Your story has been deleted successfully.",
+        });
+        onDelete?.();
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Failed to delete story. Please try again.",
+          variant: "destructive"
+        });
+      }
+    }
+  };
+
+  const canDelete = user_id === story.user_id;
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
     
-    try {
-      await deleteStory.mutateAsync(story.id);
-      toast({
-        title: "Story deleted",
-        description: "Your story has been successfully deleted.",
-      });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to delete story. Please try again.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleLike = async () => {
-    if (!currentUserId) {
-      toast({
-        title: "Login required",
-        description: "Please log in to like stories.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    try {
-      const result = await toggleReaction.mutateAsync({ storyId: story.id });
-      setUserHasLiked(result.action === 'added');
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to update reaction. Please try again.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleComment = () => {
-    if (!currentUserId) {
-      toast({
-        title: "Login required",
-        description: "Please log in to comment on stories.",
-        variant: "destructive",
-      });
-      return;
-    }
-    setShowComments(true);
+    if (diffInHours < 1) return 'Just now';
+    if (diffInHours < 24) return `${diffInHours}h ago`;
+    if (diffInHours < 168) return `${Math.floor(diffInHours / 24)}d ago`;
+    return date.toLocaleDateString();
   };
 
   return (
-    <div className="bg-gradient-card border border-juice-blue/10 rounded-3xl p-6 shadow-card hover:shadow-soft transition-smooth mb-4">
-      {/* Codename */}
-      {story.codename && (
-        <div className="mb-3">
-          <CodenameCard 
-            codename={story.codename} 
-            size="sm" 
-          />
+    <>
+      <div className="bg-white rounded-3xl shadow-soft border border-juice-orange/10 overflow-hidden mb-4">
+        {/* Header */}
+        <div className="p-4 border-b border-juice-orange/10">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-juice-orange/20 rounded-full flex items-center justify-center">
+                <span className="text-sm font-bold text-juice-orange">
+                  {authorName.charAt(0).toUpperCase()}
+                </span>
+              </div>
+              <span className="text-sm font-medium text-foreground">{authorName}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-muted-foreground">{formatDate(story.created_at)}</span>
+              {canDelete && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleDelete}
+                  className="h-8 w-8 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
+          </div>
         </div>
-      )}
 
-      {/* Story Image */}
-      {story.imageUrl && (
-        <div className="mb-4">
-          <img 
-            src={story.imageUrl} 
-            alt="Story image" 
-            className="w-full h-48 object-cover rounded-lg border border-juice-blue/10"
-          />
+        {/* Content */}
+        <div className="p-4 space-y-3">
+          <p className="text-foreground leading-relaxed whitespace-pre-wrap">{story.content}</p>
+          
+          {story.location && (
+            <p className="text-sm text-muted-foreground">📍 {story.location}</p>
+          )}
+
+          {/* Tags */}
+          {story.story_tags && story.story_tags.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {story.story_tags.map((storyTag, index) => (
+                <Badge key={index} variant="secondary" className="text-xs">
+                  {tagEmojis[storyTag.tag.toLowerCase()] || '🏷️'} {storyTag.tag}
+                </Badge>
+              ))}
+            </div>
+          )}
+
+          {/* Ratings */}
+          <div className="grid grid-cols-2 gap-3 pt-2">
+            <div className="flex items-center gap-1">
+              <span className="text-xs text-muted-foreground">Communication:</span>
+              <div className="flex">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className={`h-3 w-3 ${i < story.communication_rating ? 'fill-juice-orange text-juice-orange' : 'text-gray-300'}`} />
+                ))}
+              </div>
+            </div>
+            <div className="flex items-center gap-1">
+              <span className="text-xs text-muted-foreground">Loyalty:</span>
+              <div className="flex">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className={`h-3 w-3 ${i < story.loyalty_rating ? 'fill-juice-pink text-juice-pink' : 'text-gray-300'}`} />
+                ))}
+              </div>
+            </div>
+            <div className="flex items-center gap-1">
+              <span className="text-xs text-muted-foreground">Safety:</span>
+              <div className="flex">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className={`h-3 w-3 ${i < story.emotional_safety_rating ? 'fill-juice-green text-juice-green' : 'text-gray-300'}`} />
+                ))}
+              </div>
+            </div>
+            <div className="flex items-center gap-1">
+              <span className="text-xs text-muted-foreground">Vibe:</span>
+              <div className="flex">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className={`h-3 w-3 ${i < story.overall_vibe_rating ? 'fill-juice-blue text-juice-blue' : 'text-gray-300'}`} />
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
-      )}
 
-      {/* Story Preview */}
-      <p className="text-foreground leading-relaxed mb-4 text-base">
-        {getPreviewText(story.content)}
-      </p>
-
-      {/* Tags */}
-      <div className="flex flex-wrap gap-2 mb-4">
-        {story.tags.map((tag, index) => (
-          <Badge
-            key={index}
-            variant="secondary"
-            className="bg-juice-lavender text-juice-blue rounded-full px-3 py-1 text-sm font-medium"
-          >
-            {getTagWithEmoji(tag)}
-          </Badge>
-        ))}
-      </div>
-
-      {/* Vibe Score */}
-      <div className="flex items-center gap-2 mb-4">
-        <div className="flex items-center gap-1">
-          <Star className="h-4 w-4 fill-juice-coral text-juice-coral" />
-          <span className="text-sm font-medium text-foreground">
-            Vibe Score: {vibeScore}%
-          </span>
-        </div>
-      </div>
-
-      {/* Actions */}
-      <div className="flex items-center justify-between pt-4 border-t border-juice-blue/5">
-        <div className="flex items-center gap-4">
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            className={`gap-2 transition-colors ${
-              userHasLiked 
-                ? 'text-red-500 hover:text-red-600' 
-                : 'text-muted-foreground hover:text-red-500'
-            }`}
-            onClick={handleLike}
-            disabled={toggleReaction.isPending}
-          >
-            <Heart className={`h-4 w-4 ${userHasLiked ? 'fill-current' : ''}`} />
-            {story.reactions}
-          </Button>
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            className="gap-2 text-muted-foreground hover:text-juice-blue transition-colors"
-            onClick={handleComment}
-          >
-            <MessageCircle className="h-4 w-4" />
-            {story.comments}
-          </Button>
-        </div>
-        
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-muted-foreground">{story.timeAgo}</span>
-          <div className="flex items-center gap-1">
-            {isOwner && (
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
-                onClick={handleDelete}
-                disabled={deleteStory.isPending}
-              >
-                <Trash2 className="h-3 w-3" />
-              </Button>
-            )}
-            <Button variant="ghost" size="icon" className="h-8 w-8">
-              <Flag className="h-3 w-3 text-muted-foreground" />
+        {/* Actions */}
+        <div className="px-4 pb-4">
+          <div className="flex items-center justify-between pt-3 border-t border-juice-orange/10">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleLike}
+              className={`flex items-center gap-2 ${isLiked ? 'text-red-500' : 'text-muted-foreground'}`}
+            >
+              <Heart className={`h-4 w-4 ${isLiked ? 'fill-current' : ''}`} />
+              <span className="text-sm">{currentLikes}</span>
+            </Button>
+            
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleComment}
+              className="flex items-center gap-2 text-muted-foreground"
+            >
+              <MessageCircle className="h-4 w-4" />
+              <span className="text-sm">{story.comments_count}</span>
+            </Button>
+            
+            <Button
+              variant="ghost"
+              size="sm"
+              className="flex items-center gap-2 text-muted-foreground"
+            >
+              <Flag className="h-4 w-4" />
             </Button>
           </div>
         </div>
       </div>
 
-      {/* Comments Modal */}
-      <CommentsModal
-        isOpen={showComments}
-        onClose={() => setShowComments(false)}
-        storyId={story.id}
-        storyPreview={getPreviewText(story.content)}
-      />
-    </div>
+      {showComments && (
+        <CommentsModal
+          isOpen={showComments}
+          onClose={() => setShowComments(false)}
+          storyId={story.id}
+        />
+      )}
+    </>
   );
 };
 
