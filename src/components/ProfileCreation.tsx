@@ -172,8 +172,12 @@ const ProfileCreation = ({ onComplete }: ProfileCreationProps) => {
         return;
       }
 
-      toast.success('Profile created successfully!');
-      onComplete();
+      toast.success('✨ Profile created! Taking your selfie next...');
+      
+      // Small delay to let user see the success message before transitioning
+      setTimeout(() => {
+        onComplete();
+      }, 1500);
 
     } catch (error) {
       console.error('Error creating profile:', error);
