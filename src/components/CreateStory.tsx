@@ -305,7 +305,7 @@ const CreateStory = ({ onClose }: { onClose: () => void }) => {
                     type="tel"
                   />
                   <p className="text-xs text-muted-foreground mt-1">
-                    📱 For users who have shared their number in their profile
+                    📱 Only used for searching. Phone numbers are never displayed to other users
                   </p>
                 </div>
               </div>
