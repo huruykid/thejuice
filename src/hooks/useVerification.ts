@@ -40,6 +40,17 @@ export const useVerification = (userId?: string) => {
       selfie_url: string;
       verification_status?: string;
     }) => {
+      // Check if user is admin by looking at their profile
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('anonymous_username')
+        .eq('user_id', data.user_id)
+        .maybeSingle();
+
+      // Auto-approve admin accounts
+      const isAdmin = profile?.anonymous_username === 'admin';
+      const finalStatus = isAdmin ? 'approved' : (data.verification_status || 'pending');
+
       // Check if verification already exists
       const { data: existing } = await supabase
         .from('user_verifications')
@@ -53,7 +64,7 @@ export const useVerification = (userId?: string) => {
           .from('user_verifications')
           .update({
             selfie_url: data.selfie_url,
-            verification_status: data.verification_status || 'pending',
+            verification_status: finalStatus,
             updated_at: new Date().toISOString()
           })
           .eq('user_id', data.user_id);
@@ -63,7 +74,10 @@ export const useVerification = (userId?: string) => {
         // Create new verification
         const { error } = await supabase
           .from('user_verifications')
-          .insert(data);
+          .insert({
+            ...data,
+            verification_status: finalStatus
+          });
 
         if (error) throw error;
       }
