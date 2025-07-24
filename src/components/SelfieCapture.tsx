@@ -184,7 +184,6 @@ const SelfieCapture: React.FC<SelfieCaptureProps> = ({ onComplete, userId }) => 
             This app is only for the boys — snap a quick selfie so we can verify.
           </p>
         </CardHeader>
-        </CardContent>
         <CardContent className="space-y-4">
           <div className="relative aspect-square bg-black rounded-lg overflow-hidden">
             {!capturedImage ? (
