@@ -12,6 +12,7 @@ export interface Story {
   reactions_count: number;
   comments_count: number;
   created_at: string;
+  user_id?: string;
   image_url?: string;
   codenames: {
     id: string;
@@ -140,6 +141,10 @@ export const useCreateStory = () => {
       location?: string;
       imageUrl?: string;
     }) => {
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('User must be authenticated');
+
       // Create the story
       const { data: story, error: storyError } = await supabase
         .from('stories')
@@ -152,6 +157,7 @@ export const useCreateStory = () => {
           overall_vibe_rating: ratings.overallVibe,
           location: location || null,
           image_url: imageUrl || null,
+          user_id: user.id,
         })
         .select()
         .single();
@@ -208,6 +214,25 @@ export const useCreateCodename = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['codenames'] });
+    },
+  });
+};
+
+export const useDeleteStory = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (storyId: string) => {
+      const { error } = await supabase
+        .from('stories')
+        .delete()
+        .eq('id', storyId);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['stories'] });
+      queryClient.invalidateQueries({ queryKey: ['search-stories'] });
     },
   });
 };

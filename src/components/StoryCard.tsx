@@ -1,7 +1,11 @@
-import { Heart, MessageCircle, Flag, Star } from "lucide-react";
+import { Heart, MessageCircle, Flag, Star, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import CodenameCard from "./CodenameCard";
+import { useDeleteStory } from "@/hooks/useStories";
+import { supabase } from "@/integrations/supabase/client";
+import { useState, useEffect } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 const tagEmojis: { [key: string]: string } = {
   'red flag': '🚩',
@@ -31,6 +35,7 @@ interface StoryCardProps {
     comments: number;
     timeAgo: string;
     imageUrl?: string;
+    user_id?: string;
     codename?: {
       id: string;
       display_name: string;
@@ -41,7 +46,21 @@ interface StoryCardProps {
 }
 
 const StoryCard = ({ story }: StoryCardProps) => {
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const deleteStory = useDeleteStory();
+  const { toast } = useToast();
   const vibeScore = Math.round(story.ratings.overallVibe * 20); // Convert 1-5 to 1-100
+  
+  // Check if current user owns this story
+  useEffect(() => {
+    const getCurrentUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setCurrentUserId(user?.id || null);
+    };
+    getCurrentUser();
+  }, []);
+
+  const isOwner = currentUserId && story.user_id === currentUserId;
   
   // Get first 2 lines of content
   const getPreviewText = (text: string) => {
@@ -53,6 +72,24 @@ const StoryCard = ({ story }: StoryCardProps) => {
   const getTagWithEmoji = (tag: string) => {
     const emoji = tagEmojis[tag.toLowerCase()] || '';
     return emoji ? `${emoji} ${tag}` : tag;
+  };
+
+  const handleDelete = async () => {
+    if (!isOwner) return;
+    
+    try {
+      await deleteStory.mutateAsync(story.id);
+      toast({
+        title: "Story deleted",
+        description: "Your story has been successfully deleted.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete story. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -121,9 +158,22 @@ const StoryCard = ({ story }: StoryCardProps) => {
         
         <div className="flex items-center gap-2">
           <span className="text-xs text-muted-foreground">{story.timeAgo}</span>
-          <Button variant="ghost" size="icon" className="h-8 w-8">
-            <Flag className="h-3 w-3 text-muted-foreground" />
-          </Button>
+          <div className="flex items-center gap-1">
+            {isOwner && (
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
+                onClick={handleDelete}
+                disabled={deleteStory.isPending}
+              >
+                <Trash2 className="h-3 w-3" />
+              </Button>
+            )}
+            <Button variant="ghost" size="icon" className="h-8 w-8">
+              <Flag className="h-3 w-3 text-muted-foreground" />
+            </Button>
+          </div>
         </div>
       </div>
     </div>

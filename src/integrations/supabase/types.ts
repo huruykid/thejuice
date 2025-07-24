@@ -47,18 +47,21 @@ export type Database = {
           created_at: string
           id: string
           story_id: string
+          user_id: string | null
         }
         Insert: {
           content: string
           created_at?: string
           id?: string
           story_id: string
+          user_id?: string | null
         }
         Update: {
           content?: string
           created_at?: string
           id?: string
           story_id?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -114,6 +117,7 @@ export type Database = {
           overall_vibe_rating: number
           reactions_count: number
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           codename_id: string
@@ -129,6 +133,7 @@ export type Database = {
           overall_vibe_rating: number
           reactions_count?: number
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           codename_id?: string
@@ -144,6 +149,7 @@ export type Database = {
           overall_vibe_rating?: number
           reactions_count?: number
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: [
           {

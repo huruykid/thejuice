@@ -31,6 +31,7 @@ const Home = ({ onCreateStory }: HomeProps) => {
     reactions: story.reactions_count,
     comments: story.comments_count,
     timeAgo: formatDistanceToNow(new Date(story.created_at), { addSuffix: true }),
+    user_id: story.user_id,
     codename: {
       id: story.codenames.id,
       display_name: story.codenames.display_name,
