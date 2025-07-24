@@ -104,7 +104,7 @@ export const useCreateStory = () => {
       const sanitizedContent = sanitizeText(content);
       const sanitizedLocation = location ? sanitizeText(location) : null;
 
-      // Validate ratings
+      // Validate ratings - ensure all ratings are provided and valid
       const ratingValidations = [
         { value: ratings.communication, name: 'Communication' },
         { value: ratings.loyalty, name: 'Loyalty' },
@@ -113,6 +113,11 @@ export const useCreateStory = () => {
       ];
 
       for (const rating of ratingValidations) {
+        // If rating is 0 or undefined, require user to set it
+        if (!rating.value || rating.value === 0) {
+          throw new Error(`Please set a rating for ${rating.name}`);
+        }
+        
         const validation = validateRating(rating.value, rating.name);
         if (!validation.isValid) {
           throw new Error(validation.error);

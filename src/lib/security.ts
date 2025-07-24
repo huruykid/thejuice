@@ -133,8 +133,9 @@ export const validateTag = (tag: string): { isValid: boolean; error?: string } =
     return { isValid: false, error: 'Tag must be 50 characters or less' };
   }
   
-  if (!/^[a-zA-Z0-9\s_-]+$/.test(trimmed)) {
-    return { isValid: false, error: 'Tag can only contain letters, numbers, spaces, underscores, and dashes' };
+  // Allow emojis, unicode characters, and common punctuation for tags
+  if (!/^[\p{L}\p{N}\p{P}\p{S}\p{Z}_-]+$/u.test(trimmed)) {
+    return { isValid: false, error: 'Tag contains invalid characters' };
   }
   
   return { isValid: true };
