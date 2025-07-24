@@ -36,6 +36,7 @@ interface StoryCardProps {
     created_at: string;
     user_id?: string;
     image_url?: string;
+    subject_name?: string;
     story_tags: Array<{
       tag: string;
     }>;
