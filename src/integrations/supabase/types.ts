@@ -48,7 +48,7 @@ export type Database = {
           id: string
           profile_id: string | null
           story_id: string
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           content: string
@@ -56,7 +56,7 @@ export type Database = {
           id?: string
           profile_id?: string | null
           story_id: string
-          user_id?: string | null
+          user_id: string
         }
         Update: {
           content?: string
@@ -64,7 +64,7 @@ export type Database = {
           id?: string
           profile_id?: string | null
           story_id?: string
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: [
           {
@@ -181,7 +181,7 @@ export type Database = {
           profile_id: string | null
           reactions_count: number
           updated_at: string
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           comments_count?: number
@@ -197,7 +197,7 @@ export type Database = {
           profile_id?: string | null
           reactions_count?: number
           updated_at?: string
-          user_id?: string | null
+          user_id: string
         }
         Update: {
           comments_count?: number
@@ -213,7 +213,7 @@ export type Database = {
           profile_id?: string | null
           reactions_count?: number
           updated_at?: string
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: [
           {
@@ -289,6 +289,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      check_invite_generation_rate_limit: {
+        Args: { user_id_param: string }
+        Returns: boolean
+      }
       generate_invite_code: {
         Args: Record<PropertyKey, never>
         Returns: string
@@ -299,6 +303,14 @@ export type Database = {
       }
       use_invite_code: {
         Args: { invite_code: string; new_user_id: string }
+        Returns: boolean
+      }
+      validate_story_content: {
+        Args: { content_param: string }
+        Returns: boolean
+      }
+      validate_username: {
+        Args: { username_param: string }
         Returns: boolean
       }
     }
