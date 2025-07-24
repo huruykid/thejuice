@@ -6,8 +6,10 @@ import { User, Settings, Heart, MessageCircle, LogOut } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import CreateStory from "@/components/CreateStory";
 import InviteManager from "@/components/InviteManager";
+import LoadingSkeleton from "@/components/ui/loading-skeleton";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
+import { useUserStats } from "@/hooks/useUserStats";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 
@@ -15,6 +17,7 @@ const Profile = () => {
   const [showCreateStory, setShowCreateStory] = useState(false);
   const { signOut, user } = useAuth();
   const { profile } = useProfile(user);
+  const { userStats, isLoading: statsLoading } = useUserStats();
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -34,13 +37,16 @@ const Profile = () => {
     }
   };
 
-  // Mock data for now - in real app this would come from Supabase
-  const userStats = {
-    storiesPosted: 12,
-    totalLikes: 84,
-    commentsReceived: 23,
-    memberSince: "January 2024"
-  };
+  if (statsLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-juice-orange/5 to-juice-pink/5 pb-20">
+        <div className="container mx-auto px-4 py-6 max-w-md">
+          <LoadingSkeleton type="profile" message="Loading your profile..." />
+        </div>
+        <Navigation />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-juice-orange/5 to-juice-pink/5 pb-20">
