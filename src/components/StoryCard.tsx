@@ -60,12 +60,12 @@ const StoryCard = ({ story }: StoryCardProps) => {
   // Check if current user owns this story and if they've liked it
   useEffect(() => {
     const getCurrentUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await (supabase as any).auth.getUser();
       setCurrentUserId(user?.id || null);
       
       if (user) {
         // Check if user has liked this story
-        const { data: reaction } = await supabase
+        const { data: reaction } = await (supabase as any)
           .from('reactions')
           .select('id')
           .eq('story_id', story.id)

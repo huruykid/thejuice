@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { User, Settings, Heart, MessageCircle, LogOut } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import CreateStory from "@/components/CreateStory";
+import InviteManager from "@/components/InviteManager";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 
@@ -87,6 +88,9 @@ const Profile = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Invite Management */}
+        <InviteManager />
 
         {/* Quick Actions */}
         <div className="space-y-3">

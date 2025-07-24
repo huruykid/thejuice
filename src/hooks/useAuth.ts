@@ -30,16 +30,47 @@ export const useAuth = () => {
   const signUp = async (email: string, password: string, inviteCode: string) => {
     const redirectUrl = `${window.location.origin}/`;
     
-    const { error } = await supabase.auth.signUp({
+    // First validate the invite code
+    const { data: inviteData, error: inviteError } = await (supabase as any)
+      .from('invite_codes')
+      .select('id')
+      .eq('code', inviteCode.toUpperCase())
+      .is('used_by', null)
+      .gt('expires_at', new Date().toISOString())
+      .single();
+
+    if (inviteError || !inviteData) {
+      return { error: { message: 'Invalid or expired invite code' } };
+    }
+    
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         emailRedirectTo: redirectUrl,
         data: {
-          invite_code: inviteCode
+          invite_code: inviteCode.toUpperCase()
         }
       }
     });
+
+    // If signup successful, mark invite as used
+    if (!error && data.user) {
+      try {
+        const { error: useError } = await (supabase as any)
+          .rpc('use_invite_code', {
+            invite_code: inviteCode.toUpperCase(),
+            new_user_id: data.user.id
+          });
+        
+        if (useError) {
+          console.error('Failed to process invite code:', useError);
+        }
+      } catch (err) {
+        console.error('Error processing invite code:', err);
+      }
+    }
+
     return { error };
   };
 

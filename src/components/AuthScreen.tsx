@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { useAuth } from "@/hooks/useAuth";
+import { useInvites } from "@/hooks/useInvites";
 import { useToast } from "@/hooks/use-toast";
 import { Eye, EyeOff } from "lucide-react";
 
@@ -19,6 +20,7 @@ const AuthScreen = ({ onAuthSuccess }: AuthScreenProps) => {
   const [loading, setLoading] = useState(false);
   
   const { signIn, signUp } = useAuth();
+  const { validateInviteCode } = useInvites();
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -31,6 +33,17 @@ const AuthScreen = ({ onAuthSuccess }: AuthScreenProps) => {
           toast({
             title: "Invite code required",
             description: "Please enter a valid invite code to sign up.",
+            variant: "destructive"
+          });
+          return;
+        }
+        
+        // Validate invite code before attempting signup
+        const isValidCode = await validateInviteCode(inviteCode);
+        if (!isValidCode) {
+          toast({
+            title: "Invalid invite code",
+            description: "This invite code is invalid or has expired.",
             variant: "destructive"
           });
           return;
