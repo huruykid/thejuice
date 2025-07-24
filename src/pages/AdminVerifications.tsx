@@ -31,7 +31,7 @@ interface VerificationWithProfile {
 
 const AdminVerifications = () => {
   // Admin email check
-  const ADMIN_EMAILS = ['your-admin-email@example.com']; // Replace with your actual admin email(s)
+  const ADMIN_EMAILS = ['huruykid@gmail.com', 'huruydesigns@gmail.com'];
   
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
