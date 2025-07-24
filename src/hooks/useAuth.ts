@@ -10,27 +10,10 @@ export const useAuth = () => {
   useEffect(() => {
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      (event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
-        
-        // Handle OAuth signup with stored invite code
-        if (event === 'SIGNED_IN' && session?.user) {
-          const pendingInviteCode = localStorage.getItem('pending_invite_code');
-          if (pendingInviteCode) {
-            // This is a new OAuth user with a stored invite code
-            try {
-              await (supabase as any).rpc('use_invite_code', {
-                invite_code: pendingInviteCode,
-                new_user_id: session.user.id
-              });
-              localStorage.removeItem('pending_invite_code');
-            } catch (error) {
-              console.error('Error using invite code for OAuth user:', error);
-            }
-          }
-        }
       }
     );
 
