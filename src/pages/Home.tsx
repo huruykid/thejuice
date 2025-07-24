@@ -1,13 +1,13 @@
+
 import { useState } from "react";
 import Navigation from "@/components/Navigation";
 import StoryCard from "@/components/StoryCard";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Sparkles, TrendingUp, Clock } from "lucide-react";
-// import juiceLogo from "@/assets/juice-logo.png";
 import { useStories } from "@/hooks/useStories";
 import { useTrendingStories } from "@/hooks/useTrendingStories";
-import { formatDistanceToNow } from "date-fns";
+import { useAuth } from "@/hooks/useAuth";
 
 interface HomeProps {
   onCreateStory?: () => void;
@@ -16,32 +16,7 @@ interface HomeProps {
 const Home = ({ onCreateStory }: HomeProps) => {
   const { data: stories = [], isLoading } = useStories();
   const { data: trendingStories = [], isLoading: isTrendingLoading } = useTrendingStories();
-
-  // Transform stories for StoryCard component
-  const transformStories = (storyList: any[]) => storyList.map(story => ({
-    id: story.id,
-    content: story.content,
-    tags: story.story_tags.map(tag => tag.tag),
-    ratings: {
-      communication: story.communication_rating,
-      loyalty: story.loyalty_rating,
-      emotionalSafety: story.emotional_safety_rating,
-      overallVibe: story.overall_vibe_rating,
-    },
-    reactions: story.reactions_count,
-    comments: story.comments_count,
-    timeAgo: formatDistanceToNow(new Date(story.created_at), { addSuffix: true }),
-    user_id: story.user_id,
-    codename: {
-      id: story.codenames.id,
-      display_name: story.codenames.display_name,
-      emoji: story.codenames.emoji,
-      description: story.codenames.description,
-    },
-  }));
-
-  const transformedStories = transformStories(stories);
-  const transformedTrendingStories = transformStories(trendingStories);
+  const { user } = useAuth();
 
   return (
     <div className="min-h-screen bg-background pb-20">
@@ -93,7 +68,7 @@ const Home = ({ onCreateStory }: HomeProps) => {
               <div className="text-center py-12">
                 <div className="text-lg">Loading stories...</div>
               </div>
-            ) : transformedStories.length === 0 ? (
+            ) : stories.length === 0 ? (
               <div className="text-center py-12">
                 <div className="text-4xl mb-4">📝</div>
                 <h3 className="text-lg font-semibold text-foreground mb-2">
@@ -104,8 +79,13 @@ const Home = ({ onCreateStory }: HomeProps) => {
                 </p>
               </div>
             ) : (
-              transformedStories.map((story) => (
-                <StoryCard key={story.id} story={story} />
+              stories.map((story) => (
+                <StoryCard 
+                  key={story.id} 
+                  story={story} 
+                  authorName={story.profiles?.anonymous_username || 'Anonymous'}
+                  user_id={user?.id}
+                />
               ))
             )}
           </TabsContent>
@@ -115,7 +95,7 @@ const Home = ({ onCreateStory }: HomeProps) => {
               <div className="text-center py-12">
                 <div className="text-lg">Loading trending stories...</div>
               </div>
-            ) : transformedTrendingStories.length === 0 ? (
+            ) : trendingStories.length === 0 ? (
               <div className="text-center py-12">
                 <TrendingUp className="h-12 w-12 text-juice-blue mx-auto mb-4" />
                 <h3 className="text-lg font-semibold text-foreground mb-2">
@@ -126,15 +106,20 @@ const Home = ({ onCreateStory }: HomeProps) => {
                 </p>
               </div>
             ) : (
-              transformedTrendingStories.map((story) => (
-                <StoryCard key={story.id} story={story} />
+              trendingStories.map((story) => (
+                <StoryCard 
+                  key={story.id} 
+                  story={story} 
+                  authorName={story.profiles?.anonymous_username || 'Anonymous'}
+                  user_id={user?.id}
+                />
               ))
             )}
           </TabsContent>
 
           <TabsContent value="curated" className="mt-6">
             <div className="text-center py-12">
-              <TrendingUp className="h-12 w-12 text-juice-blue mx-auto mb-4" />
+              <Sparkles className="h-12 w-12 text-juice-blue mx-auto mb-4" />
               <h3 className="text-lg font-semibold text-foreground mb-2">
                 Curated Collection
               </h3>

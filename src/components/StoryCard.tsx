@@ -1,3 +1,4 @@
+
 import { Heart, MessageCircle, Flag, Star, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -94,7 +95,10 @@ const StoryCard = ({
         return;
       }
 
-      const result = await toggleReaction(story.id);
+      const result = await toggleReaction.mutateAsync({ 
+        storyId: story.id, 
+        reactionType: 'like' 
+      });
       
       if (result?.action === 'added') {
         setIsLiked(true);

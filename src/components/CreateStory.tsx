@@ -7,14 +7,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Star, X, Plus, Sparkles, Camera, Upload, Trash2 } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import CodenameSelector from "./CodenameSelector";
 import { useCreateStory } from "@/hooks/useStories";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
 const CreateStory = ({ onClose }: { onClose: () => void }) => {
   const [step, setStep] = useState(0);
-  const [selectedCodenameId, setSelectedCodenameId] = useState<string | null>(null);
   const [showSuccess, setShowSuccess] = useState(false);
   const [uploadedImages, setUploadedImages] = useState<File[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
@@ -82,7 +80,7 @@ const CreateStory = ({ onClose }: { onClose: () => void }) => {
   };
 
   const handleNext = () => {
-    if (step < 5) setStep(step + 1); // Updated to include person name step
+    if (step < 4) setStep(step + 1);
   };
 
   const handleBack = () => {
@@ -184,15 +182,6 @@ const CreateStory = ({ onClose }: { onClose: () => void }) => {
   };
 
   const handlePublish = async () => {
-    if (!selectedCodenameId) {
-      toast({
-        title: "Error",
-        description: "Please select a codename",
-        variant: "destructive",
-      });
-      return;
-    }
-
     try {
       let imageUrls: string[] = [];
       
@@ -209,12 +198,11 @@ const CreateStory = ({ onClose }: { onClose: () => void }) => {
       }
 
       await createStory.mutateAsync({
-        codenameId: selectedCodenameId,
         content: storyData.content,
         tags: storyData.selectedTags,
         ratings: storyData.ratings,
         location: storyData.metadata.city,
-        imageUrl: imageUrls.length > 0 ? JSON.stringify(imageUrls) : null,
+        imageUrl: imageUrls.length > 0 ? JSON.stringify(imageUrls) : undefined,
       });
       
       // Show success animation
@@ -266,18 +254,8 @@ const CreateStory = ({ onClose }: { onClose: () => void }) => {
         </div>
 
         <div className="overflow-y-auto max-h-[calc(90vh-200px)]">
-          {/* Step 0: Codename Selection */}
+          {/* Step 0: Person Name */}
           {step === 0 && (
-            <div className="p-6 space-y-6">
-              <CodenameSelector
-                selectedCodenameId={selectedCodenameId}
-                onSelect={setSelectedCodenameId}
-              />
-            </div>
-          )}
-
-          {/* Step 1: Person Name */}
-          {step === 1 && (
             <div className="p-6 space-y-6">
               <div className="space-y-3">
                 <h3 className="font-semibold text-foreground">
@@ -308,8 +286,8 @@ const CreateStory = ({ onClose }: { onClose: () => void }) => {
             </div>
           )}
 
-          {/* Step 2: Story Content */}
-          {step === 2 && (
+          {/* Step 1: Story Content */}
+          {step === 1 && (
             <div className="p-6 space-y-6">
               <div className="space-y-3">
                 <h3 className="font-semibold text-foreground">
@@ -425,8 +403,8 @@ const CreateStory = ({ onClose }: { onClose: () => void }) => {
             </div>
           )}
 
-          {/* Step 3: Tags */}
-          {step === 3 && (
+          {/* Step 2: Tags */}
+          {step === 2 && (
             <div className="p-6 space-y-6">
               <div className="space-y-3">
                 <h3 className="font-semibold text-foreground">
@@ -468,8 +446,8 @@ const CreateStory = ({ onClose }: { onClose: () => void }) => {
             </div>
           )}
 
-          {/* Step 4: Ratings */}
-          {step === 4 && (
+          {/* Step 3: Ratings */}
+          {step === 3 && (
             <div className="p-6 space-y-6">
               <div className="space-y-3">
                 <h3 className="font-semibold text-foreground">
@@ -510,8 +488,8 @@ const CreateStory = ({ onClose }: { onClose: () => void }) => {
             </div>
           )}
 
-          {/* Step 5: Optional Metadata */}
-          {step === 5 && (
+          {/* Step 4: Optional Metadata */}
+          {step === 4 && (
             <div className="p-6 space-y-6">
               <div className="space-y-3">
                 <h3 className="font-semibold text-foreground">
@@ -604,18 +582,17 @@ const CreateStory = ({ onClose }: { onClose: () => void }) => {
               Back
             </Button>
           )}
-          {step < 5 ? (
+          {step < 4 ? (
             <Button
               variant="juice"
               onClick={handleNext}
               disabled={
-                (step === 0 && !selectedCodenameId) ||
-                (step === 1 && !storyData.personName.trim()) ||
-                (step === 2 && !storyData.content.trim())
+                (step === 0 && !storyData.personName.trim()) ||
+                (step === 1 && !storyData.content.trim())
               }
               className="flex-1"
             >
-              {step === 4 ? "Add Details (Optional)" : "Next"}
+              {step === 3 ? "Add Details (Optional)" : "Next"}
             </Button>
           ) : (
             <Button
