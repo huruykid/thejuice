@@ -50,7 +50,7 @@ const Home = ({ onCreateStory }: HomeProps) => {
           <div className="flex items-center gap-3">
             <img src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" alt="Juice" className="h-8 w-8" />
             <h1 className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-              Juice
+              The Juice App
             </h1>
           </div>
           <Button variant="juice-outline" size="sm">
