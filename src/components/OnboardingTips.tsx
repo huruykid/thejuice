@@ -54,22 +54,22 @@ const OnboardingTips = ({ step }: OnboardingTipsProps) => {
 
   return (
     <Card className="mt-4 bg-muted/30">
-      <CardContent className="p-4">
-        <div className="flex items-start space-x-3">
-          <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-            <Icon className="w-4 h-4 text-primary" />
-          </div>
-          <div className="space-y-2">
+      <CardContent className="p-4 text-center">
+        <div className="flex flex-col items-center space-y-3">
+          <div className="flex items-center space-x-3">
+            <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+              <Icon className="w-4 h-4 text-primary" />
+            </div>
             <h4 className="font-medium text-sm">{currentTips.title}</h4>
-            <ul className="space-y-1">
-              {currentTips.tips.map((tip, index) => (
-                <li key={index} className="flex items-start space-x-2 text-xs text-muted-foreground">
-                  <CheckCircle className="w-3 h-3 text-green-500 mt-0.5 flex-shrink-0" />
-                  <span>{tip}</span>
-                </li>
-              ))}
-            </ul>
           </div>
+          <ul className="space-y-1 text-center">
+            {currentTips.tips.map((tip, index) => (
+              <li key={index} className="flex items-start justify-center space-x-2 text-xs text-muted-foreground">
+                <CheckCircle className="w-3 h-3 text-green-500 mt-0.5 flex-shrink-0" />
+                <span className="text-left">{tip}</span>
+              </li>
+            ))}
+          </ul>
         </div>
       </CardContent>
     </Card>
