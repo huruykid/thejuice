@@ -7,6 +7,8 @@ import ProfileCreation from "@/components/ProfileCreation";
 import SelfieCapture from "@/components/SelfieCapture";
 import VerificationPending from "@/components/VerificationPending";
 import VerificationRejected from "@/components/VerificationRejected";
+import OnboardingProgress from "@/components/OnboardingProgress";
+import LoadingSkeleton from "@/components/ui/loading-skeleton";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
 import { useVerification } from "@/hooks/useVerification";
@@ -18,6 +20,18 @@ const Index = () => {
   const { user, loading } = useAuth();
   const { profile, isLoading: profileLoading, hasProfile } = useProfile(user);
   const { verification, isLoading: verificationLoading, hasVerification, isVerified, isPending, isRejected } = useVerification(user?.id);
+
+  // Onboarding steps configuration
+  const onboardingSteps = ['Sign Up', 'Profile', 'Selfie', 'Guidelines', 'Review'];
+  
+  const getCurrentStepNumber = () => {
+    if (!user) return 1;
+    if (!hasProfile) return 2;
+    if (!hasVerification) return 3;
+    if (currentStep === 'guidelines') return 4;
+    if (isPending || isRejected) return 5;
+    return 5;
+  };
 
   const handleProfileCreated = () => {
     setCurrentStep('selfie');
@@ -38,68 +52,157 @@ const Index = () => {
     window.location.reload();
   };
 
-  if (loading || (user && profileLoading)) {
-    return (
-      <div className="min-h-screen bg-gradient-soft flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <img src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" alt="Juice" className="h-16 w-16 mx-auto animate-pulse" />
-          <p className="text-muted-foreground">Loading...</p>
-        </div>
-      </div>
-    );
+  // Loading states with better UX
+  if (loading) {
+    return <LoadingSkeleton message="Checking your authentication..." />;
+  }
+
+  if (user && profileLoading) {
+    return <LoadingSkeleton type="profile" message="Loading your profile..." />;
+  }
+
+  if (user && hasProfile && verificationLoading) {
+    return <LoadingSkeleton type="verification" message="Checking your verification status..." />;
   }
 
   if (!user) {
-    return <AuthScreen onAuthSuccess={() => {}} />;
-  }
-
-  // Loading verification status
-  if (user && verificationLoading) {
     return (
-      <div className="min-h-screen bg-gradient-soft flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <img src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" alt="Juice" className="h-16 w-16 mx-auto animate-pulse" />
-          <p className="text-muted-foreground">Loading...</p>
+      <div>
+        <div className="p-4">
+          <OnboardingProgress 
+            currentStep={1} 
+            totalSteps={5} 
+            steps={onboardingSteps} 
+          />
         </div>
+        <AuthScreen onAuthSuccess={() => {}} />
       </div>
     );
   }
 
   // If user exists but no profile, show profile creation
   if (!hasProfile) {
-    return <ProfileCreation onComplete={handleProfileCreated} />;
+    return (
+      <div>
+        <div className="p-4">
+          <OnboardingProgress 
+            currentStep={2} 
+            totalSteps={5} 
+            steps={onboardingSteps} 
+          />
+        </div>
+        <ProfileCreation onComplete={handleProfileCreated} />
+      </div>
+    );
   }
 
   // Handle verification flow
   if (hasProfile) {
     // Check verification status
     if (isRejected) {
-      return <VerificationRejected notes={verification?.notes} />;
+      return (
+        <div>
+          <div className="p-4">
+            <OnboardingProgress 
+              currentStep={5} 
+              totalSteps={5} 
+              steps={onboardingSteps} 
+            />
+          </div>
+          <VerificationRejected notes={verification?.notes} />
+        </div>
+      );
     }
     
     if (isPending) {
-      return <VerificationPending onRefresh={refreshVerificationStatus} />;
+      return (
+        <div>
+          <div className="p-4">
+            <OnboardingProgress 
+              currentStep={5} 
+              totalSteps={5} 
+              steps={onboardingSteps} 
+            />
+          </div>
+          <VerificationPending onRefresh={refreshVerificationStatus} />
+        </div>
+      );
     }
     
     if (!hasVerification) {
       // User has profile but no verification - start selfie process
       if (currentStep === 'selfie') {
-        return <SelfieCapture onComplete={(success) => success && handleSelfieComplete()} userId={user.id} />;
+        return (
+          <div>
+            <div className="p-4">
+              <OnboardingProgress 
+                currentStep={3} 
+                totalSteps={5} 
+                steps={onboardingSteps} 
+              />
+            </div>
+            <SelfieCapture onComplete={(success) => success && handleSelfieComplete()} userId={user.id} />
+          </div>
+        );
       }
       if (currentStep === 'guidelines') {
-        return <EnhancedWelcomeScreen onComplete={handleGuidelinesComplete} />;
+        return (
+          <div>
+            <div className="p-4">
+              <OnboardingProgress 
+                currentStep={4} 
+                totalSteps={5} 
+                steps={onboardingSteps} 
+              />
+            </div>
+            <EnhancedWelcomeScreen onComplete={handleGuidelinesComplete} />
+          </div>
+        );
       }
       if (currentStep === 'complete') {
         // Guidelines completed but verification record might not be loaded yet
-        return <VerificationPending onRefresh={refreshVerificationStatus} />;
+        return (
+          <div>
+            <div className="p-4">
+              <OnboardingProgress 
+                currentStep={5} 
+                totalSteps={5} 
+                steps={onboardingSteps} 
+              />
+            </div>
+            <VerificationPending onRefresh={refreshVerificationStatus} />
+          </div>
+        );
       }
       // Default to selfie step if no verification exists
-      return <SelfieCapture onComplete={(success) => success && handleSelfieComplete()} userId={user.id} />;
+      return (
+        <div>
+          <div className="p-4">
+            <OnboardingProgress 
+              currentStep={3} 
+              totalSteps={5} 
+              steps={onboardingSteps} 
+            />
+          </div>
+          <SelfieCapture onComplete={(success) => success && handleSelfieComplete()} userId={user.id} />
+        </div>
+      );
     }
     
     if (!isVerified) {
       // Has verification but not approved yet
-      return <VerificationPending onRefresh={refreshVerificationStatus} />;
+      return (
+        <div>
+          <div className="p-4">
+            <OnboardingProgress 
+              currentStep={5} 
+              totalSteps={5} 
+              steps={onboardingSteps} 
+            />
+          </div>
+          <VerificationPending onRefresh={refreshVerificationStatus} />
+        </div>
+      );
     }
   }
 

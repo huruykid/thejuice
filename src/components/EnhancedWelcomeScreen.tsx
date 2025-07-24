@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
+import OnboardingTips from '@/components/OnboardingTips';
 
 interface EnhancedWelcomeScreenProps {
   onComplete: () => void;
@@ -27,7 +28,7 @@ const EnhancedWelcomeScreen = ({ onComplete }: EnhancedWelcomeScreenProps) => {
           <div>
             <CardTitle className="text-2xl font-bold">Welcome to the Community</CardTitle>
             <CardDescription className="text-muted-foreground">
-              Please review and agree to our community standards
+              Almost done! Please review and agree to our community standards to complete your setup.
             </CardDescription>
           </div>
         </CardHeader>
@@ -83,9 +84,12 @@ const EnhancedWelcomeScreen = ({ onComplete }: EnhancedWelcomeScreenProps) => {
             onClick={handleContinue}
             disabled={!agreed}
             className="w-full"
+            aria-label={agreed ? "Enter the community" : "Please agree to terms first"}
           >
             Enter Community
           </Button>
+          
+          <OnboardingTips step="guidelines" />
         </CardContent>
       </Card>
     </div>

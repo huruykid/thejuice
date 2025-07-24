@@ -10,6 +10,7 @@ import { validateUsername } from '@/lib/security';
 import { CheckCircle, X, Loader2 } from 'lucide-react';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useProfile } from '@/hooks/useProfile';
+import OnboardingTips from '@/components/OnboardingTips';
 
 interface ProfileCreationProps {
   onComplete: () => void;
@@ -211,7 +212,7 @@ const ProfileCreation = ({ onComplete }: ProfileCreationProps) => {
           <div>
             <CardTitle className="text-2xl font-bold">Create Your Profile</CardTitle>
             <CardDescription className="text-muted-foreground">
-              Tell us about yourself to get started
+              Tell us about yourself to get started sharing and discovering stories
             </CardDescription>
           </div>
         </CardHeader>
@@ -288,6 +289,7 @@ const ProfileCreation = ({ onComplete }: ProfileCreationProps) => {
             onClick={createProfile} 
             disabled={!isValid || isCreating}
             className="w-full"
+            aria-label={isCreating ? "Creating your profile, please wait" : "Create your profile"}
           >
             {isCreating ? (
               <>
@@ -298,6 +300,8 @@ const ProfileCreation = ({ onComplete }: ProfileCreationProps) => {
               'Create My Profile'
             )}
           </Button>
+          
+          <OnboardingTips step="profile" />
         </CardContent>
       </Card>
     </div>

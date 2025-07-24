@@ -1,9 +1,10 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Camera, RotateCcw, Check, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
+import OnboardingTips from '@/components/OnboardingTips';
 
 interface SelfieCaptureProps {
   onComplete: (success: boolean) => void;
@@ -177,12 +178,17 @@ const SelfieCapture: React.FC<SelfieCaptureProps> = ({ onComplete, userId }) => 
   return (
     <div className="min-h-screen bg-gradient-soft flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <img src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" alt="Juice" className="h-12 w-12 mx-auto mb-4" />
-          <CardTitle className="text-xl">Verification Required</CardTitle>
-          <p className="text-sm text-muted-foreground">
-            This app is only for the boys — snap a quick selfie so we can verify.
-          </p>
+        <CardHeader className="text-center space-y-4">
+          <img src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" alt="Juice" className="h-16 w-16 mx-auto" />
+          <div>
+            <CardTitle className="text-2xl font-bold">Verify Your Identity</CardTitle>
+            <CardDescription className="text-muted-foreground">
+              Take a selfie to verify you're a real person. This helps us keep the community safe and authentic.
+            </CardDescription>
+          </div>
+          <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg text-sm text-blue-700 dark:text-blue-300">
+            <p><strong>Photo Tips:</strong> Make sure your face is clearly visible, well-lit, and looking at the camera</p>
+          </div>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="relative aspect-square bg-black rounded-lg overflow-hidden">
@@ -255,6 +261,8 @@ const SelfieCapture: React.FC<SelfieCaptureProps> = ({ onComplete, userId }) => 
               Your photo will be stored securely and used only for verification purposes.
             </p>
           </div>
+          
+          <OnboardingTips step="selfie" />
         </CardContent>
       </Card>
     </div>

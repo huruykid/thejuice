@@ -4,6 +4,7 @@ import { Clock, RefreshCw } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useState } from "react";
+import OnboardingTips from '@/components/OnboardingTips';
 
 interface VerificationPendingProps {
   onRefresh: () => void;
@@ -44,21 +45,25 @@ const VerificationPending = ({ onRefresh }: VerificationPendingProps) => {
             <div className="mx-auto w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center">
               <Clock className="w-8 h-8 text-amber-600" />
             </div>
-            <CardTitle className="text-2xl font-bold">Verification Pending</CardTitle>
+            <CardTitle className="text-2xl font-bold">Account Pending Approval</CardTitle>
             <CardDescription className="text-muted-foreground">
-              Your verification is being reviewed by our team
+              You're all set! Your account is being reviewed by our team.
             </CardDescription>
           </div>
         </CardHeader>
         <CardContent className="space-y-6 text-center">
           <div className="space-y-4">
             <p className="text-muted-foreground">
-              Thanks for completing your profile and selfie verification! 
-              Our team is reviewing your submission to ensure you're part of the community.
+              Congratulations! You've completed all the setup steps. Our team is now reviewing your submission to ensure you're part of our authentic community.
             </p>
             <p className="text-sm text-muted-foreground">
-              This usually takes 24-48 hours. You'll receive access once approved.
+              <strong>What happens next:</strong>
             </p>
+            <ul className="text-sm text-muted-foreground space-y-1 text-left">
+              <li>• Manual review (usually 24-48 hours)</li>
+              <li>• Email notification when approved</li>
+              <li>• Full access to share and discover stories</li>
+            </ul>
           </div>
 
           <div className="space-y-3">
@@ -85,10 +90,13 @@ const VerificationPending = ({ onRefresh }: VerificationPendingProps) => {
               onClick={handleSignOut}
               variant="ghost"
               className="w-full text-muted-foreground"
+              aria-label="Sign out of your account"
             >
               Sign Out
             </Button>
           </div>
+          
+          <OnboardingTips step="pending" />
         </CardContent>
       </Card>
     </div>
