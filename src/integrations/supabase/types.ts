@@ -284,6 +284,36 @@ export type Database = {
         }
         Relationships: []
       }
+      user_verifications: {
+        Row: {
+          created_at: string
+          id: string
+          notes: string | null
+          selfie_url: string | null
+          updated_at: string
+          user_id: string
+          verification_status: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          notes?: string | null
+          selfie_url?: string | null
+          updated_at?: string
+          user_id: string
+          verification_status?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          notes?: string | null
+          selfie_url?: string | null
+          updated_at?: string
+          user_id?: string
+          verification_status?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
