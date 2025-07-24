@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { sanitizeText, validateStoryContent, validateRating, validateTag } from '@/lib/security';
 
 export interface Story {
   id: string;
@@ -94,6 +95,40 @@ export const useCreateStory = () => {
       location?: string;
       imageUrl?: string;
     }) => {
+      // Validate and sanitize input
+      const contentValidation = validateStoryContent(content);
+      if (!contentValidation.isValid) {
+        throw new Error(contentValidation.error);
+      }
+
+      const sanitizedContent = sanitizeText(content);
+      const sanitizedLocation = location ? sanitizeText(location) : null;
+
+      // Validate ratings
+      const ratingValidations = [
+        { value: ratings.communication, name: 'Communication' },
+        { value: ratings.loyalty, name: 'Loyalty' },
+        { value: ratings.emotionalSafety, name: 'Emotional Safety' },
+        { value: ratings.overallVibe, name: 'Overall Vibe' }
+      ];
+
+      for (const rating of ratingValidations) {
+        const validation = validateRating(rating.value, rating.name);
+        if (!validation.isValid) {
+          throw new Error(validation.error);
+        }
+      }
+
+      // Validate and sanitize tags
+      const sanitizedTags: string[] = [];
+      for (const tag of tags) {
+        const tagValidation = validateTag(tag);
+        if (!tagValidation.isValid) {
+          throw new Error(tagValidation.error);
+        }
+        sanitizedTags.push(sanitizeText(tag));
+      }
+
       // Get current user
       const { data: { user } } = await (supabase as any).auth.getUser();
       if (!user) throw new Error('User must be authenticated');
@@ -112,12 +147,12 @@ export const useCreateStory = () => {
         .from('stories')
         .insert({
           profile_id: profile.id,
-          content,
+          content: sanitizedContent,
           communication_rating: ratings.communication,
           loyalty_rating: ratings.loyalty,
           emotional_safety_rating: ratings.emotionalSafety,
           overall_vibe_rating: ratings.overallVibe,
-          location: location || null,
+          location: sanitizedLocation,
           image_url: imageUrl || null,
           user_id: user.id,
         })
@@ -127,8 +162,8 @@ export const useCreateStory = () => {
       if (storyError) throw storyError;
 
       // Add tags
-      if (tags.length > 0) {
-        const tagData = tags.map((tag) => ({
+      if (sanitizedTags.length > 0) {
+        const tagData = sanitizedTags.map((tag) => ({
           story_id: story.id,
           tag,
         }));

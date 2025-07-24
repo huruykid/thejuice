@@ -64,6 +64,15 @@ export const useInvites = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
 
+      // Check rate limiting first
+      const { data: rateLimitOk, error: rateLimitError } = await (supabase as any)
+        .rpc('check_invite_generation_rate_limit', { user_id_param: user.id });
+
+      if (rateLimitError) throw rateLimitError;
+      if (!rateLimitOk) {
+        throw new Error('Rate limit exceeded. You can only generate 5 invite codes per hour.');
+      }
+
       // Check if user has remaining invites
       if (inviteStats && inviteStats.invites_remaining <= 0) {
         throw new Error('No invites remaining');

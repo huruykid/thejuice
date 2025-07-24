@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { User2, Check, X } from "lucide-react";
+import { validateUsername } from "@/lib/security";
 
 interface UsernameCreationProps {
   onComplete: () => void;
@@ -43,6 +44,13 @@ const UsernameCreation = ({ onComplete }: UsernameCreationProps) => {
     const sanitized = value.replace(/[^a-zA-Z0-9_-]/g, '');
     setUsername(sanitized);
     
+    // Validate client-side first
+    const validation = validateUsername(sanitized);
+    if (!validation.isValid) {
+      setIsAvailable(false);
+      return;
+    }
+    
     // Debounced check
     if (sanitized !== value) return; // Don't check if we had to sanitize
     
@@ -53,10 +61,21 @@ const UsernameCreation = ({ onComplete }: UsernameCreationProps) => {
   };
 
   const createProfile = async () => {
-    if (!username || username.length < 3 || !isAvailable) {
+    // Validate username
+    const validation = validateUsername(username);
+    if (!validation.isValid) {
       toast({
         title: "Invalid username",
-        description: "Please choose a valid, available username (3+ characters).",
+        description: validation.error,
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    if (!isAvailable) {
+      toast({
+        title: "Username not available",
+        description: "Please choose a different username.",
         variant: "destructive"
       });
       return;
