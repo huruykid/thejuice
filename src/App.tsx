@@ -10,6 +10,7 @@ import CodenameProfile from "./pages/CodenameProfile";
 import Explore from "./pages/Explore";
 import Profile from "./pages/Profile";
 import Comments from "./pages/Comments";
+import AdminVerifications from "./pages/AdminVerifications";
 import CreateStory from "./components/CreateStory";
 import { useAuth } from "./hooks/useAuth";
 
@@ -75,6 +76,11 @@ const App = () => (
           <Route path="/codename/:codenameId" element={
             <ProtectedRoute>
               <CodenameProfile />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/verifications" element={
+            <ProtectedRoute>
+              <AdminVerifications />
             </ProtectedRoute>
           } />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

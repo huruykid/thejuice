@@ -116,22 +116,31 @@ export type Database = {
       profiles: {
         Row: {
           anonymous_username: string
+          city: string | null
           created_at: string
+          date_of_birth: string | null
           id: string
+          relationship_status: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
           anonymous_username: string
+          city?: string | null
           created_at?: string
+          date_of_birth?: string | null
           id?: string
+          relationship_status?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
           anonymous_username?: string
+          city?: string | null
           created_at?: string
+          date_of_birth?: string | null
           id?: string
+          relationship_status?: string | null
           updated_at?: string
           user_id?: string
         }
