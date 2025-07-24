@@ -120,7 +120,7 @@ const AuthScreen = ({ onAuthSuccess }: AuthScreenProps) => {
               <p className="text-muted-foreground">
                 {isSignUp 
                   ? "Enter your invite code and create your account" 
-                  : "Sign in to share and discover dating stories"
+                  : <>Sign in to share and<br />discover dating stories</>
                 }
               </p>
             </div>
