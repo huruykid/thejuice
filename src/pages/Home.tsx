@@ -4,10 +4,13 @@ import Navigation from "@/components/Navigation";
 import StoryCard from "@/components/StoryCard";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Sparkles, TrendingUp, Clock } from "lucide-react";
+import { Sparkles, TrendingUp, Clock, Share2 } from "lucide-react";
 import { useStories } from "@/hooks/useStories";
 import { useTrendingStories } from "@/hooks/useTrendingStories";
 import { useAuth } from "@/hooks/useAuth";
+import { useInvites } from "@/hooks/useInvites";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 interface HomeProps {
   onCreateStory?: () => void;
@@ -17,6 +20,116 @@ const Home = ({ onCreateStory }: HomeProps) => {
   const { data: stories = [], isLoading } = useStories();
   const { data: trendingStories = [], isLoading: isTrendingLoading } = useTrendingStories();
   const { user } = useAuth();
+  const { inviteStats, generateInvite, generatingInvite } = useInvites();
+  const { toast } = useToast();
+
+  const handleInviteFriends = async () => {
+    if (!inviteStats || inviteStats.invites_remaining <= 0) {
+      toast({
+        title: "No invites remaining",
+        description: "You don't have any invites left to share.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      // Check for existing unused codes first
+      if (!user) return;
+
+      const { data: existingCodes } = await supabase
+        .from('invite_codes')
+        .select('code')
+        .eq('created_by', user.id)
+        .is('used_by', null)
+        .order('created_at', { ascending: false })
+        .limit(1);
+
+      if (existingCodes && existingCodes.length > 0) {
+        // Use existing code
+        const code = existingCodes[0].code;
+        shareInviteCode(code);
+      } else {
+        // Generate new code and then share it
+        generateInvite();
+        // Note: We'll handle sharing after generation completes
+        // For now, let's show a message
+        toast({
+          title: "Generating invite code...",
+          description: "Your invite will be ready to share in a moment!",
+        });
+        
+        // After a short delay, get the newest code and share it
+        setTimeout(async () => {
+          const { data: newCodes } = await supabase
+            .from('invite_codes')
+            .select('code')
+            .eq('created_by', user.id)
+            .is('used_by', null)
+            .order('created_at', { ascending: false })
+            .limit(1);
+          
+          if (newCodes && newCodes.length > 0) {
+            shareInviteCode(newCodes[0].code);
+          }
+        }, 1000);
+      }
+    } catch (error) {
+      console.error('Error handling invite:', error);
+      toast({
+        title: "Error",
+        description: "Failed to generate invite. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const shareInviteCode = async (code: string) => {
+    const baseUrl = window.location.origin;
+    const inviteUrl = `${baseUrl}?invite=${code}`;
+    const shareText = `You've just been invited to the Juice app! Share your story and learn from others. #fortheboys\n\nUse invite code: ${code}\nJoin here: ${inviteUrl}`;
+    
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'Join the Juice App!',
+          text: shareText,
+          url: inviteUrl
+        });
+      } catch (err) {
+        // User cancelled sharing or error occurred
+        if (err instanceof Error && err.name !== 'AbortError') {
+          copyToClipboard(shareText);
+        }
+      }
+    } else {
+      // Fallback to copying
+      copyToClipboard(shareText);
+    }
+  };
+
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast({
+        title: "Copied to clipboard!",
+        description: "Share this invite with your friends.",
+      });
+    } catch (err) {
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      
+      toast({
+        title: "Copied to clipboard!",
+        description: "Share this invite with your friends.",
+      });
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background pb-20">
@@ -29,8 +142,14 @@ const Home = ({ onCreateStory }: HomeProps) => {
               The Juice App
             </h1>
           </div>
-          <Button variant="juice-outline" size="sm">
-            Invite Friends
+          <Button 
+            variant="juice-outline" 
+            size="sm"
+            onClick={handleInviteFriends}
+            disabled={generatingInvite || (inviteStats?.invites_remaining || 0) <= 0}
+          >
+            <Share2 className="h-4 w-4 mr-2" />
+            {generatingInvite ? "Generating..." : "Invite Friends"}
           </Button>
         </div>
       </div>
