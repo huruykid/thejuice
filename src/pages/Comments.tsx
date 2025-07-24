@@ -250,7 +250,7 @@ const Comments = () => {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-2xl font-bold text-foreground">Comments</h1>
-            <p className="text-muted-foreground">Your tea conversation hub</p>
+            <p className="text-muted-foreground">Your Juice House</p>
           </div>
           <Button 
             variant="outline" 
