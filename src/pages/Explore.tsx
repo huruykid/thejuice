@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { useDebounce } from "@/hooks/useDebounce";
 import { Search, MapPin, Tag } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -19,9 +20,13 @@ const Explore = ({ onCreateStory }: ExploreProps = {}) => {
   const [selectedTag, setSelectedTag] = useState("");
   const [userLocation, setUserLocation] = useState<string | null>(null);
 
+  // Debounce search inputs to prevent excessive API calls
+  const debouncedSearchQuery = useDebounce(searchQuery, 300);
+  const debouncedLocation = useDebounce(location, 500);
+
   const { data: searchResults = [], isLoading: isSearching } = useSearchStories(
-    searchQuery, 
-    location, 
+    debouncedSearchQuery, 
+    debouncedLocation, 
     selectedTag
   );
   const { data: topTags = [] } = useTopTags();
