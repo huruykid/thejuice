@@ -103,6 +103,9 @@ const AuthScreen = ({ onAuthSuccess }: AuthScreenProps) => {
           <h1 className="text-4xl font-bold bg-gradient-primary bg-clip-text text-transparent">
             The Juice App
           </h1>
+          <p className="text-lg text-muted-foreground mt-2">
+            Everyone's got Juice. Spill yours.
+          </p>
         </div>
       </div>
 
