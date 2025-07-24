@@ -7,11 +7,13 @@ import Navigation from "@/components/Navigation";
 import CreateStory from "@/components/CreateStory";
 import InviteManager from "@/components/InviteManager";
 import { useAuth } from "@/hooks/useAuth";
+import { useProfile } from "@/hooks/useProfile";
 import { useToast } from "@/hooks/use-toast";
 
 const Profile = () => {
   const [showCreateStory, setShowCreateStory] = useState(false);
   const { signOut, user } = useAuth();
+  const { profile } = useProfile(user);
   const { toast } = useToast();
 
   const handleLogout = async () => {
@@ -46,7 +48,7 @@ const Profile = () => {
           <div className="w-20 h-20 bg-gradient-to-br from-juice-orange to-juice-pink rounded-full mx-auto mb-4 flex items-center justify-center">
             <User className="h-10 w-10 text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-foreground mb-2">Your Profile</h1>
+          <h1 className="text-2xl font-bold text-foreground mb-2">{profile?.anonymous_username || 'Your Profile'}</h1>
           <p className="text-muted-foreground">Anonymous storyteller</p>
         </div>
 
