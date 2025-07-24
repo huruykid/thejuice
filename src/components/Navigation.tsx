@@ -1,4 +1,4 @@
-import { Home, Plus, Search, User, MessageCircle } from "lucide-react";
+import { Home, Plus, Search, User, Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate, useLocation } from "react-router-dom";
 
@@ -46,10 +46,10 @@ const Navigation = ({ onCreateStory }: NavigationProps) => {
           variant="ghost" 
           size="icon" 
           className="flex-col h-auto py-2 rounded-xl"
-          onClick={() => navigate('/comments')}
+          onClick={() => navigate('/activity')}
         >
-          <MessageCircle className={`h-5 w-5 ${location.pathname === '/comments' ? 'text-juice-orange' : 'text-muted-foreground'}`} />
-          <span className="text-xs text-muted-foreground mt-1">Comments</span>
+          <Bell className={`h-5 w-5 ${location.pathname === '/activity' ? 'text-juice-orange' : 'text-muted-foreground'}`} />
+          <span className="text-xs text-muted-foreground mt-1">Activity</span>
         </Button>
         
         <Button 

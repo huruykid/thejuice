@@ -9,7 +9,7 @@ import NotFound from "./pages/NotFound";
 import CodenameProfile from "./pages/CodenameProfile";
 import Explore from "./pages/Explore";
 import Profile from "./pages/Profile";
-import Comments from "./pages/Comments";
+import Activity from "./pages/Activity";
 import AdminVerifications from "./pages/AdminVerifications";
 import PrivacySettings from "./pages/PrivacySettings";
 import CreateStory from "./components/CreateStory";
@@ -69,9 +69,9 @@ const App = () => (
               <Profile />
             </ProtectedRoute>
           } />
-          <Route path="/comments" element={
+          <Route path="/activity" element={
             <ProtectedRoute>
-              <Comments />
+              <Activity />
             </ProtectedRoute>
           } />
           <Route path="/codename/:codenameId" element={
