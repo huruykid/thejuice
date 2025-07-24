@@ -41,6 +41,7 @@ interface StoryCardProps {
     }>;
   };
   authorName: string;
+  subjectName?: string; // The person the story is about
   user_id?: string;
   onDelete?: () => void;
 }
@@ -48,6 +49,7 @@ interface StoryCardProps {
 const StoryCard = ({ 
   story, 
   authorName, 
+  subjectName,
   user_id, 
   onDelete 
 }: StoryCardProps) => {
@@ -187,10 +189,10 @@ const StoryCard = ({
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 bg-juice-orange/20 rounded-full flex items-center justify-center">
                 <span className="text-sm font-bold text-juice-orange">
-                  {authorName.charAt(0).toUpperCase()}
+                  {(subjectName || 'Anonymous').charAt(0).toUpperCase()}
                 </span>
               </div>
-              <span className="text-sm font-medium text-foreground">{authorName}</span>
+              <span className="text-sm font-medium text-foreground">{subjectName || 'Anonymous'}</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="text-xs text-muted-foreground">{formatDate(story.created_at)}</span>
@@ -332,6 +334,11 @@ const StoryCard = ({
             >
               <Flag className="h-4 w-4" />
             </Button>
+          </div>
+          
+          {/* Author attribution */}
+          <div className="pt-2 border-t border-juice-orange/5 mt-2">
+            <span className="text-xs text-muted-foreground">Posted by: {authorName}</span>
           </div>
         </div>
       </div>
