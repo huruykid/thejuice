@@ -182,7 +182,12 @@ const AuthScreen = ({ onAuthSuccess }: AuthScreenProps) => {
               >
                 {isSignUp 
                   ? "Already have an account? Sign in" 
-                  : "Need an account? Sign up with invite code"
+                  : (
+                    <span>
+                      Need an account?<br />
+                      Sign up with invite code
+                    </span>
+                  )
                 }
               </Button>
               
