@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -105,7 +106,7 @@ const AuthScreen = ({ onAuthSuccess }: AuthScreenProps) => {
           </h1>
         </div>
         <p className="text-lg text-muted-foreground mt-2">
-          We Got the Juice. And so do you.
+          We Got the Juice. And So Do You.
         </p>
       </div>
 
