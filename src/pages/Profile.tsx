@@ -2,12 +2,32 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { User, Settings, Heart, MessageCircle } from "lucide-react";
+import { User, Settings, Heart, MessageCircle, LogOut } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import CreateStory from "@/components/CreateStory";
+import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
 
 const Profile = () => {
   const [showCreateStory, setShowCreateStory] = useState(false);
+  const { signOut, user } = useAuth();
+  const { toast } = useToast();
+
+  const handleLogout = async () => {
+    const { error } = await signOut();
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to sign out. Please try again.",
+        variant: "destructive"
+      });
+    } else {
+      toast({
+        title: "Signed out",
+        description: "You have been successfully signed out.",
+      });
+    }
+  };
 
   // Mock data for now - in real app this would come from Supabase
   const userStats = {
@@ -83,6 +103,15 @@ const Profile = () => {
           
           <Button variant="ghost" className="w-full text-muted-foreground">
             Help & Support
+          </Button>
+          
+          <Button 
+            variant="ghost" 
+            className="w-full text-red-600 hover:text-red-700 hover:bg-red-50"
+            onClick={handleLogout}
+          >
+            <LogOut className="h-4 w-4 mr-2" />
+            Sign Out
           </Button>
         </div>
       </div>
