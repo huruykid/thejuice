@@ -86,12 +86,32 @@ const UsernameCreation = ({ onComplete }: UsernameCreationProps) => {
       const { data: { user } } = await (supabase as any).auth.getUser();
       if (!user) throw new Error('User not authenticated');
 
-      const { error } = await (supabase as any)
+      // First check if profile already exists
+      const { data: existingProfile } = await (supabase as any)
         .from('profiles')
-        .insert({
-          user_id: user.id,
-          anonymous_username: username
-        });
+        .select('id')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      let error;
+      
+      if (existingProfile) {
+        // Update existing profile
+        const result = await (supabase as any)
+          .from('profiles')
+          .update({ anonymous_username: username })
+          .eq('user_id', user.id);
+        error = result.error;
+      } else {
+        // Create new profile
+        const result = await (supabase as any)
+          .from('profiles')
+          .insert({
+            user_id: user.id,
+            anonymous_username: username
+          });
+        error = result.error;
+      }
 
       if (error) {
         if (error.code === '23505') { // Unique violation
