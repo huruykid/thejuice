@@ -192,6 +192,7 @@ export type Database = {
           overall_vibe_rating: number
           profile_id: string | null
           reactions_count: number
+          subject_name: string | null
           updated_at: string
           user_id: string
         }
@@ -208,6 +209,7 @@ export type Database = {
           overall_vibe_rating: number
           profile_id?: string | null
           reactions_count?: number
+          subject_name?: string | null
           updated_at?: string
           user_id: string
         }
@@ -224,6 +226,7 @@ export type Database = {
           overall_vibe_rating?: number
           profile_id?: string | null
           reactions_count?: number
+          subject_name?: string | null
           updated_at?: string
           user_id?: string
         }
