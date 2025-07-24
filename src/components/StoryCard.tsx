@@ -192,7 +192,7 @@ const StoryCard = ({
                   {(subjectName || 'Anonymous').charAt(0).toUpperCase()}
                 </span>
               </div>
-              <span className="text-sm font-medium text-foreground">{subjectName || 'Anonymous'}</span>
+              <span className="text-sm font-medium text-foreground">{story.subject_name || subjectName || 'Anonymous'}</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="text-xs text-muted-foreground">{formatDate(story.created_at)}</span>
