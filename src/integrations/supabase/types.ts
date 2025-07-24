@@ -73,6 +73,36 @@ export type Database = {
           },
         ]
       }
+      invite_codes: {
+        Row: {
+          code: string
+          created_at: string
+          created_by: string
+          expires_at: string
+          id: string
+          used_at: string | null
+          used_by: string | null
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          created_by: string
+          expires_at?: string
+          id?: string
+          used_at?: string | null
+          used_by?: string | null
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          created_by?: string
+          expires_at?: string
+          id?: string
+          used_at?: string | null
+          used_by?: string | null
+        }
+        Relationships: []
+      }
       reactions: {
         Row: {
           created_at: string
@@ -190,12 +220,49 @@ export type Database = {
           },
         ]
       }
+      user_invite_stats: {
+        Row: {
+          created_at: string
+          id: string
+          invites_remaining: number
+          invites_sent: number
+          invites_used: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          invites_remaining?: number
+          invites_sent?: number
+          invites_used?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          invites_remaining?: number
+          invites_sent?: number
+          invites_used?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      generate_invite_code: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      use_invite_code: {
+        Args: { invite_code: string; new_user_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never
