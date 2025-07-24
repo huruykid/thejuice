@@ -4,22 +4,25 @@ import CreateStory from "@/components/CreateStory";
 import EnhancedWelcomeScreen from "@/components/EnhancedWelcomeScreen";
 import AuthScreen from "@/components/AuthScreen";
 import ProfileCreation from "@/components/ProfileCreation";
-import SelfieCapture from "@/components/SelfieCapture";
+import EnhancedSelfieCapture from "@/components/EnhancedSelfieCapture";
 import VerificationPending from "@/components/VerificationPending";
 import VerificationRejected from "@/components/VerificationRejected";
-import OnboardingProgress from "@/components/OnboardingProgress";
+import OnboardingSuccess from "@/components/OnboardingSuccess";
+import EnhancedProgress from "@/components/ui/enhanced-progress";
 import LoadingSkeleton from "@/components/ui/loading-skeleton";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
 import { useVerification } from "@/hooks/useVerification";
+import { useOnboardingState } from "@/hooks/useOnboardingState";
 
 const Index = () => {
   const [showCreateStory, setShowCreateStory] = useState(false);
-  const [currentStep, setCurrentStep] = useState<'profile' | 'selfie' | 'guidelines' | 'complete'>('profile');
+  const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
   
   const { user, loading } = useAuth();
   const { profile, isLoading: profileLoading, hasProfile } = useProfile(user);
   const { verification, isLoading: verificationLoading, hasVerification, isVerified, isPending, isRejected } = useVerification(user?.id);
+  const { currentStep, setCurrentStep, markStepCompleted } = useOnboardingState(user?.id);
 
   // Onboarding steps configuration
   const onboardingSteps = ['Sign Up', 'Profile', 'Selfie', 'Guidelines', 'Review'];
@@ -34,17 +37,24 @@ const Index = () => {
   };
 
   const handleProfileCreated = () => {
+    markStepCompleted('profile');
     setCurrentStep('selfie');
   };
 
-  const handleSelfieComplete = () => {
-    setCurrentStep('guidelines');
+  const handleSelfieComplete = (success: boolean) => {
+    if (success) {
+      markStepCompleted('selfie');
+      setCurrentStep('guidelines');
+    }
   };
 
   const handleGuidelinesComplete = () => {
-    // Guidelines completed - user should now see pending verification screen
-    // The verification record should already exist from selfie upload
+    markStepCompleted('guidelines');
     setCurrentStep('complete');
+  };
+
+  const handleApprovalSuccess = () => {
+    setShowSuccessAnimation(true);
   };
 
   const refreshVerificationStatus = () => {
@@ -69,10 +79,11 @@ const Index = () => {
     return (
       <div>
         <div className="p-4">
-          <OnboardingProgress 
+          <EnhancedProgress 
             currentStep={1} 
             totalSteps={5} 
-            steps={onboardingSteps} 
+            steps={onboardingSteps}
+            estimatedTimeRemaining="2-3 minutes"
           />
         </div>
         <AuthScreen onAuthSuccess={() => {}} />
@@ -85,10 +96,12 @@ const Index = () => {
     return (
       <div>
         <div className="p-4">
-          <OnboardingProgress 
+          <EnhancedProgress 
             currentStep={2} 
             totalSteps={5} 
-            steps={onboardingSteps} 
+            steps={onboardingSteps}
+            estimatedTimeRemaining="1-2 minutes"
+            completedSteps={['Sign Up']}
           />
         </div>
         <ProfileCreation onComplete={handleProfileCreated} />
@@ -104,10 +117,11 @@ const Index = () => {
         return (
           <div>
             <div className="p-4">
-              <OnboardingProgress 
+              <EnhancedProgress 
                 currentStep={5} 
                 totalSteps={5} 
-                steps={onboardingSteps} 
+                steps={onboardingSteps}
+                completedSteps={['Sign Up', 'Profile', 'Selfie', 'Guidelines']}
               />
             </div>
             <VerificationRejected notes={verification?.notes} />
@@ -119,10 +133,11 @@ const Index = () => {
         return (
           <div>
             <div className="p-4">
-              <OnboardingProgress 
+              <EnhancedProgress 
                 currentStep={5} 
                 totalSteps={5} 
-                steps={onboardingSteps} 
+                steps={onboardingSteps}
+                completedSteps={['Sign Up', 'Profile', 'Selfie', 'Guidelines']}
               />
             </div>
             <VerificationPending onRefresh={refreshVerificationStatus} />
@@ -130,8 +145,16 @@ const Index = () => {
         );
       }
       
-      // Has verification and it's approved - show main app
+      // Has verification and it's approved - show success animation first
       if (isVerified) {
+        if (showSuccessAnimation) {
+          return (
+            <OnboardingSuccess 
+              onContinue={() => setShowSuccessAnimation(false)} 
+            />
+          );
+        }
+        
         return (
           <>
             <Home onCreateStory={() => setShowCreateStory(true)} />
@@ -150,13 +173,15 @@ const Index = () => {
         return (
           <div>
             <div className="p-4">
-              <OnboardingProgress 
+              <EnhancedProgress 
                 currentStep={3} 
                 totalSteps={5} 
-                steps={onboardingSteps} 
+                steps={onboardingSteps}
+                estimatedTimeRemaining="30 seconds"
+                completedSteps={['Sign Up', 'Profile']}
               />
             </div>
-            <SelfieCapture onComplete={(success) => success && handleSelfieComplete()} userId={user.id} />
+            <EnhancedSelfieCapture onComplete={handleSelfieComplete} userId={user.id} />
           </div>
         );
       }
@@ -164,10 +189,12 @@ const Index = () => {
         return (
           <div>
             <div className="p-4">
-              <OnboardingProgress 
+              <EnhancedProgress 
                 currentStep={4} 
                 totalSteps={5} 
-                steps={onboardingSteps} 
+                steps={onboardingSteps}
+                estimatedTimeRemaining="1 minute"
+                completedSteps={['Sign Up', 'Profile', 'Selfie']}
               />
             </div>
             <EnhancedWelcomeScreen onComplete={handleGuidelinesComplete} />
@@ -179,10 +206,11 @@ const Index = () => {
         return (
           <div>
             <div className="p-4">
-              <OnboardingProgress 
+              <EnhancedProgress 
                 currentStep={5} 
                 totalSteps={5} 
-                steps={onboardingSteps} 
+                steps={onboardingSteps}
+                completedSteps={['Sign Up', 'Profile', 'Selfie', 'Guidelines']}
               />
             </div>
             <VerificationPending onRefresh={refreshVerificationStatus} />
@@ -193,13 +221,15 @@ const Index = () => {
       return (
         <div>
           <div className="p-4">
-            <OnboardingProgress 
+            <EnhancedProgress 
               currentStep={3} 
               totalSteps={5} 
-              steps={onboardingSteps} 
+              steps={onboardingSteps}
+              estimatedTimeRemaining="30 seconds"
+              completedSteps={['Sign Up', 'Profile']}
             />
           </div>
-          <SelfieCapture onComplete={(success) => success && handleSelfieComplete()} userId={user.id} />
+          <EnhancedSelfieCapture onComplete={handleSelfieComplete} userId={user.id} />
         </div>
       );
     }
