@@ -87,12 +87,12 @@ const Home = ({ onCreateStory }: HomeProps) => {
   const shareInviteCode = async (code: string) => {
     const baseUrl = window.location.origin;
     const inviteUrl = `${baseUrl}?invite=${code}`;
-    const shareText = `You've just been invited to the Juice app! Share your story and learn from others. #fortheboys\n\nUse invite code: ${code}\nJoin here: ${inviteUrl}`;
+    const shareText = `You've just been invited to The Tea App for Men! Share your dating stories and learn from other guys. #TeaAppForMen\n\nUse invite code: ${code}\nJoin here: ${inviteUrl}`;
     
     if (navigator.share) {
       try {
         await navigator.share({
-          title: 'Join the Juice App!',
+          title: 'Join The Tea App for Men!',
           text: shareText,
           url: inviteUrl
         });
@@ -139,7 +139,7 @@ const Home = ({ onCreateStory }: HomeProps) => {
           <div className="flex items-center gap-3">
             <img src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" alt="Juice" className="h-8 w-8" />
             <h1 className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-              The Juice App
+              The Tea App for Men
             </h1>
           </div>
           <Button 

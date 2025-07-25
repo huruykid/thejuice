@@ -17,9 +17,9 @@ const Navigation = ({ onCreateStory }: NavigationProps) => {
           variant="ghost" 
           size="icon" 
           className="flex-col h-auto py-2 rounded-xl"
-          onClick={() => navigate('/')}
+          onClick={() => navigate('/app')}
         >
-          <Home className={`h-5 w-5 ${location.pathname === '/' ? 'text-juice-orange' : 'text-muted-foreground'}`} />
+          <Home className={`h-5 w-5 ${location.pathname === '/app' ? 'text-juice-orange' : 'text-muted-foreground'}`} />
           <span className="text-xs text-muted-foreground mt-1">Home</span>
         </Button>
         

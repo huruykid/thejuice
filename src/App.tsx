@@ -5,6 +5,9 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useState } from "react";
 import Index from "./pages/Index";
+import Landing from "./pages/Landing";
+import HowItWorks from "./pages/HowItWorks";
+import TeaAppComparison from "./pages/TeaAppComparison";
 import NotFound from "./pages/NotFound";
 import CodenameProfile from "./pages/CodenameProfile";
 import Explore from "./pages/Explore";
@@ -59,7 +62,14 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Index />} />
+          <Route path="/" element={<Landing />} />
+          <Route path="/how-it-works" element={<HowItWorks />} />
+          <Route path="/tea-app-comparison" element={<TeaAppComparison />} />
+          <Route path="/app" element={
+            <ProtectedRoute>
+              <Index />
+            </ProtectedRoute>
+          } />
           <Route path="/explore" element={
             <ProtectedRoute>
               <ExploreWrapper />
