@@ -60,7 +60,7 @@ const Landing = () => {
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <img src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" alt="Tea App" className="h-8 w-8" />
-            <h1 className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">The Juice App for Men</h1>
+            <h1 className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">The Juice App</h1>
           </div>
           <Button onClick={() => navigate("/app")} variant="juice">
             Get Started
