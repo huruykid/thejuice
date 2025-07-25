@@ -7,6 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useInvites } from "@/hooks/useInvites";
 import { useUserSession } from "@/hooks/useUserSession";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import SelfieCapture from './SelfieCapture';
@@ -29,6 +30,7 @@ const AuthScreen = ({ onAuthSuccess }: AuthScreenProps) => {
   const { signIn, signUp, user } = useAuth();
   const { validateInviteCode } = useInvites();
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -122,12 +124,15 @@ const AuthScreen = ({ onAuthSuccess }: AuthScreenProps) => {
     <div className="min-h-screen bg-gradient-soft flex flex-col">
       {/* Logo */}
       <div className="flex flex-col items-center justify-center pt-16 pb-8">
-        <div className="flex flex-col items-center gap-3">
+        <button 
+          onClick={() => navigate("/")}
+          className="flex flex-col items-center gap-3 hover:opacity-80 transition-opacity cursor-pointer"
+        >
           <img src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" alt="Juice" className="h-16 w-16" />
           <h1 className="text-4xl font-bold bg-gradient-primary bg-clip-text text-transparent">
             The Juice App
           </h1>
-        </div>
+        </button>
         <p className="text-lg text-muted-foreground mt-2">
           We Got the Juice. Now You Do Too.
         </p>
