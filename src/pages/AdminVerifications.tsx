@@ -128,12 +128,19 @@ const AdminVerifications = () => {
     
     setIsProcessing(true);
     try {
-      // Get user email for sending approval notification
-      const { data: authUser } = await supabase.auth.admin.getUserById(selectedVerification.user_id);
+      // Get user email through edge function that has proper permissions
+      const { data: emailResponse, error: emailError } = await supabase.functions.invoke('get-user-email', {
+        body: { userId: selectedVerification.user_id }
+      });
+      
+      if (emailError || !emailResponse?.email) {
+        toast.error('Failed to get user email for notification');
+        return;
+      }
       
       await approveUser.mutateAsync({
         userId: selectedVerification.user_id,
-        email: authUser.user?.email || '',
+        email: emailResponse.email,
         username: selectedVerification.profile?.anonymous_username,
         notes: notes || undefined
       });
