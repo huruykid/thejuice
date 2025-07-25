@@ -4,10 +4,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { CheckCircle, Users, Shield, MessageSquare, Star, ArrowRight, Quote } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-
 const Landing = () => {
   const navigate = useNavigate();
-  const { user, loading } = useAuth();
+  const {
+    user,
+    loading
+  } = useAuth();
   const [email, setEmail] = useState("");
 
   // Redirect authenticated users to the app
@@ -16,66 +18,49 @@ const Landing = () => {
       navigate("/app");
     }
   }, [user, loading, navigate]);
-
   const handleGetStarted = () => {
     navigate("/app");
   };
-
   const handleLearnMore = () => {
     navigate("/how-it-works");
   };
-
-  const features = [
-    {
-      icon: <Shield className="h-6 w-6 text-juice-orange" />,
-      title: "Anonymous & Verified",
-      description: "Share stories without revealing your identity, but with verified accounts for authenticity."
-    },
-    {
-      icon: <Users className="h-6 w-6 text-juice-orange" />,
-      title: "Men-Only Community",
-      description: "Finally, a space where guys can be honest about dating without judgment."
-    },
-    {
-      icon: <MessageSquare className="h-6 w-6 text-juice-orange" />,
-      title: "Rate Real Experiences",
-      description: "Help other men make informed decisions with honest ratings and reviews."
-    },
-    {
-      icon: <Star className="h-6 w-6 text-juice-orange" />,
-      title: "No Drama Zone",
-      description: "Share the good, bad, and ugly without backlash or social consequences."
-    }
-  ];
-
-  const testimonials = [
-    {
-      quote: "Finally, an app where I can get honest dating advice from other guys who've been there.",
-      author: "Mike, 28",
-      rating: 5
-    },
-    {
-      quote: "The verification system makes all the difference. These are real stories from real men.",
-      author: "James, 32",
-      rating: 5
-    },
-    {
-      quote: "Wish I had this before my last relationship. The red flags were all there in other guys' stories.",
-      author: "David, 26",
-      rating: 5
-    }
-  ];
-
-  return (
-    <div className="min-h-screen bg-gradient-soft">
+  const features = [{
+    icon: <Shield className="h-6 w-6 text-juice-orange" />,
+    title: "Anonymous & Verified",
+    description: "Share stories without revealing your identity, but with verified accounts for authenticity."
+  }, {
+    icon: <Users className="h-6 w-6 text-juice-orange" />,
+    title: "Men-Only Community",
+    description: "Finally, a space where guys can be honest about dating without judgment."
+  }, {
+    icon: <MessageSquare className="h-6 w-6 text-juice-orange" />,
+    title: "Rate Real Experiences",
+    description: "Help other men make informed decisions with honest ratings and reviews."
+  }, {
+    icon: <Star className="h-6 w-6 text-juice-orange" />,
+    title: "No Drama Zone",
+    description: "Share the good, bad, and ugly without backlash or social consequences."
+  }];
+  const testimonials = [{
+    quote: "Finally, an app where I can get honest dating advice from other guys who've been there.",
+    author: "Mike, 28",
+    rating: 5
+  }, {
+    quote: "The verification system makes all the difference. These are real stories from real men.",
+    author: "James, 32",
+    rating: 5
+  }, {
+    quote: "Wish I had this before my last relationship. The red flags were all there in other guys' stories.",
+    author: "David, 26",
+    rating: 5
+  }];
+  return <div className="min-h-screen bg-gradient-soft">
       {/* Header */}
       <header className="sticky top-0 bg-white/80 backdrop-blur-lg border-b border-juice-orange/10 z-40">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <img src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" alt="Tea App" className="h-8 w-8" />
-            <h1 className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-              The Tea App for Men
-            </h1>
+            <h1 className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">The Juice App for Men</h1>
           </div>
           <Button onClick={() => navigate("/app")} variant="juice">
             Get Started
@@ -124,8 +109,7 @@ const Landing = () => {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {features.map((feature, index) => (
-              <Card key={index} className="text-center border-0 shadow-card bg-white/80 backdrop-blur-sm">
+            {features.map((feature, index) => <Card key={index} className="text-center border-0 shadow-card bg-white/80 backdrop-blur-sm">
                 <CardHeader>
                   <div className="mx-auto mb-4 p-3 bg-juice-orange/10 rounded-full w-fit">
                     {feature.icon}
@@ -137,8 +121,7 @@ const Landing = () => {
                     {feature.description}
                   </CardDescription>
                 </CardContent>
-              </Card>
-            ))}
+              </Card>)}
           </div>
         </div>
       </section>
@@ -196,22 +179,18 @@ const Landing = () => {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {testimonials.map((testimonial, index) => (
-              <Card key={index} className="border-0 shadow-card bg-white/80 backdrop-blur-sm">
+            {testimonials.map((testimonial, index) => <Card key={index} className="border-0 shadow-card bg-white/80 backdrop-blur-sm">
                 <CardContent className="p-6">
                   <Quote className="h-8 w-8 text-juice-orange mb-4" />
                   <p className="text-foreground mb-4 italic">"{testimonial.quote}"</p>
                   <div className="flex items-center justify-between">
                     <span className="font-semibold text-sm">{testimonial.author}</span>
                     <div className="flex">
-                      {[...Array(testimonial.rating)].map((_, i) => (
-                        <Star key={i} className="h-4 w-4 fill-juice-orange text-juice-orange" />
-                      ))}
+                      {[...Array(testimonial.rating)].map((_, i) => <Star key={i} className="h-4 w-4 fill-juice-orange text-juice-orange" />)}
                     </div>
                   </div>
                 </CardContent>
-              </Card>
-            ))}
+              </Card>)}
           </div>
         </div>
       </section>
@@ -288,8 +267,6 @@ const Landing = () => {
           </div>
         </div>
       </footer>
-    </div>
-  );
+    </div>;
 };
-
 export default Landing;
