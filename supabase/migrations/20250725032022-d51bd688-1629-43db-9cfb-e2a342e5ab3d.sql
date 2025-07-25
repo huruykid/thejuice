@@ -1,0 +1,3 @@
+UPDATE profiles 
+SET anonymous_username = 'admin' 
+WHERE user_id = 'd8936f3d-4770-4e83-be22-ed3b269fa9ed';
