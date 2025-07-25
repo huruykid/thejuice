@@ -61,6 +61,9 @@ const UsernameCreation = ({ onComplete }: UsernameCreationProps) => {
   };
 
   const createProfile = async () => {
+    // Prevent double-clicking by checking if already creating
+    if (isCreating) return;
+    
     // Validate username
     const validation = validateUsername(username);
     if (!validation.isValid) {

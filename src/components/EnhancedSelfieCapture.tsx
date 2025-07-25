@@ -171,7 +171,7 @@ const EnhancedSelfieCapture: React.FC<EnhancedSelfieCaptureProps> = ({ onComplet
   };
 
   const uploadAndSave = async () => {
-    if (!capturedImage) return;
+    if (!capturedImage || isLoading) return;
 
     // Prevent upload of poor quality images
     if (imageQuality === 'poor') {
@@ -184,6 +184,12 @@ const EnhancedSelfieCapture: React.FC<EnhancedSelfieCaptureProps> = ({ onComplet
     }
 
     setIsLoading(true);
+    
+    // Show immediate feedback to user
+    toast({
+      title: "Uploading selfie...",
+      description: "Hang tight 👀 This might take a few seconds.",
+    });
     try {
       const response = await fetch(capturedImage);
       const blob = await response.blob();
@@ -297,7 +303,14 @@ const EnhancedSelfieCapture: React.FC<EnhancedSelfieCaptureProps> = ({ onComplet
                     disabled={isLoading}
                     className="flex-1"
                   >
-                    {isLoading ? "Uploading..." : "Submit Photo"}
+                    {isLoading ? (
+                      <div className="flex items-center gap-2">
+                        <div className="animate-spin w-4 h-4 border-2 border-white/30 border-t-white rounded-full" />
+                        Uploading...
+                      </div>
+                    ) : (
+                      "Submit Photo"
+                    )}
                   </Button>
                 </div>
               </div>
@@ -452,7 +465,10 @@ const EnhancedSelfieCapture: React.FC<EnhancedSelfieCaptureProps> = ({ onComplet
                   )}
                 >
                   {isLoading ? (
-                    "Uploading..."
+                    <div className="flex items-center gap-2">
+                      <div className="animate-spin w-4 h-4 border-2 border-white/30 border-t-white rounded-full" />
+                      Uploading...
+                    </div>
                   ) : (
                     <>
                       <Check className="h-4 w-4 mr-2" />
