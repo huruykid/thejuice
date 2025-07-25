@@ -65,11 +65,7 @@ const App = () => (
           <Route path="/" element={<Landing />} />
           <Route path="/how-it-works" element={<HowItWorks />} />
           <Route path="/tea-app-comparison" element={<TeaAppComparison />} />
-          <Route path="/app" element={
-            <ProtectedRoute>
-              <Index />
-            </ProtectedRoute>
-          } />
+          <Route path="/app" element={<Index />} />
           <Route path="/explore" element={
             <ProtectedRoute>
               <ExploreWrapper />
