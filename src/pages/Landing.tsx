@@ -77,7 +77,7 @@ const Landing = () => {
               The Tea App for Men
             </h1>
           </div>
-          <Button onClick={handleGetStarted} variant="juice">
+          <Button onClick={() => navigate("/app")} variant="juice">
             Get Started
           </Button>
         </div>
