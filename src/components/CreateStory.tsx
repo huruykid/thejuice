@@ -331,7 +331,7 @@ const CreateStory = ({ onClose }: { onClose: () => void }) => {
 
               <div className="bg-juice-lavender/30 rounded-2xl p-4">
                 <p className="text-sm text-muted-foreground">
-                  💡 <strong>Privacy Tip:</strong> Phone numbers are only used to identify users who have added their number to their profile. They're never displayed publicly and help others find stories about people they know.
+                  💡 <strong>Privacy Tip:</strong> Phone numbers are only used to help users find or create profiles of people they're writing about—especially when names or social handles aren't available. Phone numbers are never displayed publicly and are only used for matching purposes behind the scenes.
                 </p>
               </div>
             </div>
