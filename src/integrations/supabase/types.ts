@@ -83,6 +83,39 @@ export type Database = {
           },
         ]
       }
+      file_access_logs: {
+        Row: {
+          action: string
+          bucket_id: string
+          created_at: string
+          id: string
+          ip_address: unknown | null
+          object_path: string
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          action: string
+          bucket_id: string
+          created_at?: string
+          id?: string
+          ip_address?: unknown | null
+          object_path: string
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          action?: string
+          bucket_id?: string
+          created_at?: string
+          id?: string
+          ip_address?: unknown | null
+          object_path?: string
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       invite_codes: {
         Row: {
           code: string
@@ -380,6 +413,17 @@ export type Database = {
       is_username_available: {
         Args: { username: string }
         Returns: boolean
+      }
+      log_file_access: {
+        Args: {
+          p_user_id: string
+          p_bucket_id: string
+          p_object_path: string
+          p_action: string
+          p_ip_address?: unknown
+          p_user_agent?: string
+        }
+        Returns: undefined
       }
       use_invite_code: {
         Args: { invite_code: string; new_user_id: string }
