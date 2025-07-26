@@ -38,7 +38,10 @@ Requirements:
 - SEO optimized with target keywords
 - Controversial but tasteful angles
 - Include social proof and statistics
-- Call-to-action to join Tea App for Men
+- MUST include 2-3 backlinks to https://teaappformen.com and https://sipjuice.app for SEO
+- Include link to Instagram page: https://instagram.com/teaappformen
+- Call-to-action directing users to https://teaappformen.com (web app, not mobile app)
+- Emphasize this is a web-based platform accessible at teaappformen.com
 - 1500+ words for SEO depth
 
 Topic: ${prompt}`,
@@ -54,7 +57,8 @@ Requirements:
 - Shareable and quotable content  
 - Include trending hashtags
 - Controversial but tasteful
-- Call-to-action to check out Tea App for Men
+- Call-to-action directing to https://teaappformen.com (web app)
+- Include link to Instagram: https://instagram.com/teaappformen
 - Multiple post variations
 
 Topic: ${prompt}`,
@@ -69,6 +73,7 @@ Requirements:
 - Position as response to viral women's Tea app
 - Include quotes from "founders"
 - Statistics and market data
+- Include backlinks to https://teaappformen.com and https://sipjuice.app
 - Contact information for interviews
 - SEO optimized
 
@@ -83,9 +88,10 @@ Requirements:
 - Subject line that guarantees opens
 - Shareable content men will forward
 - Social proof and FOMO elements
-- Clear call-to-action
+- Clear call-to-action directing to https://teaappformen.com (web app)
 - Mobile optimized copy
 - Include viral hooks
+- Include Instagram link: https://instagram.com/teaappformen
 
 Topic: ${prompt}`
     };
@@ -144,10 +150,10 @@ Topic: ${prompt}`
         'Endorsed by dating coaches'
       ],
       callsToAction: [
-        'Join the revolution at teaappformen.com',
-        'Get founding member access now',
-        'Be among the first 10,000 men',
-        'Claim your spot in history'
+        'Join the revolution at https://teaappformen.com',
+        'Get founding member access at https://sipjuice.app',
+        'Visit https://teaappformen.com to get started',
+        'Follow us on Instagram: https://instagram.com/teaappformen'
       ]
     };
 
