@@ -85,16 +85,16 @@ const Home = ({ onCreateStory }: HomeProps) => {
   };
 
   const shareInviteCode = async (code: string) => {
-    const baseUrl = window.location.origin;
-    const inviteUrl = `${baseUrl}?invite=${code}`;
-    const shareText = `You've just been invited to The Tea App for Men! Share your dating stories and learn from other guys. #TeaAppForMen\n\nUse invite code: ${code}\nJoin here: ${inviteUrl}`;
+    const shareText = `Finally, men have a voice. Join the Tea App for Men - where the stories are real and the juice is anonymous.
+👉 https://sipjuice.app
+
+#fortheboys #teaappformen #getthejuice`;
     
     if (navigator.share) {
       try {
         await navigator.share({
           title: 'Join The Tea App for Men!',
           text: shareText,
-          url: inviteUrl
         });
       } catch (err) {
         // User cancelled sharing or error occurred

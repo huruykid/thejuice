@@ -52,7 +52,10 @@ const InviteManager = () => {
   };
 
   const shareInvite = async (code: string) => {
-    const shareText = `Join me on Juice - the anonymous dating story app! Use my invite code: ${code}`;
+    const shareText = `Finally, men have a voice. Join the Tea App for Men - where the stories are real and the juice is anonymous.
+👉 https://sipjuice.app
+
+#fortheboys #teaappformen #getthejuice`;
     
     if (navigator.share) {
       try {
