@@ -294,7 +294,7 @@ const CreateStory = ({ onClose }: { onClose: () => void }) => {
                   <Input
                     value={storyData.personName}
                     onChange={(e) => setStoryData(prev => ({ ...prev, personName: e.target.value }))}
-                    placeholder="e.g., @username, initials, or descriptive name..."
+                    placeholder="@instagram username"
                     className="rounded-2xl border-juice-blue/20 focus:border-juice-blue"
                     maxLength={50}
                   />
