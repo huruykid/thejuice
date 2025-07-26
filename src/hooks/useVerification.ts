@@ -1,5 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { rateLimiter } from '@/lib/security';
+import { useSecurityEventLogger } from './useSecurityAudit';
 
 export interface UserVerification {
   id: string;
@@ -13,6 +15,7 @@ export interface UserVerification {
 
 export const useVerification = (userId?: string) => {
   const queryClient = useQueryClient();
+  const { logVerificationSubmission, logSuspiciousActivity } = useSecurityEventLogger();
 
   // Get user's verification status (always get the most recent one)
   const { data: verification, isLoading, error } = useQuery({
@@ -40,6 +43,20 @@ export const useVerification = (userId?: string) => {
       selfie_url: string;
       verification_status?: string;
     }) => {
+      // Rate limiting check - max 3 verification attempts per hour
+      const rateLimitKey = `verification:${data.user_id}`;
+      if (!rateLimiter.isAllowed(rateLimitKey, 3, 60 * 60 * 1000)) {
+        const timeUntilReset = rateLimiter.getTimeUntilReset(rateLimitKey, 60 * 60 * 1000);
+        const minutesLeft = Math.ceil(timeUntilReset / (60 * 1000));
+        
+        logSuspiciousActivity('verification_rate_limit_exceeded', {
+          user_id: data.user_id,
+          minutes_until_reset: minutesLeft
+        });
+        
+        throw new Error(`Too many verification attempts. Please wait ${minutesLeft} minutes before trying again.`);
+      }
+
       // Check if user is admin by looking at their roles
       const { data: userRoles } = await supabase
         .from('user_roles')
@@ -59,6 +76,8 @@ export const useVerification = (userId?: string) => {
         .eq('user_id', data.user_id)
         .maybeSingle();
 
+      let verificationId: string;
+
       if (existing) {
         // Update existing verification instead of creating new one
         const { error } = await supabase
@@ -71,17 +90,26 @@ export const useVerification = (userId?: string) => {
           .eq('user_id', data.user_id);
 
         if (error) throw error;
+        verificationId = existing.id;
       } else {
         // Create new verification
-        const { error } = await supabase
+        const { data: newVerification, error } = await supabase
           .from('user_verifications')
           .insert({
             ...data,
             verification_status: finalStatus
-          });
+          })
+          .select('id')
+          .single();
 
         if (error) throw error;
+        verificationId = newVerification.id;
       }
+
+      // Log the verification submission
+      logVerificationSubmission(verificationId);
+
+      return verificationId;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['user-verification'] });

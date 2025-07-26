@@ -262,6 +262,42 @@ export type Database = {
           },
         ]
       }
+      security_audit_logs: {
+        Row: {
+          action: string
+          created_at: string
+          details: Json | null
+          id: string
+          ip_address: unknown | null
+          resource_id: string | null
+          resource_type: string
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          details?: Json | null
+          id?: string
+          ip_address?: unknown | null
+          resource_id?: string | null
+          resource_type: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          details?: Json | null
+          id?: string
+          ip_address?: unknown | null
+          resource_id?: string | null
+          resource_type?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       stories: {
         Row: {
           comments_count: number
@@ -465,6 +501,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_user_verified: {
+        Args: { _user_id: string }
+        Returns: boolean
+      }
       is_username_available: {
         Args: { username: string }
         Returns: boolean
@@ -480,8 +520,22 @@ export type Database = {
         }
         Returns: undefined
       }
+      log_security_event: {
+        Args: {
+          p_user_id: string
+          p_action: string
+          p_resource_type: string
+          p_resource_id?: string
+          p_details?: Json
+        }
+        Returns: undefined
+      }
       use_invite_code: {
         Args: { invite_code: string; new_user_id: string }
+        Returns: boolean
+      }
+      validate_phone_number: {
+        Args: { phone_param: string }
         Returns: boolean
       }
       validate_story_content: {

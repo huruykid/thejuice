@@ -6,7 +6,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { supabase } from '@/integrations/supabase/client';
-import { validateUsername } from '@/lib/security';
+import { validateUsername, validateProfileData, rateLimiter } from '@/lib/security';
+import { useSecurityEventLogger } from '@/hooks/useSecurityAudit';
 import { CheckCircle, X, Loader2 } from 'lucide-react';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useProfile } from '@/hooks/useProfile';
@@ -21,11 +22,13 @@ const ProfileCreation = ({ onComplete }: ProfileCreationProps) => {
   const [dateOfBirth, setDateOfBirth] = useState('');
   const [city, setCity] = useState('');
   const [relationshipStatus, setRelationshipStatus] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [isChecking, setIsChecking] = useState(false);
   const [isAvailable, setIsAvailable] = useState<boolean | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   
   const { checkUsernameAvailability } = useProfile();
+  const { logProfileUpdate, logSuspiciousActivity } = useSecurityEventLogger();
   const debouncedUsername = useDebounce(username, 500);
 
   const checkUsername = async (value: string) => {
@@ -78,8 +81,32 @@ const ProfileCreation = ({ onComplete }: ProfileCreationProps) => {
   };
 
   const createProfile = async () => {
-    if (!username || !validateUsername(username)) {
-      toast.error('Please enter a valid username');
+    // Rate limiting check - max 5 profile creation attempts per hour
+    const rateLimitKey = `profile_creation:${username}`;
+    if (!rateLimiter.isAllowed(rateLimitKey, 5, 60 * 60 * 1000)) {
+      const timeUntilReset = rateLimiter.getTimeUntilReset(rateLimitKey, 60 * 60 * 1000);
+      const minutesLeft = Math.ceil(timeUntilReset / (60 * 1000));
+      
+      logSuspiciousActivity('profile_creation_rate_limit', {
+        username,
+        minutes_until_reset: minutesLeft
+      });
+      
+      toast.error(`Too many attempts. Please wait ${minutesLeft} minutes before trying again.`);
+      return;
+    }
+
+    // Validate and sanitize profile data
+    const profileData = {
+      anonymous_username: username,
+      phone_number: phoneNumber,
+      city: city,
+      relationship_status: relationshipStatus
+    };
+
+    const validation = validateProfileData(profileData);
+    if (!validation.isValid) {
+      toast.error(validation.errors[0]);
       return;
     }
 
@@ -96,16 +123,6 @@ const ProfileCreation = ({ onComplete }: ProfileCreationProps) => {
     const age = calculateAge(dateOfBirth);
     if (age < 18) {
       toast.error('You must be 18 or older to join');
-      return;
-    }
-
-    if (!city.trim()) {
-      toast.error('Please enter your city');
-      return;
-    }
-
-    if (!relationshipStatus) {
-      toast.error('Please select your relationship status');
       return;
     }
 
@@ -133,17 +150,16 @@ const ProfileCreation = ({ onComplete }: ProfileCreationProps) => {
         .maybeSingle();
 
       let error;
+      const profileUpdateData = {
+        ...validation.sanitizedData,
+        date_of_birth: dateOfBirth
+      };
       
       if (existingProfile) {
         // Update existing profile
         const result = await supabase
           .from('profiles')
-          .update({ 
-            anonymous_username: username,
-            date_of_birth: dateOfBirth,
-            city: city.trim(),
-            relationship_status: relationshipStatus
-          })
+          .update(profileUpdateData)
           .eq('user_id', user.id);
         error = result.error;
       } else {
@@ -152,10 +168,7 @@ const ProfileCreation = ({ onComplete }: ProfileCreationProps) => {
           .from('profiles')
           .insert({
             user_id: user.id,
-            anonymous_username: username,
-            date_of_birth: dateOfBirth,
-            city: city.trim(),
-            relationship_status: relationshipStatus
+            ...profileUpdateData
           });
         error = result.error;
       }
@@ -166,11 +179,16 @@ const ProfileCreation = ({ onComplete }: ProfileCreationProps) => {
           setIsAvailable(false);
         } else if (error.message.includes('age_check')) {
           toast.error('You must be 18 or older to join');
+        } else if (error.message.includes('phone number')) {
+          toast.error('Invalid phone number format');
         } else {
           toast.error('Failed to create profile. Please try again.');
         }
         return;
       }
+
+      // Log successful profile creation
+      logProfileUpdate(Object.keys(profileUpdateData));
 
       toast.success('✨ Profile created! Taking your selfie next...');
       onComplete();
@@ -266,6 +284,18 @@ const ProfileCreation = ({ onComplete }: ProfileCreationProps) => {
               onChange={(e) => setCity(e.target.value)}
             />
             <p className="text-xs text-muted-foreground">Help others find local connections</p>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="phoneNumber">Phone Number (Optional)</Label>
+            <Input
+              id="phoneNumber"
+              type="tel"
+              placeholder="+1 (555) 123-4567"
+              value={phoneNumber}
+              onChange={(e) => setPhoneNumber(e.target.value)}
+            />
+            <p className="text-xs text-muted-foreground">For account security and recovery purposes only</p>
           </div>
 
           <div className="space-y-2">
