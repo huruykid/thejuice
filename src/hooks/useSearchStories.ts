@@ -1,10 +1,13 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useDebounce } from "./useDebounce";
 
 export const useSearchStories = (query: string, location?: string, tag?: string) => {
+  const debouncedQuery = useDebounce(query, 300);
+  
   return useQuery({
-    queryKey: ["search-stories", query, location, tag],
+    queryKey: ["search-stories", debouncedQuery, location, tag],
     queryFn: async () => {
       let dbQuery = supabase
         .from("stories")
@@ -21,31 +24,46 @@ export const useSearchStories = (query: string, location?: string, tag?: string)
           )
         `);
 
-      // Comprehensive text search across all fields
-      if (query.trim()) {
-        const searchTerm = query.trim();
+      if (debouncedQuery.trim()) {
+        const searchTerm = debouncedQuery.trim().toLowerCase();
         
-        // Try different search patterns for phone numbers
+        // Handle different search patterns
         const phoneSearchPatterns = [
           searchTerm,
-          searchTerm.replace(/\D/g, ''), // Remove non-digits
-          searchTerm.replace(/[()-\s]/g, ''), // Remove common phone formatting
+          searchTerm.replace(/\D/g, ''), // Remove non-digits for phone search
+          searchTerm.replace(/[()-\s+]/g, ''), // Remove phone formatting chars
         ].filter(Boolean);
         
-        // Build search conditions for all patterns
-        const searchConditions = phoneSearchPatterns.map(pattern => 
-          `content.ilike.%${pattern}%,location.ilike.%${pattern}%,subject_name.ilike.%${pattern}%,subject_phone.ilike.%${pattern}%,profiles.anonymous_username.ilike.%${pattern}%,profiles.city.ilike.%${pattern}%,profiles.phone_number.ilike.%${pattern}%`
-        ).join(',');
+        // Handle Instagram username search (with or without @)
+        const instagramSearch = searchTerm.startsWith('@') ? searchTerm.substring(1) : searchTerm;
         
-        dbQuery = dbQuery.or(searchConditions);
+        // Build comprehensive search conditions
+        const searchConditions = [
+          // Story content and subject info
+          `content.ilike.%${searchTerm}%`,
+          `subject_name.ilike.%${searchTerm}%`,
+          `location.ilike.%${searchTerm}%`,
+          
+          // Profile data
+          `profiles.anonymous_username.ilike.%${searchTerm}%`,
+          `profiles.city.ilike.%${searchTerm}%`,
+          
+          // Instagram username variations
+          `subject_name.ilike.%@${instagramSearch}%`,
+          `content.ilike.%@${instagramSearch}%`,
+          `profiles.anonymous_username.ilike.%${instagramSearch}%`,
+        ];
+        
+        // Add phone number search patterns
+        phoneSearchPatterns.forEach(pattern => {
+          searchConditions.push(`subject_phone.ilike.%${pattern}%`);
+          searchConditions.push(`profiles.phone_number.ilike.%${pattern}%`);
+        });
+        
+        dbQuery = dbQuery.or(searchConditions.join(','));
       }
 
-      // Add location filter with partial matching (separate from main search)
-      if (location && location.trim()) {
-        dbQuery = dbQuery.ilike('location', `%${location.trim()}%`);
-      }
-
-      // Add tag filter by joining with story_tags
+      // Handle tag-based search
       if (tag) {
         const { data: taggedStoryIds } = await supabase
           .from('story_tags')
@@ -56,18 +74,26 @@ export const useSearchStories = (query: string, location?: string, tag?: string)
           const storyIds = taggedStoryIds.map(item => item.story_id);
           dbQuery = dbQuery.in('id', storyIds);
         } else {
-          // No stories found with this tag, return empty result
           return [];
         }
+      }
+
+      // Add location filter (separate from main search)
+      if (location && location.trim()) {
+        dbQuery = dbQuery.ilike('location', `%${location.trim()}%`);
       }
 
       const { data, error } = await dbQuery
         .order('created_at', { ascending: false })
         .limit(50);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Search error:', error);
+        throw error;
+      }
+      
       return data || [];
     },
-    enabled: !!(query.trim() || location || tag),
+    enabled: !!(debouncedQuery.trim() || location || tag),
   });
 };
