@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { supabase } from '@/integrations/supabase/client';
 import { 
   Zap, 
@@ -31,10 +31,12 @@ const AutomatedCampaignDashboard = () => {
 
   // Auto-start monitoring on component mount
   useEffect(() => {
+    console.log('AutomatedCampaignDashboard mounted, starting monitoring...');
     startAutomaticMonitoring();
   }, []);
 
   const generateAutomatedCampaign = async (type: string = 'domination') => {
+    console.log(`Starting campaign generation for type: ${type}`);
     setIsGenerating(true);
     try {
       const { data, error } = await supabase.functions.invoke('automated-campaign-generator', {
@@ -67,6 +69,7 @@ const AutomatedCampaignDashboard = () => {
   };
 
   const startAutomaticMonitoring = async () => {
+    console.log('Starting automatic monitoring...');
     setIsMonitoring(true);
     try {
       const { data, error } = await supabase.functions.invoke('competitive-monitoring', {
@@ -140,6 +143,8 @@ const AutomatedCampaignDashboard = () => {
       intensity: 'AUTOPILOT'
     }
   ];
+
+  console.log('AutomatedCampaignDashboard rendering...', { isAutomationActive, isGenerating, isMonitoring });
 
   return (
     <div className="min-h-screen bg-gradient-soft p-4">
