@@ -5,6 +5,7 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import CommentsModal from "./CommentsModal";
 import { useDeleteStory } from "@/hooks/useStories";
 import { useToggleReaction } from "@/hooks/useReactions";
+import { useReactionCounts } from "@/hooks/useReactionCounts";
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
@@ -57,14 +58,13 @@ const StoryCard = ({
   onDelete 
 }: StoryCardProps) => {
   const [showComments, setShowComments] = useState(false);
-  const [isLiked, setIsLiked] = useState(false);
   const [isRedFlagged, setIsRedFlagged] = useState(false);
   const [isGreenFlagged, setIsGreenFlagged] = useState(false);
-  const [currentLikes, setCurrentLikes] = useState(story.reactions_count);
   const { toast } = useToast();
   const navigate = useNavigate();
   const deleteStory = useDeleteStory();
   const toggleReaction = useToggleReaction();
+  const { data: reactionCounts } = useReactionCounts(story.id);
 
   // Check if current user has reacted to this story
   useEffect(() => {
@@ -82,7 +82,6 @@ const StoryCard = ({
 
         if (reactions) {
           const reactionTypes = reactions.map(r => r.reaction_type);
-          setIsLiked(reactionTypes.includes('like'));
           setIsRedFlagged(reactionTypes.includes('red_flag'));
           setIsGreenFlagged(reactionTypes.includes('green_flag'));
         }
@@ -111,15 +110,7 @@ const StoryCard = ({
         reactionType 
       });
       
-      if (reactionType === 'like') {
-        if (result?.action === 'added') {
-          setIsLiked(true);
-          setCurrentLikes(prev => prev + 1);
-        } else if (result?.action === 'removed') {
-          setIsLiked(false);
-          setCurrentLikes(prev => Math.max(0, prev - 1));
-        }
-      } else if (reactionType === 'red_flag') {
+      if (reactionType === 'red_flag') {
         setIsRedFlagged(result?.action === 'added');
       } else if (reactionType === 'green_flag') {
         setIsGreenFlagged(result?.action === 'added');
@@ -337,16 +328,6 @@ const StoryCard = ({
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => handleReaction('like')}
-              className={`flex items-center gap-2 ${isLiked ? 'text-red-500' : 'text-muted-foreground'}`}
-            >
-              <Heart className={`h-4 w-4 ${isLiked ? 'fill-current' : ''}`} />
-              <span className="text-sm">{currentLikes}</span>
-            </Button>
-            
-            <Button
-              variant="ghost"
-              size="sm"
               onClick={handleComment}
               className="flex items-center gap-2 text-muted-foreground"
             >
@@ -354,23 +335,27 @@ const StoryCard = ({
               <span className="text-sm">{story.comments_count}</span>
             </Button>
             
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => handleReaction('red_flag')}
-              className={`flex items-center gap-2 ${isRedFlagged ? 'text-red-500' : 'text-muted-foreground'}`}
-            >
-              <Flag className={`h-4 w-4 ${isRedFlagged ? 'fill-current' : ''}`} />
-            </Button>
+            <div className="flex items-center gap-4">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => handleReaction('red_flag')}
+                className={`flex flex-col items-center gap-1 ${isRedFlagged ? 'text-red-500' : 'text-muted-foreground'}`}
+              >
+                <span className="text-xs font-medium">{reactionCounts?.red_flag || 0}</span>
+                <Flag className={`h-4 w-4 ${isRedFlagged ? 'fill-current' : ''}`} />
+              </Button>
 
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => handleReaction('green_flag')}
-              className={`flex items-center gap-2 ${isGreenFlagged ? 'text-green-500' : 'text-muted-foreground'}`}
-            >
-              <ShieldCheck className={`h-4 w-4 ${isGreenFlagged ? 'fill-current' : ''}`} />
-            </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => handleReaction('green_flag')}
+                className={`flex flex-col items-center gap-1 ${isGreenFlagged ? 'text-green-500' : 'text-muted-foreground'}`}
+              >
+                <span className="text-xs font-medium">{reactionCounts?.green_flag || 0}</span>
+                <ShieldCheck className={`h-4 w-4 ${isGreenFlagged ? 'fill-current' : ''}`} />
+              </Button>
+            </div>
           </div>
           
           {/* Author attribution */}
