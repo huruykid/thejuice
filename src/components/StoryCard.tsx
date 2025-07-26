@@ -275,7 +275,12 @@ const StoryCard = ({
           <p className="text-foreground leading-relaxed whitespace-pre-wrap">{story.content}</p>
           
           {story.location && (
-            <p className="text-sm text-muted-foreground">📍 {story.location}</p>
+            <button 
+              onClick={() => navigate(`/explore?location=${encodeURIComponent(story.location)}`)}
+              className="text-sm text-muted-foreground hover:text-juice-blue transition-smooth cursor-pointer text-left"
+            >
+              📍 {story.location}
+            </button>
           )}
 
           {/* Tags */}
