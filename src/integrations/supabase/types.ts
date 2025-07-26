@@ -298,6 +298,30 @@ export type Database = {
         }
         Relationships: []
       }
+      security_config: {
+        Row: {
+          configured_at: string | null
+          id: string
+          is_enabled: boolean
+          notes: string | null
+          setting_name: string
+        }
+        Insert: {
+          configured_at?: string | null
+          id?: string
+          is_enabled?: boolean
+          notes?: string | null
+          setting_name: string
+        }
+        Update: {
+          configured_at?: string | null
+          id?: string
+          is_enabled?: boolean
+          notes?: string | null
+          setting_name?: string
+        }
+        Relationships: []
+      }
       stories: {
         Row: {
           comments_count: number
