@@ -2,10 +2,8 @@ import { useState } from "react";
 import Navigation from "@/components/Navigation";
 import StoryCard from "@/components/StoryCard";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Sparkles, TrendingUp, Clock, Share2 } from "lucide-react";
+import { Share2 } from "lucide-react";
 import { useStories } from "@/hooks/useStories";
-import { useTrendingStories } from "@/hooks/useTrendingStories";
 import { useAuth } from "@/hooks/useAuth";
 import { useInvites } from "@/hooks/useInvites";
 import { useToast } from "@/hooks/use-toast";
@@ -20,10 +18,6 @@ const Home = ({
     data: stories = [],
     isLoading
   } = useStories();
-  const {
-    data: trendingStories = [],
-    isLoading: isTrendingLoading
-  } = useTrendingStories();
   const {
     user
   } = useAuth();
@@ -146,63 +140,33 @@ const Home = ({
 
       {/* Content */}
       <div className="max-w-md mx-auto px-4 py-6">
-        {/* Feed Tabs */}
-        <Tabs defaultValue="latest" className="mb-6">
-          <TabsList className="grid w-full grid-cols-3 bg-juice-lavender/50 rounded-2xl p-1">
-            <TabsTrigger value="latest" className="rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-card flex items-center gap-2">
-              <Clock className="h-4 w-4" />
-              Latest
-            </TabsTrigger>
-            <TabsTrigger value="trending" className="rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-card flex items-center gap-2">
-              <TrendingUp className="h-4 w-4" />
-              Trending
-            </TabsTrigger>
-            <TabsTrigger value="curated" className="rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-card flex items-center gap-2">
-              <Sparkles className="h-4 w-4" />
-              Curated
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="latest" className="mt-6">
-            {isLoading ? <div className="text-center py-12">
-                <div className="text-lg">Loading stories...</div>
-              </div> : stories.length === 0 ? <div className="text-center py-12">
-                <div className="text-4xl mb-4">📝</div>
-                <h3 className="text-lg font-semibold text-foreground mb-2">
-                  No stories yet
-                </h3>
-                <p className="text-muted-foreground">
-                  Be the first to share your dating story!
-                </p>
-              </div> : stories.map(story => <StoryCard key={story.id} story={story} authorName={story.profiles?.anonymous_username || 'Anonymous'} user_id={user?.id} />)}
-          </TabsContent>
-
-          <TabsContent value="trending" className="mt-6">
-            {isTrendingLoading ? <div className="text-center py-12">
-                <div className="text-lg">Loading trending stories...</div>
-              </div> : trendingStories.length === 0 ? <div className="text-center py-12">
-                <TrendingUp className="h-12 w-12 text-juice-blue mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-foreground mb-2">
-                  No trending stories yet
-                </h3>
-                <p className="text-muted-foreground">
-                  Stories need reactions to start trending!
-                </p>
-              </div> : trendingStories.map(story => <StoryCard key={story.id} story={story} authorName={story.profiles?.anonymous_username || 'Anonymous'} user_id={user?.id} />)}
-          </TabsContent>
-
-          <TabsContent value="curated" className="mt-6">
+        {/* Stories Feed */}
+        <div className="space-y-4">
+          {isLoading ? (
             <div className="text-center py-12">
-              <Sparkles className="h-12 w-12 text-juice-blue mx-auto mb-4" />
+              <div className="text-lg">Loading stories...</div>
+            </div>
+          ) : stories.length === 0 ? (
+            <div className="text-center py-12">
+              <div className="text-4xl mb-4">📝</div>
               <h3 className="text-lg font-semibold text-foreground mb-2">
-                Curated Collection
+                No stories yet
               </h3>
               <p className="text-muted-foreground">
-                Hand-picked stories for your reading pleasure
+                Be the first to share your dating story!
               </p>
             </div>
-          </TabsContent>
-        </Tabs>
+          ) : (
+            stories.map(story => (
+              <StoryCard 
+                key={story.id} 
+                story={story} 
+                authorName={story.profiles?.anonymous_username || 'Anonymous'} 
+                user_id={user?.id} 
+              />
+            ))
+          )}
+        </div>
       </div>
 
       <Navigation onCreateStory={onCreateStory} />
