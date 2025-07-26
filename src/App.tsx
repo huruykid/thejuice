@@ -23,6 +23,7 @@ import MensDatingAdvice from "./pages/MensDatingAdvice";
 import MaleDatingCommunity from "./pages/MaleDatingCommunity";
 import CompetitorAnalysis from "./pages/CompetitorAnalysis";
 import ViralMarketingHub from "./pages/ViralMarketingHub";
+import AutomatedCampaignDashboard from "./pages/AutomatedCampaignDashboard";
 import { useAuth } from "./hooks/useAuth";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -116,6 +117,11 @@ const App = () => (
           <Route path="/viral-marketing-hub" element={
             <ProtectedRoute>
               <ViralMarketingHub />
+            </ProtectedRoute>
+          } />
+          <Route path="/automated-campaign-dashboard" element={
+            <ProtectedRoute>
+              <AutomatedCampaignDashboard />
             </ProtectedRoute>
           } />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
