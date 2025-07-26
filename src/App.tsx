@@ -17,6 +17,10 @@ import AdminVerifications from "./pages/AdminVerifications";
 import PrivacySettings from "./pages/PrivacySettings";
 import AuthorStories from "./pages/AuthorStories";
 import CreateStory from "./components/CreateStory";
+import DatingStoriesForMen from "./pages/DatingStoriesForMen";
+import AnonymousDatingReviews from "./pages/AnonymousDatingReviews";
+import MensDatingAdvice from "./pages/MensDatingAdvice";
+import MaleDatingCommunity from "./pages/MaleDatingCommunity";
 import { useAuth } from "./hooks/useAuth";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -101,6 +105,11 @@ const App = () => (
               <AuthorStories />
             </ProtectedRoute>
           } />
+          {/* SEO Landing Pages */}
+          <Route path="/dating-stories-for-men" element={<DatingStoriesForMen />} />
+          <Route path="/anonymous-dating-reviews" element={<AnonymousDatingReviews />} />
+          <Route path="/mens-dating-advice" element={<MensDatingAdvice />} />
+          <Route path="/male-dating-community" element={<MaleDatingCommunity />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

@@ -1,0 +1,199 @@
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Users, Shield, MessageSquare, Star, ArrowRight, Heart, ThumbsUp, Eye } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+
+const DatingStoriesForMen = () => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // SEO: Update page title and meta description dynamically
+    document.title = "Dating Stories for Men - Real Anonymous Experiences | Tea App for Men";
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute('content', "Read real dating stories from men. Anonymous experiences, honest reviews, and dating advice from guys who have been there. Join thousands sharing their stories.");
+    }
+  }, []);
+
+  const stats = [
+    { icon: <Users className="h-8 w-8 text-juice-orange" />, number: "10,000+", label: "Men Sharing Stories" },
+    { icon: <MessageSquare className="h-8 w-8 text-juice-orange" />, number: "50,000+", label: "Dating Stories Shared" },
+    { icon: <Eye className="h-8 w-8 text-juice-orange" />, number: "100%", label: "Anonymous & Safe" },
+    { icon: <Shield className="h-8 w-8 text-juice-orange" />, number: "Verified", label: "Real Men Only" }
+  ];
+
+  const storyTypes = [
+    {
+      title: "First Date Experiences",
+      description: "Real stories about first dates - the good, bad, and everything in between",
+      icon: <Heart className="h-6 w-6 text-juice-orange" />
+    },
+    {
+      title: "Relationship Reviews",
+      description: "Honest ratings and reviews of dating experiences and relationships",
+      icon: <Star className="h-6 w-6 text-juice-orange" />
+    },
+    {
+      title: "Dating App Stories",
+      description: "Real experiences from Tinder, Bumble, Hinge and other dating platforms",
+      icon: <MessageSquare className="h-6 w-6 text-juice-orange" />
+    },
+    {
+      title: "Red Flag Warnings",
+      description: "Men sharing warning signs and red flags to help other guys avoid problems",
+      icon: <Shield className="h-6 w-6 text-juice-orange" />
+    }
+  ];
+
+  return (
+    <div className="min-h-screen bg-gradient-soft">
+      {/* Header */}
+      <header className="sticky top-0 bg-white/80 backdrop-blur-lg border-b border-juice-orange/10 z-40">
+        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <img src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" alt="Tea App for Men" className="h-8 w-8" />
+            <h1 className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">Tea App for Men</h1>
+          </div>
+          <Button onClick={() => navigate("/app")} variant="juice">
+            Join Now
+          </Button>
+        </div>
+      </header>
+
+      {/* Hero Section */}
+      <section className="py-20 px-4">
+        <div className="max-w-4xl mx-auto text-center">
+          <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6">
+            Real Dating Stories from{" "}
+            <span className="bg-gradient-primary bg-clip-text text-transparent">
+              Real Men
+            </span>
+          </h1>
+          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+            Read anonymous dating experiences, honest relationship reviews, and get real advice from thousands of verified men who've been there.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button size="lg" onClick={() => navigate("/app")} className="text-lg px-8">
+              Read Stories Now
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
+            <Button size="lg" variant="outline" onClick={() => navigate("/how-it-works")} className="text-lg px-8">
+              How It Works
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Stats Section */}
+      <section className="py-16 px-4 bg-white/50">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            {stats.map((stat, index) => (
+              <div key={index} className="text-center">
+                <div className="mx-auto mb-4 p-3 bg-juice-orange/10 rounded-full w-fit">
+                  {stat.icon}
+                </div>
+                <div className="text-3xl font-bold text-foreground mb-2">{stat.number}</div>
+                <div className="text-sm text-muted-foreground">{stat.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Story Types */}
+      <section className="py-20 px-4">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+              What Kind of Dating Stories Do Men Share?
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              From first dates to long-term relationships - men share it all anonymously
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {storyTypes.map((type, index) => (
+              <Card key={index} className="border-0 shadow-card bg-white/80 backdrop-blur-sm hover:shadow-lg transition-shadow">
+                <CardHeader>
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="p-2 bg-juice-orange/10 rounded-lg">
+                      {type.icon}
+                    </div>
+                    <CardTitle className="text-xl">{type.title}</CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <CardDescription className="text-base">
+                    {type.description}
+                  </CardDescription>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Benefits Section */}
+      <section className="py-20 px-4 bg-white/50">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-8">
+            Why Men Choose Our Platform for Dating Stories
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="space-y-4">
+              <Shield className="h-12 w-12 text-juice-orange mx-auto" />
+              <h3 className="text-xl font-semibold">100% Anonymous</h3>
+              <p className="text-muted-foreground">Share your real experiences without revealing your identity. Complete privacy guaranteed.</p>
+            </div>
+            <div className="space-y-4">
+              <Users className="h-12 w-12 text-juice-orange mx-auto" />
+              <h3 className="text-xl font-semibold">Men-Only Community</h3>
+              <p className="text-muted-foreground">A space designed specifically for men to share honest dating experiences without judgment.</p>
+            </div>
+            <div className="space-y-4">
+              <ThumbsUp className="h-12 w-12 text-juice-orange mx-auto" />
+              <h3 className="text-xl font-semibold">Verified Users</h3>
+              <p className="text-muted-foreground">All stories come from verified men, ensuring authentic and trustworthy experiences.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-20 px-4">
+        <div className="max-w-4xl mx-auto text-center">
+          <Card className="border-0 shadow-card bg-gradient-primary text-white">
+            <CardContent className="p-12">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                Ready to Read Real Dating Stories?
+              </h2>
+              <p className="text-xl mb-8 opacity-90">
+                Join thousands of men sharing and reading authentic dating experiences
+              </p>
+              <Button size="lg" variant="secondary" onClick={() => navigate("/app")} className="text-lg px-8">
+                Start Reading Now
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+              <p className="text-sm mt-4 opacity-75">
+                Free to join • Anonymous sharing • Verified community
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+
+      {/* SEO Footer */}
+      <footer className="py-12 px-4 bg-white/80 border-t border-juice-orange/10">
+        <div className="max-w-4xl mx-auto text-center text-sm text-muted-foreground">
+          <p>Dating Stories for Men | Anonymous Dating Experiences | Men's Dating Community | Tea App for Men</p>
+          <p className="mt-2">&copy; 2024 Tea App for Men. All rights reserved.</p>
+        </div>
+      </footer>
+    </div>
+  );
+};
+
+export default DatingStoriesForMen;
