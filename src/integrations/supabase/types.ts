@@ -337,6 +337,7 @@ export type Database = {
           profile_id: string | null
           reactions_count: number
           subject_name: string | null
+          subject_phone: string | null
           updated_at: string
           user_id: string
         }
@@ -354,6 +355,7 @@ export type Database = {
           profile_id?: string | null
           reactions_count?: number
           subject_name?: string | null
+          subject_phone?: string | null
           updated_at?: string
           user_id: string
         }
@@ -371,6 +373,7 @@ export type Database = {
           profile_id?: string | null
           reactions_count?: number
           subject_name?: string | null
+          subject_phone?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -572,6 +575,10 @@ export type Database = {
       }
       validate_story_content: {
         Args: { content_param: string }
+        Returns: boolean
+      }
+      validate_subject_phone: {
+        Args: { phone_param: string }
         Returns: boolean
       }
       validate_username: {

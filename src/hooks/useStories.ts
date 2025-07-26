@@ -85,6 +85,7 @@ export const useCreateStory = () => {
       location,
       imageUrl,
       subjectName,
+      subjectPhone,
     }: {
       content: string;
       tags: string[];
@@ -97,6 +98,7 @@ export const useCreateStory = () => {
       location?: string;
       imageUrl?: string;
       subjectName?: string;
+      subjectPhone?: string;
     }) => {
       // Validate and sanitize input
       const contentValidation = validateStoryContent(content);
@@ -107,6 +109,7 @@ export const useCreateStory = () => {
       const sanitizedContent = sanitizeText(content);
       const sanitizedLocation = location ? sanitizeText(location) : null;
       const sanitizedSubjectName = subjectName ? sanitizeText(subjectName) : null;
+      const sanitizedSubjectPhone = subjectPhone ? sanitizeText(subjectPhone) : null;
 
       // Validate ratings - ensure all ratings are provided and valid
       const ratingValidations = [
@@ -164,6 +167,7 @@ export const useCreateStory = () => {
           location: sanitizedLocation,
           image_url: imageUrl || null,
           subject_name: sanitizedSubjectName,
+          subject_phone: sanitizedSubjectPhone,
           user_id: user.id,
         })
         .select()

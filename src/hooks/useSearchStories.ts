@@ -34,7 +34,7 @@ export const useSearchStories = (query: string, location?: string, tag?: string)
         
         // Build search conditions for all patterns
         const searchConditions = phoneSearchPatterns.map(pattern => 
-          `content.ilike.%${pattern}%,location.ilike.%${pattern}%,subject_name.ilike.%${pattern}%,profiles.anonymous_username.ilike.%${pattern}%,profiles.city.ilike.%${pattern}%,profiles.phone_number.ilike.%${pattern}%`
+          `content.ilike.%${pattern}%,location.ilike.%${pattern}%,subject_name.ilike.%${pattern}%,subject_phone.ilike.%${pattern}%,profiles.anonymous_username.ilike.%${pattern}%,profiles.city.ilike.%${pattern}%,profiles.phone_number.ilike.%${pattern}%`
         ).join(',');
         
         dbQuery = dbQuery.or(searchConditions);
