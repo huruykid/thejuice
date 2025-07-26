@@ -12,26 +12,47 @@ export const useSearchStories = (query: string, location?: string, tag?: string)
           *,
           profiles (
             id,
-            anonymous_username
+            anonymous_username,
+            city,
+            phone_number
           ),
           story_tags (
             tag
           )
         `);
 
-      // Add text search
+      // Comprehensive text search across all fields
       if (query.trim()) {
-        dbQuery = dbQuery.or(`content.ilike.%${query}%,profiles.anonymous_username.ilike.%${query}%`);
+        const searchTerm = `%${query.trim()}%`;
+        dbQuery = dbQuery.or(`
+          content.ilike.${searchTerm},
+          location.ilike.${searchTerm},
+          subject_name.ilike.${searchTerm},
+          profiles.anonymous_username.ilike.${searchTerm},
+          profiles.city.ilike.${searchTerm},
+          profiles.phone_number.ilike.${searchTerm}
+        `);
       }
 
-      // Add location filter with partial matching
+      // Add location filter with partial matching (separate from main search)
       if (location && location.trim()) {
         dbQuery = dbQuery.ilike('location', `%${location.trim()}%`);
       }
 
-      // Add tag filter
+      // Add tag filter by joining with story_tags
       if (tag) {
-        dbQuery = dbQuery.contains('story_tags.tag', [tag]);
+        const { data: taggedStoryIds } = await supabase
+          .from('story_tags')
+          .select('story_id')
+          .ilike('tag', `%${tag}%`);
+        
+        if (taggedStoryIds && taggedStoryIds.length > 0) {
+          const storyIds = taggedStoryIds.map(item => item.story_id);
+          dbQuery = dbQuery.in('id', storyIds);
+        } else {
+          // No stories found with this tag, return empty result
+          return [];
+        }
       }
 
       const { data, error } = await dbQuery
