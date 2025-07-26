@@ -124,52 +124,97 @@ const Home = ({
       });
     }
   };
-  return <div className="min-h-screen bg-background pb-20">
-      {/* Header */}
-      <div className="sticky top-0 bg-white/80 backdrop-blur-lg border-b border-juice-blue/10 z-40">
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-background via-background-secondary to-background pb-20">
+      {/* Modern Header with Glass Effect */}
+      <div className="sticky top-0 z-40 glass border-b border-white/10">
         <div className="flex items-center justify-between p-4 max-w-md mx-auto">
           <div className="flex items-center gap-3">
-            <img src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" alt="Juice" className="h-8 w-8" />
-            <h1 className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">The Juice App</h1>
+            <div className="relative">
+              <img 
+                src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" 
+                alt="Juice" 
+                className="h-10 w-10 rounded-2xl shadow-lg animate-float" 
+              />
+              <div className="absolute -inset-0.5 bg-gradient-primary rounded-2xl opacity-30 blur-sm"></div>
+            </div>
+            <h1 className="text-xl font-display font-bold gradient-text">
+              The Juice App
+            </h1>
           </div>
-          <Button variant="juice-outline" size="sm" onClick={handleInviteFriends} disabled={generatingInvite || (inviteStats?.invites_remaining || 0) <= 0}>
-            {generatingInvite ? "Generating..." : "Invite Friends"}
+          <Button 
+            variant="gradient" 
+            size="sm" 
+            onClick={handleInviteFriends} 
+            disabled={generatingInvite || (inviteStats?.invites_remaining || 0) <= 0}
+            className="shadow-glow"
+          >
+            {generatingInvite ? (
+              <>
+                <div className="animate-pulse">Generating...</div>
+              </>
+            ) : (
+              <>
+                <Share2 className="h-4 w-4" />
+                Invite Friends
+              </>
+            )}
           </Button>
         </div>
       </div>
 
-      {/* Content */}
-      <div className="max-w-md mx-auto px-4 py-6">
-        {/* Stories Feed */}
-        <div className="space-y-4">
+      {/* Enhanced Content Section */}
+      <div className="max-w-md mx-auto px-4 py-8">
+        {/* Stories Feed with Modern Layout */}
+        <div className="space-y-6">
           {isLoading ? (
-            <div className="text-center py-12">
-              <div className="text-lg">Loading stories...</div>
+            <div className="text-center py-16">
+              <div className="animate-pulse-glow">
+                <div className="w-16 h-16 bg-gradient-primary rounded-3xl mx-auto mb-4 animate-bounce-in"></div>
+                <div className="text-lg font-medium text-muted-foreground">Loading stories...</div>
+              </div>
             </div>
           ) : stories.length === 0 ? (
-            <div className="text-center py-12">
-              <div className="text-4xl mb-4">📝</div>
-              <h3 className="text-lg font-semibold text-foreground mb-2">
-                No stories yet
-              </h3>
-              <p className="text-muted-foreground">
-                Be the first to share your dating story!
-              </p>
+            <div className="text-center py-16">
+              <div className="modern-card p-8 max-w-sm mx-auto">
+                <div className="text-6xl mb-6 animate-float">📝</div>
+                <h3 className="text-xl font-display font-semibold text-foreground mb-3">
+                  No stories yet
+                </h3>
+                <p className="text-muted-foreground mb-6">
+                  Be the first to share your dating story and get the conversation started!
+                </p>
+                <Button 
+                  variant="gradient" 
+                  onClick={onCreateStory}
+                  className="animate-bounce-in"
+                >
+                  Share Your Story
+                </Button>
+              </div>
             </div>
           ) : (
-            stories.map(story => (
-              <StoryCard 
-                key={story.id} 
-                story={story} 
-                authorName={story.profiles?.anonymous_username || 'Anonymous'} 
-                user_id={user?.id} 
-              />
-            ))
+            <div className="space-y-4">
+              {stories.map((story, index) => (
+                <div 
+                  key={story.id} 
+                  className="animate-fade-in modern-card hover:shadow-glow transition-all duration-300"
+                  style={{ animationDelay: `${index * 100}ms` }}
+                >
+                  <StoryCard 
+                    story={story} 
+                    authorName={story.profiles?.anonymous_username || 'Anonymous'} 
+                    user_id={user?.id} 
+                  />
+                </div>
+              ))}
+            </div>
           )}
         </div>
       </div>
 
       <Navigation onCreateStory={onCreateStory} />
-    </div>;
+    </div>
+  );
 };
 export default Home;
