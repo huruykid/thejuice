@@ -40,15 +40,16 @@ export const useVerification = (userId?: string) => {
       selfie_url: string;
       verification_status?: string;
     }) => {
-      // Check if user is admin by looking at their profile
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('anonymous_username')
+      // Check if user is admin by looking at their roles
+      const { data: userRoles } = await supabase
+        .from('user_roles')
+        .select('role')
         .eq('user_id', data.user_id)
+        .eq('role', 'admin')
         .maybeSingle();
 
       // Auto-approve admin accounts
-      const isAdmin = profile?.anonymous_username === 'admin';
+      const isAdmin = !!userRoles;
       const finalStatus = isAdmin ? 'approved' : (data.verification_status || 'pending');
 
       // Check if verification already exists

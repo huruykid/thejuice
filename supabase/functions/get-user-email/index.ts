@@ -1,11 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-};
+import { handleCorsPreFlight, createSecureResponse, createSecureErrorResponse } from '../_shared/security.ts';
 
 interface GetUserEmailRequest {
   userId: string;
@@ -14,7 +9,7 @@ interface GetUserEmailRequest {
 const handler = async (req: Request): Promise<Response> => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
+    return handleCorsPreFlight();
   }
 
   try {
@@ -23,13 +18,7 @@ const handler = async (req: Request): Promise<Response> => {
     console.log(`Getting email for user ID: ${userId}`);
 
     if (!userId) {
-      return new Response(
-        JSON.stringify({ error: "User ID is required" }),
-        {
-          status: 400,
-          headers: { "Content-Type": "application/json", ...corsHeaders },
-        }
-      );
+      return createSecureErrorResponse("User ID is required", 400);
     }
 
     // Create Supabase client with service role key for admin access
@@ -43,44 +32,20 @@ const handler = async (req: Request): Promise<Response> => {
 
     if (error) {
       console.error("Error fetching user:", error);
-      return new Response(
-        JSON.stringify({ error: "Failed to fetch user data" }),
-        {
-          status: 500,
-          headers: { "Content-Type": "application/json", ...corsHeaders },
-        }
-      );
+      return createSecureErrorResponse("Failed to fetch user data", 500);
     }
 
     if (!authUser.user?.email) {
       console.error("No email found for user:", userId);
-      return new Response(
-        JSON.stringify({ error: "User email not found" }),
-        {
-          status: 404,
-          headers: { "Content-Type": "application/json", ...corsHeaders },
-        }
-      );
+      return createSecureErrorResponse("User email not found", 404);
     }
 
     console.log(`Successfully retrieved email for user: ${authUser.user.email}`);
 
-    return new Response(
-      JSON.stringify({ email: authUser.user.email }),
-      {
-        status: 200,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
-      }
-    );
+    return createSecureResponse({ email: authUser.user.email });
   } catch (error: any) {
     console.error("Error in get-user-email function:", error);
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      {
-        status: 500,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
-      }
-    );
+    return createSecureErrorResponse(error.message, 500);
   }
 };
 

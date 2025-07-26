@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { useUserRole } from '@/hooks/useUserRole';
 import { useApproveUser } from '@/hooks/useApproveUser';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -32,10 +33,8 @@ interface VerificationWithProfile {
 
 const AdminVerifications = () => {
   const approveUser = useApproveUser();
-  // Admin email check
-  const ADMIN_EMAILS = ['huruykid@gmail.com', 'huruydesigns@gmail.com'];
-  
   const { user, loading: authLoading } = useAuth();
+  const { isAdmin, isLoading: roleLoading } = useUserRole(user?.id);
   const navigate = useNavigate();
   const [filter, setFilter] = useState<'all' | 'pending' | 'approved' | 'rejected'>('pending');
   const [search, setSearch] = useState('');
@@ -47,14 +46,13 @@ const AdminVerifications = () => {
 
   // Check admin access
   useEffect(() => {
-    if (!authLoading && user) {
-      const isAdmin = ADMIN_EMAILS.includes(user.email || '');
+    if (!authLoading && !roleLoading && user) {
       if (!isAdmin) {
         navigate('/not-found');
         return;
       }
     }
-  }, [user, authLoading, navigate]);
+  }, [user, authLoading, roleLoading, isAdmin, navigate]);
 
   // Fetch verifications with profiles
   const { data: verifications, isLoading } = useQuery({
@@ -212,7 +210,7 @@ const AdminVerifications = () => {
   }
 
   // Don't render if not authenticated or not admin (redirect will happen in useEffect)
-  if (!user || !ADMIN_EMAILS.includes(user.email || '')) {
+  if (!user || (!isAdmin && !roleLoading)) {
     return null;
   }
 
