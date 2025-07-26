@@ -32,6 +32,8 @@ const InviteManager = () => {
     const shareText = `Finally, men have a voice. Join the Tea App for Men - where the stories are real and the juice is anonymous.
 👉 https://sipjuice.app?invite=${code}
 
+Use my invite code: ${code}
+
 #fortheboys #teaappformen #getthejuice`;
 
     try {
@@ -59,6 +61,8 @@ const InviteManager = () => {
   const shareInvite = async (code: string) => {
     const shareText = `Finally, men have a voice. Join the Tea App for Men - where the stories are real and the juice is anonymous.
 👉 https://sipjuice.app?invite=${code}
+
+Use my invite code: ${code}
 
 #fortheboys #teaappformen #getthejuice`;
     
