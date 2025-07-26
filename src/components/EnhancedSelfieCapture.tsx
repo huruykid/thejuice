@@ -41,12 +41,6 @@ const EnhancedSelfieCapture: React.FC<EnhancedSelfieCaptureProps> = ({ onComplet
       setIsCameraLoading(true);
       setCameraError(null);
       
-      // Show user what's happening
-      toast({
-        title: "📷 Starting camera...",
-        description: "Please wait while we access your camera",
-      });
-      
       const mediaStream = await navigator.mediaDevices.getUserMedia({
         video: {
           facingMode: 'user',
@@ -58,13 +52,9 @@ const EnhancedSelfieCapture: React.FC<EnhancedSelfieCaptureProps> = ({ onComplet
       setStream(mediaStream);
       if (videoRef.current) {
         videoRef.current.srcObject = mediaStream;
-        // Wait for video to be ready before hiding loading
-        videoRef.current.onloadedmetadata = () => {
+        // Hide loading immediately when stream is ready
+        videoRef.current.onloadeddata = () => {
           setIsCameraLoading(false);
-          toast({
-            title: "✅ Camera ready!",
-            description: "Position your face in the frame and take a clear photo",
-          });
         };
       }
     } catch (error) {
@@ -72,48 +62,44 @@ const EnhancedSelfieCapture: React.FC<EnhancedSelfieCaptureProps> = ({ onComplet
       setIsCameraLoading(false);
       setCameraError('Camera access denied. You can upload a photo instead.');
       setRetryCount(prev => prev + 1);
-      
-      toast({
-        title: "Camera access denied",
-        description: "No worries! You can upload a photo instead.",
-        variant: "destructive",
-      });
     }
   };
 
   const checkImageQuality = (imageData: string): Promise<'good' | 'poor'> => {
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    const img = new Image();
-    
     return new Promise((resolve) => {
+      const img = new Image();
       img.onload = () => {
-        canvas.width = img.width;
-        canvas.height = img.height;
-        ctx?.drawImage(img, 0, 0);
+        // Sample only center portion for faster processing
+        const sampleSize = 64; // Much smaller sample
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
         
-        const data = ctx?.getImageData(0, 0, canvas.width, canvas.height);
-        if (!data) return resolve('poor');
+        canvas.width = sampleSize;
+        canvas.height = sampleSize;
+        
+        // Draw center crop for quality check
+        const centerX = img.width / 2 - sampleSize / 2;
+        const centerY = img.height / 2 - sampleSize / 2;
+        ctx?.drawImage(img, centerX, centerY, sampleSize, sampleSize, 0, 0, sampleSize, sampleSize);
+        
+        const data = ctx?.getImageData(0, 0, sampleSize, sampleSize);
+        if (!data) return resolve('good'); // Default to good if can't check
         
         let totalBrightness = 0;
-        let minBrightness = 255;
-        let maxBrightness = 0;
+        const pixelCount = data.data.length / 4;
         
-        for (let i = 0; i < data.data.length; i += 4) {
+        // Sample every 4th pixel for speed
+        for (let i = 0; i < data.data.length; i += 16) {
           const r = data.data[i];
           const g = data.data[i + 1];
           const b = data.data[i + 2];
-          const brightness = (r + g + b) / 3;
-          totalBrightness += brightness;
-          minBrightness = Math.min(minBrightness, brightness);
-          maxBrightness = Math.max(maxBrightness, brightness);
+          totalBrightness += (r + g + b) / 3;
         }
         
-        const avgBrightness = totalBrightness / (data.data.length / 4);
-        const contrast = maxBrightness - minBrightness;
+        const avgBrightness = totalBrightness / (pixelCount / 4);
         
-        // More strict quality check: good brightness range, sufficient contrast, not too dark/bright
-        const isGoodQuality = avgBrightness > 60 && avgBrightness < 180 && contrast > 50;
+        // Simplified quality check - just brightness
+        const isGoodQuality = avgBrightness > 40 && avgBrightness < 200;
         resolve(isGoodQuality ? 'good' : 'poor');
       };
       img.src = imageData;
@@ -136,14 +122,16 @@ const EnhancedSelfieCapture: React.FC<EnhancedSelfieCaptureProps> = ({ onComplet
     const imageDataUrl = canvas.toDataURL('image/jpeg', 0.8);
     setCapturedImage(imageDataUrl);
 
-    // Check image quality
-    setImageQuality('checking');
-    const quality = await checkImageQuality(imageDataUrl);
-    setImageQuality(quality);
+    // Set quality to good by default, check in background
+    setImageQuality('good');
     
-    if (quality === 'poor') {
-      setShowQualityTips(true);
-    }
+    // Check quality asynchronously without blocking UI
+    checkImageQuality(imageDataUrl).then(quality => {
+      setImageQuality(quality);
+      if (quality === 'poor') {
+        setShowQualityTips(true);
+      }
+    });
 
     if (stream) {
       stream.getTracks().forEach(track => track.stop());
@@ -176,13 +164,17 @@ const EnhancedSelfieCapture: React.FC<EnhancedSelfieCaptureProps> = ({ onComplet
     }
 
     const reader = new FileReader();
-    reader.onload = async (e) => {
+    reader.onload = (e) => {
       const imageDataUrl = e.target?.result as string;
       setCapturedImage(imageDataUrl);
       
-      setImageQuality('checking');
-      const quality = await checkImageQuality(imageDataUrl);
-      setImageQuality(quality);
+      // Set quality to good by default, check in background
+      setImageQuality('good');
+      
+      // Check quality asynchronously
+      checkImageQuality(imageDataUrl).then(quality => {
+        setImageQuality(quality);
+      });
     };
     reader.readAsDataURL(file);
   };
@@ -209,12 +201,6 @@ const EnhancedSelfieCapture: React.FC<EnhancedSelfieCaptureProps> = ({ onComplet
     }
 
     setIsLoading(true);
-    
-    // Show immediate feedback to user
-    toast({
-      title: "Uploading selfie...",
-      description: "Hang tight 👀 This might take a few seconds.",
-    });
     try {
       const response = await fetch(capturedImage);
       const blob = await response.blob();
