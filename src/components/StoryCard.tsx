@@ -238,12 +238,13 @@ const StoryCard = ({
               <CarouselContent>
                 {imageUrls.map((url, index) => (
                   <CarouselItem key={index}>
-                    <div className="aspect-[4/3] bg-muted">
+                    <div className="bg-muted">
                       <img
                         src={url}
                         alt={`Story image ${index + 1}`}
-                        className="w-full h-full object-cover"
+                        className="w-full h-auto object-contain cursor-pointer"
                         loading="lazy"
+                        onClick={() => window.open(url, '_blank')}
                       />
                     </div>
                   </CarouselItem>
