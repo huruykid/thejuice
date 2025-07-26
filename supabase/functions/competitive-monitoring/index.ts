@@ -185,7 +185,7 @@ PROVIDE:
         'Men finally get their own Tea app',
         'What 50 million men have been waiting for',
         'Breaking the silence in male dating',
-        'The revolution men didn't know they needed'
+        'The revolution men did not know they needed'
       ],
       automatedActions: autoResponse ? 'Response strategies generated' : 'Manual review required'
     };
