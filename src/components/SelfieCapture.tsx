@@ -20,6 +20,7 @@ const SelfieCapture: React.FC<SelfieCaptureProps> = ({ onComplete, userId }) => 
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [cameraError, setCameraError] = useState<string | null>(null);
+  const [isCameraLoading, setIsCameraLoading] = useState(true);
 
   useEffect(() => {
     startCamera();
@@ -32,7 +33,15 @@ const SelfieCapture: React.FC<SelfieCaptureProps> = ({ onComplete, userId }) => 
 
   const startCamera = async () => {
     try {
+      setIsCameraLoading(true);
       setCameraError(null);
+      
+      // Show user what's happening
+      toast({
+        title: "📷 Starting camera...",
+        description: "Please wait while we access your camera",
+      });
+      
       const mediaStream = await navigator.mediaDevices.getUserMedia({
         video: {
           facingMode: 'user', // Front-facing camera
@@ -44,9 +53,18 @@ const SelfieCapture: React.FC<SelfieCaptureProps> = ({ onComplete, userId }) => 
       setStream(mediaStream);
       if (videoRef.current) {
         videoRef.current.srcObject = mediaStream;
+        // Wait for video to be ready before hiding loading
+        videoRef.current.onloadedmetadata = () => {
+          setIsCameraLoading(false);
+          toast({
+            title: "✅ Camera ready!",
+            description: "Position your face in the frame and take a clear photo",
+          });
+        };
       }
     } catch (error) {
       console.error('Error accessing camera:', error);
+      setIsCameraLoading(false);
       setCameraError('Camera access denied. Please allow camera access to continue.');
       toast({
         title: "Camera Access Required",
@@ -193,13 +211,37 @@ const SelfieCapture: React.FC<SelfieCaptureProps> = ({ onComplete, userId }) => 
         <CardContent className="space-y-4">
           <div className="relative aspect-square bg-black rounded-lg overflow-hidden">
             {!capturedImage ? (
-              <video
-                ref={videoRef}
-                autoPlay
-                playsInline
-                muted
-                className="w-full h-full object-cover scale-x-[-1]" // Mirror effect
-              />
+              <>
+                {isCameraLoading ? (
+                  <div className="flex items-center justify-center h-full bg-gradient-to-br from-primary/20 to-primary/10">
+                    <div className="text-center p-6 space-y-4">
+                      <div className="relative">
+                        <Camera className="h-16 w-16 mx-auto text-primary/60" />
+                        <div className="absolute inset-0 animate-ping">
+                          <Camera className="h-16 w-16 mx-auto text-primary/30" />
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <p className="text-white font-medium">Starting camera...</p>
+                        <p className="text-white/80 text-sm">This may take a few seconds</p>
+                      </div>
+                      <div className="flex items-center justify-center space-x-1">
+                        <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                        <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                        <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <video
+                    ref={videoRef}
+                    autoPlay
+                    playsInline
+                    muted
+                    className="w-full h-full object-cover scale-x-[-1]" // Mirror effect
+                  />
+                )}
+              </>
             ) : (
               <img
                 src={capturedImage}
@@ -209,7 +251,7 @@ const SelfieCapture: React.FC<SelfieCaptureProps> = ({ onComplete, userId }) => 
             )}
             
             {/* Camera guidelines overlay */}
-            {!capturedImage && (
+            {!capturedImage && !isCameraLoading && (
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="w-48 h-64 border-2 border-white/30 rounded-2xl"></div>
               </div>
@@ -222,11 +264,20 @@ const SelfieCapture: React.FC<SelfieCaptureProps> = ({ onComplete, userId }) => 
             {!capturedImage ? (
               <Button 
                 onClick={capturePhoto} 
-                disabled={!stream}
+                disabled={!stream || isCameraLoading}
                 className="flex-1 bg-primary hover:bg-primary/90"
               >
-                <Camera className="h-4 w-4 mr-2" />
-                Take Photo
+                {isCameraLoading ? (
+                  <>
+                    <div className="animate-spin w-4 h-4 border-2 border-white/30 border-t-white rounded-full mr-2" />
+                    Camera Starting...
+                  </>
+                ) : (
+                  <>
+                    <Camera className="h-4 w-4 mr-2" />
+                    Take Photo
+                  </>
+                )}
               </Button>
             ) : (
               <>

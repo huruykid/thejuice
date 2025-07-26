@@ -25,6 +25,7 @@ const EnhancedSelfieCapture: React.FC<EnhancedSelfieCaptureProps> = ({ onComplet
   const [retryCount, setRetryCount] = useState(0);
   const [imageQuality, setImageQuality] = useState<'good' | 'poor' | 'checking'>('checking');
   const [showQualityTips, setShowQualityTips] = useState(false);
+  const [isCameraLoading, setIsCameraLoading] = useState(true);
 
   useEffect(() => {
     startCamera();
@@ -37,7 +38,15 @@ const EnhancedSelfieCapture: React.FC<EnhancedSelfieCaptureProps> = ({ onComplet
 
   const startCamera = async () => {
     try {
+      setIsCameraLoading(true);
       setCameraError(null);
+      
+      // Show user what's happening
+      toast({
+        title: "📷 Starting camera...",
+        description: "Please wait while we access your camera",
+      });
+      
       const mediaStream = await navigator.mediaDevices.getUserMedia({
         video: {
           facingMode: 'user',
@@ -49,11 +58,26 @@ const EnhancedSelfieCapture: React.FC<EnhancedSelfieCaptureProps> = ({ onComplet
       setStream(mediaStream);
       if (videoRef.current) {
         videoRef.current.srcObject = mediaStream;
+        // Wait for video to be ready before hiding loading
+        videoRef.current.onloadedmetadata = () => {
+          setIsCameraLoading(false);
+          toast({
+            title: "✅ Camera ready!",
+            description: "Position your face in the frame and take a clear photo",
+          });
+        };
       }
     } catch (error) {
       console.error('Error accessing camera:', error);
+      setIsCameraLoading(false);
       setCameraError('Camera access denied. You can upload a photo instead.');
       setRetryCount(prev => prev + 1);
+      
+      toast({
+        title: "Camera access denied",
+        description: "No worries! You can upload a photo instead.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -167,6 +191,7 @@ const EnhancedSelfieCapture: React.FC<EnhancedSelfieCaptureProps> = ({ onComplet
     setCapturedImage(null);
     setImageQuality('checking');
     setShowQualityTips(false);
+    setIsCameraLoading(true); // Show loading when restarting camera
     startCamera();
   };
 
@@ -380,6 +405,26 @@ const EnhancedSelfieCapture: React.FC<EnhancedSelfieCaptureProps> = ({ onComplet
                       <p className="text-sm text-muted-foreground">{cameraError}</p>
                     </div>
                   </div>
+                ) : isCameraLoading ? (
+                  <div className="flex items-center justify-center h-full bg-gradient-to-br from-primary/20 to-primary/10">
+                    <div className="text-center p-6 space-y-4">
+                      <div className="relative">
+                        <Camera className="h-16 w-16 mx-auto text-primary/60" />
+                        <div className="absolute inset-0 animate-ping">
+                          <Camera className="h-16 w-16 mx-auto text-primary/30" />
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <p className="text-white font-medium">Starting camera...</p>
+                        <p className="text-white/80 text-sm">This may take a few seconds</p>
+                      </div>
+                      <div className="flex items-center justify-center space-x-1">
+                        <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                        <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                        <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                      </div>
+                    </div>
+                  </div>
                 ) : (
                   <video
                     ref={videoRef}
@@ -390,9 +435,11 @@ const EnhancedSelfieCapture: React.FC<EnhancedSelfieCaptureProps> = ({ onComplet
                   />
                 )}
                 
-                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                  <div className="w-48 h-64 border-2 border-white/30 rounded-2xl"></div>
-                </div>
+                {!isCameraLoading && !cameraError && (
+                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <div className="w-48 h-64 border-2 border-white/30 rounded-2xl"></div>
+                  </div>
+                )}
               </>
             ) : (
               <div className="relative h-full">
@@ -429,12 +476,21 @@ const EnhancedSelfieCapture: React.FC<EnhancedSelfieCaptureProps> = ({ onComplet
               <>
                 <Button 
                   onClick={capturePhoto} 
-                  disabled={!stream || !!cameraError}
+                  disabled={!stream || !!cameraError || isCameraLoading}
                   className="flex-1"
                   size="lg"
                 >
-                  <Camera className="h-4 w-4 mr-2" />
-                  Take Photo
+                  {isCameraLoading ? (
+                    <>
+                      <div className="animate-spin w-4 h-4 border-2 border-white/30 border-t-white rounded-full mr-2" />
+                      Camera Starting...
+                    </>
+                  ) : (
+                    <>
+                      <Camera className="h-4 w-4 mr-2" />
+                      Take Photo
+                    </>
+                  )}
                 </Button>
                 {cameraError && (
                   <Button 
