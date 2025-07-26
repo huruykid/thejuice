@@ -346,7 +346,7 @@ const StoryCard = ({
                     : 'border-gray-300 text-gray-600 hover:border-green-400 hover:bg-green-50'
                 }`}
               >
-                <ShieldCheck className="h-4 w-4" />
+                <Flag className="h-4 w-4 text-green-500" />
                 <span className="text-sm font-medium">{reactionCounts?.green_flag || 0}</span>
               </Button>
 
@@ -360,7 +360,7 @@ const StoryCard = ({
                     : 'border-gray-300 text-gray-600 hover:border-red-400 hover:bg-red-50'
                 }`}
               >
-                <Flag className="h-4 w-4" />
+                <Flag className="h-4 w-4 text-red-500" />
                 <span className="text-sm font-medium">{reactionCounts?.red_flag || 0}</span>
               </Button>
             </div>
