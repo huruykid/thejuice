@@ -10,7 +10,7 @@ export const useToggleReaction = () => {
       if (!user) throw new Error('User must be authenticated');
 
       // Check if user already reacted to this story
-      const { data: existingReaction, error: checkError } = await (supabase as any)
+      const { data: existingReaction, error: checkError } = await supabase
         .from('reactions')
         .select('id')
         .eq('story_id', storyId)
@@ -22,7 +22,7 @@ export const useToggleReaction = () => {
 
       if (existingReaction) {
         // Remove reaction if it exists
-        const { error } = await (supabase as any)
+        const { error } = await supabase
           .from('reactions')
           .delete()
           .eq('id', existingReaction.id);
@@ -30,14 +30,14 @@ export const useToggleReaction = () => {
         if (error) throw error;
 
         // Decrement reactions count
-        const { data: currentStory } = await (supabase as any)
+        const { data: currentStory } = await supabase
           .from('stories')
           .select('reactions_count')
           .eq('id', storyId)
           .single();
 
         if (currentStory) {
-          const { error: updateError } = await (supabase as any)
+          const { error: updateError } = await supabase
             .from('stories')
             .update({ reactions_count: Math.max(0, currentStory.reactions_count - 1) })
             .eq('id', storyId);
@@ -48,7 +48,7 @@ export const useToggleReaction = () => {
         return { action: 'removed' };
       } else {
         // Add reaction if it doesn't exist
-        const { error } = await (supabase as any)
+        const { error } = await supabase
           .from('reactions')
           .insert({
             story_id: storyId,
@@ -59,14 +59,14 @@ export const useToggleReaction = () => {
         if (error) throw error;
 
         // Increment reactions count
-        const { data: currentStory } = await (supabase as any)
+        const { data: currentStory } = await supabase
           .from('stories')
           .select('reactions_count')
           .eq('id', storyId)
           .single();
 
         if (currentStory) {
-          const { error: updateError } = await (supabase as any)
+          const { error: updateError } = await supabase
             .from('stories')
             .update({ reactions_count: currentStory.reactions_count + 1 })
             .eq('id', storyId);

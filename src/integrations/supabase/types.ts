@@ -239,18 +239,21 @@ export type Database = {
           id: string
           reaction_type: string
           story_id: string
+          user_id: string
         }
         Insert: {
           created_at?: string
           id?: string
           reaction_type?: string
           story_id: string
+          user_id: string
         }
         Update: {
           created_at?: string
           id?: string
           reaction_type?: string
           story_id?: string
+          user_id?: string
         }
         Relationships: [
           {

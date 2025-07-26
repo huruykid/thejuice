@@ -70,11 +70,11 @@ const StoryCard = ({
   useEffect(() => {
     const checkUserReactions = async () => {
       try {
-        const { data: { user } } = await (supabase as any).auth.getUser();
+        const { data: { user } } = await supabase.auth.getUser();
         if (!user) return;
 
         // Check for all reaction types
-        const { data: reactions } = await (supabase as any)
+        const { data: reactions } = await supabase
           .from('reactions')
           .select('reaction_type')
           .eq('story_id', story.id)
@@ -96,7 +96,7 @@ const StoryCard = ({
 
   const handleReaction = async (reactionType: string) => {
     try {
-      const { data: { user } } = await (supabase as any).auth.getUser();
+      const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         toast({
           title: "Login required",
@@ -135,7 +135,7 @@ const StoryCard = ({
 
   const handleComment = async () => {
     try {
-      const { data: { user } } = await (supabase as any).auth.getUser();
+      const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         toast({
           title: "Login required",
