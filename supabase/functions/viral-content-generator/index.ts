@@ -1,5 +1,6 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { corsHeaders, createSecureResponse, createSecureErrorResponse } from '../_shared/security.ts';
 
 serve(async (req) => {
@@ -12,6 +13,11 @@ serve(async (req) => {
     if (!openAIApiKey) {
       throw new Error('OpenAI API key not configured');
     }
+
+    // Initialize Supabase client
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+    const supabase = createClient(supabaseUrl!, supabaseKey!);
 
     const { prompt, contentType = 'blog', keywords = '', targetAudience = 'men 18-35' } = await req.json();
 
@@ -147,12 +153,49 @@ Topic: ${prompt}`
 
     console.log('Content generated successfully');
 
+    // Auto-save blog posts to database for SEO
+    let blogPostId = null;
+    if (contentType === 'blog') {
+      try {
+        // Create blog post from generated content
+        const title = generatedContent.split('\n')[0].replace(/^\*\*|\*\*$/g, '').replace(/^#+ /, '').trim();
+        const excerpt = generatedContent.split('\n').find(line => line.length > 50 && !line.startsWith('#'))?.substring(0, 160) + '...';
+        const readTime = Math.ceil(generatedContent.split(' ').length / 200);
+        
+        const { data: blogPost, error: blogError } = await supabase
+          .from('blog_posts')
+          .insert({
+            title: title,
+            content: generatedContent,
+            excerpt: excerpt,
+            slug: '', // Will be auto-generated
+            keywords: keywords.split(',').map(k => k.trim()).filter(k => k.length > 0),
+            meta_description: excerpt,
+            published: true,
+            read_time_minutes: readTime,
+            author_id: null // System generated
+          })
+          .select()
+          .single();
+
+        if (!blogError && blogPost) {
+          blogPostId = blogPost.id;
+          console.log('Blog post auto-saved for SEO:', blogPost.slug);
+        }
+      } catch (error) {
+        console.error('Failed to auto-save blog post:', error);
+        // Continue anyway - don't fail the whole request
+      }
+    }
+
     return createSecureResponse({
       content: generatedContent,
       enhancements,
       contentType,
       generatedAt: new Date().toISOString(),
-      wordCount: generatedContent.split(' ').length
+      wordCount: generatedContent.split(' ').length,
+      blogPostId,
+      autoSaved: contentType === 'blog' && blogPostId !== null
     });
 
   } catch (error) {

@@ -24,6 +24,8 @@ import MaleDatingCommunity from "./pages/MaleDatingCommunity";
 import CompetitorAnalysis from "./pages/CompetitorAnalysis";
 import ViralMarketingHub from "./pages/ViralMarketingHub";
 import AutomatedCampaignDashboard from "./pages/AutomatedCampaignDashboard";
+import Blog from "./pages/Blog";
+import BlogPost from "./pages/BlogPost";
 import { useAuth } from "./hooks/useAuth";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -124,6 +126,9 @@ const App = () => (
               <AutomatedCampaignDashboard />
             </ProtectedRoute>
           } />
+          {/* Blog Routes */}
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/blog/:slug" element={<BlogPost />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

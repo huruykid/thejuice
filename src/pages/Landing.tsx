@@ -62,9 +62,14 @@ const Landing = () => {
             <img src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" alt="Tea App" className="h-8 w-8" />
             <h1 className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">The Juice App</h1>
           </div>
-          <Button onClick={() => navigate("/app")} variant="juice">
-            Get Started
-          </Button>
+          <div className="flex items-center gap-4">
+            <Button variant="ghost" onClick={() => navigate("/blog")} className="hidden md:flex">
+              Blog
+            </Button>
+            <Button onClick={() => navigate("/app")} variant="juice">
+              Get Started
+            </Button>
+          </div>
         </div>
       </header>
 

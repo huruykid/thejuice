@@ -63,9 +63,15 @@ const ViralMarketingHub = () => {
       if (error) throw error;
 
       setGeneratedContent(data.content);
+      
+      let toastDescription = `Viral ${contentType} content generated successfully`;
+      if (data.autoSaved && contentType === 'blog') {
+        toastDescription += ` and automatically published to /blog for SEO!`;
+      }
+      
       toast({
         title: "Success!",
-        description: `Viral ${contentType} content generated successfully`,
+        description: toastDescription,
       });
     } catch (error) {
       console.error('Error generating content:', error);
