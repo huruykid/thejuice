@@ -37,21 +37,11 @@ export const useSearchStories = (query: string, location?: string, tag?: string)
         // Handle Instagram username search (with or without @)
         const instagramSearch = searchTerm.startsWith('@') ? searchTerm.substring(1) : searchTerm;
         
-        // Build comprehensive search conditions
+        // Build focused search conditions - Instagram and phone only
         const searchConditions = [
-          // Story content and subject info
-          `content.ilike.%${searchTerm}%`,
-          `subject_name.ilike.%${searchTerm}%`,
-          `location.ilike.%${searchTerm}%`,
-          
-          // Profile data
-          `profiles.anonymous_username.ilike.%${searchTerm}%`,
-          `profiles.city.ilike.%${searchTerm}%`,
-          
           // Instagram username variations
           `subject_name.ilike.%@${instagramSearch}%`,
           `content.ilike.%@${instagramSearch}%`,
-          `profiles.anonymous_username.ilike.%${instagramSearch}%`,
         ];
         
         // Add phone number search patterns
