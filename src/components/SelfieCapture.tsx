@@ -54,7 +54,7 @@ const SelfieCapture: React.FC<SelfieCaptureProps> = ({ onComplete, userId }) => 
       if (videoRef.current) {
         videoRef.current.srcObject = mediaStream;
         // Wait for video to be ready before hiding loading
-        videoRef.current.onloadedmetadata = () => {
+        videoRef.current.onloadeddata = () => {
           setIsCameraLoading(false);
           toast({
             title: "✅ Camera ready!",
