@@ -105,6 +105,22 @@ const StoryCard = ({
         return;
       }
 
+      // Check if user is verified before attempting to react
+      const { data: verification } = await supabase
+        .from('user_verifications')
+        .select('verification_status')
+        .eq('user_id', user.id)
+        .single();
+
+      if (!verification || verification.verification_status !== 'approved') {
+        toast({
+          title: "Verification required",
+          description: "You need to be verified to vote on stories. Please complete your verification process.",
+          variant: "destructive"
+        });
+        return;
+      }
+
       const result = await toggleReaction.mutateAsync({ 
         storyId: story.id, 
         reactionType 
@@ -116,6 +132,7 @@ const StoryCard = ({
         setIsGreenFlagged(result?.action === 'added');
       }
     } catch (error) {
+      console.error('Reaction error:', error);
       toast({
         title: "Error",
         description: "Failed to toggle reaction. Please try again.",
