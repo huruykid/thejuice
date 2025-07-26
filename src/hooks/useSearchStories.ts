@@ -23,15 +23,21 @@ export const useSearchStories = (query: string, location?: string, tag?: string)
 
       // Comprehensive text search across all fields
       if (query.trim()) {
-        const searchTerm = `%${query.trim()}%`;
-        dbQuery = dbQuery.or(`
-          content.ilike.${searchTerm},
-          location.ilike.${searchTerm},
-          subject_name.ilike.${searchTerm},
-          profiles.anonymous_username.ilike.${searchTerm},
-          profiles.city.ilike.${searchTerm},
-          profiles.phone_number.ilike.${searchTerm}
-        `);
+        const searchTerm = query.trim();
+        
+        // Try different search patterns for phone numbers
+        const phoneSearchPatterns = [
+          searchTerm,
+          searchTerm.replace(/\D/g, ''), // Remove non-digits
+          searchTerm.replace(/[()-\s]/g, ''), // Remove common phone formatting
+        ].filter(Boolean);
+        
+        // Build search conditions for all patterns
+        const searchConditions = phoneSearchPatterns.map(pattern => 
+          `content.ilike.%${pattern}%,location.ilike.%${pattern}%,subject_name.ilike.%${pattern}%,profiles.anonymous_username.ilike.%${pattern}%,profiles.city.ilike.%${pattern}%,profiles.phone_number.ilike.%${pattern}%`
+        ).join(',');
+        
+        dbQuery = dbQuery.or(searchConditions);
       }
 
       // Add location filter with partial matching (separate from main search)
