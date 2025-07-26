@@ -509,6 +509,10 @@ export type Database = {
         Args: { username: string }
         Returns: boolean
       }
+      is_valid_email_domain: {
+        Args: { email_param: string }
+        Returns: boolean
+      }
       log_file_access: {
         Args: {
           p_user_id: string
