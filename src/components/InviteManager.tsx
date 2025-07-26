@@ -29,16 +29,21 @@ const InviteManager = () => {
   const { toast } = useToast();
 
   const copyToClipboard = async (code: string) => {
+    const shareText = `Finally, men have a voice. Join the Tea App for Men - where the stories are real and the juice is anonymous.
+👉 https://sipjuice.app?invite=${code}
+
+#fortheboys #teaappformen #getthejuice`;
+
     try {
-      await navigator.clipboard.writeText(code);
+      await navigator.clipboard.writeText(shareText);
       toast({
         title: "Copied!",
-        description: "Invite code copied to clipboard",
+        description: "Invite message copied to clipboard",
       });
     } catch (err) {
       // Fallback for older browsers
       const textArea = document.createElement('textarea');
-      textArea.value = code;
+      textArea.value = shareText;
       document.body.appendChild(textArea);
       textArea.select();
       document.execCommand('copy');
@@ -46,14 +51,14 @@ const InviteManager = () => {
       
       toast({
         title: "Copied!",
-        description: "Invite code copied to clipboard",
+        description: "Invite message copied to clipboard",
       });
     }
   };
 
   const shareInvite = async (code: string) => {
     const shareText = `Finally, men have a voice. Join the Tea App for Men - where the stories are real and the juice is anonymous.
-👉 https://sipjuice.app
+👉 https://sipjuice.app?invite=${code}
 
 #fortheboys #teaappformen #getthejuice`;
     
@@ -68,7 +73,7 @@ const InviteManager = () => {
       }
     } else {
       // Fallback to copying
-      copyToClipboard(`${shareText}`);
+      copyToClipboard(code);
     }
   };
 
