@@ -58,7 +58,7 @@ const Explore = ({ onCreateStory }: ExploreProps) => {
             <Input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search stories, tags, or topics..."
+              placeholder="Search by story, tags, city, @instagram, name, phone..."
               className="pl-10 rounded-2xl border-juice-blue/20 focus:border-juice-blue"
             />
           </form>
