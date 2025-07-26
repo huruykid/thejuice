@@ -1,4 +1,4 @@
-import { Heart, MessageCircle, Flag, Star, Trash2 } from "lucide-react";
+import { Heart, MessageCircle, Flag, Star, Trash2, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
@@ -58,44 +58,49 @@ const StoryCard = ({
 }: StoryCardProps) => {
   const [showComments, setShowComments] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
+  const [isRedFlagged, setIsRedFlagged] = useState(false);
+  const [isGreenFlagged, setIsGreenFlagged] = useState(false);
   const [currentLikes, setCurrentLikes] = useState(story.reactions_count);
   const { toast } = useToast();
   const navigate = useNavigate();
   const deleteStory = useDeleteStory();
   const toggleReaction = useToggleReaction();
 
-  // Check if current user has liked this story
+  // Check if current user has reacted to this story
   useEffect(() => {
-    const checkUserReaction = async () => {
+    const checkUserReactions = async () => {
       try {
         const { data: { user } } = await (supabase as any).auth.getUser();
         if (!user) return;
 
-        // Check if user has liked this story
-        const { data: reaction } = await (supabase as any)
+        // Check for all reaction types
+        const { data: reactions } = await (supabase as any)
           .from('reactions')
-          .select('id')
+          .select('reaction_type')
           .eq('story_id', story.id)
-          .eq('user_id', user.id)
-          .eq('reaction_type', 'like')
-          .maybeSingle();
+          .eq('user_id', user.id);
 
-        setIsLiked(!!reaction);
+        if (reactions) {
+          const reactionTypes = reactions.map(r => r.reaction_type);
+          setIsLiked(reactionTypes.includes('like'));
+          setIsRedFlagged(reactionTypes.includes('red_flag'));
+          setIsGreenFlagged(reactionTypes.includes('green_flag'));
+        }
       } catch (error) {
-        console.error('Error checking user reaction:', error);
+        console.error('Error checking user reactions:', error);
       }
     };
 
-    checkUserReaction();
+    checkUserReactions();
   }, [story.id]);
 
-  const handleLike = async () => {
+  const handleReaction = async (reactionType: string) => {
     try {
       const { data: { user } } = await (supabase as any).auth.getUser();
       if (!user) {
         toast({
           title: "Login required",
-          description: "Please log in to like stories.",
+          description: "Please log in to react to stories.",
           variant: "destructive"
         });
         return;
@@ -103,20 +108,26 @@ const StoryCard = ({
 
       const result = await toggleReaction.mutateAsync({ 
         storyId: story.id, 
-        reactionType: 'like' 
+        reactionType 
       });
       
-      if (result?.action === 'added') {
-        setIsLiked(true);
-        setCurrentLikes(prev => prev + 1);
-      } else if (result?.action === 'removed') {
-        setIsLiked(false);
-        setCurrentLikes(prev => Math.max(0, prev - 1));
+      if (reactionType === 'like') {
+        if (result?.action === 'added') {
+          setIsLiked(true);
+          setCurrentLikes(prev => prev + 1);
+        } else if (result?.action === 'removed') {
+          setIsLiked(false);
+          setCurrentLikes(prev => Math.max(0, prev - 1));
+        }
+      } else if (reactionType === 'red_flag') {
+        setIsRedFlagged(result?.action === 'added');
+      } else if (reactionType === 'green_flag') {
+        setIsGreenFlagged(result?.action === 'added');
       }
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to toggle like. Please try again.",
+        description: "Failed to toggle reaction. Please try again.",
         variant: "destructive"
       });
     }
@@ -320,7 +331,7 @@ const StoryCard = ({
             <Button
               variant="ghost"
               size="sm"
-              onClick={handleLike}
+              onClick={() => handleReaction('like')}
               className={`flex items-center gap-2 ${isLiked ? 'text-red-500' : 'text-muted-foreground'}`}
             >
               <Heart className={`h-4 w-4 ${isLiked ? 'fill-current' : ''}`} />
@@ -340,9 +351,19 @@ const StoryCard = ({
             <Button
               variant="ghost"
               size="sm"
-              className="flex items-center gap-2 text-muted-foreground"
+              onClick={() => handleReaction('red_flag')}
+              className={`flex items-center gap-2 ${isRedFlagged ? 'text-red-500' : 'text-muted-foreground'}`}
             >
-              <Flag className="h-4 w-4" />
+              <Flag className={`h-4 w-4 ${isRedFlagged ? 'fill-current' : ''}`} />
+            </Button>
+
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => handleReaction('green_flag')}
+              className={`flex items-center gap-2 ${isGreenFlagged ? 'text-green-500' : 'text-muted-foreground'}`}
+            >
+              <ShieldCheck className={`h-4 w-4 ${isGreenFlagged ? 'fill-current' : ''}`} />
             </Button>
           </div>
           
