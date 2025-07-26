@@ -182,7 +182,8 @@ const CreateStory = ({
         },
         location: storyData.metadata.city,
         imageUrl: imageUrls.length > 0 ? JSON.stringify(imageUrls) : undefined,
-        subjectName: storyData.personName
+        subjectName: storyData.personName,
+        subjectPhone: storyData.personPhone // Add this line to save the phone number
       };
       console.log('Story payload:', storyPayload);
       await createStory.mutateAsync(storyPayload);
