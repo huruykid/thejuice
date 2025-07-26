@@ -21,6 +21,8 @@ import DatingStoriesForMen from "./pages/DatingStoriesForMen";
 import AnonymousDatingReviews from "./pages/AnonymousDatingReviews";
 import MensDatingAdvice from "./pages/MensDatingAdvice";
 import MaleDatingCommunity from "./pages/MaleDatingCommunity";
+import CompetitorAnalysis from "./pages/CompetitorAnalysis";
+import ViralMarketingHub from "./pages/ViralMarketingHub";
 import { useAuth } from "./hooks/useAuth";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -110,6 +112,12 @@ const App = () => (
           <Route path="/anonymous-dating-reviews" element={<AnonymousDatingReviews />} />
           <Route path="/mens-dating-advice" element={<MensDatingAdvice />} />
           <Route path="/male-dating-community" element={<MaleDatingCommunity />} />
+          <Route path="/competitor-analysis" element={<CompetitorAnalysis />} />
+          <Route path="/viral-marketing-hub" element={
+            <ProtectedRoute>
+              <ViralMarketingHub />
+            </ProtectedRoute>
+          } />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
