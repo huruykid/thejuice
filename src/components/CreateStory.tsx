@@ -424,7 +424,7 @@ const CreateStory = ({ onClose }: { onClose: () => void }) => {
                 value={storyData.content}
                 onChange={(e) => setStoryData(prev => ({ ...prev, content: e.target.value }))}
                 placeholder="Pour the juice... Use initials, codenames, or emojis instead of real names"
-                className="min-h-32 rounded-2xl border-juice-blue/20 focus:border-juice-blue"
+                className="min-h-48 rounded-2xl border-juice-blue/20 focus:border-juice-blue"
                 maxLength={500}
               />
               
@@ -432,25 +432,6 @@ const CreateStory = ({ onClose }: { onClose: () => void }) => {
                 {storyData.content.length}/500 characters
               </div>
 
-              <div className="space-y-3">
-                <p className="text-sm text-muted-foreground">
-                  Quick prompts to help you share:
-                </p>
-                <div className="space-y-2">
-                  {prompts.slice(1).map((prompt, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setStoryData(prev => ({ 
-                        ...prev, 
-                        content: prev.content + (prev.content ? '\n\n' : '') + prompt + ' '
-                      }))}
-                      className="text-left text-sm text-juice-blue hover:text-juice-blue-dark transition-smooth w-full p-2 rounded-xl hover:bg-juice-lavender/30"
-                    >
-                      • {prompt}
-                    </button>
-                  ))}
-                </div>
-              </div>
             </div>
           )}
 
