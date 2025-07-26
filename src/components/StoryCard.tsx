@@ -335,25 +335,33 @@ const StoryCard = ({
               <span className="text-sm">{story.comments_count}</span>
             </Button>
             
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
               <Button
-                variant="ghost"
+                variant="outline"
                 size="sm"
-                onClick={() => handleReaction('red_flag')}
-                className={`flex flex-col items-center gap-1 ${isRedFlagged ? 'text-red-500' : 'text-muted-foreground'}`}
+                onClick={() => handleReaction('green_flag')}
+                className={`flex items-center gap-2 px-3 py-1 rounded-full border-2 transition-all ${
+                  isGreenFlagged 
+                    ? 'bg-green-50 border-green-500 text-green-700' 
+                    : 'border-gray-300 text-gray-600 hover:border-green-400 hover:bg-green-50'
+                }`}
               >
-                <span className="text-xs font-medium">{reactionCounts?.red_flag || 0}</span>
-                <Flag className={`h-4 w-4 ${isRedFlagged ? 'fill-current' : ''}`} />
+                <ShieldCheck className="h-4 w-4" />
+                <span className="text-sm font-medium">{reactionCounts?.green_flag || 0}</span>
               </Button>
 
               <Button
-                variant="ghost"
+                variant="outline"
                 size="sm"
-                onClick={() => handleReaction('green_flag')}
-                className={`flex flex-col items-center gap-1 ${isGreenFlagged ? 'text-green-500' : 'text-muted-foreground'}`}
+                onClick={() => handleReaction('red_flag')}
+                className={`flex items-center gap-2 px-3 py-1 rounded-full border-2 transition-all ${
+                  isRedFlagged 
+                    ? 'bg-red-50 border-red-500 text-red-700' 
+                    : 'border-gray-300 text-gray-600 hover:border-red-400 hover:bg-red-50'
+                }`}
               >
-                <span className="text-xs font-medium">{reactionCounts?.green_flag || 0}</span>
-                <ShieldCheck className={`h-4 w-4 ${isGreenFlagged ? 'fill-current' : ''}`} />
+                <Flag className="h-4 w-4" />
+                <span className="text-sm font-medium">{reactionCounts?.red_flag || 0}</span>
               </Button>
             </div>
           </div>
