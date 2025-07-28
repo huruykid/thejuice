@@ -138,7 +138,7 @@ const Home = ({
               />
               <div className="absolute -inset-0.5 bg-gradient-primary rounded-2xl opacity-30 blur-sm"></div>
             </div>
-            <h1 className="text-xl font-display font-bold gradient-text">
+            <h1 className="text-lg font-display font-bold gradient-text">
               The Juice App
             </h1>
           </div>
