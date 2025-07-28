@@ -1,27 +1,15 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
 
 export interface CameraState {
-  stream: MediaStream | null;
   isLoading: boolean;
   error: string | null;
   retryCount: number;
 }
 
 export const useCameraCapture = () => {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [stream, setStream] = useState<MediaStream | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState(0);
-
-  useEffect(() => {
-    startCamera();
-    return () => {
-      if (stream) {
-        stream.getTracks().forEach(track => track.stop());
-      }
-    };
-  }, []);
 
   const captureDirectPhoto = async (): Promise<string | null> => {
     try {
@@ -116,50 +104,16 @@ export const useCameraCapture = () => {
     }
   };
 
-  const startCamera = async () => {
-    // For simplified photo capture, we don't need to start a video stream
-    setIsLoading(false);
-  };
 
-  const capturePhoto = (): string | null => {
-    if (!videoRef.current || !stream) return null;
-
-    const canvas = document.createElement('canvas');
-    const context = canvas.getContext('2d');
-    const video = videoRef.current;
-
-    if (!context) return null;
-
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-    // Optimized JPEG quality for smaller file size and faster upload
-    return canvas.toDataURL('image/jpeg', 0.85);
-  };
-
-  const stopCamera = () => {
-    if (stream) {
-      stream.getTracks().forEach(track => track.stop());
-      setStream(null);
-    }
-  };
-
-  const skipCamera = () => {
-    setIsLoading(false);
-    setError('Camera unavailable. Please upload a photo instead.');
+  const clearError = () => {
+    setError(null);
   };
 
   return {
-    videoRef,
-    stream,
     isLoading,
     error,
     retryCount,
-    startCamera,
-    capturePhoto,
     captureDirectPhoto,
-    stopCamera,
-    skipCamera
+    clearError
   };
 };

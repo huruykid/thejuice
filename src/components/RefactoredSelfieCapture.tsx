@@ -25,7 +25,8 @@ const RefactoredSelfieCapture: React.FC<RefactoredSelfieCaptureProps> = ({ onCom
     captureDirectPhoto, 
     isLoading: isCameraLoading, 
     error: cameraError, 
-    retryCount
+    retryCount,
+    clearError
   } = useCameraCapture();
   
   const { 
