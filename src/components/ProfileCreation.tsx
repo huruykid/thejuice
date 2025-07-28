@@ -81,6 +81,8 @@ const ProfileCreation = ({ onComplete }: ProfileCreationProps) => {
   };
 
   const createProfile = async () => {
+    // Prevent double-clicks
+    if (isCreating) return;
     // Rate limiting check - max 5 profile creation attempts per hour
     const rateLimitKey = `profile_creation:${username}`;
     if (!rateLimiter.isAllowed(rateLimitKey, 5, 60 * 60 * 1000)) {

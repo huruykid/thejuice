@@ -5,34 +5,34 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-medium ring-offset-background transition-smooth focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 active:scale-[0.98]",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-medium ring-offset-background transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 active:scale-[0.95] hover:scale-[1.02] cursor-pointer touch-manipulation",
   {
     variants: {
       variant: {
-        default: "bg-gradient-primary text-white hover:shadow-glow hover:scale-[1.02] transition-spring font-semibold",
-        destructive: "bg-gradient-to-r from-destructive to-destructive-light text-destructive-foreground hover:shadow-lg hover:scale-[1.02] transition-spring",
-        outline: "border border-border bg-background hover:bg-card-hover hover:border-primary/50 transition-smooth",
-        secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80 hover:scale-[1.02] transition-smooth",
-        ghost: "hover:bg-muted/60 hover:text-foreground transition-smooth",
-        link: "text-primary underline-offset-4 hover:underline transition-smooth",
+        default: "bg-gradient-primary text-white hover:shadow-glow hover:scale-[1.02] transition-all duration-200 font-semibold active:scale-[0.95]",
+        destructive: "bg-gradient-to-r from-destructive to-destructive-light text-destructive-foreground hover:shadow-lg hover:scale-[1.02] transition-all duration-200 active:scale-[0.95]",
+        outline: "border border-border bg-background hover:bg-card-hover hover:border-primary/50 transition-all duration-200 active:scale-[0.95]",
+        secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80 hover:scale-[1.02] transition-all duration-200 active:scale-[0.95]",
+        ghost: "hover:bg-muted/60 hover:text-foreground transition-all duration-200 active:scale-[0.95]",
+        link: "text-primary underline-offset-4 hover:underline transition-all duration-200 active:scale-[0.95]",
         
         // Modern Instagram/Tinder-inspired variants
-        gradient: "bg-gradient-primary text-white hover:shadow-glow hover:scale-[1.02] transition-spring font-semibold rounded-2xl",
-        "gradient-secondary": "bg-gradient-secondary text-white hover:shadow-lg hover:scale-[1.02] transition-spring font-medium rounded-2xl",
-        success: "bg-gradient-success text-success-foreground hover:shadow-lg hover:scale-[1.02] transition-spring font-medium",
+        gradient: "bg-gradient-primary text-white hover:shadow-glow hover:scale-[1.02] transition-all duration-200 font-semibold rounded-2xl active:scale-[0.95]",
+        "gradient-secondary": "bg-gradient-secondary text-white hover:shadow-lg hover:scale-[1.02] transition-all duration-200 font-medium rounded-2xl active:scale-[0.95]",
+        success: "bg-gradient-success text-success-foreground hover:shadow-lg hover:scale-[1.02] transition-all duration-200 font-medium active:scale-[0.95]",
         
         // Juice App specific variants
-        juice: "bg-gradient-primary text-white hover:shadow-glow hover:scale-[1.02] transition-spring rounded-2xl font-semibold",
-        "juice-soft": "bg-juice-lavender text-juice-purple hover:bg-juice-pink/20 hover:text-juice-purple transition-smooth rounded-xl",
-        "juice-outline": "border-2 border-primary text-primary bg-background hover:bg-primary hover:text-white transition-smooth rounded-xl font-medium",
+        juice: "bg-gradient-primary text-white hover:shadow-glow hover:scale-[1.02] transition-all duration-200 rounded-2xl font-semibold active:scale-[0.95]",
+        "juice-soft": "bg-juice-lavender text-juice-purple hover:bg-juice-pink/20 hover:text-juice-purple transition-all duration-200 rounded-xl active:scale-[0.95]",
+        "juice-outline": "border-2 border-primary text-primary bg-background hover:bg-primary hover:text-white transition-all duration-200 rounded-xl font-medium active:scale-[0.95]",
         
         // Interactive voting buttons
-        "flag-green": "bg-success/10 border border-success/20 text-success hover:bg-success hover:text-white transition-smooth rounded-full",
-        "flag-red": "bg-destructive/10 border border-destructive/20 text-destructive hover:bg-destructive hover:text-white transition-smooth rounded-full",
+        "flag-green": "bg-success/10 border border-success/20 text-success hover:bg-success hover:text-white transition-all duration-200 rounded-full active:scale-[0.95]",
+        "flag-red": "bg-destructive/10 border border-destructive/20 text-destructive hover:bg-destructive hover:text-white transition-all duration-200 rounded-full active:scale-[0.95]",
         
         // Glass effect buttons
-        glass: "bg-white/10 backdrop-blur-lg border border-white/20 text-foreground hover:bg-white/20 transition-smooth",
-        "glass-dark": "bg-black/10 backdrop-blur-lg border border-black/20 text-foreground hover:bg-black/20 transition-smooth",
+        glass: "bg-white/10 backdrop-blur-lg border border-white/20 text-foreground hover:bg-white/20 transition-all duration-200 active:scale-[0.95]",
+        "glass-dark": "bg-black/10 backdrop-blur-lg border border-black/20 text-foreground hover:bg-black/20 transition-all duration-200 active:scale-[0.95]",
       },
       size: {
         default: "h-11 px-6 py-2.5",

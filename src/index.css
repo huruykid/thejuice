@@ -81,10 +81,10 @@
     --shadow-card: 0 8px 32px -8px rgba(25, 95%, 60%, 0.15);
     --shadow-glow: 0 0 40px rgba(25, 95%, 60%, 0.3);
 
-    /* Modern Animation Curves */
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-bounce: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    --transition-spring: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    /* Modern Animation Curves - Optimized for responsiveness */
+    --transition-smooth: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    --transition-spring: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 
     /* Spacing & Layout */
     --radius: 1.2rem;
@@ -205,13 +205,13 @@
     @apply bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent;
   }
 
-  /* Interactive Elements */
+  /* Interactive Elements - Optimized for instant feedback */
   .interactive {
-    @apply transition-all duration-300 hover:scale-[1.02] active:scale-[0.98];
+    @apply transition-all duration-200 hover:scale-[1.02] active:scale-[0.95];
   }
 
   .tap-highlight {
-    @apply transition-colors duration-200 hover:bg-muted/50 active:bg-muted;
+    @apply transition-colors duration-150 hover:bg-muted/50 active:bg-muted;
   }
 
   /* Modern Card */

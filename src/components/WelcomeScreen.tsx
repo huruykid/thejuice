@@ -30,6 +30,9 @@ const WelcomeScreen = ({
     description: "Use emojis, tags, and codenames to tell your story your way"
   }];
   const handleNext = () => {
+    // Prevent double-clicks
+    if (step >= 2) return;
+    
     if (step < 2) {
       setStep(step + 1);
     } else {

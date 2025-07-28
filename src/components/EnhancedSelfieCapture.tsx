@@ -122,7 +122,8 @@ const EnhancedSelfieCapture: React.FC<EnhancedSelfieCaptureProps> = ({ onComplet
   };
 
   const capturePhoto = async () => {
-    if (!videoRef.current || !canvasRef.current) return;
+    // Prevent double-clicks
+    if (!videoRef.current || !canvasRef.current || !stream) return;
 
     const canvas = canvasRef.current;
     const video = videoRef.current;
@@ -206,6 +207,7 @@ const EnhancedSelfieCapture: React.FC<EnhancedSelfieCaptureProps> = ({ onComplet
   };
 
   const uploadAndSave = async () => {
+    // Prevent double-clicks and ensure we have data
     if (!capturedImage || isLoading) return;
 
     // Prevent upload of poor quality images
