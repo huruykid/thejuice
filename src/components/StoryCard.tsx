@@ -235,8 +235,6 @@ const StoryCard = ({
             </div>
             <div className="flex items-center gap-2">
               <span className="text-xs text-muted-foreground">{formatDate(story.created_at)}</span>
-              <span className="text-xs text-muted-foreground">•</span>
-              <span className="text-xs text-muted-foreground">{formatViewCount(story.view_count)} views</span>
               {canDelete && (
                 <Button
                   variant="ghost"
@@ -397,12 +395,17 @@ const StoryCard = ({
           
           {/* Author attribution */}
           <div className="pt-2 border-t border-juice-orange/5 mt-2">
-            <button 
-              onClick={handleAuthorClick}
-              className="text-xs text-muted-foreground hover:text-juice-blue transition-smooth cursor-pointer"
-            >
-              Posted by: {authorName}
-            </button>
+            <div className="flex items-center justify-between">
+              <button 
+                onClick={handleAuthorClick}
+                className="text-xs text-muted-foreground hover:text-juice-blue transition-smooth cursor-pointer"
+              >
+                Posted by: {authorName}
+              </button>
+              <span className="text-xs text-muted-foreground">
+                {formatViewCount(story.view_count)} views
+              </span>
+            </div>
           </div>
         </div>
       </div>
