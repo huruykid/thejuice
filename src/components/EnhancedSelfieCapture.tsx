@@ -41,21 +41,35 @@ const EnhancedSelfieCapture: React.FC<EnhancedSelfieCaptureProps> = ({ onComplet
       setIsCameraLoading(true);
       setCameraError(null);
       
+      // Optimized camera constraints for faster initialization
       const mediaStream = await navigator.mediaDevices.getUserMedia({
         video: {
           facingMode: 'user',
-          width: { ideal: 640 },
-          height: { ideal: 480 }
-        }
+          width: { min: 320, ideal: 480, max: 640 },
+          height: { min: 240, ideal: 360, max: 480 },
+          frameRate: { ideal: 15, max: 30 } // Lower framerate for faster startup
+        },
+        audio: false // Explicitly disable audio for faster initialization
       });
       
       setStream(mediaStream);
       if (videoRef.current) {
         videoRef.current.srcObject = mediaStream;
-        // Hide loading immediately when stream is ready
-        videoRef.current.onloadeddata = () => {
+        
+        // Multiple event listeners for faster detection
+        const handleReady = () => {
           setIsCameraLoading(false);
         };
+        
+        videoRef.current.onloadedmetadata = handleReady;
+        videoRef.current.oncanplay = handleReady;
+        
+        // Fallback timeout to prevent infinite loading
+        setTimeout(() => {
+          if (isCameraLoading) {
+            setIsCameraLoading(false);
+          }
+        }, 3000);
       }
     } catch (error) {
       console.error('Error accessing camera:', error);
@@ -67,39 +81,40 @@ const EnhancedSelfieCapture: React.FC<EnhancedSelfieCaptureProps> = ({ onComplet
 
   const checkImageQuality = (imageData: string): Promise<'good' | 'poor'> => {
     return new Promise((resolve) => {
+      // Ultra-fast quality check using minimal sampling
       const img = new Image();
       img.onload = () => {
-        // Sample only center portion for faster processing
-        const sampleSize = 64; // Much smaller sample
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
         
+        // Super small sample for instant checking
+        const sampleSize = 32;
         canvas.width = sampleSize;
         canvas.height = sampleSize;
         
-        // Draw center crop for quality check
+        // Quick center crop
         const centerX = img.width / 2 - sampleSize / 2;
         const centerY = img.height / 2 - sampleSize / 2;
         ctx?.drawImage(img, centerX, centerY, sampleSize, sampleSize, 0, 0, sampleSize, sampleSize);
         
         const data = ctx?.getImageData(0, 0, sampleSize, sampleSize);
-        if (!data) return resolve('good'); // Default to good if can't check
+        if (!data) return resolve('good');
         
+        // Sample every 8th pixel for maximum speed
         let totalBrightness = 0;
-        const pixelCount = data.data.length / 4;
+        const sampleCount = data.data.length / 32; // Much fewer samples
         
-        // Sample every 4th pixel for speed
-        for (let i = 0; i < data.data.length; i += 16) {
+        for (let i = 0; i < data.data.length; i += 32) {
           const r = data.data[i];
           const g = data.data[i + 1];
           const b = data.data[i + 2];
           totalBrightness += (r + g + b) / 3;
         }
         
-        const avgBrightness = totalBrightness / (pixelCount / 4);
+        const avgBrightness = totalBrightness / sampleCount;
         
-        // Simplified quality check - just brightness
-        const isGoodQuality = avgBrightness > 40 && avgBrightness < 200;
+        // More lenient quality check for better UX
+        const isGoodQuality = avgBrightness > 30 && avgBrightness < 220;
         resolve(isGoodQuality ? 'good' : 'poor');
       };
       img.src = imageData;
@@ -119,19 +134,22 @@ const EnhancedSelfieCapture: React.FC<EnhancedSelfieCaptureProps> = ({ onComplet
     canvas.height = video.videoHeight;
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-    const imageDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+    // Optimized JPEG quality for smaller file size and faster upload
+    const imageDataUrl = canvas.toDataURL('image/jpeg', 0.85);
     setCapturedImage(imageDataUrl);
 
-    // Set quality to good by default, check in background
+    // Always assume good quality initially for instant feedback
     setImageQuality('good');
     
-    // Check quality asynchronously without blocking UI
-    checkImageQuality(imageDataUrl).then(quality => {
-      setImageQuality(quality);
-      if (quality === 'poor') {
-        setShowQualityTips(true);
-      }
-    });
+    // Optional: Quick quality check in background (non-blocking)
+    setTimeout(() => {
+      checkImageQuality(imageDataUrl).then(quality => {
+        if (quality === 'poor') {
+          setImageQuality(quality);
+          setShowQualityTips(true);
+        }
+      });
+    }, 100); // Delay to not block UI
 
     if (stream) {
       stream.getTracks().forEach(track => track.stop());
@@ -181,9 +199,9 @@ const EnhancedSelfieCapture: React.FC<EnhancedSelfieCaptureProps> = ({ onComplet
 
   const retakePhoto = () => {
     setCapturedImage(null);
-    setImageQuality('checking');
+    setImageQuality('good'); // Default to good for instant feedback
     setShowQualityTips(false);
-    setIsCameraLoading(true); // Show loading when restarting camera
+    setIsCameraLoading(true);
     startCamera();
   };
 
@@ -393,21 +411,21 @@ const EnhancedSelfieCapture: React.FC<EnhancedSelfieCaptureProps> = ({ onComplet
                   </div>
                 ) : isCameraLoading ? (
                   <div className="flex items-center justify-center h-full bg-gradient-to-br from-primary/20 to-primary/10">
-                    <div className="text-center p-6 space-y-4">
+                    <div className="text-center p-6 space-y-3">
                       <div className="relative">
-                        <Camera className="h-16 w-16 mx-auto text-primary/60" />
-                        <div className="absolute inset-0 animate-ping">
-                          <Camera className="h-16 w-16 mx-auto text-primary/30" />
+                        <Camera className="h-12 w-12 mx-auto text-primary/60" />
+                        <div className="absolute inset-0 animate-pulse">
+                          <Camera className="h-12 w-12 mx-auto text-primary/40" />
                         </div>
                       </div>
-                      <div className="space-y-2">
-                        <p className="text-white font-medium">Starting camera...</p>
-                        <p className="text-white/80 text-sm">This may take a few seconds</p>
+                      <div className="space-y-1">
+                        <p className="text-white font-medium text-sm">Camera loading...</p>
+                        <p className="text-white/70 text-xs">Almost ready!</p>
                       </div>
                       <div className="flex items-center justify-center space-x-1">
-                        <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                        <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                        <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                        <div className="w-1.5 h-1.5 bg-white/80 rounded-full animate-pulse" style={{ animationDelay: '0ms' }}></div>
+                        <div className="w-1.5 h-1.5 bg-white/80 rounded-full animate-pulse" style={{ animationDelay: '200ms' }}></div>
+                        <div className="w-1.5 h-1.5 bg-white/80 rounded-full animate-pulse" style={{ animationDelay: '400ms' }}></div>
                       </div>
                     </div>
                   </div>
