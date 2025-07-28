@@ -96,7 +96,7 @@ const HowItWorks = () => {
               Back
             </Button>
             <img src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" alt="Tea App" className="h-8 w-8" />
-            <span className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+            <span className="text-lg md:text-xl font-bold bg-gradient-primary bg-clip-text text-transparent whitespace-nowrap">
               The Tea App for Men
             </span>
           </div>
