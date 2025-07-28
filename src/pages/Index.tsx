@@ -4,7 +4,7 @@ import CreateStory from "@/components/CreateStory";
 import EnhancedWelcomeScreen from "@/components/EnhancedWelcomeScreen";
 import AuthScreen from "@/components/AuthScreen";
 import ProfileCreation from "@/components/ProfileCreation";
-import EnhancedSelfieCapture from "@/components/EnhancedSelfieCapture";
+import RefactoredSelfieCapture from "@/components/RefactoredSelfieCapture";
 import VerificationPending from "@/components/VerificationPending";
 import VerificationRejected from "@/components/VerificationRejected";
 import OnboardingSuccess from "@/components/OnboardingSuccess";
@@ -174,7 +174,7 @@ const Index = () => {
                 completedSteps={['Sign Up', 'Profile']}
               />
             </div>
-            <EnhancedSelfieCapture onComplete={handleSelfieComplete} userId={user.id} />
+            <RefactoredSelfieCapture onComplete={handleSelfieComplete} userId={user.id} />
           </div>
         );
       }
@@ -222,7 +222,7 @@ const Index = () => {
               completedSteps={['Sign Up', 'Profile']}
             />
           </div>
-          <EnhancedSelfieCapture onComplete={handleSelfieComplete} userId={user.id} />
+          <RefactoredSelfieCapture onComplete={handleSelfieComplete} userId={user.id} />
         </div>
       );
     }
