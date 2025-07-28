@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { Camera } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useCameraCapture } from '@/hooks/useCameraCapture';
 import { useImageProcessing } from '@/hooks/useImageProcessing';
 import { useVerificationUpload } from '@/hooks/useVerificationUpload';
+import { useOnboardingState } from '@/hooks/useOnboardingState';
 import { CameraView } from '@/components/SelfieCapture/CameraView';
 import { ImagePreview } from '@/components/SelfieCapture/ImagePreview';
 import OnboardingTips from '@/components/OnboardingTips';
@@ -16,6 +18,8 @@ interface RefactoredSelfieCaptureProps {
 
 const RefactoredSelfieCapture: React.FC<RefactoredSelfieCaptureProps> = ({ onComplete, userId }) => {
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
+  const navigate = useNavigate();
+  const { clearState } = useOnboardingState(userId);
   
   const { 
     videoRef, 
@@ -61,6 +65,16 @@ const RefactoredSelfieCapture: React.FC<RefactoredSelfieCaptureProps> = ({ onCom
     
     const success = await uploadVerification(capturedImage, userId, quality);
     onComplete(success);
+  };
+
+  const handleStartOver = () => {
+    clearState();
+    navigate('/profile');
+  };
+
+  const handleCancel = () => {
+    clearState();
+    navigate('/');
   };
 
 
@@ -149,6 +163,23 @@ const RefactoredSelfieCapture: React.FC<RefactoredSelfieCaptureProps> = ({ onCom
           </div>
           
           <OnboardingTips step="selfie" />
+          
+          <div className="flex gap-2 pt-4 border-t">
+            <Button 
+              variant="outline" 
+              onClick={handleStartOver}
+              className="flex-1"
+            >
+              Start Over
+            </Button>
+            <Button 
+              variant="ghost" 
+              onClick={handleCancel}
+              className="flex-1"
+            >
+              Cancel Sign-up
+            </Button>
+          </div>
         </CardContent>
       </Card>
     </div>
