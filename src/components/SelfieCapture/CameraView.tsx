@@ -1,4 +1,4 @@
-import { Camera, Upload } from 'lucide-react';
+import { Camera } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { AlertTriangle } from 'lucide-react';
 
@@ -8,8 +8,6 @@ interface CameraViewProps {
   error: string | null;
   hasStream: boolean;
   onCapture: () => void;
-  onUpload: () => void;
-  onSkipCamera: () => void;
 }
 
 export const CameraView = ({
@@ -17,9 +15,7 @@ export const CameraView = ({
   isLoading,
   error,
   hasStream,
-  onCapture,
-  onUpload,
-  onSkipCamera
+  onCapture
 }: CameraViewProps) => {
   return (
     <>
@@ -68,11 +64,11 @@ export const CameraView = ({
         )}
       </div>
 
-      <div className="flex gap-3">
+      <div className="flex">
         <Button 
           onClick={onCapture} 
           disabled={!hasStream || !!error || isLoading}
-          className="flex-1"
+          className="w-full"
           size="lg"
         >
           {isLoading ? (
@@ -83,35 +79,11 @@ export const CameraView = ({
           ) : (
             <>
               <Camera className="h-4 w-4 mr-2" />
-              Take Photo
+              Take Live Selfie
             </>
           )}
         </Button>
-        
-        {/* Always show upload option */}
-        <Button 
-          onClick={onUpload}
-          variant="outline"
-          size="lg"
-          className="px-3"
-        >
-          <Upload className="h-4 w-4" />
-        </Button>
       </div>
-
-      {/* Skip option for camera issues */}
-      {isLoading && (
-        <div className="text-center">
-          <Button 
-            onClick={onSkipCamera}
-            variant="ghost" 
-            size="sm"
-            className="text-muted-foreground"
-          >
-            Camera taking too long? Upload photo instead
-          </Button>
-        </div>
-      )}
     </>
   );
 };

@@ -64,14 +64,14 @@ export const useCameraCapture = () => {
           setError('Camera failed to start. You can upload a photo instead.');
         };
         
-        // Aggressive timeout - if not ready in 1.5 seconds, assume it's working
+        // Ultra-aggressive timeout - force ready state after 800ms
         const timeoutId = setTimeout(() => {
           if (!isReady) {
-            console.log('Camera timeout - forcing ready state after 1.5s');
+            console.log('Camera timeout - forcing ready state after 800ms');
             isReady = true;
             setIsLoading(false);
           }
-        }, 1500); // Even more aggressive
+        }, 800); // Much faster
         
         // Try multiple approaches for detecting ready state
         const video = videoRef.current;
@@ -89,13 +89,13 @@ export const useCameraCapture = () => {
         };
         checkDimensions();
         
-        // Approach 3: Polling fallback
+        // Approach 3: Fast polling fallback
         const pollInterval = setInterval(() => {
           if (video.videoWidth > 0 && video.videoHeight > 0) {
             clearInterval(pollInterval);
             handleVideoReady();
           }
-        }, 100);
+        }, 50); // Faster polling
         
         // Cleanup function
         setTimeout(() => {

@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { Camera } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { useCameraCapture } from '@/hooks/useCameraCapture';
 import { useImageProcessing } from '@/hooks/useImageProcessing';
 import { useVerificationUpload } from '@/hooks/useVerificationUpload';
@@ -15,7 +16,6 @@ interface RefactoredSelfieCaptureProps {
 }
 
 const RefactoredSelfieCapture: React.FC<RefactoredSelfieCaptureProps> = ({ onComplete, userId }) => {
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   
   const { 
@@ -39,8 +39,7 @@ const RefactoredSelfieCapture: React.FC<RefactoredSelfieCaptureProps> = ({ onCom
   
   const { 
     isUploading, 
-    uploadVerification, 
-    validateFile 
+    uploadVerification
   } = useVerificationUpload();
 
   const handleCapture = () => {
@@ -52,18 +51,6 @@ const RefactoredSelfieCapture: React.FC<RefactoredSelfieCaptureProps> = ({ onCom
     }
   };
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file || !validateFile(file)) return;
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const imageDataUrl = e.target?.result as string;
-      setCapturedImage(imageDataUrl);
-      checkQualityAsync(imageDataUrl);
-    };
-    reader.readAsDataURL(file);
-  };
 
   const handleRetake = () => {
     setCapturedImage(null);
@@ -78,30 +65,32 @@ const RefactoredSelfieCapture: React.FC<RefactoredSelfieCaptureProps> = ({ onCom
     onComplete(success);
   };
 
-  const handleFileSelect = () => {
-    fileInputRef.current?.click();
-  };
 
-  // Show upload fallback if camera failed after retries
+  // If camera fails, show error message and retry option
   if (cameraError && retryCount >= 2) {
     return (
       <div className="min-h-screen bg-gradient-soft flex items-center justify-center p-4">
-        <UploadFallback
-          capturedImage={capturedImage}
-          quality={quality}
-          showQualityTips={showQualityTips}
-          isUploading={isUploading}
-          onFileSelect={handleFileSelect}
-          onSubmit={handleSubmit}
-          onTryCamera={startCamera}
-        />
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/*"
-          onChange={handleFileUpload}
-          className="hidden"
-        />
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center space-y-4">
+            <img src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" alt="Juice" className="h-16 w-16 mx-auto" />
+            <div>
+              <CardTitle className="text-2xl font-bold">Camera Required</CardTitle>
+              <CardDescription>
+                We need you to take a live selfie for verification. Please enable camera access to continue.
+              </CardDescription>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="text-center p-6 bg-muted rounded-lg">
+              <Camera className="h-12 w-12 mx-auto text-muted-foreground mb-3" />
+              <p className="text-sm font-medium mb-2">Camera Access Required</p>
+              <p className="text-xs text-muted-foreground mb-4">{cameraError}</p>
+              <Button onClick={startCamera} className="w-full">
+                Try Camera Again
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     );
   }
@@ -142,8 +131,6 @@ const RefactoredSelfieCapture: React.FC<RefactoredSelfieCaptureProps> = ({ onCom
               error={cameraError}
               hasStream={!!stream}
               onCapture={handleCapture}
-              onUpload={handleFileSelect}
-              onSkipCamera={skipCamera}
             />
           ) : (
             <ImagePreview
@@ -156,13 +143,6 @@ const RefactoredSelfieCapture: React.FC<RefactoredSelfieCaptureProps> = ({ onCom
             />
           )}
 
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            onChange={handleFileUpload}
-            className="hidden"
-          />
 
           <div className="text-center">
             <p className="text-xs text-muted-foreground">
