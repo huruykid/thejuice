@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { Camera } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,7 +7,6 @@ import { useImageProcessing } from '@/hooks/useImageProcessing';
 import { useVerificationUpload } from '@/hooks/useVerificationUpload';
 import { CameraView } from '@/components/SelfieCapture/CameraView';
 import { ImagePreview } from '@/components/SelfieCapture/ImagePreview';
-import { UploadFallback } from '@/components/SelfieCapture/UploadFallback';
 import OnboardingTips from '@/components/OnboardingTips';
 
 interface RefactoredSelfieCaptureProps {
@@ -26,7 +25,6 @@ const RefactoredSelfieCapture: React.FC<RefactoredSelfieCaptureProps> = ({ onCom
     retryCount,
     capturePhoto,
     stopCamera,
-    skipCamera,
     startCamera
   } = useCameraCapture();
   
