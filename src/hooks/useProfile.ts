@@ -32,11 +32,34 @@ export const useProfile = (user?: any) => {
 
   // Check if username is available
   const checkUsernameAvailability = async (username: string): Promise<boolean> => {
-    const { data, error } = await (supabase as any)
-      .rpc('is_username_available', { username });
-    
-    if (error) throw error;
-    return data;
+    try {
+      // First try the RPC function
+      const { data, error } = await (supabase as any)
+        .rpc('is_username_available', { username });
+      
+      if (error) {
+        console.warn('RPC function failed, falling back to direct query:', error);
+        // Fallback to direct database query
+        const { data: existingProfile, error: queryError } = await supabase
+          .from('profiles')
+          .select('id')
+          .eq('anonymous_username', username)
+          .maybeSingle();
+        
+        if (queryError && queryError.code !== 'PGRST116') { // PGRST116 is "no rows returned"
+          console.error('Direct query also failed:', queryError);
+          return false; // Conservative approach - assume not available if we can't check
+        }
+        
+        // Username is available if no existing profile found
+        return !existingProfile;
+      }
+      
+      return data;
+    } catch (error) {
+      console.error('Username availability check failed:', error);
+      return false; // Conservative approach - assume not available if we can't check
+    }
   };
 
   return {
