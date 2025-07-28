@@ -12,6 +12,7 @@ export interface Story {
   overall_vibe_rating: number;
   reactions_count: number;
   comments_count: number;
+  view_count: number;
   created_at: string;
   user_id?: string;
   image_url?: string;

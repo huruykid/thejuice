@@ -35,6 +35,7 @@ interface StoryCardProps {
     overall_vibe_rating: number;
     reactions_count: number;
     comments_count: number;
+    view_count: number;
     created_at: string;
     user_id?: string;
     image_url?: string;
@@ -196,6 +197,15 @@ const StoryCard = ({
     return date.toLocaleDateString();
   };
 
+  const formatViewCount = (count: number) => {
+    if (count >= 1000000) {
+      return `${(count / 1000000).toFixed(1)}M`;
+    } else if (count >= 1000) {
+      return `${(count / 1000).toFixed(1)}K`;
+    }
+    return count.toLocaleString();
+  };
+
   // Parse image URLs from JSON string
   const getImageUrls = (): string[] => {
     if (!story.image_url) return [];
@@ -225,6 +235,8 @@ const StoryCard = ({
             </div>
             <div className="flex items-center gap-2">
               <span className="text-xs text-muted-foreground">{formatDate(story.created_at)}</span>
+              <span className="text-xs text-muted-foreground">•</span>
+              <span className="text-xs text-muted-foreground">{formatViewCount(story.view_count)} views</span>
               {canDelete && (
                 <Button
                   variant="ghost"

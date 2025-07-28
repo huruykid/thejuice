@@ -343,6 +343,7 @@ export type Database = {
           subject_phone: string | null
           updated_at: string
           user_id: string
+          view_count: number
         }
         Insert: {
           comments_count?: number
@@ -361,6 +362,7 @@ export type Database = {
           subject_phone?: string | null
           updated_at?: string
           user_id: string
+          view_count?: number
         }
         Update: {
           comments_count?: number
@@ -379,6 +381,7 @@ export type Database = {
           subject_phone?: string | null
           updated_at?: string
           user_id?: string
+          view_count?: number
         }
         Relationships: [
           {
