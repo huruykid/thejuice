@@ -1,16 +1,8 @@
-import { useState, useEffect } from 'react';
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { toast } from "sonner";
-import { supabase } from '@/integrations/supabase/client';
-import { validateUsername, validateProfileData, rateLimiter } from '@/lib/security';
-import { useSecurityEventLogger } from '@/hooks/useSecurityAudit';
-import { CheckCircle, X, Loader2 } from 'lucide-react';
-import { useDebounce } from '@/hooks/useDebounce';
-import { useProfile } from '@/hooks/useProfile';
+import { useProfileForm } from '@/hooks/useProfileForm';
+import { useProfileCreation } from '@/hooks/useProfileCreation';
+import { useUsernameValidation } from '@/hooks/useUsernameValidation';
+import { ProfileForm } from '@/components/ProfileCreation/ProfileForm';
 import OnboardingTips from '@/components/OnboardingTips';
 
 interface ProfileCreationProps {
@@ -18,211 +10,25 @@ interface ProfileCreationProps {
 }
 
 const ProfileCreation = ({ onComplete }: ProfileCreationProps) => {
-  const [username, setUsername] = useState('');
-  const [dateOfBirth, setDateOfBirth] = useState('');
-  const [city, setCity] = useState('');
-  const [relationshipStatus, setRelationshipStatus] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [isChecking, setIsChecking] = useState(false);
-  const [isAvailable, setIsAvailable] = useState<boolean | null>(null);
-  const [isCreating, setIsCreating] = useState(false);
-  
-  const { checkUsernameAvailability } = useProfile();
-  const { logProfileUpdate, logSuspiciousActivity } = useSecurityEventLogger();
-  const debouncedUsername = useDebounce(username, 500);
+  const { formData, updateField, updateUsername, validateForm, calculateAge } = useProfileForm();
+  const { isAvailable } = useUsernameValidation(formData.username);
+  const { isCreating, createProfile } = useProfileCreation();
 
-  const checkUsername = async (value: string) => {
-    if (!value || value.length < 3) {
-      setIsAvailable(null);
-      return;
-    }
-
-    setIsChecking(true);
-    try {
-      const available = await checkUsernameAvailability(value);
-      setIsAvailable(available);
-    } catch (error) {
-      console.error('Error checking username:', error);
-      setIsAvailable(false);
-    } finally {
-      setIsChecking(false);
-    }
-  };
-
-  // Debounced username checking
-  useEffect(() => {
-    if (debouncedUsername) {
-      checkUsername(debouncedUsername);
-    }
-  }, [debouncedUsername]);
-
-  const handleUsernameChange = (value: string) => {
-    // Clean the input
-    const cleaned = value.toLowerCase().replace(/[^a-z0-9_-]/g, '');
-    setUsername(cleaned);
-    
-    // Validate immediately for feedback
-    if (!validateUsername(cleaned)) {
-      setIsAvailable(false);
-    }
-  };
-
-  const calculateAge = (birthDate: string): number => {
-    const today = new Date();
-    const birth = new Date(birthDate);
-    let age = today.getFullYear() - birth.getFullYear();
-    const monthDiff = today.getMonth() - birth.getMonth();
-    
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
-      age--;
-    }
-    
-    return age;
-  };
-
-  const createProfile = async () => {
-    // Prevent double-clicks
-    if (isCreating) return;
-    // Rate limiting check - max 5 profile creation attempts per hour
-    const rateLimitKey = `profile_creation:${username}`;
-    if (!rateLimiter.isAllowed(rateLimitKey, 5, 60 * 60 * 1000)) {
-      const timeUntilReset = rateLimiter.getTimeUntilReset(rateLimitKey, 60 * 60 * 1000);
-      const minutesLeft = Math.ceil(timeUntilReset / (60 * 1000));
-      
-      logSuspiciousActivity('profile_creation_rate_limit', {
-        username,
-        minutes_until_reset: minutesLeft
-      });
-      
-      toast.error(`Too many attempts. Please wait ${minutesLeft} minutes before trying again.`);
-      return;
-    }
-
-    // Validate and sanitize profile data
-    const profileData = {
-      anonymous_username: username,
-      phone_number: phoneNumber,
-      city: city,
-      relationship_status: relationshipStatus
-    };
-
-    const validation = validateProfileData(profileData);
+  const handleSubmit = async () => {
+    const validation = validateForm(isAvailable || false);
     if (!validation.isValid) {
-      toast.error(validation.errors[0]);
-      return;
+      return; // Form validation errors are handled in the validation
     }
 
-    if (!isAvailable) {
-      toast.error('Please choose an available username');
-      return;
-    }
-
-    if (!dateOfBirth) {
-      toast.error('Please enter your date of birth');
-      return;
-    }
-
-    const age = calculateAge(dateOfBirth);
-    if (age < 18) {
-      toast.error('You must be 18 or older to join');
-      return;
-    }
-
-    setIsCreating(true);
-
-    try {
-      // Check availability one more time
-      const stillAvailable = await checkUsernameAvailability(username);
-      if (!stillAvailable) {
-        toast.error('Username is no longer available. Please choose another.');
-        setIsAvailable(false);
-        setIsCreating(false);
-        return;
-      }
-
-      // Get current user
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('User not authenticated');
-
-      // Check if profile already exists
-      const { data: existingProfile } = await supabase
-        .from('profiles')
-        .select('id')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      let error;
-      const profileUpdateData = {
-        ...validation.sanitizedData,
-        date_of_birth: dateOfBirth
-      };
-      
-      if (existingProfile) {
-        // Update existing profile
-        const result = await supabase
-          .from('profiles')
-          .update(profileUpdateData)
-          .eq('user_id', user.id);
-        error = result.error;
-      } else {
-        // Create new profile
-        const result = await supabase
-          .from('profiles')
-          .insert({
-            user_id: user.id,
-            ...profileUpdateData
-          });
-        error = result.error;
-      }
-
-      if (error) {
-        if (error.code === '23505') { // Unique violation
-          toast.error('Username is already taken');
-          setIsAvailable(false);
-        } else if (error.message.includes('age_check')) {
-          toast.error('You must be 18 or older to join');
-        } else if (error.message.includes('phone number')) {
-          toast.error('Invalid phone number format');
-        } else {
-          toast.error('Failed to create profile. Please try again.');
-        }
-        return;
-      }
-
-      // Log successful profile creation
-      logProfileUpdate(Object.keys(profileUpdateData));
-
-      toast.success('✨ Profile created! Taking your selfie next...');
-      onComplete();
-
-    } catch (error) {
-      console.error('Error creating profile:', error);
-      toast.error('Failed to create profile. Please try again.');
-    } finally {
-      setIsCreating(false);
-    }
+    await createProfile(formData, onComplete);
   };
 
-  const getStatusIcon = () => {
-    if (isChecking) return <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />;
-    if (isAvailable === true) return <CheckCircle className="h-4 w-4 text-green-600" />;
-    if (isAvailable === false) return <X className="h-4 w-4 text-red-600" />;
-    return null;
-  };
-
-  const getStatusText = () => {
-    if (isChecking) return 'Checking...';
-    if (isAvailable === true) return 'Available!';
-    if (isAvailable === false) return 'Not available';
-    return '';
-  };
-
-  const isValid = username && 
+  const isFormValid = formData.username && 
     isAvailable && 
-    dateOfBirth && 
-    city.trim() && 
-    relationshipStatus &&
-    calculateAge(dateOfBirth) >= 18;
+    formData.dateOfBirth && 
+    formData.city.trim() && 
+    formData.relationshipStatus &&
+    calculateAge(formData.dateOfBirth) >= 18;
 
   return (
     <div className="min-h-screen bg-gradient-soft flex items-center justify-center p-4">
@@ -237,101 +43,14 @@ const ProfileCreation = ({ onComplete }: ProfileCreationProps) => {
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="space-y-2">
-            <Label htmlFor="username">Anonymous Screen Name</Label>
-            <div className="relative">
-              <Input
-                id="username"
-                type="text"
-                placeholder="Choose a name other users will see"
-                value={username}
-                onChange={(e) => handleUsernameChange(e.target.value)}
-                className="pr-10"
-              />
-              <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                {getStatusIcon()}
-              </div>
-            </div>
-            {username && (
-              <p className={`text-sm ${isAvailable === false ? 'text-red-600' : isAvailable === true ? 'text-green-600' : 'text-muted-foreground'}`}>
-                {getStatusText()}
-              </p>
-            )}
-            <div className="text-xs text-muted-foreground space-y-1">
-              <p>• 3-20 characters</p>
-              <p>• Letters, numbers, underscore, hyphen only</p>
-              <p>• Don't use your real name</p>
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="dateOfBirth">Date of Birth</Label>
-            <Input
-              id="dateOfBirth"
-              type="date"
-              value={dateOfBirth}
-              onChange={(e) => setDateOfBirth(e.target.value)}
-              max={new Date(new Date().setFullYear(new Date().getFullYear() - 18)).toISOString().split('T')[0]}
-            />
-            <p className="text-xs text-muted-foreground">Must be 18 or older</p>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="city">City You Live In</Label>
-            <Input
-              id="city"
-              type="text"
-              placeholder="Los Angeles, CA"
-              value={city}
-              onChange={(e) => setCity(e.target.value)}
-            />
-            <p className="text-xs text-muted-foreground">Help others find local connections</p>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="phoneNumber">Phone Number (Optional)</Label>
-            <Input
-              id="phoneNumber"
-              type="tel"
-              placeholder="+1 (555) 123-4567"
-              value={phoneNumber}
-              onChange={(e) => setPhoneNumber(e.target.value)}
-            />
-            <p className="text-xs text-muted-foreground">For account security and recovery purposes only</p>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="relationshipStatus">Current Relationship Status</Label>
-            <Select value={relationshipStatus} onValueChange={setRelationshipStatus}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select your status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="single">Single</SelectItem>
-                <SelectItem value="talking">Talking to someone</SelectItem>
-                <SelectItem value="situationship">In a situationship</SelectItem>
-                <SelectItem value="relationship">In a relationship</SelectItem>
-                <SelectItem value="complicated">It's complicated</SelectItem>
-                <SelectItem value="prefer_not_to_say">Prefer not to say</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <Button 
-            onClick={createProfile} 
-            disabled={!isValid || isCreating}
-            className="w-full"
-            aria-label={isCreating ? "Creating your profile, please wait" : "Create your profile"}
-          >
-            {isCreating ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Creating Profile...
-              </>
-            ) : (
-              'Create My Profile'
-            )}
-          </Button>
+          <ProfileForm
+            formData={formData}
+            onUpdateField={updateField}
+            onUpdateUsername={updateUsername}
+            onSubmit={handleSubmit}
+            isValid={isFormValid}
+            isSubmitting={isCreating}
+          />
           
           <OnboardingTips step="profile" />
         </CardContent>
