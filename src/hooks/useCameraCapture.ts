@@ -46,7 +46,10 @@ export const useCameraCapture = () => {
       setStream(mediaStream);
       
       if (videoRef.current) {
-        videoRef.current.srcObject = mediaStream;
+        const video = videoRef.current;
+        video.srcObject = mediaStream;
+        
+        console.log('Setting up camera video element...');
         
         let isReady = false;
         
@@ -64,44 +67,68 @@ export const useCameraCapture = () => {
           setError('Camera failed to start. You can upload a photo instead.');
         };
         
-        // Ultra-aggressive timeout - force ready state after 800ms
+        // Very aggressive timeout - force ready after 300ms
         const timeoutId = setTimeout(() => {
           if (!isReady) {
-            console.log('Camera timeout - forcing ready state after 800ms');
+            console.log('Camera timeout - forcing ready state after 300ms');
             isReady = true;
             setIsLoading(false);
           }
-        }, 800); // Much faster
+        }, 300);
         
-        // Try multiple approaches for detecting ready state
-        const video = videoRef.current;
+        // Try to play the video immediately (required for some browsers)
+        const playVideo = async () => {
+          try {
+            video.muted = true; // Ensure muted for autoplay
+            video.playsInline = true; // Important for mobile
+            video.autoplay = true;
+            await video.play();
+            console.log('Video started playing');
+            
+            // Check if ready immediately after play
+            if (video.videoWidth > 0 && video.videoHeight > 0) {
+              handleVideoReady();
+            }
+          } catch (error) {
+            console.log('Video play failed, but continuing:', error);
+            // Don't treat this as an error - just continue with other detection methods
+          }
+        };
+        
+        // Start playing immediately
+        playVideo();
         
         // Approach 1: Standard events
         video.addEventListener('loadedmetadata', handleVideoReady, { once: true });
         video.addEventListener('canplay', handleVideoReady, { once: true });
+        video.addEventListener('loadeddata', handleVideoReady, { once: true });
         video.addEventListener('error', handleError, { once: true });
         
-        // Approach 2: Check if video dimensions are available (immediate)
+        // Approach 2: Check dimensions immediately and repeatedly
         const checkDimensions = () => {
+          console.log('Checking video dimensions:', video.videoWidth, 'x', video.videoHeight);
           if (video.videoWidth > 0 && video.videoHeight > 0) {
             handleVideoReady();
+            return true;
           }
+          return false;
         };
+        
+        // Check immediately
         checkDimensions();
         
-        // Approach 3: Fast polling fallback
+        // Approach 3: Very fast polling
         const pollInterval = setInterval(() => {
-          if (video.videoWidth > 0 && video.videoHeight > 0) {
+          if (checkDimensions()) {
             clearInterval(pollInterval);
-            handleVideoReady();
           }
-        }, 50); // Faster polling
+        }, 25); // Even faster polling
         
         // Cleanup function
         setTimeout(() => {
           clearTimeout(timeoutId);
           clearInterval(pollInterval);
-        }, 5000);
+        }, 2000);
       }
     } catch (error: any) {
       console.error('Error accessing camera:', error);
