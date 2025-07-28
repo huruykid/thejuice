@@ -7,7 +7,7 @@ import { useCameraCapture } from '@/hooks/useCameraCapture';
 import { useImageProcessing } from '@/hooks/useImageProcessing';
 import { useVerificationUpload } from '@/hooks/useVerificationUpload';
 import { useOnboardingState } from '@/hooks/useOnboardingState';
-import { CameraView } from '@/components/SelfieCapture/CameraView';
+
 import { ImagePreview } from '@/components/SelfieCapture/ImagePreview';
 import OnboardingTips from '@/components/OnboardingTips';
 
@@ -22,14 +22,10 @@ const RefactoredSelfieCapture: React.FC<RefactoredSelfieCaptureProps> = ({ onCom
   const { clearState } = useOnboardingState(userId);
   
   const { 
-    videoRef, 
-    stream, 
+    captureDirectPhoto, 
     isLoading: isCameraLoading, 
     error: cameraError, 
-    retryCount,
-    capturePhoto,
-    stopCamera,
-    startCamera
+    retryCount
   } = useCameraCapture();
   
   const { 
@@ -44,12 +40,11 @@ const RefactoredSelfieCapture: React.FC<RefactoredSelfieCaptureProps> = ({ onCom
     uploadVerification
   } = useVerificationUpload();
 
-  const handleCapture = () => {
-    const imageData = capturePhoto();
+  const handleCapture = async () => {
+    const imageData = await captureDirectPhoto();
     if (imageData) {
       setCapturedImage(imageData);
       checkQualityAsync(imageData);
-      stopCamera();
     }
   };
 
@@ -57,7 +52,6 @@ const RefactoredSelfieCapture: React.FC<RefactoredSelfieCaptureProps> = ({ onCom
   const handleRetake = () => {
     setCapturedImage(null);
     resetQuality();
-    startCamera();
   };
 
   const handleSubmit = async () => {
@@ -97,7 +91,7 @@ const RefactoredSelfieCapture: React.FC<RefactoredSelfieCaptureProps> = ({ onCom
               <Camera className="h-12 w-12 mx-auto text-muted-foreground mb-3" />
               <p className="text-sm font-medium mb-2">Camera Access Required</p>
               <p className="text-xs text-muted-foreground mb-4">{cameraError}</p>
-              <Button onClick={startCamera} className="w-full">
+              <Button onClick={handleCapture} disabled={isCameraLoading} className="w-full">
                 Try Camera Again
               </Button>
             </div>
@@ -137,13 +131,20 @@ const RefactoredSelfieCapture: React.FC<RefactoredSelfieCaptureProps> = ({ onCom
         
         <CardContent className="space-y-4">
           {!capturedImage ? (
-            <CameraView
-              videoRef={videoRef}
-              isLoading={isCameraLoading}
-              error={cameraError}
-              hasStream={!!stream}
-              onCapture={handleCapture}
-            />
+            <div className="text-center p-8 bg-muted rounded-lg">
+              <Camera className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
+              <p className="text-sm font-medium mb-4">Ready to take your verification photo</p>
+              <Button 
+                onClick={handleCapture} 
+                disabled={isCameraLoading}
+                className="w-full h-12 text-lg"
+              >
+                {isCameraLoading ? 'Taking Photo...' : 'Take Selfie'}
+              </Button>
+              {cameraError && (
+                <p className="text-sm text-destructive mt-2">{cameraError}</p>
+              )}
+            </div>
           ) : (
             <ImagePreview
               imageData={capturedImage}

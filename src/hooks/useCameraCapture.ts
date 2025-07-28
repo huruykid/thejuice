@@ -23,7 +23,7 @@ export const useCameraCapture = () => {
     };
   }, []);
 
-  const startCamera = async () => {
+  const captureDirectPhoto = async (): Promise<string | null> => {
     try {
       setIsLoading(true);
       setError(null);
@@ -33,123 +33,92 @@ export const useCameraCapture = () => {
         throw new Error('Camera not supported in this browser');
       }
       
-      // Simplified constraints for better compatibility
+      console.log('Requesting camera access for photo capture...');
+      
+      // Get camera stream for single photo capture
       const mediaStream = await navigator.mediaDevices.getUserMedia({
         video: {
           facingMode: 'user',
-          width: { ideal: 640, max: 1280 },
-          height: { ideal: 480, max: 720 }
+          width: { ideal: 640 },
+          height: { ideal: 480 }
         },
         audio: false
       });
       
-      setStream(mediaStream);
+      console.log('Camera access granted, capturing photo...');
       
-      if (videoRef.current) {
-        const video = videoRef.current;
-        video.srcObject = mediaStream;
+      // Create video element for capture
+      const video = document.createElement('video');
+      video.srcObject = mediaStream;
+      video.muted = true;
+      video.playsInline = true;
+      
+      return new Promise((resolve) => {
+        video.addEventListener('loadedmetadata', () => {
+          video.play().then(() => {
+            // Wait a moment for the camera to adjust
+            setTimeout(() => {
+              // Create canvas and capture
+              const canvas = document.createElement('canvas');
+              const context = canvas.getContext('2d');
+              
+              if (!context) {
+                mediaStream.getTracks().forEach(track => track.stop());
+                resolve(null);
+                return;
+              }
+              
+              canvas.width = video.videoWidth;
+              canvas.height = video.videoHeight;
+              context.drawImage(video, 0, 0, canvas.width, canvas.height);
+              
+              // Stop the camera
+              mediaStream.getTracks().forEach(track => track.stop());
+              
+              // Convert to base64
+              const photoData = canvas.toDataURL('image/jpeg', 0.85);
+              console.log('Photo captured successfully');
+              
+              setIsLoading(false);
+              resolve(photoData);
+            }, 500); // Brief delay for camera to stabilize
+          });
+        });
         
-        console.log('Setting up camera video element...');
-        
-        let isReady = false;
-        
-        // Single handler to prevent multiple calls
-        const handleVideoReady = () => {
-          if (isReady) return; // Prevent multiple calls
-          isReady = true;
-          console.log('Camera ready - video can play');
+        video.addEventListener('error', () => {
+          mediaStream.getTracks().forEach(track => track.stop());
           setIsLoading(false);
-        };
-        
-        const handleError = (e: Event) => {
-          console.error('Video error occurred:', e);
-          setIsLoading(false);
-          setError('Camera failed to start. You can upload a photo instead.');
-        };
-        
-        // Very aggressive timeout - force ready after 300ms
-        const timeoutId = setTimeout(() => {
-          if (!isReady) {
-            console.log('Camera timeout - forcing ready state after 300ms');
-            isReady = true;
-            setIsLoading(false);
-          }
-        }, 300);
-        
-        // Try to play the video immediately (required for some browsers)
-        const playVideo = async () => {
-          try {
-            video.muted = true; // Ensure muted for autoplay
-            video.playsInline = true; // Important for mobile
-            video.autoplay = true;
-            await video.play();
-            console.log('Video started playing');
-            
-            // Check if ready immediately after play
-            if (video.videoWidth > 0 && video.videoHeight > 0) {
-              handleVideoReady();
-            }
-          } catch (error) {
-            console.log('Video play failed, but continuing:', error);
-            // Don't treat this as an error - just continue with other detection methods
-          }
-        };
-        
-        // Start playing immediately
-        playVideo();
-        
-        // Approach 1: Standard events
-        video.addEventListener('loadedmetadata', handleVideoReady, { once: true });
-        video.addEventListener('canplay', handleVideoReady, { once: true });
-        video.addEventListener('loadeddata', handleVideoReady, { once: true });
-        video.addEventListener('error', handleError, { once: true });
-        
-        // Approach 2: Check dimensions immediately and repeatedly
-        const checkDimensions = () => {
-          console.log('Checking video dimensions:', video.videoWidth, 'x', video.videoHeight);
-          if (video.videoWidth > 0 && video.videoHeight > 0) {
-            handleVideoReady();
-            return true;
-          }
-          return false;
-        };
-        
-        // Check immediately
-        checkDimensions();
-        
-        // Approach 3: Very fast polling
-        const pollInterval = setInterval(() => {
-          if (checkDimensions()) {
-            clearInterval(pollInterval);
-          }
-        }, 25); // Even faster polling
-        
-        // Cleanup function
-        setTimeout(() => {
-          clearTimeout(timeoutId);
-          clearInterval(pollInterval);
-        }, 2000);
-      }
+          setError('Failed to capture photo');
+          resolve(null);
+        });
+      });
+      
     } catch (error: any) {
-      console.error('Error accessing camera:', error);
+      console.error('Error capturing photo:', error);
       setIsLoading(false);
       
       // More specific error messages
-      let errorMessage = 'Camera access denied. You can upload a photo instead.';
+      let errorMessage = 'Camera access denied. Please allow camera access.';
       
       if (error.name === 'NotAllowedError') {
-        errorMessage = 'Camera permission denied. Please allow camera access or upload a photo.';
+        errorMessage = 'Camera permission denied. Please allow camera access in your browser.';
       } else if (error.name === 'NotFoundError') {
-        errorMessage = 'No camera found. You can upload a photo instead.';
+        errorMessage = 'No camera found on this device.';
       } else if (error.name === 'NotSupportedError') {
-        errorMessage = 'Camera not supported in this browser. Please upload a photo.';
+        errorMessage = 'Camera not supported in this browser.';
       } else if (error.name === 'NotReadableError') {
-        errorMessage = 'Camera is being used by another app. Please close other apps or upload a photo.';
+        errorMessage = 'Camera is being used by another application.';
       }
       
       setError(errorMessage);
       setRetryCount(prev => prev + 1);
+      return null;
     }
+  };
+
+  const startCamera = async () => {
+    // For simplified photo capture, we don't need to start a video stream
+    setIsLoading(false);
   };
 
   const capturePhoto = (): string | null => {
@@ -189,6 +158,7 @@ export const useCameraCapture = () => {
     retryCount,
     startCamera,
     capturePhoto,
+    captureDirectPhoto,
     stopCamera,
     skipCamera
   };
