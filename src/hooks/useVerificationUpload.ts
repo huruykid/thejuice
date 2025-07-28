@@ -40,16 +40,13 @@ export const useVerificationUpload = () => {
 
       if (uploadError) throw uploadError;
 
-      const { data: { publicUrl } } = supabase.storage
-        .from('verification-selfies')
-        .getPublicUrl(fileName);
-
+      // For private buckets, store just the file path, not the full URL
       // Save verification record
       const { error: dbError } = await supabase
         .from('user_verifications')
         .upsert({
           user_id: userId,
-          selfie_url: publicUrl,
+          selfie_url: fileName, // Store just the file path for private buckets
           verification_status: 'pending',
           updated_at: new Date().toISOString()
         });

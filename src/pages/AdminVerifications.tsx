@@ -86,10 +86,19 @@ const AdminVerifications = () => {
         let signedUrl = undefined;
         if (verification.selfie_url) {
           try {
-            // Extract the file path from the storage URL
-            const url = new URL(verification.selfie_url);
-            const pathParts = url.pathname.split('/');
-            const filePath = pathParts.slice(3).join('/'); // Remove /storage/v1/object/public/verification-selfies
+            // Check if selfie_url is already just a file path or needs extraction
+            let filePath = verification.selfie_url;
+            
+            // If it's a full URL (legacy data), extract the path
+            if (verification.selfie_url.startsWith('http')) {
+              const url = new URL(verification.selfie_url);
+              const pathParts = url.pathname.split('/');
+              // Extract everything after /storage/v1/object/public/verification-selfies/
+              const bucketIndex = pathParts.indexOf('verification-selfies');
+              if (bucketIndex !== -1) {
+                filePath = pathParts.slice(bucketIndex + 1).join('/');
+              }
+            }
             
             const { data: signedUrlData } = await supabase.storage
               .from('verification-selfies')
