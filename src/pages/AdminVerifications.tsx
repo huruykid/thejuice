@@ -29,6 +29,7 @@ interface VerificationWithProfile {
     city: string;
     relationship_status: string;
   } | null;
+  signedUrl?: string;
 }
 
 const AdminVerifications = () => {
@@ -81,10 +82,30 @@ const AdminVerifications = () => {
           .eq('user_id', verification.user_id)
           .single();
 
+        // Generate signed URL for the selfie if it exists
+        let signedUrl = undefined;
+        if (verification.selfie_url) {
+          try {
+            // Extract the file path from the storage URL
+            const url = new URL(verification.selfie_url);
+            const pathParts = url.pathname.split('/');
+            const filePath = pathParts.slice(3).join('/'); // Remove /storage/v1/object/public/verification-selfies
+            
+            const { data: signedUrlData } = await supabase.storage
+              .from('verification-selfies')
+              .createSignedUrl(filePath, 3600); // 1 hour expiry
+            
+            signedUrl = signedUrlData?.signedUrl;
+          } catch (error) {
+            console.warn('Failed to generate signed URL for selfie:', error);
+          }
+        }
+
         verificationsWithProfiles.push({
           ...verification,
           verification_status: verification.verification_status as 'pending' | 'approved' | 'rejected',
-          profile: profileData
+          profile: profileData,
+          signedUrl
         });
       }
 
@@ -276,12 +297,16 @@ const AdminVerifications = () => {
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
-                {verification.selfie_url && (
+                {(verification.signedUrl || verification.selfie_url) && (
                   <div className="aspect-square bg-muted rounded-lg overflow-hidden">
                     <img 
-                      src={verification.selfie_url} 
+                      src={verification.signedUrl || verification.selfie_url} 
                       alt="Verification selfie"
                       className="w-full h-full object-cover"
+                      onError={(e) => {
+                        console.error('Failed to load image:', verification.selfie_url);
+                        e.currentTarget.style.display = 'none';
+                      }}
                     />
                   </div>
                 )}
@@ -330,12 +355,16 @@ const AdminVerifications = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                {selectedVerification.selfie_url && (
+                {(selectedVerification.signedUrl || selectedVerification.selfie_url) && (
                   <div className="aspect-square max-w-md mx-auto bg-muted rounded-lg overflow-hidden">
                     <img 
-                      src={selectedVerification.selfie_url} 
+                      src={selectedVerification.signedUrl || selectedVerification.selfie_url} 
                       alt="Verification selfie"
                       className="w-full h-full object-cover"
+                      onError={(e) => {
+                        console.error('Failed to load image:', selectedVerification.selfie_url);
+                        e.currentTarget.style.display = 'none';
+                      }}
                     />
                   </div>
                 )}
