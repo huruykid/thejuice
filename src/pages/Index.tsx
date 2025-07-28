@@ -20,7 +20,7 @@ const Index = () => {
   const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
   
   const { user, loading } = useAuth();
-  const { profile, isLoading: profileLoading, hasProfile } = useProfile(user);
+  const { profile, isLoading: profileLoading, hasProfile, refetch: refetchProfile } = useProfile(user);
   const { verification, isLoading: verificationLoading, hasVerification, isVerified, isPending, isRejected } = useVerification(user?.id);
   const { currentStep, setCurrentStep, markStepCompleted } = useOnboardingState(user?.id);
 
@@ -36,9 +36,11 @@ const Index = () => {
     return 5;
   };
 
-  const handleProfileCreated = () => {
+  const handleProfileCreated = async () => {
     markStepCompleted('profile');
     setCurrentStep('selfie');
+    // Force refresh of profile data to recognize the new profile
+    await refetchProfile();
   };
 
   const handleSelfieComplete = (success: boolean) => {

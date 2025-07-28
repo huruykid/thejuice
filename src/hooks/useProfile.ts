@@ -67,6 +67,7 @@ export const useProfile = (user?: any) => {
     isLoading,
     error,
     hasProfile: !!profile,
-    checkUsernameAvailability
+    checkUsernameAvailability,
+    refetch: () => queryClient.invalidateQueries({ queryKey: ['user-profile', user?.id] })
   };
 };
