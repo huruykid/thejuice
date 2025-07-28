@@ -41,40 +41,76 @@ const EnhancedSelfieCapture: React.FC<EnhancedSelfieCaptureProps> = ({ onComplet
       setIsCameraLoading(true);
       setCameraError(null);
       
-      // Optimized camera constraints for faster initialization
+      // Check if camera is supported
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error('Camera not supported in this browser');
+      }
+      
+      // Simplified constraints for better compatibility
       const mediaStream = await navigator.mediaDevices.getUserMedia({
         video: {
           facingMode: 'user',
-          width: { min: 320, ideal: 480, max: 640 },
-          height: { min: 240, ideal: 360, max: 480 },
-          frameRate: { ideal: 15, max: 30 } // Lower framerate for faster startup
+          width: { ideal: 640, max: 1280 },
+          height: { ideal: 480, max: 720 }
         },
-        audio: false // Explicitly disable audio for faster initialization
+        audio: false
       });
       
       setStream(mediaStream);
+      
       if (videoRef.current) {
         videoRef.current.srcObject = mediaStream;
         
-        // Multiple event listeners for faster detection
-        const handleReady = () => {
+        // More reliable ready detection
+        const handleVideoReady = () => {
+          console.log('Camera ready - video can play');
           setIsCameraLoading(false);
         };
         
-        videoRef.current.onloadedmetadata = handleReady;
-        videoRef.current.oncanplay = handleReady;
+        const handleError = () => {
+          console.error('Video error occurred');
+          setIsCameraLoading(false);
+          setCameraError('Camera failed to start. You can upload a photo instead.');
+        };
         
-        // Fallback timeout to prevent infinite loading
-        setTimeout(() => {
-          if (isCameraLoading) {
-            setIsCameraLoading(false);
-          }
-        }, 3000);
+        // Clean up any existing listeners
+        videoRef.current.removeEventListener('loadedmetadata', handleVideoReady);
+        videoRef.current.removeEventListener('canplay', handleVideoReady);
+        videoRef.current.removeEventListener('error', handleError);
+        
+        // Add event listeners
+        videoRef.current.addEventListener('loadedmetadata', handleVideoReady);
+        videoRef.current.addEventListener('canplay', handleVideoReady);
+        videoRef.current.addEventListener('error', handleError);
+        
+        // Immediate fallback timeout - don't wait too long
+        const timeoutId = setTimeout(() => {
+          console.log('Camera timeout - forcing ready state');
+          setIsCameraLoading(false);
+        }, 2000); // Reduced from 3000ms
+        
+        // Clear timeout if camera becomes ready
+        const cleanup = () => clearTimeout(timeoutId);
+        videoRef.current.addEventListener('loadedmetadata', cleanup, { once: true });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error accessing camera:', error);
       setIsCameraLoading(false);
-      setCameraError('Camera access denied. You can upload a photo instead.');
+      
+      // More specific error messages
+      let errorMessage = 'Camera access denied. You can upload a photo instead.';
+      
+      if (error.name === 'NotAllowedError') {
+        errorMessage = 'Camera permission denied. Please allow camera access or upload a photo.';
+      } else if (error.name === 'NotFoundError') {
+        errorMessage = 'No camera found. You can upload a photo instead.';
+      } else if (error.name === 'NotSupportedError') {
+        errorMessage = 'Camera not supported in this browser. Please upload a photo.';
+      } else if (error.name === 'NotReadableError') {
+        errorMessage = 'Camera is being used by another app. Please close other apps or upload a photo.';
+      }
+      
+      setCameraError(errorMessage);
       setRetryCount(prev => prev + 1);
     }
   };
@@ -489,7 +525,7 @@ const EnhancedSelfieCapture: React.FC<EnhancedSelfieCaptureProps> = ({ onComplet
                   {isCameraLoading ? (
                     <>
                       <div className="animate-spin w-4 h-4 border-2 border-white/30 border-t-white rounded-full mr-2" />
-                      Camera Starting...
+                      Starting Camera...
                     </>
                   ) : (
                     <>
@@ -497,6 +533,16 @@ const EnhancedSelfieCapture: React.FC<EnhancedSelfieCaptureProps> = ({ onComplet
                       Take Photo
                     </>
                   )}
+                </Button>
+                
+                {/* Add upload option even when camera is loading */}
+                <Button 
+                  onClick={() => fileInputRef.current?.click()}
+                  variant="outline"
+                  size="lg"
+                  className="px-3"
+                >
+                  <Upload className="h-4 w-4" />
                 </Button>
                 {cameraError && (
                   <Button 
@@ -567,6 +613,23 @@ const EnhancedSelfieCapture: React.FC<EnhancedSelfieCaptureProps> = ({ onComplet
             className="hidden"
           />
 
+          {/* Add skip option for camera issues */}
+          {isCameraLoading && (
+            <div className="text-center">
+              <Button 
+                onClick={() => {
+                  setIsCameraLoading(false);
+                  setCameraError('Camera unavailable. Please upload a photo instead.');
+                }}
+                variant="ghost" 
+                size="sm"
+                className="text-muted-foreground"
+              >
+                Camera taking too long? Upload photo instead
+              </Button>
+            </div>
+          )}
+          
           <div className="text-center">
             <p className="text-xs text-muted-foreground">
               Your photo is stored securely and used only for verification.
