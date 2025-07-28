@@ -87,6 +87,10 @@ const Landing = () => {
             No judgment, just real talk about modern dating.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button size="lg" onClick={handleGetStarted} variant="juice" className="text-lg px-8">
+              Sign Up Here
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
             <Button size="lg" onClick={() => window.open('https://instagram.com/sipjuiceapp', '_blank')} className="text-lg px-8">
               Join the Brotherhood
               <ArrowRight className="ml-2 h-5 w-5" />
