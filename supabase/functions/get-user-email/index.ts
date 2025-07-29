@@ -27,6 +27,41 @@ const handler = async (req: Request): Promise<Response> => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
     );
 
+    // Verify the requester is an admin
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      return createSecureErrorResponse("Authorization required", 401);
+    }
+
+    // Get the calling user's ID from the JWT
+    const token = authHeader.replace('Bearer ', '');
+    const { data: { user: callingUser }, error: authError } = await supabase.auth.getUser(token);
+    
+    if (authError || !callingUser) {
+      return createSecureErrorResponse("Invalid authentication", 401);
+    }
+
+    // Check if calling user has admin role
+    const { data: roles, error: roleError } = await supabase
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', callingUser.id)
+      .eq('role', 'admin');
+
+    if (roleError || !roles || roles.length === 0) {
+      console.error(`Unauthorized access attempt by user: ${callingUser.id}`);
+      return createSecureErrorResponse("Admin access required", 403);
+    }
+
+    // Log the admin access for security audit
+    await supabase.rpc('log_security_event', {
+      p_user_id: callingUser.id,
+      p_action: 'admin_email_lookup',
+      p_resource_type: 'user_email',
+      p_resource_id: userId,
+      p_details: { timestamp: new Date().toISOString() }
+    });
+
     // Get user data using service role permissions
     const { data: authUser, error } = await supabase.auth.admin.getUserById(userId);
 

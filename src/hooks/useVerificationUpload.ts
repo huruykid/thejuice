@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useSecurityEventLogger } from './useSecurityAudit';
 import type { ImageQuality } from './useImageProcessing';
 
 export const useVerificationUpload = () => {
   const [isUploading, setIsUploading] = useState(false);
   const { toast } = useToast();
+  const { logVerificationSubmission } = useSecurityEventLogger();
 
   const uploadVerification = async (
     imageData: string,
@@ -52,6 +54,9 @@ export const useVerificationUpload = () => {
         });
 
       if (dbError) throw dbError;
+
+      // Log the verification submission for security audit
+      logVerificationSubmission(fileName);
 
       toast({
         title: "✨ Photo Submitted Successfully!",
