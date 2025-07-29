@@ -21,7 +21,7 @@ const handler = async (req: Request): Promise<Response> => {
     console.log(`Sending approval email to: ${email}`);
 
     const emailResponse = await resend.emails.send({
-      from: "Juice App <onboarding@resend.dev>",
+      from: "Juice App <noreply@teaappformen.com>",
       to: [email],
       subject: "🎉 Welcome to Juice - Your Account is Approved!",
       html: `
@@ -87,7 +87,7 @@ const handler = async (req: Request): Promise<Response> => {
               </ul>
 
               <div style="text-align: center;">
-                <a href="${Deno.env.get('SUPABASE_URL') ? Deno.env.get('SUPABASE_URL').replace('/rest/v1', '') : 'https://da2e9ee2-4548-482f-80e7-6cfedc4bfcb9.lovableproject.com'}//" class="cta-button">
+                <a href="https://teaappformen.com" class="cta-button">
                   🍊 Start Sharing Your Stories
                 </a>
               </div>
