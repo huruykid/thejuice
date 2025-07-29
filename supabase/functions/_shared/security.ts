@@ -11,9 +11,9 @@ export const securityHeaders = {
   'X-Frame-Options': 'DENY',
   'X-XSS-Protection': '1; mode=block',
   'Referrer-Policy': 'strict-origin-when-cross-origin',
-  'Permissions-Policy': 'camera=(), microphone=(), location=()',
-  'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
-  'Content-Security-Policy': "default-src 'self'; script-src 'self' 'sha256-[your-hash-here]'; style-src 'self' 'sha256-[your-hash-here]'; img-src 'self' data: https: blob:; connect-src 'self' https://*.supabase.co wss://*.supabase.co; font-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self';",
+  'Permissions-Policy': 'camera=(), microphone=(), location=(), geolocation=(), payment=(), usb=()',
+  'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload',
+  'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline' https://fonts.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https: blob: https://*.supabase.co; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com https://fonts.googleapis.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests;",
 };
 
 export const getAllHeaders = () => ({
@@ -52,5 +52,38 @@ export const createSecureErrorResponse = (
   return createSecureResponse(
     { error: message },
     { status }
+  );
+};
+
+// Rate limiting store (in-memory for edge functions)
+const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
+
+export const checkRateLimit = (
+  identifier: string,
+  maxRequests: number = 100,
+  windowMs: number = 60000 // 1 minute
+): boolean => {
+  const now = Date.now();
+  const key = identifier;
+  
+  const current = rateLimitStore.get(key);
+  
+  if (!current || now > current.resetTime) {
+    rateLimitStore.set(key, { count: 1, resetTime: now + windowMs });
+    return true;
+  }
+  
+  if (current.count >= maxRequests) {
+    return false;
+  }
+  
+  current.count++;
+  return true;
+};
+
+export const createRateLimitErrorResponse = (): Response => {
+  return createSecureErrorResponse(
+    'Rate limit exceeded. Please try again later.',
+    429
   );
 };

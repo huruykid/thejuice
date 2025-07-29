@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { User, Session } from '@supabase/supabase-js';
+import { useSecurityMonitoring } from './useSecurityMonitoring';
 
 export const useAuth = () => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const { trackFailedLogin, trackLoginPattern } = useSecurityMonitoring(user?.id);
 
   useEffect(() => {
     // Set up auth state listener
@@ -89,10 +91,19 @@ export const useAuth = () => {
   };
 
   const signIn = async (email: string, password: string) => {
+    // Track login pattern for security monitoring
+    trackLoginPattern(email);
+    
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password
     });
+    
+    // Track failed login attempts
+    if (error) {
+      trackFailedLogin(email);
+    }
+    
     return { error };
   };
 
