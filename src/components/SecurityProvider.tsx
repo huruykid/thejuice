@@ -30,12 +30,7 @@ export const SecurityProvider: React.FC<SecurityProviderProps> = ({
 }) => {
   const { user } = useAuth();
   const { extendSession } = useSessionTimeout(sessionTimeoutMinutes);
-  const { moderateContent, trackProfileChange, monitorSessionSecurity } = useSecurityMonitoring(user?.id);
-
-  // Initialize session monitoring
-  useEffect(() => {
-    monitorSessionSecurity();
-  }, [user?.id]);
+  const { moderateContent, trackProfileChange } = useSecurityMonitoring(user?.id);
 
   const value: SecurityContextType = {
     extendSession,

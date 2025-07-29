@@ -97,40 +97,38 @@ export const useSecurityMonitoring = (userId?: string) => {
   };
 
   // Monitor for session hijacking attempts
-  const monitorSessionSecurity = () => {
+  useEffect(() => {
     if (!userId) return;
     
-    useEffect(() => {
-      const checkSessionSecurity = async () => {
-        try {
-          const { data: { session } } = await supabase.auth.getSession();
+    const checkSessionSecurity = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (session) {
+          const tokenExp = session.expires_at;
+          const now = Math.floor(Date.now() / 1000);
           
-          if (session) {
-            const tokenExp = session.expires_at;
-            const now = Math.floor(Date.now() / 1000);
-            
-            // Check if token is about to expire (within 5 minutes)
-            if (tokenExp && (tokenExp - now) < 300) {
-              // Attempt to refresh token
-              const { error } = await supabase.auth.refreshSession();
-              if (error) {
-                logSuspiciousActivity('token_refresh_failed', {
-                  error: error.message,
-                  expires_at: tokenExp
-                });
-              }
+          // Check if token is about to expire (within 5 minutes)
+          if (tokenExp && (tokenExp - now) < 300) {
+            // Attempt to refresh token
+            const { error } = await supabase.auth.refreshSession();
+            if (error) {
+              logSuspiciousActivity('token_refresh_failed', {
+                error: error.message,
+                expires_at: tokenExp
+              });
             }
           }
-        } catch (error) {
-          console.error('Session security check failed:', error);
         }
-      };
+      } catch (error) {
+        console.error('Session security check failed:', error);
+      }
+    };
 
-      // Check session security every 5 minutes
-      const interval = setInterval(checkSessionSecurity, 5 * 60 * 1000);
-      return () => clearInterval(interval);
-    }, [userId]);
-  };
+    // Check session security every 5 minutes
+    const interval = setInterval(checkSessionSecurity, 5 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, [userId, logSuspiciousActivity]);
 
   // Content moderation for stories
   const moderateContent = (content: string): { isViolation: boolean; reasons: string[] } => {
@@ -180,7 +178,6 @@ export const useSecurityMonitoring = (userId?: string) => {
     trackFailedLogin,
     trackProfileChange,
     trackLoginPattern,
-    monitorSessionSecurity,
     moderateContent,
     suspiciousActivity
   };
