@@ -21,7 +21,7 @@ const handler = async (req: Request): Promise<Response> => {
     console.log(`Sending approval email to: ${email}`);
 
     const emailResponse = await resend.emails.send({
-      from: "Juice App <noreply@teaappformen.com>",
+      from: "SipJuice <noreply@sipjuice.app>",
       to: [email],
       subject: "🎉 Welcome to Juice - Your Account is Approved!",
       html: `
@@ -87,7 +87,7 @@ const handler = async (req: Request): Promise<Response> => {
               </ul>
 
               <div style="text-align: center;">
-                <a href="https://teaappformen.com" class="cta-button">
+                <a href="https://sipjuice.app" class="cta-button">
                   🍊 Start Sharing Your Stories
                 </a>
               </div>

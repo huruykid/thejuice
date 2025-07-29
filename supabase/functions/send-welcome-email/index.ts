@@ -21,7 +21,7 @@ const handler = async (req: Request): Promise<Response> => {
     console.log(`Sending welcome email to: ${email}`);
 
     const emailResponse = await resend.emails.send({
-      from: "SipJuice <onboarding@resend.dev>", // Using Resend's default domain for now
+      from: "SipJuice <noreply@sipjuice.app>",
       to: [email],
       subject: "Welcome to SipJuice! 🍹",
       html: `
@@ -52,7 +52,7 @@ const handler = async (req: Request): Promise<Response> => {
             </p>
             
             <div style="text-align: center; margin: 30px 0;">
-              <a href="${Deno.env.get('SUPABASE_URL') ? `https://${Deno.env.get('SUPABASE_URL').replace('https://', '')}` : 'https://sipjuice.app'}" 
+              <a href="https://sipjuice.app" 
                  style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 30px; text-decoration: none; border-radius: 25px; font-weight: bold; display: inline-block;">
                 Start Your Journey
               </a>
