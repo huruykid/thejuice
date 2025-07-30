@@ -328,15 +328,15 @@ export type Database = {
       stories: {
         Row: {
           comments_count: number
-          communication_rating: number
+          communication_rating: number | null
           content: string
           created_at: string
-          emotional_safety_rating: number
+          emotional_safety_rating: number | null
           id: string
           image_url: string | null
           location: string | null
-          loyalty_rating: number
-          overall_vibe_rating: number
+          loyalty_rating: number | null
+          overall_vibe_rating: number | null
           profile_id: string | null
           reactions_count: number
           subject_name: string | null
@@ -347,15 +347,15 @@ export type Database = {
         }
         Insert: {
           comments_count?: number
-          communication_rating: number
+          communication_rating?: number | null
           content: string
           created_at?: string
-          emotional_safety_rating: number
+          emotional_safety_rating?: number | null
           id?: string
           image_url?: string | null
           location?: string | null
-          loyalty_rating: number
-          overall_vibe_rating: number
+          loyalty_rating?: number | null
+          overall_vibe_rating?: number | null
           profile_id?: string | null
           reactions_count?: number
           subject_name?: string | null
@@ -366,15 +366,15 @@ export type Database = {
         }
         Update: {
           comments_count?: number
-          communication_rating?: number
+          communication_rating?: number | null
           content?: string
           created_at?: string
-          emotional_safety_rating?: number
+          emotional_safety_rating?: number | null
           id?: string
           image_url?: string | null
           location?: string | null
-          loyalty_rating?: number
-          overall_vibe_rating?: number
+          loyalty_rating?: number | null
+          overall_vibe_rating?: number | null
           profile_id?: string | null
           reactions_count?: number
           subject_name?: string | null

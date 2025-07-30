@@ -82,7 +82,6 @@ export const useCreateStory = () => {
     mutationFn: async ({
       content,
       tags,
-      ratings,
       location,
       imageUrl,
       subjectName,
@@ -90,12 +89,6 @@ export const useCreateStory = () => {
     }: {
       content: string;
       tags: string[];
-      ratings: {
-        communication: number;
-        loyalty: number;
-        emotionalSafety: number;
-        overallVibe: number;
-      };
       location?: string;
       imageUrl?: string;
       subjectName?: string;
@@ -111,26 +104,6 @@ export const useCreateStory = () => {
       const sanitizedLocation = location ? sanitizeText(location) : null;
       const sanitizedSubjectName = subjectName ? sanitizeText(subjectName) : null;
       const sanitizedSubjectPhone = subjectPhone ? sanitizeText(subjectPhone) : null;
-
-      // Validate ratings - ensure all ratings are provided and valid
-      const ratingValidations = [
-        { value: ratings.communication, name: 'Communication' },
-        { value: ratings.loyalty, name: 'Loyalty' },
-        { value: ratings.emotionalSafety, name: 'Emotional Safety' },
-        { value: ratings.overallVibe, name: 'Overall Vibe' }
-      ];
-
-      for (const rating of ratingValidations) {
-        // If rating is 0 or undefined, require user to set it
-        if (!rating.value || rating.value === 0) {
-          throw new Error(`Please set a rating for ${rating.name}`);
-        }
-        
-        const validation = validateRating(rating.value, rating.name);
-        if (!validation.isValid) {
-          throw new Error(validation.error);
-        }
-      }
 
       // Validate and sanitize tags
       const sanitizedTags: string[] = [];
@@ -161,10 +134,6 @@ export const useCreateStory = () => {
         .insert({
           profile_id: profile.id,
           content: sanitizedContent,
-          communication_rating: ratings.communication,
-          loyalty_rating: ratings.loyalty,
-          emotional_safety_rating: ratings.emotionalSafety,
-          overall_vibe_rating: ratings.overallVibe,
           location: sanitizedLocation,
           image_url: imageUrl || null,
           subject_name: sanitizedSubjectName,
