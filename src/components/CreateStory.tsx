@@ -385,12 +385,16 @@ const CreateStory = ({
               <div>
                 <h3 className="text-lg font-semibold mb-3">Share Your Experience</h3>
                 <div className="space-y-4">
-                  <textarea
+                  <Textarea
                     value={storyData.content}
                     onChange={(e) => setStoryData(prev => ({ ...prev, content: e.target.value }))}
-                    placeholder="Share your dating experience..."
-                    className="w-full h-40 p-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                    placeholder="Share your dating experience... What happened? How did it make you feel?"
+                    className="min-h-[120px] resize-none"
+                    maxLength={5000}
                   />
+                  <p className="text-xs text-muted-foreground">
+                    {storyData.content.length}/5000 characters
+                  </p>
                 </div>
               </div>
               
