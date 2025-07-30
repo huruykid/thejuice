@@ -37,10 +37,16 @@ const CreateStory = ({
   const createStory = useCreateStory();
   const { toast } = useToast();
 
-  const availableTags = [
-    "🚩Red Flag", "💯Loyal", "🫠Ghosted", "💸Gold Digger", "✨Thoughtful", 
-    "📱Phone Addict", "🤷‍♀️Mixed Signals", "🎭Fake", "🔥Chemistry", "❄️Cold", 
-    "🎵Music Lover", "🍕Foodie", "💼Career Focused", "🏃‍♂️Active", "🎨Creative"
+  const greenFlags = [
+    "💯Loyal", "✨Thoughtful", "🔥Chemistry", "🎵Music Lover", "🍕Foodie", 
+    "💼Career Focused", "🏃‍♂️Active", "🎨Creative", "😂Funny", "🧠Smart",
+    "💝Generous", "🤗Respectful", "📞Good Communicator"
+  ];
+
+  const redFlags = [
+    "🚩Red Flag", "🫠Ghosted", "💸Gold Digger", "📱Phone Addict", 
+    "🤷‍♀️Mixed Signals", "🎭Fake", "❄️Cold", "🙄Rude", "⏰Always Late",
+    "🍻Heavy Drinker", "🤥Dishonest", "😠Aggressive"
   ];
 
   const datingApps = [
@@ -265,12 +271,33 @@ const CreateStory = ({
         </div>
 
         <div className="overflow-y-auto max-h-[calc(90vh-200px)]">
-          {/* Step 1: Content */}
+          {/* Step 1: Person Details */}
           {step === 0 && (
             <div className="space-y-6 p-6">
               <div>
-                <h3 className="text-lg font-semibold mb-3">Share Your Experience</h3>
+                <h3 className="text-lg font-semibold mb-3">Person Details</h3>
                 <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Name/Username *</label>
+                    <Input
+                      value={storyData.personName}
+                      onChange={(e) => setStoryData(prev => ({ ...prev, personName: e.target.value }))}
+                      placeholder="@username or first name"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Phone *</label>
+                    <Input
+                      value={storyData.personPhone}
+                      onChange={(e) => setStoryData(prev => ({ ...prev, personPhone: e.target.value }))}
+                      placeholder="Phone number"
+                      type="tel"
+                      required
+                    />
+                    <p className="text-xs text-gray-500 mt-1">For profile matching only - never displayed publicly</p>
+                  </div>
+
                   {/* Add Photos Section */}
                   <div className="space-y-4">
                     <h4 className="text-sm font-medium">Add Photos (Optional)</h4>
@@ -335,7 +362,29 @@ const CreateStory = ({
                       </div>
                     )}
                   </div>
+                </div>
+              </div>
+              
+              <div className="flex justify-between">
+                <Button variant="outline" onClick={onClose}>
+                  Cancel
+                </Button>
+                <Button 
+                  onClick={handleNext}
+                  disabled={!storyData.personName.trim() || !storyData.personPhone.trim()}
+                >
+                  Next
+                </Button>
+              </div>
+            </div>
+          )}
 
+          {/* Step 2: Story Content */}
+          {step === 1 && (
+            <div className="space-y-6 p-6">
+              <div>
+                <h3 className="text-lg font-semibold mb-3">Share Your Experience</h3>
+                <div className="space-y-4">
                   <textarea
                     value={storyData.content}
                     onChange={(e) => setStoryData(prev => ({ ...prev, content: e.target.value }))}
@@ -346,8 +395,8 @@ const CreateStory = ({
               </div>
               
               <div className="flex justify-between">
-                <Button variant="outline" onClick={onClose}>
-                  Cancel
+                <Button variant="outline" onClick={handleBack}>
+                  Back
                 </Button>
                 <Button 
                   onClick={handleNext}
@@ -359,60 +408,44 @@ const CreateStory = ({
             </div>
           )}
 
-          {/* Step 2: Tags */}
-          {step === 1 && (
-            <div className="space-y-6 p-6">
-              <div>
-                <h3 className="text-lg font-semibold mb-3">Add Tags</h3>
-                <p className="text-sm text-gray-600 mb-4">Choose tags that describe your experience</p>
-                <div className="flex flex-wrap gap-2">
-                  {availableTags.map((tag) => (
-                    <Badge
-                      key={tag}
-                      variant={storyData.selectedTags.includes(tag) ? "default" : "outline"}
-                      className="cursor-pointer"
-                      onClick={() => toggleTag(tag)}
-                    >
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-              
-              <div className="flex justify-between">
-                <Button variant="outline" onClick={handleBack}>
-                  Back
-                </Button>
-                <Button onClick={handleNext}>
-                  Next
-                </Button>
-              </div>
-            </div>
-          )}
-
-          {/* Step 3: Person Details */}
+          {/* Step 3: Flags */}
           {step === 2 && (
             <div className="space-y-6 p-6">
               <div>
-                <h3 className="text-lg font-semibold mb-3">Person Details (Optional)</h3>
+                <h3 className="text-lg font-semibold mb-3">Red Flags & Green Flags</h3>
+                <p className="text-sm text-gray-600 mb-4">Select any flags that apply to this person</p>
+                
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium mb-1">Name/Username</label>
-                    <Input
-                      value={storyData.personName}
-                      onChange={(e) => setStoryData(prev => ({ ...prev, personName: e.target.value }))}
-                      placeholder="@username or first name"
-                    />
+                    <h4 className="text-md font-medium text-green-700 mb-2">Green Flags ✅</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {greenFlags.map((flag) => (
+                        <Badge
+                          key={flag}
+                          variant={storyData.selectedTags.includes(flag) ? "default" : "outline"}
+                          className="cursor-pointer border-green-200 hover:border-green-300"
+                          onClick={() => toggleTag(flag)}
+                        >
+                          {flag}
+                        </Badge>
+                      ))}
+                    </div>
                   </div>
+                  
                   <div>
-                    <label className="block text-sm font-medium mb-1">Phone (Optional)</label>
-                    <Input
-                      value={storyData.personPhone}
-                      onChange={(e) => setStoryData(prev => ({ ...prev, personPhone: e.target.value }))}
-                      placeholder="Phone number"
-                      type="tel"
-                    />
-                    <p className="text-xs text-gray-500 mt-1">For profile matching only - never displayed publicly</p>
+                    <h4 className="text-md font-medium text-red-700 mb-2">Red Flags 🚩</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {redFlags.map((flag) => (
+                        <Badge
+                          key={flag}
+                          variant={storyData.selectedTags.includes(flag) ? "default" : "outline"}
+                          className="cursor-pointer border-red-200 hover:border-red-300"
+                          onClick={() => toggleTag(flag)}
+                        >
+                          {flag}
+                        </Badge>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -428,7 +461,7 @@ const CreateStory = ({
             </div>
           )}
 
-          {/* Step 4: Final Details */}
+          {/* Step 4: Metadata */}
           {step === 3 && (
             <div className="space-y-6 p-6">
               <div>
