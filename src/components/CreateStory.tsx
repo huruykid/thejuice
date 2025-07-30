@@ -209,11 +209,25 @@ const CreateStory = ({
       setTimeout(() => {
         onClose();
       }, 2500);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Detailed error publishing story:', error);
+      
+      // Better error handling with specific messages
+      let errorMessage = "Failed to publish story. Please try again.";
+      
+      if (error?.message?.includes('verification')) {
+        errorMessage = "You need to complete account verification before posting stories.";
+      } else if (error?.message?.includes('Invalid story content')) {
+        errorMessage = "Story content contains invalid characters or formatting.";
+      } else if (error?.message?.includes('Invalid subject phone')) {
+        errorMessage = "Please enter a valid phone number format.";
+      } else if (error?.message?.includes('authentication')) {
+        errorMessage = "Please log in to post a story.";
+      }
+      
       toast({
         title: "Error",
-        description: "Failed to publish story. Please try again.",
+        description: errorMessage,
         variant: "destructive"
       });
     }

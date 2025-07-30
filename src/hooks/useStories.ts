@@ -6,10 +6,10 @@ export interface Story {
   id: string;
   profile_id: string;
   content: string;
-  communication_rating: number;
-  loyalty_rating: number;
-  emotional_safety_rating: number;
-  overall_vibe_rating: number;
+  communication_rating: number | null;
+  loyalty_rating: number | null;
+  emotional_safety_rating: number | null;
+  overall_vibe_rating: number | null;
   reactions_count: number;
   comments_count: number;
   view_count: number;
