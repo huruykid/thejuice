@@ -7,6 +7,8 @@ interface ApproveUserData {
   email: string;
   username?: string;
   notes?: string;
+  verificationId?: string;
+  selfieUrl?: string;
 }
 
 export const useApproveUser = () => {
@@ -14,7 +16,7 @@ export const useApproveUser = () => {
   const { toast } = useToast();
 
   return useMutation({
-    mutationFn: async ({ userId, email, username, notes }: ApproveUserData) => {
+    mutationFn: async ({ userId, email, username, notes, verificationId, selfieUrl }: ApproveUserData) => {
       // Update verification status to approved
       const { error: updateError } = await supabase
         .from('user_verifications')
@@ -27,6 +29,26 @@ export const useApproveUser = () => {
 
       if (updateError) {
         throw new Error(`Failed to update verification: ${updateError.message}`);
+      }
+
+      // Delete verification selfie after approval
+      if (verificationId && selfieUrl) {
+        try {
+          const { error: deleteError } = await supabase.functions.invoke('delete-verification-selfie', {
+            body: { 
+              verificationId,
+              selfieUrl
+            }
+          });
+
+          if (deleteError) {
+            console.error('Failed to delete verification selfie:', deleteError);
+            // Continue with approval process even if deletion fails
+          }
+        } catch (error) {
+          console.error('Error during selfie deletion:', error);
+          // Continue with approval process even if deletion fails
+        }
       }
 
       // Send approval email
@@ -48,7 +70,7 @@ export const useApproveUser = () => {
       } else {
         toast({
           title: "✅ User Approved",
-          description: "User approved and welcome email sent successfully!",
+          description: "User approved and verification selfie deleted for privacy protection!",
         });
       }
 

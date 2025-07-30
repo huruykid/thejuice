@@ -479,8 +479,10 @@ export type Database = {
       user_verifications: {
         Row: {
           created_at: string
+          deleted_by: string | null
           id: string
           notes: string | null
+          selfie_deleted_at: string | null
           selfie_url: string | null
           updated_at: string
           user_id: string
@@ -488,8 +490,10 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          deleted_by?: string | null
           id?: string
           notes?: string | null
+          selfie_deleted_at?: string | null
           selfie_url?: string | null
           updated_at?: string
           user_id: string
@@ -497,8 +501,10 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          deleted_by?: string | null
           id?: string
           notes?: string | null
+          selfie_deleted_at?: string | null
           selfie_url?: string | null
           updated_at?: string
           user_id?: string

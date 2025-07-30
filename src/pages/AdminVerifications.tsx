@@ -12,7 +12,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { CheckCircle, XCircle, Clock, Search, Filter, Mail } from 'lucide-react';
+import { CheckCircle, XCircle, Clock, Search, Filter, Mail, Shield } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface VerificationWithProfile {
@@ -23,6 +23,8 @@ interface VerificationWithProfile {
   created_at: string;
   updated_at: string;
   notes: string | null;
+  selfie_deleted_at: string | null;
+  deleted_by: string | null;
   profile: {
     anonymous_username: string;
     date_of_birth: string;
@@ -170,7 +172,9 @@ const AdminVerifications = () => {
         userId: selectedVerification.user_id,
         email: emailResponse.email,
         username: selectedVerification.profile?.anonymous_username,
-        notes: notes || undefined
+        notes: notes || undefined,
+        verificationId: selectedVerification.id,
+        selfieUrl: selectedVerification.selfie_url || undefined
       });
       
       // Reset form
@@ -306,7 +310,15 @@ const AdminVerifications = () => {
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
-                {(verification.signedUrl || verification.selfie_url) && (
+                {verification.selfie_deleted_at ? (
+                  <div className="aspect-square bg-muted rounded-lg flex items-center justify-center border-2 border-dashed border-green-300">
+                    <div className="text-center space-y-2">
+                      <Shield className="w-8 h-8 mx-auto text-green-600" />
+                      <p className="text-sm text-green-600 font-medium">Image Deleted</p>
+                      <p className="text-xs text-muted-foreground">Privacy Protected</p>
+                    </div>
+                  </div>
+                ) : (verification.signedUrl || verification.selfie_url) ? (
                   <div className="aspect-square bg-muted rounded-lg overflow-hidden">
                     <img 
                       src={verification.signedUrl || verification.selfie_url} 
@@ -318,11 +330,17 @@ const AdminVerifications = () => {
                       }}
                     />
                   </div>
-                )}
+                ) : null}
                 
                 <div className="space-y-2 text-sm">
                   <p><strong>Status:</strong> {verification.profile?.relationship_status}</p>
                   <p><strong>Submitted:</strong> {new Date(verification.created_at).toLocaleDateString()}</p>
+                  {verification.selfie_deleted_at && (
+                    <p className="text-green-600 text-xs flex items-center">
+                      <Shield className="w-3 h-3 mr-1" />
+                      <strong>Selfie deleted:</strong> {new Date(verification.selfie_deleted_at).toLocaleDateString()}
+                    </p>
+                  )}
                   {verification.notes && (
                     <p className="text-muted-foreground"><strong>Notes:</strong> {verification.notes}</p>
                   )}
@@ -364,7 +382,20 @@ const AdminVerifications = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                {(selectedVerification.signedUrl || selectedVerification.selfie_url) && (
+                {selectedVerification.selfie_deleted_at ? (
+                  <div className="aspect-square max-w-md mx-auto bg-muted rounded-lg flex items-center justify-center border-2 border-dashed border-green-300">
+                    <div className="text-center space-y-3">
+                      <Shield className="w-12 h-12 mx-auto text-green-600" />
+                      <div>
+                        <p className="text-lg text-green-600 font-medium">Image Deleted</p>
+                        <p className="text-sm text-muted-foreground">Privacy Protected</p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Deleted: {new Date(selectedVerification.selfie_deleted_at).toLocaleString()}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ) : (selectedVerification.signedUrl || selectedVerification.selfie_url) ? (
                   <div className="aspect-square max-w-md mx-auto bg-muted rounded-lg overflow-hidden">
                     <img 
                       src={selectedVerification.signedUrl || selectedVerification.selfie_url} 
@@ -376,7 +407,7 @@ const AdminVerifications = () => {
                       }}
                     />
                   </div>
-                )}
+                ) : null}
 
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
