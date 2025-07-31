@@ -134,7 +134,8 @@ export const validateTag = (tag: string): { isValid: boolean; error?: string } =
   }
   
   // Allow emojis, unicode characters, and common punctuation for tags
-  if (!/^[\p{L}\p{N}\p{P}\p{S}\p{Z}_-]+$/u.test(trimmed)) {
+  // \p{L} = letters, \p{N} = numbers, \p{P} = punctuation, \p{S} = symbols (including emojis), \p{Z} = separators
+  if (!/^[\p{L}\p{N}\p{P}\p{S}\p{Z}\p{So}_-]+$/u.test(trimmed)) {
     return { isValid: false, error: 'Tag contains invalid characters' };
   }
   
