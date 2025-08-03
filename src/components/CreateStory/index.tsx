@@ -7,7 +7,6 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import PersonDetailsStep from "./PersonDetailsStep";
 import StoryContentStep from "./StoryContentStep";
-import FlagsStep from "./FlagsStep";
 import MetadataStep from "./MetadataStep";
 import SuccessAnimation from "./SuccessAnimation";
 
@@ -48,7 +47,7 @@ const CreateStory = ({ onClose }: { onClose: () => void }) => {
   const { toast } = useToast();
 
   const handleNext = () => {
-    if (step < 3) setStep(step + 1);
+    if (step < 2) setStep(step + 1);
   };
 
   const handleBack = () => {
@@ -183,15 +182,6 @@ const CreateStory = ({ onClose }: { onClose: () => void }) => {
           )}
 
           {step === 2 && (
-            <FlagsStep
-              storyData={storyData}
-              setStoryData={setStoryData}
-              onNext={handleNext}
-              onBack={handleBack}
-            />
-          )}
-
-          {step === 3 && (
             <MetadataStep
               storyData={storyData}
               setStoryData={setStoryData}
