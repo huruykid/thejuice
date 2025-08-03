@@ -93,13 +93,12 @@ const PersonDetailsStep = ({
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Phone *</label>
+            <label className="block text-sm font-medium mb-1">Phone</label>
             <Input
               value={storyData.personPhone}
               onChange={(e) => setStoryData(prev => ({ ...prev, personPhone: e.target.value }))}
               placeholder="Phone number"
               type="tel"
-              required
             />
             <p className="text-xs text-gray-500 mt-1">For profile matching only - never displayed publicly</p>
           </div>
@@ -177,7 +176,7 @@ const PersonDetailsStep = ({
         </Button>
         <Button 
           onClick={onNext}
-          disabled={!storyData.personName.trim() || !storyData.personPhone.trim()}
+          disabled={!storyData.personName.trim()}
         >
           Next
         </Button>
