@@ -127,10 +127,28 @@ const StoryCard = ({
         reactionType 
       });
       
-      if (reactionType === 'red_flag') {
-        setIsRedFlagged(result?.action === 'added');
-      } else if (reactionType === 'green_flag') {
-        setIsGreenFlagged(result?.action === 'added');
+      if (result?.action === 'added') {
+        // User added a new reaction
+        if (reactionType === 'red_flag') {
+          setIsRedFlagged(true);
+          // If they replaced a green flag, remove it
+          if (result.replacedType === 'green_flag') {
+            setIsGreenFlagged(false);
+          }
+        } else if (reactionType === 'green_flag') {
+          setIsGreenFlagged(true);
+          // If they replaced a red flag, remove it
+          if (result.replacedType === 'red_flag') {
+            setIsRedFlagged(false);
+          }
+        }
+      } else if (result?.action === 'removed') {
+        // User removed their reaction
+        if (reactionType === 'red_flag') {
+          setIsRedFlagged(false);
+        } else if (reactionType === 'green_flag') {
+          setIsGreenFlagged(false);
+        }
       }
     } catch (error) {
       console.error('Reaction error:', error);
