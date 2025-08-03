@@ -312,41 +312,6 @@ const StoryCard = ({
             </div>
           )}
 
-          {/* Ratings */}
-          <div className="grid grid-cols-2 gap-3 pt-2">
-            <div className="flex items-center gap-1">
-              <span className="text-xs text-muted-foreground">Communication:</span>
-              <div className="flex">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className={`h-3 w-3 ${i < story.communication_rating ? 'fill-juice-orange text-juice-orange' : 'text-gray-300'}`} />
-                ))}
-              </div>
-            </div>
-            <div className="flex items-center gap-1">
-              <span className="text-xs text-muted-foreground">Loyalty:</span>
-              <div className="flex">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className={`h-3 w-3 ${i < story.loyalty_rating ? 'fill-juice-pink text-juice-pink' : 'text-gray-300'}`} />
-                ))}
-              </div>
-            </div>
-            <div className="flex items-center gap-1">
-              <span className="text-xs text-muted-foreground">Safety:</span>
-              <div className="flex">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className={`h-3 w-3 ${i < story.emotional_safety_rating ? 'fill-juice-green text-juice-green' : 'text-gray-300'}`} />
-                ))}
-              </div>
-            </div>
-            <div className="flex items-center gap-1">
-              <span className="text-xs text-muted-foreground">Vibe:</span>
-              <div className="flex">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className={`h-3 w-3 ${i < story.overall_vibe_rating ? 'fill-juice-blue text-juice-blue' : 'text-gray-300'}`} />
-                ))}
-              </div>
-            </div>
-          </div>
         </div>
 
         {/* Actions */}
