@@ -577,6 +577,10 @@ export type Database = {
         }
         Returns: undefined
       }
+      normalize_phone_number: {
+        Args: { phone_input: string }
+        Returns: string
+      }
       use_invite_code: {
         Args: { invite_code: string; new_user_id: string }
         Returns: boolean
