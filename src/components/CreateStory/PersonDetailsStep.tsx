@@ -1,7 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Camera, Plus, Trash2 } from "lucide-react";
+import { Camera, Plus, Trash2, Lock } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useState, useEffect } from "react";
+import PhoneInput from 'react-phone-number-input';
+import { isValidPhoneNumber } from 'react-phone-number-input';
+import 'react-phone-number-input/style.css';
 import type { StoryData } from "./index";
 
 interface PersonDetailsStepProps {
@@ -26,6 +30,37 @@ const PersonDetailsStep = ({
   onClose
 }: PersonDetailsStepProps) => {
   const { toast } = useToast();
+  const [phoneError, setPhoneError] = useState<string>("");
+  const [defaultCountry, setDefaultCountry] = useState<string>("US");
+
+  // Auto-detect country from IP (fallback to US)
+  useEffect(() => {
+    const detectCountry = async () => {
+      try {
+        const response = await fetch('https://ipapi.co/json/');
+        const data = await response.json();
+        if (data.country_code) {
+          setDefaultCountry(data.country_code);
+        }
+      } catch (error) {
+        // Fallback to US if detection fails
+        setDefaultCountry("US");
+      }
+    };
+    detectCountry();
+  }, []);
+
+  const handlePhoneChange = (value: string | undefined) => {
+    const phoneValue = value || "";
+    setStoryData(prev => ({ ...prev, personPhone: phoneValue }));
+    
+    // Validate phone number
+    if (phoneValue && !isValidPhoneNumber(phoneValue)) {
+      setPhoneError("Please enter a valid phone number");
+    } else {
+      setPhoneError("");
+    }
+  };
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -94,13 +129,33 @@ const PersonDetailsStep = ({
           </div>
           <div>
             <label className="block text-sm font-medium mb-1">Phone</label>
-            <Input
-              value={storyData.personPhone}
-              onChange={(e) => setStoryData(prev => ({ ...prev, personPhone: e.target.value }))}
-              placeholder="Phone number"
-              type="tel"
-            />
-            <p className="text-xs text-gray-500 mt-1">For profile matching only - never displayed publicly</p>
+            <div className="relative">
+              <PhoneInput
+                defaultCountry={defaultCountry as any}
+                value={storyData.personPhone}
+                onChange={handlePhoneChange}
+                placeholder="+1 555-555-5555"
+                className={`flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${
+                  phoneError ? 'border-destructive' : ''
+                }`}
+                international
+                countryCallingCodeEditable={false}
+              />
+              {phoneError && (
+                <p className="text-xs text-destructive mt-1 flex items-center gap-1">
+                  {phoneError}
+                </p>
+              )}
+            </div>
+            <div className="space-y-2 mt-2">
+              <p className="text-xs text-muted-foreground">
+                Don't know her @username? Add a phone number so others can find her too.
+              </p>
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <Lock className="h-3 w-3" />
+                <span>Phone numbers are never shown publicly. Only used to match stories to the right person.</span>
+              </div>
+            </div>
           </div>
 
           {/* Add Photos Section */}
