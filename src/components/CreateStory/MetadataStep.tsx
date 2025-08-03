@@ -45,6 +45,9 @@ const MetadataStep = ({
               }))}
               placeholder="City"
             />
+            <p className="text-xs text-muted-foreground mt-1">
+              Type full city name (e.g. "Los Angeles", not "LA") for better search results.
+            </p>
           </div>
           <div>
             <label className="block text-sm font-medium mb-1">Where you met</label>
