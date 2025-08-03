@@ -2,6 +2,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useDebounce } from "./useDebounce";
+import { fuzzySearchCities, getUniqueCities, normalizeCityName } from "@/lib/citySearch";
 
 export const useSearchStories = (query: string, location?: string, tag?: string) => {
   const debouncedQuery = useDebounce(query, 300);
@@ -68,9 +69,41 @@ export const useSearchStories = (query: string, location?: string, tag?: string)
         }
       }
 
-      // Add location filter (separate from main search)
+      // Add location filter with fuzzy search
       if (location && location.trim()) {
-        dbQuery = dbQuery.ilike('location', `%${location.trim()}%`);
+        const normalizedLocation = normalizeCityName(location.trim());
+        
+        // First try exact match on normalized location
+        const exactLocationQuery = dbQuery.eq('normalized_location', normalizedLocation);
+        const { data: exactData } = await exactLocationQuery
+          .order('created_at', { ascending: false })
+          .limit(50);
+        
+        if (exactData && exactData.length > 0) {
+          return exactData;
+        }
+        
+        // If no exact match, try fuzzy search
+        const allStoriesForCitySearch = await supabase
+          .from('stories')
+          .select('location, normalized_location')
+          .not('location', 'is', null);
+        
+        if (allStoriesForCitySearch.data) {
+          const uniqueCities = getUniqueCities(allStoriesForCitySearch.data);
+          const cityMatches = fuzzySearchCities(location.trim(), uniqueCities, 3);
+          
+          if (cityMatches.length > 0) {
+            const matchingCities = cityMatches.map(match => match.item);
+            dbQuery = dbQuery.in('normalized_location', matchingCities);
+          } else {
+            // No fuzzy matches, fall back to ILIKE
+            dbQuery = dbQuery.ilike('location', `%${location.trim()}%`);
+          }
+        } else {
+          // Fallback to ILIKE if normalization data not available
+          dbQuery = dbQuery.ilike('location', `%${location.trim()}%`);
+        }
       }
 
       const { data, error } = await dbQuery

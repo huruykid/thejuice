@@ -336,6 +336,7 @@ export type Database = {
           image_url: string | null
           location: string | null
           loyalty_rating: number | null
+          normalized_location: string | null
           overall_vibe_rating: number | null
           profile_id: string | null
           reactions_count: number
@@ -355,6 +356,7 @@ export type Database = {
           image_url?: string | null
           location?: string | null
           loyalty_rating?: number | null
+          normalized_location?: string | null
           overall_vibe_rating?: number | null
           profile_id?: string | null
           reactions_count?: number
@@ -374,6 +376,7 @@ export type Database = {
           image_url?: string | null
           location?: string | null
           loyalty_rating?: number | null
+          normalized_location?: string | null
           overall_vibe_rating?: number | null
           profile_id?: string | null
           reactions_count?: number
@@ -576,6 +579,10 @@ export type Database = {
           p_details?: Json
         }
         Returns: undefined
+      }
+      normalize_city_name: {
+        Args: { city_input: string }
+        Returns: string
       }
       normalize_phone_number: {
         Args: { phone_input: string }

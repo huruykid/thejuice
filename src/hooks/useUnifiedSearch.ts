@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { parsePhoneNumber } from 'react-phone-number-input';
 import { useToast } from '@/hooks/use-toast';
+import { fuzzySearchCities, getUniqueCities, normalizeCityName } from '@/lib/citySearch';
 
 interface Story {
   id: string;
@@ -124,8 +125,9 @@ export const useUnifiedSearch = () => {
         }
       }
 
-      // Search stories by content
+      // Search stories by content and location
       if (!isPhoneQuery) {
+        // First, try content search
         const { data: storyResults, error: storyError } = await supabase
           .from('stories')
           .select(`
@@ -147,6 +149,44 @@ export const useUnifiedSearch = () => {
               matchType: 'content'
             });
           });
+        }
+
+        // Then try fuzzy city search if query could be a location
+        const allStoriesForCitySearch = await supabase
+          .from('stories')
+          .select('location, normalized_location')
+          .not('location', 'is', null);
+
+        if (allStoriesForCitySearch.data) {
+          const uniqueCities = getUniqueCities(allStoriesForCitySearch.data);
+          const cityMatches = fuzzySearchCities(trimmedQuery, uniqueCities, 5);
+          
+          if (cityMatches.length > 0) {
+            for (const cityMatch of cityMatches) {
+              const { data: cityStories, error: cityError } = await supabase
+                .from('stories')
+                .select(`
+                  *,
+                  profiles!stories_profile_id_fkey(id, anonymous_username),
+                  story_tags(tag)
+                `)
+                .eq('normalized_location', cityMatch.item)
+                .limit(3);
+
+              if (!cityError && cityStories) {
+                cityStories.forEach(story => {
+                  results.push({
+                    type: 'story',
+                    story: {
+                      ...story,
+                      story_tags: story.story_tags || []
+                    },
+                    matchType: 'content'
+                  });
+                });
+              }
+            }
+          }
         }
       }
 

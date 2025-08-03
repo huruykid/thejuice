@@ -10,6 +10,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import StoryCard from "@/components/StoryCard";
 import Navigation from "@/components/Navigation";
 import ProfileSearch from "@/components/ProfileSearch";
+import CitySearchTest from "@/components/CitySearchTest";
 import { useSearchStories } from "@/hooks/useSearchStories";
 import { useUnifiedSearch } from "@/hooks/useUnifiedSearch";
 import { useTopTags } from "@/hooks/useTopTags";
@@ -199,16 +200,16 @@ const Explore = ({ onCreateStory }: ExploreProps) => {
                                     </div>
                                   </div>
                                   
-                                  <div className="text-sm text-muted-foreground">
-                                    {result.profile.city && `📍 ${result.profile.city}`}
-                                    {result.matchType === 'phone' && result.profile.phone_number && 
-                                      ` • ${formatPhoneDisplay(result.profile.phone_number)}`
-                                    }
-                                  </div>
-                                </div>
-                              </div>
-                            </CardContent>
-                          </Card>
+                                   <div className="text-sm text-muted-foreground">
+                                     {result.profile.city && `📍 ${result.profile.city}`}
+                                     {result.matchType === 'phone' && result.profile.phone_number && 
+                                       ` • ${formatPhoneDisplay(result.profile.phone_number)}`
+                                     }
+                                   </div>
+                                 </div>
+                               </div>
+                             </CardContent>
+                           </Card>
                         );
                       } else if (result.type === 'story' && result.story) {
                         return (
@@ -292,6 +293,11 @@ const Explore = ({ onCreateStory }: ExploreProps) => {
                   <li>• Phone numbers are matched in international format</li>
                   <li>• Full number match only for privacy</li>
                 </ul>
+              </div>
+              
+              {/* City Search Test Component */}
+              <div className="mt-6">
+                <CitySearchTest />
               </div>
             </div>
           </TabsContent>
