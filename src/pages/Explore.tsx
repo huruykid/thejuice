@@ -1,12 +1,13 @@
 
 import { useState } from "react";
-import { Search, TrendingUp, Hash, Filter } from "lucide-react";
+import { Search, TrendingUp, Hash, Filter, Users } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import StoryCard from "@/components/StoryCard";
 import Navigation from "@/components/Navigation";
+import ProfileSearch from "@/components/ProfileSearch";
 import { useSearchStories } from "@/hooks/useSearchStories";
 import { useTopTags } from "@/hooks/useTopTags";
 import { useAuth } from "@/hooks/useAuth";
@@ -68,13 +69,20 @@ const Explore = ({ onCreateStory }: ExploreProps) => {
       {/* Content */}
       <div className="max-w-md mx-auto px-4 py-6">
         <Tabs defaultValue="trending" className="mb-6">
-          <TabsList className="grid w-full grid-cols-2 bg-juice-lavender/50 rounded-2xl p-1">
+          <TabsList className="grid w-full grid-cols-3 bg-juice-lavender/50 rounded-2xl p-1">
             <TabsTrigger
               value="trending"
               className="rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-card flex items-center gap-2"
             >
               <TrendingUp className="h-4 w-4" />
               Trending
+            </TabsTrigger>
+            <TabsTrigger
+              value="people"
+              className="rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-card flex items-center gap-2"
+            >
+              <Users className="h-4 w-4" />
+              People
             </TabsTrigger>
             <TabsTrigger
               value="tags"
@@ -140,6 +148,37 @@ const Explore = ({ onCreateStory }: ExploreProps) => {
                 </p>
               </div>
             )}
+          </TabsContent>
+
+          <TabsContent value="people" className="mt-6">
+            <div className="space-y-4">
+              <h2 className="text-lg font-semibold text-foreground">
+                Find People
+              </h2>
+              <p className="text-sm text-muted-foreground mb-4">
+                Search for users by @username or phone number to find their stories
+              </p>
+              
+              <ProfileSearch 
+                placeholder="Search @username or +1 555-555-5555"
+                onProfileSelect={(profileId, username) => {
+                  console.log('Selected profile:', { profileId, username });
+                  // You can implement navigation to profile or filtering stories by user
+                  setSearchQuery(`@${username}`);
+                  refetchSearch();
+                }}
+              />
+              
+              <div className="mt-4 p-4 bg-juice-lavender/20 rounded-xl">
+                <h3 className="font-medium text-sm mb-2">How it works:</h3>
+                <ul className="text-xs text-muted-foreground space-y-1">
+                  <li>• Search by @username (e.g., @sarah)</li>
+                  <li>• Search by phone number (+1 555-555-5555)</li>
+                  <li>• Phone numbers are matched in international format</li>
+                  <li>• Full number match only for privacy</li>
+                </ul>
+              </div>
+            </div>
           </TabsContent>
 
           <TabsContent value="tags" className="mt-6">

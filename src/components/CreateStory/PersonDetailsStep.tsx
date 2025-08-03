@@ -5,6 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
 import PhoneInput from 'react-phone-number-input';
 import { isValidPhoneNumber } from 'react-phone-number-input';
+import { parsePhoneNumber } from 'react-phone-number-input';
 import 'react-phone-number-input/style.css';
 import type { StoryData } from "./index";
 
@@ -54,9 +55,18 @@ const PersonDetailsStep = ({
     const phoneValue = value || "";
     setStoryData(prev => ({ ...prev, personPhone: phoneValue }));
     
-    // Validate phone number
-    if (phoneValue && !isValidPhoneNumber(phoneValue)) {
-      setPhoneError("Please enter a valid phone number");
+    // Validate phone number if provided
+    if (phoneValue) {
+      try {
+        const phoneNumber = parsePhoneNumber(phoneValue);
+        if (phoneNumber && phoneNumber.isValid()) {
+          setPhoneError("");
+        } else {
+          setPhoneError("Please enter a valid phone number");
+        }
+      } catch (error) {
+        setPhoneError("Please enter a valid phone number");
+      }
     } else {
       setPhoneError("");
     }
