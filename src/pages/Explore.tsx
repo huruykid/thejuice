@@ -189,7 +189,7 @@ const Explore = ({ onCreateStory }: ExploreProps) => {
         )}
 
         <Tabs defaultValue="stories" className="mb-6">
-          <TabsList className="grid w-full grid-cols-3 bg-juice-lavender/50 rounded-2xl p-1">
+          <TabsList className="grid w-full grid-cols-2 bg-juice-lavender/50 rounded-2xl p-1">
             <TabsTrigger
               value="stories"
               className="rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-card flex items-center gap-2"
@@ -203,13 +203,6 @@ const Explore = ({ onCreateStory }: ExploreProps) => {
             >
               <Users className="h-4 w-4" />
               People
-            </TabsTrigger>
-            <TabsTrigger
-              value="tags"
-              className="rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-card flex items-center gap-2"
-            >
-              <Hash className="h-4 w-4" />
-              Tags
             </TabsTrigger>
           </TabsList>
 
@@ -435,43 +428,6 @@ const Explore = ({ onCreateStory }: ExploreProps) => {
                   <li>• Full number match only for privacy</li>
                 </ul>
               </div>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="tags" className="mt-6">
-            <div className="space-y-4">
-              <h2 className="text-lg font-semibold text-foreground">
-                Popular Tags
-              </h2>
-              
-              {topTags.length === 0 ? (
-                <div className="text-center py-12">
-                  <Hash className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold text-foreground mb-2">
-                    No tags yet
-                  </h3>
-                  <p className="text-muted-foreground">
-                    Tags will appear here as people share stories
-                  </p>
-                </div>
-              ) : (
-                <div className="flex flex-wrap gap-2">
-                  {topTags.map((tagData) => (
-                    <Badge
-                      key={tagData.tag}
-                      variant="outline"
-                      className="cursor-pointer border-juice-blue/30 text-juice-blue hover:bg-juice-blue hover:text-white transition-smooth rounded-full px-3 py-1 flex items-center gap-1"
-                      onClick={() => handleTagClick(tagData.tag)}
-                    >
-                      <Hash className="h-3 w-3" />
-                      {tagData.tag}
-                      <span className="text-xs ml-1 opacity-70">
-                        {tagData.count}
-                      </span>
-                    </Badge>
-                  ))}
-                </div>
-              )}
             </div>
           </TabsContent>
         </Tabs>
