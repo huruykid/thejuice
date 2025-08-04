@@ -155,13 +155,6 @@ const Explore = ({ onCreateStory }: ExploreProps) => {
                 className="pl-10 rounded-2xl border-juice-blue/20 focus:border-juice-blue"
               />
             </form>
-            
-            {/* Quick Search Tips */}
-            <div className="text-xs text-muted-foreground space-y-1">
-              <p>💡 <strong>Search Tips:</strong></p>
-              <p>• Stories: "dating advice", "red flag"</p>
-              <p>• People: @username or +1-555-555-5555</p>
-            </div>
           </div>
         </div>
       </div>
