@@ -14,7 +14,7 @@ export interface StoryData {
   content: string;
   selectedTags: string[];
   metadata: {
-    city_id: string | null;
+    location?: string;
   };
   personName: string;
   personPhone: string;
@@ -31,7 +31,7 @@ const CreateStory = ({ onClose }: { onClose: () => void }) => {
     content: '',
     selectedTags: [],
     metadata: {
-      city_id: null,
+      location: '',
     },
     personName: '',
     personPhone: '',
@@ -102,7 +102,7 @@ const CreateStory = ({ onClose }: { onClose: () => void }) => {
       const storyPayload = {
         content: storyData.content,
         tags: storyData.selectedTags,
-        city_id: storyData.metadata.city_id,
+        location: storyData.metadata.location,
         imageUrl: imageUrls.length > 0 ? JSON.stringify(imageUrls) : undefined,
         subjectName: storyData.personName,
         subjectPhone: storyData.personPhone

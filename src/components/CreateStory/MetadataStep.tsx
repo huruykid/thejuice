@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { CitySelector } from "@/components/ui/city-selector";
+import { Input } from "@/components/ui/input";
 import type { StoryData } from "./index";
-import type { City } from "@/hooks/useCities";
 
 interface MetadataStepProps {
   storyData: StoryData;
@@ -21,20 +20,18 @@ const MetadataStep = ({
   isLoading,
   uploading
 }: MetadataStepProps) => {
-  const handleCitySelect = (city: City | null) => {
-    setSelectedCity(city);
+  const [cityInput, setCityInput] = useState(storyData.metadata?.location || "");
+
+  const handleCityChange = (value: string) => {
+    setCityInput(value);
     setStoryData(prev => ({
       ...prev,
       metadata: {
         ...prev.metadata,
-        city_id: city?.id || null
+        location: value
       }
     }));
   };
-
-  // We'll need to get the selected city by ID, not by name
-  // For now, let's simplify and just track the selected city in state
-  const [selectedCity, setSelectedCity] = useState<City | null>(null);
   const datingApps = [
     "Tinder", "Bumble", "Hinge", "Instagram", "IRL", "Raya", 
     "Facebook Dating", "Coffee Meets Bagel", "OkCupid", "Match", "eHarmony", "Other"
@@ -52,13 +49,13 @@ const MetadataStep = ({
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium mb-1">City</label>
-            <CitySelector
-              value={selectedCity || null}
-              onSelect={handleCitySelect}
-              placeholder="Search and select your city..."
+            <Input
+              value={cityInput}
+              onChange={(e) => handleCityChange(e.target.value)}
+              placeholder="Enter your city..."
             />
             <p className="text-xs text-muted-foreground mt-1">
-              Search and select your city from our database for consistent location data.
+              Enter the city where this story took place.
             </p>
           </div>
         </div>
