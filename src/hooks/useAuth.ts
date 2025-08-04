@@ -91,20 +91,41 @@ export const useAuth = () => {
   };
 
   const signIn = async (email: string, password: string) => {
+    // Check rate limit for login attempts
+    const identifier = `login_${email}_${window.location.hostname}`;
+    const { data: rateLimitOk } = await supabase.rpc('check_rate_limit', {
+      p_identifier: identifier,
+      p_action_type: 'login_attempt',
+      p_max_attempts: 5,
+      p_window_minutes: 15,
+      p_block_minutes: 60
+    });
+
+    if (!rateLimitOk) {
+      return { 
+        error: new Error('Too many login attempts. Please try again later.') 
+      };
+    }
+
     // Track login pattern for security monitoring
     trackLoginPattern(email);
     
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password
     });
     
-    // Track failed login attempts
+    // Track failed login attempts and detect suspicious activity
     if (error) {
       trackFailedLogin(email);
+      await supabase.rpc('detect_suspicious_activity', {
+        p_user_id: null,
+        p_activity_type: 'failed_login',
+        p_details: { email, error: error.message }
+      });
     }
     
-    return { error };
+    return { data, error };
   };
 
   const signOut = async () => {

@@ -130,41 +130,67 @@ export const useSecurityMonitoring = (userId?: string) => {
     return () => clearInterval(interval);
   }, [userId, logSuspiciousActivity]);
 
-  // Content moderation for stories
+  // Enhanced content moderation for stories
   const moderateContent = (content: string): { isViolation: boolean; reasons: string[] } => {
     const violations: string[] = [];
     
     // Check for potentially harmful content
     const harmfulPatterns = [
-      /\b(kill|murder|suicide|harm)\b/gi,
-      /\b(hate|racist|nazi)\b/gi,
-      /\b(drug|cocaine|heroin|meth)\b/gi,
-      /\b(revenge|blackmail|extort)\b/gi,
+      /\b(kill|murder|suicide|harm|death|die)\b/gi,
+      /\b(hate|racist|nazi|white power|supremacy)\b/gi,
+      /\b(drug|cocaine|heroin|meth|fentanyl|crack)\b/gi,
+      /\b(revenge|blackmail|extort|threaten|bomb)\b/gi,
+      /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, // Script injection
+      /javascript:/gi, // JavaScript URLs
+      /data:text\/html/gi, // Data URLs
+      /on\w+\s*=/gi, // Event handlers
     ];
     
     harmfulPatterns.forEach((pattern, index) => {
       if (pattern.test(content)) {
-        violations.push(`Content policy violation type ${index + 1}`);
+        violations.push(`Harmful content detected (pattern ${index + 1})`);
       }
     });
     
     // Check for spam indicators
     const spamPatterns = [
       /(.)\1{10,}/g, // Repeated characters
-      /\b(buy now|click here|free money|limited time)\b/gi,
+      /\b(buy now|click here|free money|limited time|act now|urgent)\b/gi,
       /(http|www)\./gi, // URLs
+      /\b(viagra|cialis|pharmacy|casino|poker|lottery)\b/gi,
+      /(.{10,})\1{3,}/g, // Repeated phrases
+      /[\W_]{10,}/g, // Excessive special characters
     ];
     
     spamPatterns.forEach((pattern, index) => {
       if (pattern.test(content)) {
-        violations.push(`Spam indicator type ${index + 1}`);
+        violations.push(`Spam indicator detected (pattern ${index + 1})`);
       }
     });
+
+    // Check for social engineering
+    const socialEngineeringPatterns = [
+      /\b(verify account|urgent|immediate|expire|suspend)\b/gi,
+      /\b(password|credit card|social security|ssn|bank account)\b/gi,
+      /\b(click here|download now|install|update required)\b/gi,
+    ];
+
+    socialEngineeringPatterns.forEach((pattern, index) => {
+      if (pattern.test(content)) {
+        violations.push(`Social engineering detected (pattern ${index + 1})`);
+      }
+    });
+
+    // Check content length for potential DoS
+    if (content.length > 10000) {
+      violations.push('Content exceeds maximum allowed length');
+    }
     
     if (violations.length > 0) {
       logSuspiciousActivity('content_moderation_violation', {
         content_preview: content.substring(0, 100),
-        violations
+        violations,
+        content_length: content.length
       });
     }
     

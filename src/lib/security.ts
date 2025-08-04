@@ -4,7 +4,7 @@
  * Sanitizes text content to prevent XSS attacks
  */
 export const sanitizeText = (text: string): string => {
-  if (!text) return '';
+  if (!text || typeof text !== 'string') return '';
   
   return text
     .trim()
@@ -13,11 +13,14 @@ export const sanitizeText = (text: string): string => {
     .replace(/javascript:/gi, '')
     .replace(/data:/gi, '')
     .replace(/vbscript:/gi, '')
-    .replace(/onload\s*=/gi, '')
-    .replace(/onerror\s*=/gi, '')
-    .replace(/onclick\s*=/gi, '')
-    .replace(/onmouseover\s*=/gi, '')
-    // Limit length
+    .replace(/on\w+\s*=/gi, '') // Remove all event handlers
+    .replace(/<iframe\b[^>]*>/gi, '') // Remove iframes
+    .replace(/<object\b[^>]*>/gi, '') // Remove objects
+    .replace(/<embed\b[^>]*>/gi, '') // Remove embeds
+    .replace(/<link\b[^>]*>/gi, '') // Remove link tags
+    .replace(/<meta\b[^>]*>/gi, '') // Remove meta tags
+    .replace(/style\s*=\s*['"'][^'"]*expression[^'"]*['"]/gi, '') // Remove CSS expressions
+    // Limit length to prevent DoS
     .substring(0, 5000);
 };
 
