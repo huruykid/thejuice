@@ -8,38 +8,26 @@ import Navigation from "@/components/Navigation";
 import LoadingSkeleton from "@/components/ui/loading-skeleton";
 import { useUserActivity } from "@/hooks/useUserActivity";
 import { formatDistanceToNow } from "date-fns";
-
 const Activity = () => {
   const navigate = useNavigate();
-  const { activities, isLoading } = useUserActivity();
-
+  const {
+    activities,
+    isLoading
+  } = useUserActivity();
   const handleActivityTap = (storyId: string) => {
     // Navigate to the specific story - you might want to create a story detail page
     // For now, navigate to explore with the story in focus
     navigate(`/explore?story=${storyId}`);
   };
-
   const getInitials = (username: string) => {
-    return username
-      .split(' ')
-      .map(word => word[0])
-      .join('')
-      .toUpperCase()
-      .substring(0, 2);
+    return username.split(' ').map(word => word[0]).join('').toUpperCase().substring(0, 2);
   };
-
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-juice-orange/5 to-juice-pink/5 pb-20">
+    return <div className="min-h-screen bg-gradient-to-br from-juice-orange/5 to-juice-pink/5 pb-20">
         <div className="container mx-auto px-4 py-6 max-w-md">
           {/* Header */}
           <div className="flex items-center mb-6">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => navigate(-1)}
-              className="mr-3"
-            >
+            <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="mr-3">
               <ArrowLeft className="h-5 w-5" />
             </Button>
             <div className="flex items-center gap-2">
@@ -50,8 +38,7 @@ const Activity = () => {
 
           {/* Loading skeletons */}
           <div className="space-y-4">
-            {[1, 2, 3, 4, 5].map((i) => (
-              <Card key={i} className="border-juice-orange/20">
+            {[1, 2, 3, 4, 5].map(i => <Card key={i} className="border-juice-orange/20">
                 <CardContent className="p-4">
                   <div className="flex items-start gap-3">
                     <div className="h-10 w-10 bg-muted rounded-full animate-pulse" />
@@ -63,26 +50,17 @@ const Activity = () => {
                     </div>
                   </div>
                 </CardContent>
-              </Card>
-            ))}
+              </Card>)}
           </div>
         </div>
         <Navigation />
-      </div>
-    );
+      </div>;
   }
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-juice-orange/5 to-juice-pink/5 pb-20">
+  return <div className="min-h-screen bg-gradient-to-br from-juice-orange/5 to-juice-pink/5 pb-20">
       <div className="container mx-auto px-4 py-6 max-w-md">
         {/* Header */}
         <div className="flex items-center mb-6">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigate(-1)}
-            className="mr-3"
-          >
+          <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="mr-3">
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div className="flex items-center gap-2">
@@ -93,13 +71,12 @@ const Activity = () => {
 
         {/* Subtitle */}
         <div className="text-center mb-6">
-          <p className="text-muted-foreground">Your Juice House</p>
+          
         </div>
 
         {/* Activity Feed */}
         <div className="space-y-3">
-          {activities.length === 0 ? (
-            <Card className="border-juice-orange/20">
+          {activities.length === 0 ? <Card className="border-juice-orange/20">
               <CardContent className="p-8 text-center">
                 <div className="w-16 h-16 bg-gradient-to-br from-juice-orange/20 to-juice-pink/20 rounded-full mx-auto mb-4 flex items-center justify-center">
                   <MessageCircle className="h-8 w-8 text-juice-orange" />
@@ -109,15 +86,9 @@ const Activity = () => {
                   When someone comments on your stories, you'll see the activity here.
                 </p>
               </CardContent>
-            </Card>
-          ) : (
-            activities.map((activity, index) => (
-              <Card 
-                key={activity.id} 
-                className="border-juice-orange/20 hover:border-juice-orange/40 transition-colors cursor-pointer animate-fade-in"
-                style={{ animationDelay: `${index * 50}ms` }}
-                onClick={() => handleActivityTap(activity.story_id)}
-              >
+            </Card> : activities.map((activity, index) => <Card key={activity.id} className="border-juice-orange/20 hover:border-juice-orange/40 transition-colors cursor-pointer animate-fade-in" style={{
+          animationDelay: `${index * 50}ms`
+        }} onClick={() => handleActivityTap(activity.story_id)}>
                 <CardContent className="p-4">
                   <div className="flex items-start gap-3">
                     {/* Avatar */}
@@ -152,7 +123,9 @@ const Activity = () => {
 
                       {/* Timestamp */}
                       <p className="text-xs text-muted-foreground">
-                        {formatDistanceToNow(new Date(activity.created_at), { addSuffix: true })}
+                        {formatDistanceToNow(new Date(activity.created_at), {
+                    addSuffix: true
+                  })}
                       </p>
                     </div>
 
@@ -164,24 +137,18 @@ const Activity = () => {
                     </div>
                   </div>
                 </CardContent>
-              </Card>
-            ))
-          )}
+              </Card>)}
         </div>
 
         {/* Show more indicator */}
-        {activities.length > 0 && (
-          <div className="text-center mt-6">
+        {activities.length > 0 && <div className="text-center mt-6">
             <p className="text-sm text-muted-foreground">
               Showing recent activity
             </p>
-          </div>
-        )}
+          </div>}
       </div>
 
       <Navigation />
-    </div>
-  );
+    </div>;
 };
-
 export default Activity;
