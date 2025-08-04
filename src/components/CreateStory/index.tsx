@@ -14,10 +14,7 @@ export interface StoryData {
   content: string;
   selectedTags: string[];
   metadata: {
-    city: string;
-    ageRange: string;
-    datingApp: string;
-    relationshipStage: string;
+    city_id: string | null;
   };
   personName: string;
   personPhone: string;
@@ -34,10 +31,7 @@ const CreateStory = ({ onClose }: { onClose: () => void }) => {
     content: '',
     selectedTags: [],
     metadata: {
-      city: '',
-      ageRange: '',
-      datingApp: '',
-      relationshipStage: '',
+      city_id: null,
     },
     personName: '',
     personPhone: '',
@@ -108,7 +102,7 @@ const CreateStory = ({ onClose }: { onClose: () => void }) => {
       const storyPayload = {
         content: storyData.content,
         tags: storyData.selectedTags,
-        location: storyData.metadata.city,
+        city_id: storyData.metadata.city_id,
         imageUrl: imageUrls.length > 0 ? JSON.stringify(imageUrls) : undefined,
         subjectName: storyData.personName,
         subjectPhone: storyData.personPhone

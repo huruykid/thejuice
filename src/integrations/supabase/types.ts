@@ -65,6 +65,48 @@ export type Database = {
         }
         Relationships: []
       }
+      cities: {
+        Row: {
+          city_name: string
+          country: string | null
+          country_code: string | null
+          created_at: string
+          id: string
+          latitude: number | null
+          longitude: number | null
+          population: number | null
+          slug: string
+          state_province: string | null
+          updated_at: string
+        }
+        Insert: {
+          city_name: string
+          country?: string | null
+          country_code?: string | null
+          created_at?: string
+          id?: string
+          latitude?: number | null
+          longitude?: number | null
+          population?: number | null
+          slug: string
+          state_province?: string | null
+          updated_at?: string
+        }
+        Update: {
+          city_name?: string
+          country?: string | null
+          country_code?: string | null
+          created_at?: string
+          id?: string
+          latitude?: number | null
+          longitude?: number | null
+          population?: number | null
+          slug?: string
+          state_province?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       codenames: {
         Row: {
           created_at: string
@@ -360,6 +402,7 @@ export type Database = {
       }
       stories: {
         Row: {
+          city_id: string | null
           comments_count: number
           communication_rating: number | null
           content: string
@@ -380,6 +423,7 @@ export type Database = {
           view_count: number
         }
         Insert: {
+          city_id?: string | null
           comments_count?: number
           communication_rating?: number | null
           content: string
@@ -400,6 +444,7 @@ export type Database = {
           view_count?: number
         }
         Update: {
+          city_id?: string | null
           comments_count?: number
           communication_rating?: number | null
           content?: string
@@ -420,6 +465,13 @@ export type Database = {
           view_count?: number
         }
         Relationships: [
+          {
+            foreignKeyName: "stories_city_id_fkey"
+            columns: ["city_id"]
+            isOneToOne: false
+            referencedRelation: "cities"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "stories_profile_id_fkey"
             columns: ["profile_id"]
@@ -574,6 +626,10 @@ export type Database = {
       detect_suspicious_activity: {
         Args: { p_user_id: string; p_activity_type: string; p_details?: Json }
         Returns: undefined
+      }
+      generate_city_slug: {
+        Args: { city_name_param: string }
+        Returns: string
       }
       generate_invite_code: {
         Args: Record<PropertyKey, never>

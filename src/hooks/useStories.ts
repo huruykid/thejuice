@@ -82,14 +82,14 @@ export const useCreateStory = () => {
     mutationFn: async ({
       content,
       tags,
-      location,
+      city_id,
       imageUrl,
       subjectName,
       subjectPhone,
     }: {
       content: string;
       tags: string[];
-      location?: string;
+      city_id?: string | null;
       imageUrl?: string;
       subjectName?: string;
       subjectPhone?: string;
@@ -101,7 +101,6 @@ export const useCreateStory = () => {
       }
 
       const sanitizedContent = sanitizeText(content);
-      const sanitizedLocation = location ? sanitizeText(location) : null;
       const sanitizedSubjectName = subjectName ? sanitizeText(subjectName) : null;
       const sanitizedSubjectPhone = subjectPhone ? sanitizeText(subjectPhone) : null;
 
@@ -134,7 +133,7 @@ export const useCreateStory = () => {
         .insert({
           profile_id: profile.id,
           content: sanitizedContent,
-          location: sanitizedLocation,
+          city_id: city_id || null,
           image_url: imageUrl || null,
           subject_name: sanitizedSubjectName,
           subject_phone: sanitizedSubjectPhone,

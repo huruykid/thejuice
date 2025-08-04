@@ -1,7 +1,8 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { CitySelector } from "@/components/ui/city-selector";
 import type { StoryData } from "./index";
+import type { City } from "@/hooks/useCities";
 
 interface MetadataStepProps {
   storyData: StoryData;
@@ -20,6 +21,20 @@ const MetadataStep = ({
   isLoading,
   uploading
 }: MetadataStepProps) => {
+  const handleCitySelect = (city: City | null) => {
+    setSelectedCity(city);
+    setStoryData(prev => ({
+      ...prev,
+      metadata: {
+        ...prev.metadata,
+        city_id: city?.id || null
+      }
+    }));
+  };
+
+  // We'll need to get the selected city by ID, not by name
+  // For now, let's simplify and just track the selected city in state
+  const [selectedCity, setSelectedCity] = useState<City | null>(null);
   const datingApps = [
     "Tinder", "Bumble", "Hinge", "Instagram", "IRL", "Raya", 
     "Facebook Dating", "Coffee Meets Bagel", "OkCupid", "Match", "eHarmony", "Other"
@@ -37,16 +52,13 @@ const MetadataStep = ({
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium mb-1">City</label>
-            <Input
-              value={storyData.metadata.city}
-              onChange={(e) => setStoryData(prev => ({ 
-                ...prev, 
-                metadata: { ...prev.metadata, city: e.target.value }
-              }))}
-              placeholder="City"
+            <CitySelector
+              value={selectedCity || null}
+              onSelect={handleCitySelect}
+              placeholder="Search and select your city..."
             />
             <p className="text-xs text-muted-foreground mt-1">
-              Type full city name (e.g. "Los Angeles", not "LA") for better search results.
+              Search and select your city from our database for consistent location data.
             </p>
           </div>
         </div>
