@@ -1,21 +1,29 @@
 
 import { useState, useEffect } from "react";
-import { Search, TrendingUp, Hash, Filter, Users, Phone, User, MessageCircle } from "lucide-react";
+import { Search, TrendingUp, Hash, MapPin, Users, Phone, User, MessageCircle, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import StoryCard from "@/components/StoryCard";
 import Navigation from "@/components/Navigation";
 import ProfileSearch from "@/components/ProfileSearch";
-import CitySearchTest from "@/components/CitySearchTest";
-import { useSearchStories } from "@/hooks/useSearchStories";
+import { StoryPreview } from "@/components/StoryPreview";
+import { StoryModal } from "@/components/StoryModal";
+import { LocationPrompt } from "@/components/LocationPrompt";
+import { LocationFilter } from "@/components/LocationFilter";
 import { useUnifiedSearch } from "@/hooks/useUnifiedSearch";
 import { useTopTags } from "@/hooks/useTopTags";
 import { useAuth } from "@/hooks/useAuth";
 import { useDebounce } from "@/hooks/useDebounce";
+import { useGeolocation } from "@/hooks/useGeolocation";
+import { useNearbyStories } from "@/hooks/useNearbyStories";
+import { useTrendingStories } from "@/hooks/useTrendingStories";
+import { DISTANCE_RANGES } from "@/lib/distance";
+import type { Story } from "@/hooks/useStories";
 
 interface ExploreProps {
   onCreateStory?: () => void;
@@ -24,9 +32,37 @@ interface ExploreProps {
 const Explore = ({ onCreateStory }: ExploreProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
+  const [selectedStory, setSelectedStory] = useState<Story | null>(null);
+  const [selectedRadius, setSelectedRadius] = useState<number | null>(25);
+  const [showLocationPrompt, setShowLocationPrompt] = useState(true);
   const { user } = useAuth();
 
-  // Use the unified search hook for comprehensive search
+  // Geolocation hook
+  const {
+    coordinates: userLocation,
+    isLoading: isLocationLoading,
+    error: locationError,
+    requestLocation,
+    clearLocation
+  } = useGeolocation();
+
+  // Location-based stories
+  const { 
+    data: nearbyStories = [], 
+    isLoading: isNearbyLoading 
+  } = useNearbyStories({
+    userLocation: userLocation || { latitude: 0, longitude: 0 },
+    radiusMiles: selectedRadius || 25,
+    enabled: !!userLocation && !!selectedRadius
+  });
+
+  // Trending stories fallback
+  const { 
+    data: trendingStories = [], 
+    isLoading: isTrendingLoading 
+  } = useTrendingStories();
+
+  // Unified search hook
   const { 
     isSearching: isUnifiedSearching, 
     searchResults: unifiedResults, 
@@ -34,11 +70,18 @@ const Explore = ({ onCreateStory }: ExploreProps) => {
     clearResults: clearUnifiedResults
   } = useUnifiedSearch();
 
-  // Use debounced search
+  // Debounced search
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
-  // Use the top tags hook
+  // Top tags hook
   const { data: topTags = [] } = useTopTags();
+
+  // Auto-dismiss location prompt if user has location
+  useEffect(() => {
+    if (userLocation) {
+      setShowLocationPrompt(false);
+    }
+  }, [userLocation]);
 
   // Perform search when debounced query changes
   useEffect(() => {
@@ -48,6 +91,10 @@ const Explore = ({ onCreateStory }: ExploreProps) => {
       clearUnifiedResults();
     }
   }, [debouncedSearchQuery]);
+
+  // Get stories to display - nearby if location available, trending otherwise
+  const displayStories = userLocation && selectedRadius ? nearbyStories : trendingStories;
+  const isLoadingStories = userLocation && selectedRadius ? isNearbyLoading : isTrendingLoading;
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,6 +106,24 @@ const Explore = ({ onCreateStory }: ExploreProps) => {
   const handleTagClick = (tag: string) => {
     setSelectedTag(tag);
     setSearchQuery(tag);
+  };
+
+  const handleLocationRequest = async () => {
+    await requestLocation();
+  };
+
+  const handleLocationDismiss = () => {
+    setShowLocationPrompt(false);
+  };
+
+  const handleClearLocation = () => {
+    clearLocation();
+    setSelectedRadius(null);
+    setShowLocationPrompt(true);
+  };
+
+  const handleStoryClick = (story: Story) => {
+    setSelectedStory(story);
   };
 
   const formatPhoneDisplay = (phone: string | null): string => {
@@ -103,14 +168,34 @@ const Explore = ({ onCreateStory }: ExploreProps) => {
 
       {/* Content */}
       <div className="max-w-md mx-auto px-4 py-6">
-        <Tabs defaultValue="trending" className="mb-6">
+        {/* Location Prompt */}
+        {showLocationPrompt && !userLocation && (
+          <LocationPrompt
+            onRequestLocation={handleLocationRequest}
+            onDismiss={handleLocationDismiss}
+            isLoading={isLocationLoading}
+          />
+        )}
+
+        {/* Location Filter */}
+        {userLocation && (
+          <LocationFilter
+            userLocation={userLocation}
+            selectedRadius={selectedRadius}
+            onRadiusChange={setSelectedRadius}
+            nearbyCount={nearbyStories.length}
+            onClearLocation={handleClearLocation}
+          />
+        )}
+
+        <Tabs defaultValue="stories" className="mb-6">
           <TabsList className="grid w-full grid-cols-3 bg-juice-lavender/50 rounded-2xl p-1">
             <TabsTrigger
-              value="trending"
+              value="stories"
               className="rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-card flex items-center gap-2"
             >
-              <TrendingUp className="h-4 w-4" />
-              Trending
+              {userLocation ? <MapPin className="h-4 w-4" /> : <TrendingUp className="h-4 w-4" />}
+              {userLocation ? "Nearby" : "Trending"}
             </TabsTrigger>
             <TabsTrigger
               value="people"
@@ -128,7 +213,7 @@ const Explore = ({ onCreateStory }: ExploreProps) => {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="trending" className="mt-6">
+          <TabsContent value="stories" className="mt-6">
             {searchQuery ? (
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
@@ -250,19 +335,75 @@ const Explore = ({ onCreateStory }: ExploreProps) => {
                 )}
               </div>
             ) : (
-              <div className="text-center py-12">
-                <TrendingUp className="h-12 w-12 text-juice-blue mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-foreground mb-2">
-                  Discover Stories & People
-                </h3>
-                <p className="text-muted-foreground mb-4">
-                  Search for stories, people, or topics you're interested in
-                </p>
-                <div className="text-sm text-muted-foreground space-y-1">
-                  <p><strong>Try searching for:</strong></p>
-                  <p>• Stories: "dating advice", "red flag"</p>
-                  <p>• People: @admin, +1-559-475-1807</p>
-                </div>
+              <div className="space-y-6">
+                {/* Stories Grid */}
+                {isLoadingStories ? (
+                  <div className="text-center py-12">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+                    <div className="text-lg">
+                      {userLocation ? "Finding nearby stories..." : "Loading trending stories..."}
+                    </div>
+                  </div>
+                ) : displayStories.length === 0 ? (
+                  <div className="text-center py-12">
+                    {userLocation ? (
+                      <>
+                        <MapPin className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                        <h3 className="text-lg font-semibold text-foreground mb-2">
+                          No nearby stories
+                        </h3>
+                        <p className="text-muted-foreground mb-4">
+                          Try expanding your search radius or check back later
+                        </p>
+                        <Button
+                          variant="outline"
+                          onClick={() => setSelectedRadius(50)}
+                          className="mb-2"
+                        >
+                          Expand to 50 miles
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <TrendingUp className="h-12 w-12 text-juice-blue mx-auto mb-4" />
+                        <h3 className="text-lg font-semibold text-foreground mb-2">
+                          No stories yet
+                        </h3>
+                        <p className="text-muted-foreground mb-4">
+                          Be the first to share a story in your area
+                        </p>
+                      </>
+                    )}
+                  </div>
+                ) : (
+                  <>
+                    {/* Header */}
+                    <div className="flex items-center justify-between">
+                      <h2 className="text-lg font-semibold text-foreground">
+                        {userLocation ? `Stories near you` : "Trending Stories"}
+                        {userLocation && selectedRadius && (
+                          <span className="text-sm font-normal text-muted-foreground ml-2">
+                            within {selectedRadius} miles
+                          </span>
+                        )}
+                      </h2>
+                      <span className="text-sm text-muted-foreground">
+                        {displayStories.length} stories
+                      </span>
+                    </div>
+
+                    {/* Stories Grid */}
+                    <div className="grid grid-cols-2 gap-3">
+                      {displayStories.map((story) => (
+                        <StoryPreview
+                          key={story.id}
+                          story={story}
+                          onClick={() => handleStoryClick(story)}
+                        />
+                      ))}
+                    </div>
+                  </>
+                )}
               </div>
             )}
           </TabsContent>
@@ -293,11 +434,6 @@ const Explore = ({ onCreateStory }: ExploreProps) => {
                   <li>• Phone numbers are matched in international format</li>
                   <li>• Full number match only for privacy</li>
                 </ul>
-              </div>
-              
-              {/* City Search Test Component */}
-              <div className="mt-6">
-                <CitySearchTest />
               </div>
             </div>
           </TabsContent>
@@ -340,6 +476,14 @@ const Explore = ({ onCreateStory }: ExploreProps) => {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Story Modal */}
+      <StoryModal
+        story={selectedStory}
+        isOpen={!!selectedStory}
+        onClose={() => setSelectedStory(null)}
+        userId={user?.id}
+      />
 
       <Navigation onCreateStory={onCreateStory} />
     </div>
