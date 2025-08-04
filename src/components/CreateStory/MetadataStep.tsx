@@ -50,27 +50,6 @@ const MetadataStep = ({
             </p>
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Where you met</label>
-            <Select
-              value={storyData.metadata.datingApp}
-              onValueChange={(value) => setStoryData(prev => ({ 
-                ...prev, 
-                metadata: { ...prev.metadata, datingApp: value }
-              }))}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select app or method" />
-              </SelectTrigger>
-              <SelectContent>
-                {datingApps.map((app) => (
-                  <SelectItem key={app} value={app.toLowerCase()}>
-                    {app}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
             <label className="block text-sm font-medium mb-1">Relationship stage</label>
             <Select
               value={storyData.metadata.relationshipStage}
