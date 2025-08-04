@@ -1,12 +1,16 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Navigation from "@/components/Navigation";
 import StoryCard from "@/components/StoryCard";
 import { Button } from "@/components/ui/button";
-import { Share2 } from "lucide-react";
+import { Share2, MapPin } from "lucide-react";
 import { useStories } from "@/hooks/useStories";
 import { useAuth } from "@/hooks/useAuth";
 import { useInvites } from "@/hooks/useInvites";
 import { useToast } from "@/hooks/use-toast";
+import { useGeolocation } from "@/hooks/useGeolocation";
+import { useNearbyStories } from "@/hooks/useNearbyStories";
+import { LocationPrompt } from "@/components/LocationPrompt";
+import { LocationFilter } from "@/components/LocationFilter";
 import { supabase } from "@/integrations/supabase/client";
 interface HomeProps {
   onCreateStory?: () => void;
@@ -14,21 +18,56 @@ interface HomeProps {
 const Home = ({
   onCreateStory
 }: HomeProps) => {
+  const [showLocationPrompt, setShowLocationPrompt] = useState(false);
+  const [selectedRadius, setSelectedRadius] = useState<number | null>(25);
+  
   const {
-    data: stories = [],
+    data: allStories = [],
     isLoading
   } = useStories();
+  
   const {
     user
   } = useAuth();
+  
   const {
     inviteStats,
     generateInvite,
     generatingInvite
   } = useInvites();
+  
   const {
     toast
   } = useToast();
+
+  const {
+    coordinates,
+    isLoading: isLocationLoading,
+    error: locationError,
+    requestLocation,
+    clearLocation,
+    permissionState,
+  } = useGeolocation();
+
+  const {
+    data: nearbyStories = [],
+    isLoading: isNearbyLoading,
+  } = useNearbyStories({
+    userLocation: coordinates || { latitude: 0, longitude: 0 },
+    radiusMiles: selectedRadius || undefined,
+    enabled: !!coordinates && selectedRadius !== null,
+  });
+
+  // Show location prompt on first visit if location not granted
+  useEffect(() => {
+    const hasSeenPrompt = localStorage.getItem('hasSeenLocationPrompt');
+    if (!hasSeenPrompt && !coordinates && permissionState !== 'denied') {
+      setShowLocationPrompt(true);
+    }
+  }, [coordinates, permissionState]);
+
+  // Use nearby stories if available, otherwise fall back to all stories
+  const stories = coordinates && selectedRadius !== null ? nearbyStories : allStories;
   const handleInviteFriends = async () => {
     if (!inviteStats || inviteStats.invites_remaining <= 0) {
       toast({
@@ -124,6 +163,21 @@ const Home = ({
       });
     }
   };
+
+  const handleRequestLocation = () => {
+    requestLocation();
+    localStorage.setItem('hasSeenLocationPrompt', 'true');
+  };
+
+  const handleDismissLocationPrompt = () => {
+    setShowLocationPrompt(false);
+    localStorage.setItem('hasSeenLocationPrompt', 'true');
+  };
+
+  const handleClearLocation = () => {
+    clearLocation();
+    setSelectedRadius(null);
+  };
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background-secondary to-background pb-20">
       {/* Modern Header with Glass Effect */}
@@ -165,9 +219,35 @@ const Home = ({
 
       {/* Enhanced Content Section */}
       <div className="max-w-md mx-auto px-4 py-8">
+        {/* Location Features */}
+        {showLocationPrompt && (
+          <LocationPrompt
+            onRequestLocation={handleRequestLocation}
+            onDismiss={handleDismissLocationPrompt}
+            isLoading={isLocationLoading}
+          />
+        )}
+
+        {locationError && (
+          <div className="modern-card p-4 mb-6 border-destructive/20 bg-destructive/5">
+            <div className="flex items-center gap-2 text-destructive text-sm">
+              <MapPin className="h-4 w-4" />
+              <span>{locationError}</span>
+            </div>
+          </div>
+        )}
+
+        <LocationFilter
+          userLocation={coordinates}
+          selectedRadius={selectedRadius}
+          onRadiusChange={setSelectedRadius}
+          nearbyCount={nearbyStories.length}
+          onClearLocation={handleClearLocation}
+        />
+
         {/* Stories Feed with Modern Layout */}
         <div className="space-y-6">
-          {isLoading ? (
+          {(isLoading || isNearbyLoading) ? (
             <div className="text-center py-16">
               <div className="animate-pulse-glow">
                 <div className="w-16 h-16 bg-gradient-primary rounded-3xl mx-auto mb-4 animate-bounce-in"></div>

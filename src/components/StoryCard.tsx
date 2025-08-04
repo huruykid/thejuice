@@ -1,4 +1,4 @@
-import { Heart, MessageCircle, Flag, Star, Trash2, ShieldCheck } from "lucide-react";
+import { Heart, MessageCircle, Flag, Star, Trash2, ShieldCheck, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
@@ -10,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
+import { formatDistance } from "@/lib/distance";
 
 const tagEmojis: { [key: string]: string } = {
   'red flag': '🚩',
@@ -44,6 +45,11 @@ interface StoryCardProps {
     story_tags: Array<{
       tag: string;
     }>;
+    distance?: number;
+    cities?: {
+      city_name: string;
+      state_province: string;
+    };
   };
   authorName: string;
   subjectName?: string; // The person the story is about
@@ -310,13 +316,21 @@ const StoryCard = ({
         <div className="p-4 space-y-3">
           <p className="text-foreground leading-relaxed whitespace-pre-wrap">{story.content}</p>
           
-          {story.location && (
-            <button 
-              onClick={() => navigate(`/explore?location=${encodeURIComponent(story.location)}`)}
-              className="text-sm text-muted-foreground hover:text-juice-blue transition-smooth cursor-pointer text-left"
-            >
-              📍 {story.location}
-            </button>
+          {(story.location || story.cities) && (
+            <div className="flex items-center gap-1 text-sm text-muted-foreground">
+              <MapPin className="h-3 w-3" />
+              <span className="text-xs">
+                {story.cities 
+                  ? `${story.cities.city_name}, ${story.cities.state_province}`
+                  : story.location
+                }
+                {story.distance && (
+                  <span className="ml-1 text-juice-blue font-medium">
+                    • {formatDistance(story.distance)} away
+                  </span>
+                )}
+              </span>
+            </div>
           )}
 
           {/* Tags */}
