@@ -28,9 +28,14 @@ export const useProfileSearch = () => {
   const normalizePhoneNumber = (input: string): string | null => {
     try {
       // Remove any @ symbols if user includes them
-      const cleanInput = input.replace('@', '');
+      const cleanInput = input.replace('@', '').trim();
       
-      // Try to parse as phone number
+      // Must start with + for international format
+      if (!cleanInput.startsWith('+')) {
+        return null;
+      }
+      
+      // Try to parse as phone number - must be valid international format
       const phoneNumber = parsePhoneNumber(cleanInput);
       
       if (phoneNumber && phoneNumber.isValid()) {
@@ -46,9 +51,9 @@ export const useProfileSearch = () => {
   };
 
   const isPhoneNumberInput = (input: string): boolean => {
-    const cleanInput = input.replace(/[@\s\-\(\)\.]/g, '');
-    // Check if input contains mostly digits and some common phone chars
-    return /^[\+]?[\d\s\-\(\)\.]{7,}$/.test(input);
+    const cleanInput = input.trim();
+    // Must start with + and contain mostly digits
+    return cleanInput.startsWith('+') && /^\+[\d\s\-\(\)\.]{7,}$/.test(cleanInput);
   };
 
   const searchProfiles = async (query: string): Promise<SearchResult[]> => {
@@ -109,26 +114,7 @@ export const useProfileSearch = () => {
         }
       }
 
-      // If no results found and this could be either type, try the other method
-      if (results.length === 0 && !isPhoneQuery) {
-        // Try phone search as fallback
-        const normalizedPhone = normalizePhoneNumber(trimmedQuery);
-        if (normalizedPhone) {
-          const { data: phoneResults, error: phoneError } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('phone_number', normalizedPhone);
-
-          if (!phoneError && phoneResults && phoneResults.length > 0) {
-            phoneResults.forEach(profile => {
-              results.push({
-                profile,
-                matchType: 'phone'
-              });
-            });
-          }
-        }
-      }
+      // No fallback search - strict phone number formatting required
 
     } catch (error) {
       console.error('Search error:', error);
