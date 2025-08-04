@@ -316,6 +316,7 @@ const StoryCard = ({
         <div className="p-4 space-y-3">
           <p className="text-foreground leading-relaxed whitespace-pre-wrap">{story.content}</p>
           
+          {/* Location - moved here after story content and images */}
           {(story.location || story.cities) && (
             <div className="flex items-center gap-1 text-sm text-muted-foreground">
               <MapPin className="h-3 w-3" />
