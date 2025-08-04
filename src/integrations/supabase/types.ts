@@ -233,6 +233,39 @@ export type Database = {
         }
         Relationships: []
       }
+      rate_limits: {
+        Row: {
+          action_type: string
+          attempt_count: number
+          blocked_until: string | null
+          created_at: string
+          id: string
+          identifier: string
+          updated_at: string
+          window_start: string
+        }
+        Insert: {
+          action_type: string
+          attempt_count?: number
+          blocked_until?: string | null
+          created_at?: string
+          id?: string
+          identifier: string
+          updated_at?: string
+          window_start?: string
+        }
+        Update: {
+          action_type?: string
+          attempt_count?: number
+          blocked_until?: string | null
+          created_at?: string
+          id?: string
+          identifier?: string
+          updated_at?: string
+          window_start?: string
+        }
+        Relationships: []
+      }
       reactions: {
         Row: {
           created_at: string
@@ -524,9 +557,23 @@ export type Database = {
         Args: { user_id_param: string }
         Returns: boolean
       }
+      check_rate_limit: {
+        Args: {
+          p_identifier: string
+          p_action_type: string
+          p_max_attempts?: number
+          p_window_minutes?: number
+          p_block_minutes?: number
+        }
+        Returns: boolean
+      }
       current_user_has_role: {
         Args: { _role: Database["public"]["Enums"]["app_role"] }
         Returns: boolean
+      }
+      detect_suspicious_activity: {
+        Args: { p_user_id: string; p_activity_type: string; p_details?: Json }
+        Returns: undefined
       }
       generate_invite_code: {
         Args: Record<PropertyKey, never>
@@ -590,6 +637,15 @@ export type Database = {
       }
       use_invite_code: {
         Args: { invite_code: string; new_user_id: string }
+        Returns: boolean
+      }
+      validate_file_upload: {
+        Args: {
+          file_name: string
+          file_size: number
+          mime_type: string
+          bucket_name: string
+        }
         Returns: boolean
       }
       validate_phone_number: {
