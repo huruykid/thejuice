@@ -17,24 +17,31 @@ export const useCities = (searchQuery: string = "") => {
   return useQuery({
     queryKey: ["cities", searchQuery],
     queryFn: async () => {
-      let query = supabase
-        .from("cities")
-        .select("*")
-        .order("population", { ascending: false });
+      try {
+        let query = supabase
+          .from("cities")
+          .select("*")
+          .order("population", { ascending: false });
 
-      if (searchQuery.trim()) {
-        query = query.ilike("city_name", `%${searchQuery}%`);
+        if (searchQuery.trim()) {
+          query = query.ilike("city_name", `%${searchQuery}%`);
+        }
+
+        const { data, error } = await query.limit(20);
+
+        if (error) {
+          console.error("Error fetching cities:", error);
+          throw error;
+        }
+
+        return (data as City[]) || [];
+      } catch (error) {
+        console.error("Error in useCities:", error);
+        return []; // Return empty array on error to prevent iteration issues
       }
-
-      const { data, error } = await query.limit(20);
-
-      if (error) {
-        throw error;
-      }
-
-      return data as City[];
     },
-    enabled: true
+    enabled: true,
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 };
 

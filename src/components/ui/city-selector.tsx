@@ -24,7 +24,10 @@ export const CitySelector = ({
 }: CitySelectorProps) => {
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const { data: cities = [], isLoading } = useCities(searchQuery);
+  const { data: cities, isLoading, error } = useCities(searchQuery);
+  
+  // Ensure cities is always an array to prevent iteration errors
+  const safeCities = Array.isArray(cities) ? cities : [];
 
   const handleSelect = (city: City) => {
     onSelect(city);
@@ -66,7 +69,7 @@ export const CitySelector = ({
             onValueChange={setSearchQuery}
           />
           <CommandEmpty>
-            {isLoading ? "Loading cities..." : "No cities found."}
+            {isLoading ? "Loading cities..." : error ? "Error loading cities" : "No cities found."}
           </CommandEmpty>
           <CommandGroup className="max-h-64 overflow-auto">
             {value && (
@@ -77,7 +80,7 @@ export const CitySelector = ({
                 Clear selection
               </CommandItem>
             )}
-            {cities.map((city) => (
+            {safeCities.map((city) => (
               <CommandItem
                 key={city.id}
                 onSelect={() => handleSelect(city)}
