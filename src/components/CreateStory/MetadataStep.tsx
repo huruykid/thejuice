@@ -49,27 +49,6 @@ const MetadataStep = ({
               Type full city name (e.g. "Los Angeles", not "LA") for better search results.
             </p>
           </div>
-          <div>
-            <label className="block text-sm font-medium mb-1">Relationship stage</label>
-            <Select
-              value={storyData.metadata.relationshipStage}
-              onValueChange={(value) => setStoryData(prev => ({ 
-                ...prev, 
-                metadata: { ...prev.metadata, relationshipStage: value }
-              }))}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select stage" />
-              </SelectTrigger>
-              <SelectContent>
-                {relationshipStages.map((stage) => (
-                  <SelectItem key={stage} value={stage.toLowerCase()}>
-                    {stage}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
         </div>
       </div>
       
