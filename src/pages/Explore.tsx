@@ -151,7 +151,7 @@ const Explore = ({ onCreateStory }: ExploreProps) => {
               <Input
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search stories, @username, or +1-555-555-5555..."
+                placeholder="Search by @username or phone number"
                 className="pl-10 rounded-2xl border-juice-blue/20 focus:border-juice-blue"
               />
             </form>
