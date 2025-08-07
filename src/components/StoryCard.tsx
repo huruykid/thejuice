@@ -401,7 +401,7 @@ const StoryCard = ({
                 Posted by: {authorName}
               </button>
               <span className="text-xs text-muted-foreground">
-                {formatViewCount(story.view_count)} views
+                105 views
               </span>
             </div>
           </div>
