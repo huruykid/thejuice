@@ -48,6 +48,20 @@ export const useScreenshotProtection = () => {
       }
     };
 
+    // Mobile-specific: Detect rapid app switching (potential screenshot)
+    const handleAppStateChange = () => {
+      if (document.visibilityState === 'hidden') {
+        setIsScreenshotAttempted(true);
+        document.body.classList.add('screenshot-blur');
+        
+        clearTimeout(blurTimeout);
+        blurTimeout = setTimeout(() => {
+          setIsScreenshotAttempted(false);
+          document.body.classList.remove('screenshot-blur');
+        }, 2000);
+      }
+    };
+
     // Disable right-click context menu
     const handleContextMenu = (e: MouseEvent) => {
       e.preventDefault();
@@ -61,8 +75,17 @@ export const useScreenshotProtection = () => {
     // Add event listeners
     document.addEventListener('keydown', handleKeyDown);
     document.addEventListener('visibilitychange', handleVisibilityChange);
+    document.addEventListener('visibilitychange', handleAppStateChange);
     document.addEventListener('contextmenu', handleContextMenu);
     document.addEventListener('dragstart', handleDragStart);
+
+    // Mobile-specific touch events
+    document.addEventListener('touchstart', (e) => {
+      if (e.touches.length > 1) {
+        // Multi-touch might indicate screenshot gesture attempt
+        e.preventDefault();
+      }
+    });
 
     // Cleanup
     return () => {
