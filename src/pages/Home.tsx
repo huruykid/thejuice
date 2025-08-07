@@ -124,6 +124,8 @@ const Home = ({
     const shareText = `Finally, men have a voice. Join the Tea App for Men - where the stories are real and the juice is anonymous.
 👉 https://sipjuice.app
 
+Use invite code: ${code}
+
 #fortheboys #teaappformen #getthejuice`;
     if (navigator.share) {
       try {
