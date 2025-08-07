@@ -28,6 +28,7 @@ import AutomatedCampaignDashboard from "./pages/AutomatedCampaignDashboard";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import { useAuth } from "./hooks/useAuth";
+import { useScreenshotProtection } from "./hooks/useScreenshotProtection";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
@@ -65,10 +66,14 @@ const ExploreWrapper = () => {
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <SecurityProvider sessionTimeoutMinutes={30}>
-      <TooltipProvider>
+const App = () => {
+  // Enable screenshot protection across the entire app
+  useScreenshotProtection();
+  
+  return (
+    <QueryClientProvider client={queryClient}>
+      <SecurityProvider sessionTimeoutMinutes={30}>
+        <TooltipProvider>
         <Toaster />
         <Sonner />
         <BrowserRouter>
@@ -134,10 +139,11 @@ const App = () => (
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-    </SecurityProvider>
-  </QueryClientProvider>
-);
+        </BrowserRouter>
+      </TooltipProvider>
+      </SecurityProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;

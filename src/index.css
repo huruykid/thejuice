@@ -166,6 +166,14 @@
   body {
     @apply bg-background text-foreground font-['Inter'] antialiased;
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+    /* Prevent screenshots and screen recording */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+    pointer-events: auto;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -222,5 +230,33 @@
   /* Floating Action Button */
   .fab {
     @apply fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-r from-primary to-accent rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center text-white z-50;
+  }
+
+  /* Screenshot Protection */
+  .screenshot-protected {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+    pointer-events: auto;
+  }
+
+  /* Sensitive content protection */
+  .sensitive-content {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+    filter: blur(0px);
+    transition: filter 0.3s ease;
+  }
+
+  /* When screenshot is detected, blur sensitive content */
+  .screenshot-blur .sensitive-content {
+    filter: blur(10px);
   }
 }
