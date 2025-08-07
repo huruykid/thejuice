@@ -401,7 +401,7 @@ const StoryCard = ({
                 Posted by: {authorName}
               </button>
               <span className="text-xs text-muted-foreground">
-                105 views
+                1,421 views
               </span>
             </div>
           </div>
