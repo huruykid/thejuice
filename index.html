@@ -4,6 +4,16 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
+    <script>
+      (function() {
+        var host = window.location.hostname;
+        if (host === 'teaappformen.com' || host === 'www.teaappformen.com') {
+          var target = 'https://sipjuice.app' + window.location.pathname + window.location.search + window.location.hash;
+          window.location.replace(target);
+        }
+      })();
+    </script>
+    
     <!-- SEO Meta Tags -->
     <title>Tea App for Men - Anonymous Dating Stories & Reviews | Real Male Dating Experiences</title>
     <meta name="description" content="Join 10,000+ verified men sharing anonymous dating stories. Rate experiences, read real reviews, and get honest dating advice from guys who've been there. The tea app designed specifically for men." />
