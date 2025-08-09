@@ -2,16 +2,16 @@ import { useState, useEffect } from "react";
 import Navigation from "@/components/Navigation";
 import StoryCard from "@/components/StoryCard";
 import { Button } from "@/components/ui/button";
-import { Share2, MapPin } from "lucide-react";
+import { MapPin } from "lucide-react";
 import { useStories } from "@/hooks/useStories";
 import { useAuth } from "@/hooks/useAuth";
-import { useInvites } from "@/hooks/useInvites";
+
 import { useToast } from "@/hooks/use-toast";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import { useNearbyStories } from "@/hooks/useNearbyStories";
 import { LocationPrompt } from "@/components/LocationPrompt";
 import { LocationFilter } from "@/components/LocationFilter";
-import { supabase } from "@/integrations/supabase/client";
+
 interface HomeProps {
   onCreateStory?: () => void;
 }
@@ -30,11 +30,6 @@ const Home = ({
     user
   } = useAuth();
   
-  const {
-    inviteStats,
-    generateInvite,
-    generatingInvite
-  } = useInvites();
   
   const {
     toast
@@ -68,103 +63,6 @@ const Home = ({
 
   // Use nearby stories if available, otherwise fall back to all stories
   const stories = coordinates && selectedRadius !== null ? nearbyStories : allStories;
-  const handleInviteFriends = async () => {
-    if (!inviteStats || inviteStats.invites_remaining <= 0) {
-      toast({
-        title: "No invites remaining",
-        description: "You don't have any invites left to share.",
-        variant: "destructive"
-      });
-      return;
-    }
-    try {
-      // Check for existing unused codes first
-      if (!user) return;
-      const {
-        data: existingCodes
-      } = await supabase.from('invite_codes').select('code').eq('created_by', user.id).is('used_by', null).order('created_at', {
-        ascending: false
-      }).limit(1);
-      if (existingCodes && existingCodes.length > 0) {
-        // Use existing code
-        const code = existingCodes[0].code;
-        shareInviteCode(code);
-      } else {
-        // Generate new code and then share it
-        generateInvite();
-        // Note: We'll handle sharing after generation completes
-        // For now, let's show a message
-        toast({
-          title: "Generating invite code...",
-          description: "Your invite will be ready to share in a moment!"
-        });
-
-        // After a short delay, get the newest code and share it
-        setTimeout(async () => {
-          const {
-            data: newCodes
-          } = await supabase.from('invite_codes').select('code').eq('created_by', user.id).is('used_by', null).order('created_at', {
-            ascending: false
-          }).limit(1);
-          if (newCodes && newCodes.length > 0) {
-            shareInviteCode(newCodes[0].code);
-          }
-        }, 1000);
-      }
-    } catch (error) {
-      console.error('Error handling invite:', error);
-      toast({
-        title: "Error",
-        description: "Failed to generate invite. Please try again.",
-        variant: "destructive"
-      });
-    }
-  };
-  const shareInviteCode = async (code: string) => {
-    const shareText = `Finally, men have a voice. Join the Tea App for Men - where the stories are real and the juice is anonymous.
-👉 https://sipjuice.app
-
-Use invite code: ${code}
-
-#fortheboys #teaappformen #getthejuice`;
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: 'Join The Tea App for Men!',
-          text: shareText
-        });
-      } catch (err) {
-        // User cancelled sharing or error occurred
-        if (err instanceof Error && err.name !== 'AbortError') {
-          copyToClipboard(shareText);
-        }
-      }
-    } else {
-      // Fallback to copying
-      copyToClipboard(shareText);
-    }
-  };
-  const copyToClipboard = async (text: string) => {
-    try {
-      await navigator.clipboard.writeText(text);
-      toast({
-        title: "Copied to clipboard!",
-        description: "Share this invite with your friends."
-      });
-    } catch (err) {
-      // Fallback for older browsers
-      const textArea = document.createElement('textarea');
-      textArea.value = text;
-      document.body.appendChild(textArea);
-      textArea.select();
-      document.execCommand('copy');
-      document.body.removeChild(textArea);
-      toast({
-        title: "Copied to clipboard!",
-        description: "Share this invite with your friends."
-      });
-    }
-  };
 
   const handleRequestLocation = () => {
     requestLocation();
@@ -198,24 +96,6 @@ Use invite code: ${code}
               The Juice App
             </h1>
           </div>
-          <Button 
-            variant="gradient" 
-            size="sm" 
-            onClick={handleInviteFriends} 
-            disabled={generatingInvite || (inviteStats?.invites_remaining || 0) <= 0}
-            className="shadow-glow"
-          >
-            {generatingInvite ? (
-              <>
-                <div className="animate-pulse">Generating...</div>
-              </>
-            ) : (
-              <>
-                <Share2 className="h-4 w-4" />
-                Invite Friends
-              </>
-            )}
-          </Button>
         </div>
       </div>
 

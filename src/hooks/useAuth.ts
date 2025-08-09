@@ -29,61 +29,30 @@ export const useAuth = () => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const signUp = async (email: string, password: string, inviteCode: string) => {
+  const signUp = async (email: string, password: string, _inviteCode?: string) => {
     // Use a more robust redirect URL that works in all environments
     const redirectUrl = window.location.href.includes('lovableproject.com') 
       ? 'https://da2e9ee2-4548-482f-80e7-6cfedc4bfcb9.lovableproject.com/'
       : `${window.location.origin}/`;
-    
-    // First validate the invite code
-    const { data: inviteData, error: inviteError } = await (supabase as any)
-      .from('invite_codes')
-      .select('id')
-      .eq('code', inviteCode.toUpperCase())
-      .is('used_by', null)
-      .gt('expires_at', new Date().toISOString())
-      .single();
 
-    if (inviteError || !inviteData) {
-      return { error: { message: 'Invalid or expired invite code' } };
-    }
-    
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         emailRedirectTo: redirectUrl,
-        data: {
-          invite_code: inviteCode.toUpperCase()
-        }
       }
     });
 
-    // If signup successful, mark invite as used and send welcome email
+    // Send welcome email (non-blocking)
     if (!error && data.user) {
       try {
-        const { error: useError } = await (supabase as any)
-          .rpc('use_invite_code', {
-            invite_code: inviteCode.toUpperCase(),
-            new_user_id: data.user.id
-          });
-        
-        if (useError) {
-          console.error('Failed to process invite code:', useError);
-        }
-
-        // Send welcome email
-        try {
-          await supabase.functions.invoke('send-welcome-email', {
-            body: { email: data.user.email }
-          });
-          console.log('Welcome email sent successfully');
-        } catch (emailError) {
-          console.error('Failed to send welcome email:', emailError);
-          // Don't fail signup if email fails
-        }
-      } catch (err) {
-        console.error('Error processing invite code:', err);
+        await supabase.functions.invoke('send-welcome-email', {
+          body: { email: data.user.email }
+        });
+        console.log('Welcome email sent successfully');
+      } catch (emailError) {
+        console.error('Failed to send welcome email:', emailError);
+        // Do not fail signup if email fails
       }
     }
 

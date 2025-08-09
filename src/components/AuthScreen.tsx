@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { useAuth } from "@/hooks/useAuth";
-import { useInvites } from "@/hooks/useInvites";
+
 import { useUserSession } from "@/hooks/useUserSession";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
@@ -21,14 +21,14 @@ const AuthScreen = ({ onAuthSuccess }: AuthScreenProps) => {
   const [isSignUp, setIsSignUp] = useState(!isReturningUser);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [inviteCode, setInviteCode] = useState("");
+  
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showSelfieCapture, setShowSelfieCapture] = useState(false);
   const [pendingUserId, setPendingUserId] = useState<string | null>(null);
   
   const { signIn, signUp, user } = useAuth();
-  const { validateInviteCode } = useInvites();
+  
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -38,27 +38,7 @@ const AuthScreen = ({ onAuthSuccess }: AuthScreenProps) => {
 
     try {
       if (isSignUp) {
-        if (!inviteCode || inviteCode.length < 6) {
-          toast({
-            title: "Invite code required",
-            description: "Please enter a valid invite code to sign up.",
-            variant: "destructive"
-          });
-          return;
-        }
-        
-        // Validate invite code before attempting signup
-        const isValidCode = await validateInviteCode(inviteCode);
-        if (!isValidCode) {
-          toast({
-            title: "Invalid invite code",
-            description: "This invite code is invalid or has expired.",
-            variant: "destructive"
-          });
-          return;
-        }
-        
-        const result = await signUp(email, password, inviteCode);
+        const result = await signUp(email, password);
         if (result.error) {
           if (result.error.message.includes('already been registered')) {
             toast({
@@ -147,7 +127,7 @@ const AuthScreen = ({ onAuthSuccess }: AuthScreenProps) => {
               </h2>
               <p className="text-muted-foreground">
                 {isSignUp 
-                  ? "Enter your invite code and create your account" 
+                  ? "Create your account" 
                   : <>Sign in to share and<br />discover dating stories</>
                 }
               </p>
@@ -155,19 +135,6 @@ const AuthScreen = ({ onAuthSuccess }: AuthScreenProps) => {
 
 
             <form onSubmit={handleSubmit} className="space-y-4">
-              {isSignUp && (
-                <div>
-                  <Input
-                    type="text"
-                    value={inviteCode}
-                    onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
-                    placeholder="INVITE-CODE"
-                    className="text-center text-lg tracking-wider rounded-2xl border-juice-orange/30 focus:border-juice-orange"
-                    maxLength={12}
-                    required
-                  />
-                </div>
-              )}
               
               <div>
                 <Input
@@ -220,7 +187,6 @@ const AuthScreen = ({ onAuthSuccess }: AuthScreenProps) => {
                 variant="ghost"
                 onClick={() => {
                   setIsSignUp(!isSignUp);
-                  setInviteCode("");
                   setEmail("");
                   setPassword("");
                 }}
@@ -228,20 +194,10 @@ const AuthScreen = ({ onAuthSuccess }: AuthScreenProps) => {
               >
                 {isSignUp 
                   ? "Already have an account? Sign in" 
-                  : (
-                    <span>
-                      Need an account?<br />
-                      Sign up with invite code
-                    </span>
-                  )
+                  : "Need an account? Create one" 
                 }
               </Button>
               
-              {isSignUp && (
-                <p className="text-xs text-muted-foreground">
-                  Don't have an invite code? Ask a friend who's already on Juice!
-                </p>
-              )}
             </div>
           </div>
         </Card>

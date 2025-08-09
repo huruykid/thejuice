@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { User, Settings, Heart, MessageCircle, LogOut } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import CreateStory from "@/components/CreateStory";
-import InviteManager from "@/components/InviteManager";
+
 import LoadingSkeleton from "@/components/ui/loading-skeleton";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
@@ -99,10 +99,6 @@ const Profile = () => {
           </CardContent>
         </Card>
 
-        {/* Invite Management */}
-        <InviteManager />
-
-        {/* Quick Actions */}
         <div className="space-y-3">
           <Button 
             onClick={() => setShowCreateStory(true)}
