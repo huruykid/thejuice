@@ -1,4 +1,4 @@
-# Robots.txt for Tea App for Men - teaappformen.com
+# Robots.txt for Tea App for Men - sipjuice.app
 # Optimized for maximum search engine visibility
 
 User-agent: *
@@ -38,7 +38,7 @@ Allow: /*.svg
 Allow: /*.webp
 
 # Sitemap location
-Sitemap: https://teaappformen.com/sitemap.xml
+Sitemap: https://sipjuice.app/sitemap.xml
 
 # Crawl delay for polite crawling
 Crawl-delay: 1
