@@ -27,6 +27,7 @@ import ViralMarketingHub from "./pages/ViralMarketingHub";
 import AutomatedCampaignDashboard from "./pages/AutomatedCampaignDashboard";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 import { useAuth } from "./hooks/useAuth";
 import { useScreenshotProtection } from "./hooks/useScreenshotProtection";
 
@@ -136,6 +137,8 @@ const App = () => {
           {/* Blog Routes */}
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:slug" element={<BlogPost />} />
+          {/* Legal */}
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
