@@ -3,14 +3,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Privacy Policy | thejuice</title>
-  <meta name="description" content="thejuice Privacy Policy explaining how we collect, use, and protect your data, including camera and location permissions." />
+  <title>Privacy Policy | The Juice App</title>
+  <meta name="description" content="Simple, plain-English privacy policy for The Juice App. Learn what we collect, how we use it, and your choices." />
   <link rel="canonical" href="https://sipjuice.app/privacy-policy.html" />
   <meta name="robots" content="index,follow" />
-  
+
   <!-- Open Graph -->
-  <meta property="og:title" content="Privacy Policy | thejuice" />
-  <meta property="og:description" content="How thejuice handles your data, permissions, and privacy choices." />
+  <meta property="og:title" content="Privacy Policy | The Juice App" />
+  <meta property="og:description" content="How The Juice App handles your data and privacy choices." />
   <meta property="og:url" content="https://sipjuice.app/privacy-policy.html" />
   <meta property="og:type" content="website" />
   <meta property="og:image" content="/juice-logo.png" />
@@ -19,18 +19,23 @@
   {
     "@context": "https://schema.org",
     "@type": "WebPage",
-    "name": "Privacy Policy | thejuice",
+    "name": "Privacy Policy | The Juice App",
     "url": "https://sipjuice.app/privacy-policy.html",
+    "about": {
+      "@type": "Thing",
+      "name": "Privacy policy"
+    },
     "isPartOf": {
       "@type": "Organization",
-      "name": "thejuice",
+      "name": "The Juice App",
       "url": "https://sipjuice.app"
     }
   }
   </script>
   <style>
     :root{--bg:#0b0b0d;--fg:#e8e8ea;--muted:#b5b5bb;--card:#141418;--primary:#8b5cf6}
-    *{box-sizing:border-box}body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--fg);line-height:1.6}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--fg);line-height:1.6}
     header,main,footer{max-width:880px;margin:auto;padding:24px}
     header{padding-top:40px}
     h1{font-size:2rem;margin:0 0 12px}
@@ -39,6 +44,8 @@
     .card{background:var(--card);border:1px solid #1f1f24;border-radius:12px;padding:20px;margin:16px 0}
     a{color:var(--fg)} a:hover{color:#fff;text-decoration:underline}
     .badge{display:inline-block;background:color-mix(in oklab, var(--primary), black 70%);color:#fff;padding:2px 8px;border-radius:999px;font-size:.75rem;margin-left:8px}
+    .top{display:flex;align-items:center;gap:12px}
+    .logo{width:36px;height:36px;object-fit:contain;border-radius:8px;border:1px solid #24242a}
   </style>
 </head>
 <body>
@@ -46,113 +53,71 @@
     <nav aria-label="Breadcrumb">
       <a href="/" aria-label="Home">← Back to Home</a>
     </nav>
-    <h1>Privacy Policy for thejuice</h1>
-    <p>Effective date: August 9, 2025</p>
+    <div class="top">
+      <img src="/juice-logo.png" alt="The Juice App logo" class="logo" />
+      <h1>Privacy Policy for The Juice App</h1>
+    </div>
+    <p>Effective Date: 08/12/2025</p>
+    <p class="card" style="margin-top:8px">The Juice App is an anonymous, men-only social platform for sharing stories, comments, and advice—without judgment. This policy explains in plain English how we handle your information.</p>
   </header>
 
   <main>
-    <section class="card" aria-labelledby="overview">
-      <h2 id="overview">Overview</h2>
-      <p>thejuice ("we", "us", or "our") is committed to protecting your privacy. This policy explains what information we collect, how we use it, and the choices you have. By using the app or website, you agree to this policy.</p>
-    </section>
-
-    <section class="card" aria-labelledby="collection">
-      <h2 id="collection">Information We Collect</h2>
+    <section class="card" aria-labelledby="collect">
+      <h2 id="collect">Information We Collect</h2>
       <ul>
-        <li>Account data: email, username, profile details.</li>
-        <li>Verification data: selfie images you upload for account verification.</li>
-        <li>Location data: approximate city/location when you allow location access.</li>
-        <li>Usage data: app interactions, device info, and diagnostics.</li>
-        <li>Content: stories, comments, reactions and related metadata you create.</li>
+        <li>Account info: username and email to create and manage your account.</li>
+        <li>Content you create: stories, comments, and reactions (with basic timestamps or tags).</li>
+        <li>Device info: device model, OS version, app version, and basic diagnostics to keep the app working.</li>
       </ul>
-      <p>We use Supabase for authentication, database, and storage services.</p>
-    </section>
-
-    <section class="card" aria-labelledby="permissions">
-      <h2 id="permissions">Device Permissions</h2>
-      <ul>
-        <li>Camera: used only to capture a verification selfie and optional profile photos.</li>
-        <li>Photos: optional, to select an image from your library.</li>
-        <li>Location: optional, to show nearby content and improve discovery.</li>
-      </ul>
-      <p>You can change these permissions anytime in your device settings.</p>
-    </section>
-
-    <section class="card" aria-labelledby="app-privacy">
-      <h2 id="app-privacy">App Privacy Details (Apple)</h2>
-      <p>This summary reflects how thejuice handles data as disclosed in App Store Connect.</p>
-      <ul>
-        <li>Data linked to you: Contact info (email), Identifiers (user ID), User content (selfies, stories, comments), Usage data (app interactions), Approximate location (when enabled).</li>
-        <li>Data used for tracking: None. We do not track you across apps or websites or use third‑party ad SDKs.</li>
-        <li>Data sharing: We share with service providers only (e.g., Supabase) to operate the service; we do not sell personal data.</li>
-        <li>Data retention: Kept only as long as needed for the purposes described below or as required by law.</li>
-        <li>Deletion: You can delete your account in the app (Privacy Settings → Delete Account) or email support@sipjuice.app.</li>
-      </ul>
+      <p>We collect only what’s needed to run the app. We do not sell your data and we do not use third‑party ad SDKs or track you across other apps and websites.</p>
     </section>
 
     <section class="card" aria-labelledby="use">
-      <h2 id="use">How We Use Information</h2>
+      <h2 id="use">How We Use Your Information</h2>
       <ul>
-        <li>Provide and improve core features, including discovery and moderation.</li>
-        <li>Verify accounts and maintain community safety.</li>
-        <li>Communicate with you about updates, security, and support.</li>
-        <li>Prevent fraud, abuse, and violations of our Terms.</li>
+        <li>Operate the app: create accounts, enable posting and interactions, and show relevant content.</li>
+        <li>Safety and moderation: maintain community standards and prevent abuse or fraud.</li>
+        <li>Improve reliability: fix bugs, measure performance, and ship updates.</li>
+        <li>Communicate with you: send essential service messages (e.g., security or account changes).</li>
       </ul>
     </section>
 
     <section class="card" aria-labelledby="share">
-      <h2 id="share">How We Share Information</h2>
+      <h2 id="share">Sharing Your Information</h2>
       <ul>
-        <li>Service providers: e.g., Supabase and email providers to run the service.</li>
-        <li>Legal and safety: when required by law or to protect our users and platform.</li>
+        <li>Service providers: trusted vendors (e.g., hosting, database, email) who help us operate the app. They may use data only to provide these services to us.</li>
+        <li>Legal and safety: when required by law or necessary to protect users, our rights, or the platform.</li>
       </ul>
-      <p>We do not sell your personal information.</p>
-    </section>
-
-    <section class="card" aria-labelledby="retention">
-      <h2 id="retention">Data Retention</h2>
-      <p>We retain information only as long as necessary for the purposes described here, unless a longer period is required by law.</p>
-    </section>
-
-    <section class="card" aria-labelledby="choices">
-      <h2 id="choices">Your Choices & Rights</h2>
-      <ul>
-        <li>Access, correct, or delete your data: use in‑app Privacy Settings or contact Support.</li>
-        <li>Withdraw consent for optional permissions (camera, location, photos) in device settings.</li>
-        <li>Opt out of certain communications using in‑app controls or unsubscribe links.</li>
-      </ul>
+      <p>We do not sell personal data or share it for advertising or cross‑app tracking.</p>
     </section>
 
     <section class="card" aria-labelledby="security">
-      <h2 id="security">Security</h2>
-      <p>We implement technical and organizational measures to protect data, including encryption in transit and restricted access. No system is 100% secure, but we continuously improve our safeguards.</p>
+      <h2 id="security">Data Security</h2>
+      <p>We use safeguards like encryption in transit, access controls, and monitoring. No method is 100% secure, but we work to protect your information and limit what we collect. We keep data only as long as needed for the purposes above or as required by law.</p>
     </section>
 
-    <section class="card" aria-labelledby="children">
-      <h2 id="children">Children's Privacy</h2>
-      <p>thejuice is intended for users 13+ and not directed to children. If you believe a child provided personal information, contact us to remove it.</p>
+    <section class="card" aria-labelledby="choices">
+      <h2 id="choices">Your Choices</h2>
+      <ul>
+        <li>Access, update, or delete your data by contacting us. You may also request account deletion.</li>
+        <li>Emails: you can opt out of non‑essential messages.</li>
+        <li>Anonymity: avoid including personal details in posts or comments if you wish to stay anonymous.</li>
+      </ul>
     </section>
 
-    <section class="card" aria-labelledby="international">
-      <h2 id="international">International Transfers</h2>
-      <p>Your data may be processed in regions where our providers operate. We rely on appropriate safeguards as applicable.</p>
-    </section>
-
-    <section class="card" aria-labelledby="updates">
-      <h2 id="updates">Updates to This Policy</h2>
-      <p>We may update this policy. We will change the "Effective date" above and, when appropriate, notify you in the app or by email.</p>
+    <section class="card" aria-labelledby="changes">
+      <h2 id="changes">Changes to This Policy</h2>
+      <p>We may update this policy. We’ll revise the “Effective Date” above and notify you in the app or by email when changes are significant.</p>
     </section>
 
     <section class="card" aria-labelledby="contact">
       <h2 id="contact">Contact Us</h2>
-      <p>Support Center: <a href="/support.html">sipjuice.app/support.html</a></p>
       <p>Email: <a href="mailto:support@sipjuice.app">support@sipjuice.app</a> <span class="badge">Support</span></p>
-      <p>For data requests, please include your account email and username.</p>
     </section>
   </main>
 
   <footer>
-    <p>© 2025 thejuice • <a href="/privacy-policy.html">Privacy Policy</a> • <a href="/support.html">Support</a></p>
+    <p>© 2025 The Juice App • <a href="/privacy-policy.html">Privacy Policy</a></p>
   </footer>
 </body>
 </html>
