@@ -31,6 +31,7 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import Support from "./pages/Support";
 import { useAuth } from "./hooks/useAuth";
 import { useScreenshotProtection } from "./hooks/useScreenshotProtection";
+import { useIosCaptureProtection } from "./hooks/useIosCaptureProtection";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
@@ -69,10 +70,12 @@ const ExploreWrapper = () => {
 const queryClient = new QueryClient();
 
 const App = () => {
-  // Enable screenshot protection across the entire app
+  // Enable screenshot protection across the entire app (web + iOS native)
   useScreenshotProtection();
+  useIosCaptureProtection();
   
   return (
+
     <QueryClientProvider client={queryClient}>
       <SecurityProvider sessionTimeoutMinutes={30}>
         <TooltipProvider>

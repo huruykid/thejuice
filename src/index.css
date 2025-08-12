@@ -259,4 +259,16 @@
   .screenshot-blur .sensitive-content {
     filter: blur(10px);
   }
+
+  /* Full-screen privacy overlay when screenshot or recording is detected */
+  body.screenshot-blur::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: hsl(0 0% 0% / 0.98);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    z-index: 2147483647; /* Max overlay */
+    pointer-events: none;
+  }
 }
