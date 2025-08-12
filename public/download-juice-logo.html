@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Download Juice Logo (PNG)</title>
+  <meta name="description" content="Download the Juice logo as a PNG file." />
+  <link rel="canonical" href="/download-juice-logo.html" />
+  <style>
+    body { font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; margin: 0; padding: 2rem; background: #0b0b0b; color: #f4f4f5; }
+    .card { max-width: 640px; margin: 0 auto; background: #111214; border: 1px solid #23242a; border-radius: 16px; padding: 24px; }
+    .title { font-size: 1.25rem; margin: 0 0 0.5rem; }
+    .desc { color: #a1a1aa; margin: 0 0 1rem; }
+    .btn { display: inline-block; background: #f97316; color: #0b0b0b; text-decoration: none; padding: 12px 16px; border-radius: 10px; font-weight: 600; }
+    .btn:hover { filter: brightness(1.05); }
+    .note { color: #a1a1aa; font-size: 0.9rem; margin-top: 0.75rem; }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <h1 class="title">Download Juice Logo (PNG)</h1>
+    <p class="desc">Your download should start automatically. If it doesn't, use the button below.</p>
+    <p>
+      <a id="dl" class="btn" href="/juice-logo.png" download="juice-logo.png">Download PNG</a>
+    </p>
+    <p class="note">Tip: You can also right‑click the link and choose “Save link as…”.</p>
+  </main>
+  <script>
+    // Auto-trigger download after page loads
+    window.addEventListener('DOMContentLoaded', () => {
+      const a = document.getElementById('dl');
+      if (a) {
+        // Small delay to ensure the page is fully ready
+        setTimeout(() => a.click(), 300);
+      }
+    });
+  </script>
+</body>
+</html>
