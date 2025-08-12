@@ -256,7 +256,7 @@ const Landing = () => {
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li><a href="/about" className="hover:text-juice-orange transition-colors">About Us</a></li>
                 <li><a href="/how-it-works" className="hover:text-juice-orange transition-colors">How It Works</a></li>
-                <li><a href="/privacy" className="hover:text-juice-orange transition-colors">Privacy Policy</a></li>
+                <li><a href="/privacy-policy" className="hover:text-juice-orange transition-colors">Privacy Policy</a></li>
                 <li><a href="/terms" className="hover:text-juice-orange transition-colors">Terms of Service</a></li>
               </ul>
             </div>
@@ -265,7 +265,7 @@ const Landing = () => {
               <h4 className="font-semibold text-foreground mb-4">Support</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li><a href="/help" className="hover:text-juice-orange transition-colors">Help Center</a></li>
-                <li><a href="/contact" className="hover:text-juice-orange transition-colors">Contact Us</a></li>
+                <li><a href="/support" className="hover:text-juice-orange transition-colors">Support</a></li>
                 <li><a href="/safety" className="hover:text-juice-orange transition-colors">Safety Guidelines</a></li>
               </ul>
             </div>

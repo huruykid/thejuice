@@ -28,6 +28,7 @@ import AutomatedCampaignDashboard from "./pages/AutomatedCampaignDashboard";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
+import Support from "./pages/Support";
 import { useAuth } from "./hooks/useAuth";
 import { useScreenshotProtection } from "./hooks/useScreenshotProtection";
 
@@ -139,6 +140,7 @@ const App = () => {
           <Route path="/blog/:slug" element={<BlogPost />} />
           {/* Legal */}
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/support" element={<Support />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
