@@ -7,7 +7,7 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "12.2.12 (cd3cf9e)"
@@ -611,11 +611,11 @@ export type Database = {
       }
       check_rate_limit: {
         Args: {
-          p_identifier: string
           p_action_type: string
+          p_block_minutes?: number
+          p_identifier: string
           p_max_attempts?: number
           p_window_minutes?: number
-          p_block_minutes?: number
         }
         Returns: boolean
       }
@@ -624,7 +624,7 @@ export type Database = {
         Returns: boolean
       }
       detect_suspicious_activity: {
-        Args: { p_user_id: string; p_activity_type: string; p_details?: Json }
+        Args: { p_activity_type: string; p_details?: Json; p_user_id: string }
         Returns: undefined
       }
       generate_city_slug: {
@@ -641,8 +641,8 @@ export type Database = {
       }
       has_role: {
         Args: {
-          _user_id: string
           _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
         }
         Returns: boolean
       }
@@ -664,22 +664,22 @@ export type Database = {
       }
       log_file_access: {
         Args: {
-          p_user_id: string
-          p_bucket_id: string
-          p_object_path: string
           p_action: string
+          p_bucket_id: string
           p_ip_address?: unknown
+          p_object_path: string
           p_user_agent?: string
+          p_user_id: string
         }
         Returns: undefined
       }
       log_security_event: {
         Args: {
-          p_user_id: string
           p_action: string
-          p_resource_type: string
-          p_resource_id?: string
           p_details?: Json
+          p_resource_id?: string
+          p_resource_type: string
+          p_user_id: string
         }
         Returns: undefined
       }
@@ -697,10 +697,10 @@ export type Database = {
       }
       validate_file_upload: {
         Args: {
+          bucket_name: string
           file_name: string
           file_size: number
           mime_type: string
-          bucket_name: string
         }
         Returns: boolean
       }
