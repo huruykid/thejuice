@@ -64,9 +64,18 @@ const Home = ({
   // Use nearby stories if available, otherwise fall back to all stories
   const stories = coordinates && selectedRadius !== null ? nearbyStories : allStories;
 
-  const handleRequestLocation = () => {
-    requestLocation();
-    localStorage.setItem('hasSeenLocationPrompt', 'true');
+  const handleRequestLocation = async () => {
+    try {
+      localStorage.setItem('hasSeenLocationPrompt', 'true');
+      await requestLocation();
+    } catch (error) {
+      console.error('Location request failed:', error);
+      toast({
+        title: "Location access denied",
+        description: "To see stories near you, please enable location access in your browser settings.",
+        variant: "default"
+      });
+    }
   };
 
   const handleDismissLocationPrompt = () => {

@@ -1,8 +1,16 @@
-import { Heart, MessageCircle, Flag, Star, Trash2, ShieldCheck, MapPin } from "lucide-react";
+import { Heart, MessageCircle, Flag, Star, Trash2, ShieldCheck, MapPin, MoreVertical } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import CommentsModal from "./CommentsModal";
+import { BlockUserDialog } from "./BlockUserDialog";
+import { ReportContentDialog } from "./ReportContentDialog";
 import { useDeleteStory } from "@/hooks/useStories";
 import { useToggleReaction } from "@/hooks/useReactions";
 import { useReactionCounts } from "@/hooks/useReactionCounts";
@@ -259,16 +267,47 @@ const StoryCard = ({
             </div>
             <div className="flex items-center gap-2">
               <span className="text-xs text-muted-foreground">{formatDate(story.created_at)}</span>
-              {canDelete && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleDelete}
-                  className="h-8 w-8 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              )}
+              
+              {/* Story menu */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 p-0"
+                  >
+                    <MoreVertical className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  {canDelete && (
+                    <DropdownMenuItem
+                      onClick={handleDelete}
+                      className="text-red-600 hover:text-red-700"
+                    >
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      Delete Story
+                    </DropdownMenuItem>
+                  )}
+                  
+                  {!canDelete && story.user_id && (
+                    <>
+                      <BlockUserDialog userId={story.user_id} username={authorName}>
+                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                          Block @{authorName}
+                        </DropdownMenuItem>
+                      </BlockUserDialog>
+                      
+                      <ReportContentDialog targetType="story" targetId={story.id}>
+                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                          <Flag className="h-4 w-4 mr-2" />
+                          Report Story
+                        </DropdownMenuItem>
+                      </ReportContentDialog>
+                    </>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
         </div>

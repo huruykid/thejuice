@@ -316,6 +316,18 @@ const PrivacySettings = () => {
             <Button
               variant="outline"
               className="w-full"
+              onClick={() => {
+                try {
+                  window.open('/privacy-policy', '_blank');
+                } catch (error) {
+                  console.error('Failed to open privacy policy:', error);
+                  toast({
+                    title: "Unable to open link",
+                    description: "Please visit the privacy policy page directly.",
+                    variant: "destructive"
+                  });
+                }
+              }}
             >
               <FileText className="h-4 w-4 mr-2" />
               Privacy Policy & Terms
@@ -324,6 +336,18 @@ const PrivacySettings = () => {
             <Button
               variant="outline"
               className="w-full"
+              onClick={() => {
+                try {
+                  window.open('/support', '_blank');
+                } catch (error) {
+                  console.error('Failed to open support:', error);
+                  toast({
+                    title: "Unable to open link",
+                    description: "Please visit the support page directly.",
+                    variant: "destructive"
+                  });
+                }
+              }}
             >
               <UserX className="h-4 w-4 mr-2" />
               Report Content or User

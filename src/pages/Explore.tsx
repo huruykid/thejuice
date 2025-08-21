@@ -109,7 +109,12 @@ const Explore = ({ onCreateStory }: ExploreProps) => {
   };
 
   const handleLocationRequest = async () => {
-    await requestLocation();
+    try {
+      await requestLocation();
+    } catch (error) {
+      console.error('Location request failed:', error);
+      // Graceful fallback - user can still use the app without location
+    }
   };
 
   const handleLocationDismiss = () => {

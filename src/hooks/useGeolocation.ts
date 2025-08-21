@@ -54,14 +54,16 @@ export const useGeolocation = () => {
         
         switch (error.code) {
           case error.PERMISSION_DENIED:
-            errorMessage = 'Location access denied by user';
+            errorMessage = 'Location access denied. To see stories near you, please enable location access in your browser settings.';
             break;
           case error.POSITION_UNAVAILABLE:
-            errorMessage = 'Location information unavailable';
+            errorMessage = 'Location information unavailable. Please try again or continue browsing without location.';
             break;
           case error.TIMEOUT:
-            errorMessage = 'Location request timed out';
+            errorMessage = 'Location request timed out. Please try again.';
             break;
+          default:
+            errorMessage = 'Failed to get location. Please try again or continue without location features.';
         }
 
         setState(prev => ({
@@ -72,7 +74,7 @@ export const useGeolocation = () => {
       },
       {
         enableHighAccuracy: true,
-        timeout: 10000,
+        timeout: 15000, // Increased timeout for iOS
         maximumAge: 300000, // 5 minutes
       }
     );
