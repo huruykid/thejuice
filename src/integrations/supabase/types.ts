@@ -340,6 +340,51 @@ export type Database = {
           },
         ]
       }
+      reports: {
+        Row: {
+          action_taken: string | null
+          created_at: string
+          details: string | null
+          id: string
+          reason: string
+          reporter_id: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          target_id: string
+          target_type: string
+          updated_at: string
+        }
+        Insert: {
+          action_taken?: string | null
+          created_at?: string
+          details?: string | null
+          id?: string
+          reason: string
+          reporter_id: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          target_id: string
+          target_type: string
+          updated_at?: string
+        }
+        Update: {
+          action_taken?: string | null
+          created_at?: string
+          details?: string | null
+          id?: string
+          reason?: string
+          reporter_id?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          target_id?: string
+          target_type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       security_audit_logs: {
         Row: {
           action: string
@@ -410,6 +455,7 @@ export type Database = {
           emotional_safety_rating: number | null
           id: string
           image_url: string | null
+          is_flagged: boolean
           location: string | null
           loyalty_rating: number | null
           normalized_location: string | null
@@ -431,6 +477,7 @@ export type Database = {
           emotional_safety_rating?: number | null
           id?: string
           image_url?: string | null
+          is_flagged?: boolean
           location?: string | null
           loyalty_rating?: number | null
           normalized_location?: string | null
@@ -452,6 +499,7 @@ export type Database = {
           emotional_safety_rating?: number | null
           id?: string
           image_url?: string | null
+          is_flagged?: boolean
           location?: string | null
           loyalty_rating?: number | null
           normalized_location?: string | null
@@ -510,6 +558,30 @@ export type Database = {
           },
         ]
       }
+      user_blocks: {
+        Row: {
+          blocked_id: string
+          blocker_id: string
+          created_at: string
+          id: string
+          reason: string | null
+        }
+        Insert: {
+          blocked_id: string
+          blocker_id: string
+          created_at?: string
+          id?: string
+          reason?: string | null
+        }
+        Update: {
+          blocked_id?: string
+          blocker_id?: string
+          created_at?: string
+          id?: string
+          reason?: string | null
+        }
+        Relationships: []
+      }
       user_invite_stats: {
         Row: {
           created_at: string
@@ -560,6 +632,39 @@ export type Database = {
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
           updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_suspensions: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          expires_at: string | null
+          id: string
+          reason: string | null
+          revoked_at: string | null
+          revoked_by: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string | null
+          id?: string
+          reason?: string | null
+          revoked_at?: string | null
+          revoked_by?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string | null
+          id?: string
+          reason?: string | null
+          revoked_at?: string | null
+          revoked_by?: string | null
           user_id?: string
         }
         Relationships: []
@@ -639,6 +744,10 @@ export type Database = {
         Args: { title_text: string }
         Returns: string
       }
+      get_story_owner: {
+        Args: { _story_id: string }
+        Returns: string
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -646,8 +755,16 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_blocked: {
+        Args: { _actor: string; _target: string }
+        Returns: boolean
+      }
       is_pg_net_exception_acceptable: {
         Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
+      is_user_suspended: {
+        Args: { _user: string }
         Returns: boolean
       }
       is_user_verified: {
