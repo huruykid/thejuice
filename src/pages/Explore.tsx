@@ -1,28 +1,22 @@
-
 import { useState, useEffect } from "react";
-import { Search, TrendingUp, Hash, MapPin, Users, Phone, User, MessageCircle, X } from "lucide-react";
+import { Search, TrendingUp, Hash, Users, Phone, User, MessageCircle } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import StoryCard from "@/components/StoryCard";
 import Navigation from "@/components/Navigation";
 import ProfileSearch from "@/components/ProfileSearch";
 import { StoryPreview } from "@/components/StoryPreview";
 import { StoryModal } from "@/components/StoryModal";
-import { LocationPrompt } from "@/components/LocationPrompt";
-import { LocationFilter } from "@/components/LocationFilter";
 import { useUnifiedSearch } from "@/hooks/useUnifiedSearch";
 import { useTopTags } from "@/hooks/useTopTags";
 import { useAuth } from "@/hooks/useAuth";
 import { useDebounce } from "@/hooks/useDebounce";
-import { useGeolocation } from "@/hooks/useGeolocation";
-import { useNearbyStories } from "@/hooks/useNearbyStories";
+import { useStories } from "@/hooks/useStories";
 import { useTrendingStories } from "@/hooks/useTrendingStories";
-import { DISTANCE_RANGES } from "@/lib/distance";
 import type { Story } from "@/hooks/useStories";
 
 interface ExploreProps {
@@ -32,100 +26,57 @@ interface ExploreProps {
 const Explore = ({ onCreateStory }: ExploreProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
-  const [selectedStory, setSelectedStory] = useState<Story | null>(null);
-  const [selectedRadius, setSelectedRadius] = useState<number | null>(25);
-  const [showLocationPrompt, setShowLocationPrompt] = useState(true);
+  const [selectedStory, setSelectedStory] = useState<any>(null);
+  const [showTrending, setShowTrending] = useState(false);
   const { user } = useAuth();
 
-  // Geolocation hook
-  const {
-    coordinates: userLocation,
-    isLoading: isLocationLoading,
-    error: locationError,
-    requestLocation,
-    clearLocation
-  } = useGeolocation();
-
-  // Location-based stories
-  const { 
-    data: nearbyStories = [], 
-    isLoading: isNearbyLoading 
-  } = useNearbyStories({
-    userLocation: userLocation || { latitude: 0, longitude: 0 },
-    radiusMiles: selectedRadius || 25,
-    enabled: !!userLocation && !!selectedRadius
-  });
-
-  // Trending stories fallback
-  const { 
-    data: trendingStories = [], 
-    isLoading: isTrendingLoading 
-  } = useTrendingStories();
-
-  // Unified search hook
-  const { 
-    isSearching: isUnifiedSearching, 
-    searchResults: unifiedResults, 
-    performSearch: performUnifiedSearch,
-    clearResults: clearUnifiedResults
-  } = useUnifiedSearch();
-
-  // Debounced search
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
-  // Top tags hook
-  const { data: topTags = [] } = useTopTags();
+  const { 
+    data: allStories,
+    isLoading: allStoriesLoading
+  } = useStories();
 
-  // Auto-dismiss location prompt if user has location
-  useEffect(() => {
-    if (userLocation) {
-      setShowLocationPrompt(false);
-    }
-  }, [userLocation]);
+  const { 
+    searchResults, 
+    isSearching: searchLoading,
+    performSearch,
+    clearResults
+  } = useUnifiedSearch();
 
-  // Perform search when debounced query changes
+  const {
+    data: trendingStories,
+    isLoading: trendingLoading,
+  } = useTrendingStories();
+
+  const { data: topTags, isLoading: tagsLoading } = useTopTags();
+
+  // Search when query changes
   useEffect(() => {
-    if (debouncedSearchQuery.trim().length >= 2) {
-      performUnifiedSearch(debouncedSearchQuery);
+    if (debouncedSearchQuery) {
+      performSearch(debouncedSearchQuery);
     } else {
-      clearUnifiedResults();
+      clearResults();
     }
   }, [debouncedSearchQuery]);
 
-  // Get stories to display - nearby if location available, trending otherwise
-  const displayStories = userLocation && selectedRadius ? nearbyStories : trendingStories;
-  const isLoadingStories = userLocation && selectedRadius ? isNearbyLoading : isTrendingLoading;
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim().length >= 2) {
-      performUnifiedSearch(searchQuery);
+  // Determine what stories to show based on current filters
+  const getDisplayStories = () => {
+    if (debouncedSearchQuery && searchResults) {
+      return searchResults.filter(result => result.type === 'story').map(result => result.story).filter(Boolean);
     }
-  };
-
-  const handleTagClick = (tag: string) => {
-    setSelectedTag(tag);
-    setSearchQuery(tag);
-  };
-
-  const handleLocationRequest = async () => {
-    try {
-      await requestLocation();
-    } catch (error) {
-      console.error('Location request failed:', error);
-      // Graceful fallback - user can still use the app without location
+    
+    if (selectedTag) {
+      return allStories?.filter(story => 
+        story.story_tags?.some(tag => tag.tag === selectedTag)
+      ) || [];
     }
+    
+    return showTrending ? trendingStories : allStories;
   };
 
-  const handleLocationDismiss = () => {
-    setShowLocationPrompt(false);
-  };
-
-  const handleClearLocation = () => {
-    clearLocation();
-    setSelectedRadius(null);
-    setShowLocationPrompt(true);
-  };
+  const displayStories = getDisplayStories() || [];
+  const isLoading = allStoriesLoading || searchLoading || trendingLoading;
 
   const handleStoryClick = (story: Story) => {
     setSelectedStory(story);
@@ -151,7 +102,7 @@ const Explore = ({ onCreateStory }: ExploreProps) => {
           
           {/* Enhanced Search Bar */}
           <div className="space-y-3">
-            <form onSubmit={handleSearch} className="relative">
+            <form onSubmit={(e) => e.preventDefault()} className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 value={searchQuery}
@@ -160,47 +111,49 @@ const Explore = ({ onCreateStory }: ExploreProps) => {
                 className="pl-10 rounded-2xl border-juice-blue/20 focus:border-juice-blue"
               />
             </form>
+            
+            {/* Popular Tags */}
+            {!searchQuery && topTags && topTags.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {topTags.slice(0, 6).map((tag) => (
+                  <Badge
+                    key={tag.tag}
+                    variant="secondary"
+                    className="cursor-pointer hover:bg-juice-blue/20 transition-colors"
+                    onClick={() => {
+                      setSelectedTag(tag.tag);
+                      setSearchQuery(`#${tag.tag}`);
+                    }}
+                  >
+                    <Hash className="h-3 w-3 mr-1" />
+                    {tag.tag}
+                  </Badge>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>
 
       {/* Content */}
       <div className="max-w-md mx-auto px-4 py-6">
-        {/* Location Prompt */}
-        {showLocationPrompt && !userLocation && (
-          <LocationPrompt
-            onRequestLocation={handleLocationRequest}
-            onDismiss={handleLocationDismiss}
-            isLoading={isLocationLoading}
-          />
-        )}
-
-        {/* Location Filter */}
-        {userLocation && (
-          <LocationFilter
-            userLocation={userLocation}
-            selectedRadius={selectedRadius}
-            onRadiusChange={setSelectedRadius}
-            nearbyCount={nearbyStories.length}
-            onClearLocation={handleClearLocation}
-          />
-        )}
-
         <Tabs defaultValue="stories" className="mb-6">
           <TabsList className="grid w-full grid-cols-2 bg-juice-lavender/50 rounded-2xl p-1">
             <TabsTrigger
               value="stories"
               className="rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-card flex items-center gap-2"
+              onClick={() => setShowTrending(false)}
             >
-              {userLocation ? <MapPin className="h-4 w-4" /> : <TrendingUp className="h-4 w-4" />}
-              {userLocation ? "Nearby" : "Trending"}
+              <TrendingUp className="h-4 w-4" />
+              Latest
             </TabsTrigger>
             <TabsTrigger
-              value="people"
+              value="trending"
               className="rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-card flex items-center gap-2"
+              onClick={() => setShowTrending(true)}
             >
-              <Users className="h-4 w-4" />
-              People
+              <TrendingUp className="h-4 w-4" />
+              Trending
             </TabsTrigger>
           </TabsList>
 
@@ -212,184 +165,91 @@ const Explore = ({ onCreateStory }: ExploreProps) => {
                     Search Results for "{searchQuery}"
                   </h2>
                   <Button
-                    variant="juice-outline"
+                    variant="outline"
                     size="sm"
                     onClick={() => {
                       setSearchQuery("");
                       setSelectedTag(null);
-                      clearUnifiedResults();
                     }}
                   >
                     Clear
                   </Button>
                 </div>
                 
-                {isUnifiedSearching ? (
+                {searchLoading ? (
                   <div className="text-center py-12">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
                     <div className="text-lg">Searching...</div>
                   </div>
-                ) : unifiedResults.length === 0 ? (
+                ) : searchResults && searchResults.length === 0 ? (
                   <div className="text-center py-12">
                     <Search className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                     <h3 className="text-lg font-semibold text-foreground mb-2">
                       No results found
                     </h3>
                     <p className="text-muted-foreground text-sm">
-                      Try searching for:
+                      Try searching for different keywords or usernames
                     </p>
-                    <ul className="text-muted-foreground text-sm mt-2 space-y-1">
-                      <li>• @username (e.g., @admin)</li>
-                      <li>• Phone number (+1 555-555-5555)</li>
-                      <li>• Story content (e.g., "dating")</li>
-                    </ul>
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    {unifiedResults.map((result, index) => {
-                      if (result.type === 'profile' && result.profile) {
-                        return (
-                          <Card key={`profile-${result.profile.id}`} className="p-4">
-                            <CardContent className="p-0">
-                              <div className="flex items-center gap-3">
-                                <Avatar className="h-12 w-12">
-                                  <AvatarFallback>
-                                    {result.profile.anonymous_username.charAt(0).toUpperCase()}
-                                  </AvatarFallback>
-                                </Avatar>
-                                
-                                <div className="flex-1">
-                                  <div className="flex items-center gap-2 mb-1">
-                                    <span className="font-semibold">@{result.profile.anonymous_username}</span>
-                                    <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                                      {result.matchType === 'phone' ? (
-                                        <>
-                                          <Phone className="h-3 w-3" />
-                                          <span>Phone match</span>
-                                        </>
-                                      ) : (
-                                        <>
-                                          <User className="h-3 w-3" />
-                                          <span>Username match</span>
-                                        </>
-                                      )}
-                                    </div>
-                                  </div>
-                                  
-                                   <div className="text-sm text-muted-foreground">
-                                     {result.profile.city && `📍 ${result.profile.city}`}
-                                     {result.matchType === 'phone' && result.profile.phone_number && 
-                                       ` • ${formatPhoneDisplay(result.profile.phone_number)}`
-                                     }
-                                   </div>
-                                 </div>
-                               </div>
-                             </CardContent>
-                           </Card>
-                        );
-                      } else if (result.type === 'story' && result.story) {
-                        return (
-                          <div key={`story-${result.story.id}`} className="relative">
-                            <StoryCard 
-                              story={result.story} 
-                              authorName={result.story.profiles?.anonymous_username || 'Anonymous'}
-                              user_id={user?.id}
-                            />
-                            <div className="absolute top-2 right-2">
-                              <Badge variant="secondary" className="text-xs">
-                                {result.matchType === 'content' && (
-                                  <>
-                                    <MessageCircle className="h-3 w-3 mr-1" />
-                                    Story match
-                                  </>
-                                )}
-                                {result.matchType === 'subject_name' && (
-                                  <>
-                                    <User className="h-3 w-3 mr-1" />
-                                    Subject match
-                                  </>
-                                )}
-                                {result.matchType === 'subject_phone' && (
-                                  <>
-                                    <Phone className="h-3 w-3 mr-1" />
-                                    Phone match
-                                  </>
-                                )}
-                              </Badge>
-                            </div>
-                          </div>
-                        );
-                      }
-                      return null;
-                    })}
+                    {displayStories.map((story) => (
+                      <StoryCard 
+                        key={story.id}
+                        story={story} 
+                        authorName={story.profiles?.anonymous_username || 'Anonymous'}
+                        user_id={user?.id}
+                      />
+                    ))}
                   </div>
                 )}
               </div>
             ) : (
               <div className="space-y-6">
                 {/* Stories Grid */}
-                {isLoadingStories ? (
+                {isLoading ? (
                   <div className="text-center py-12">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
                     <div className="text-lg">
-                      {userLocation ? "Finding nearby stories..." : "Loading trending stories..."}
+                      Loading stories...
                     </div>
                   </div>
                 ) : displayStories.length === 0 ? (
                   <div className="text-center py-12">
-                    {userLocation ? (
-                      <>
-                        <MapPin className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                        <h3 className="text-lg font-semibold text-foreground mb-2">
-                          No nearby stories
-                        </h3>
-                        <p className="text-muted-foreground mb-4">
-                          Try expanding your search radius or check back later
-                        </p>
-                        <Button
-                          variant="outline"
-                          onClick={() => setSelectedRadius(50)}
-                          className="mb-2"
-                        >
-                          Expand to 50 miles
-                        </Button>
-                      </>
-                    ) : (
-                      <>
-                        <TrendingUp className="h-12 w-12 text-juice-blue mx-auto mb-4" />
-                        <h3 className="text-lg font-semibold text-foreground mb-2">
-                          No stories yet
-                        </h3>
-                        <p className="text-muted-foreground mb-4">
-                          Be the first to share a story in your area
-                        </p>
-                      </>
-                    )}
+                    <TrendingUp className="h-12 w-12 text-juice-blue mx-auto mb-4" />
+                    <h3 className="text-lg font-semibold text-foreground mb-2">
+                      No stories yet
+                    </h3>
+                    <p className="text-muted-foreground mb-4">
+                      Be the first to share a story
+                    </p>
+                    <Button 
+                      onClick={onCreateStory}
+                      className="bg-gradient-to-r from-juice-orange to-juice-pink hover:from-juice-orange/90 hover:to-juice-pink/90"
+                    >
+                      Share Your Story
+                    </Button>
                   </div>
                 ) : (
                   <>
                     {/* Header */}
                     <div className="flex items-center justify-between">
                       <h2 className="text-lg font-semibold text-foreground">
-                        {userLocation ? `Stories near you` : "Trending Stories"}
-                        {userLocation && selectedRadius && (
-                          <span className="text-sm font-normal text-muted-foreground ml-2">
-                            within {selectedRadius} miles
-                          </span>
-                        )}
+                        {showTrending ? "Trending Stories" : "Latest Stories"}
                       </h2>
                       <span className="text-sm text-muted-foreground">
                         {displayStories.length} stories
                       </span>
                     </div>
 
-                    {/* Stories Grid */}
-                    <div className="grid grid-cols-2 gap-3">
+                    {/* Stories List */}
+                    <div className="space-y-4">
                       {displayStories.map((story) => (
-                        <StoryPreview
+                        <StoryCard 
                           key={story.id}
-                          story={story}
-                          onClick={() => handleStoryClick(story)}
+                          story={story} 
+                          authorName={story.profiles?.anonymous_username || 'Anonymous'}
+                          user_id={user?.id}
                         />
                       ))}
                     </div>
@@ -399,34 +259,8 @@ const Explore = ({ onCreateStory }: ExploreProps) => {
             )}
           </TabsContent>
 
-          <TabsContent value="people" className="mt-6">
-            <div className="space-y-4">
-              <h2 className="text-lg font-semibold text-foreground">
-                Find People
-              </h2>
-              <p className="text-sm text-muted-foreground mb-4">
-                Search for users by @username or phone number to find their stories
-              </p>
-              
-              <ProfileSearch 
-                placeholder="Search @username or +1 555-555-5555"
-                onProfileSelect={(profileId, username) => {
-                  console.log('Selected profile:', { profileId, username });
-                  // You can implement navigation to profile or filtering stories by user
-                  setSearchQuery(`@${username}`);
-                }}
-              />
-              
-              <div className="mt-4 p-4 bg-juice-lavender/20 rounded-xl">
-                <h3 className="font-medium text-sm mb-2">How it works:</h3>
-                <ul className="text-xs text-muted-foreground space-y-1">
-                  <li>• Search by @username (e.g., @sarah)</li>
-                  <li>• Search by phone number (+1 555-555-5555)</li>
-                  <li>• Phone numbers are matched in international format</li>
-                  <li>• Full number match only for privacy</li>
-                </ul>
-              </div>
-            </div>
+          <TabsContent value="trending" className="mt-6">
+            {/* Same content as stories tab but with trending filter */}
           </TabsContent>
         </Tabs>
       </div>
