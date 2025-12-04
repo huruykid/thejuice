@@ -182,7 +182,7 @@ export type Database = {
           bucket_id: string
           created_at: string
           id: string
-          ip_address: unknown | null
+          ip_address: unknown
           object_path: string
           user_agent: string | null
           user_id: string
@@ -192,7 +192,7 @@ export type Database = {
           bucket_id: string
           created_at?: string
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           object_path: string
           user_agent?: string | null
           user_id: string
@@ -202,7 +202,7 @@ export type Database = {
           bucket_id?: string
           created_at?: string
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           object_path?: string
           user_agent?: string | null
           user_id?: string
@@ -391,7 +391,7 @@ export type Database = {
           created_at: string
           details: Json | null
           id: string
-          ip_address: unknown | null
+          ip_address: unknown
           resource_id: string | null
           resource_type: string
           user_agent: string | null
@@ -402,7 +402,7 @@ export type Database = {
           created_at?: string
           details?: Json | null
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           resource_id?: string | null
           resource_type: string
           user_agent?: string | null
@@ -413,7 +413,7 @@ export type Database = {
           created_at?: string
           details?: Json | null
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           resource_id?: string | null
           resource_type?: string
           user_agent?: string | null
@@ -732,22 +732,10 @@ export type Database = {
         Args: { p_activity_type: string; p_details?: Json; p_user_id: string }
         Returns: undefined
       }
-      generate_city_slug: {
-        Args: { city_name_param: string }
-        Returns: string
-      }
-      generate_invite_code: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
-      generate_slug: {
-        Args: { title_text: string }
-        Returns: string
-      }
-      get_story_owner: {
-        Args: { _story_id: string }
-        Returns: string
-      }
+      generate_city_slug: { Args: { city_name_param: string }; Returns: string }
+      generate_invite_code: { Args: never; Returns: string }
+      generate_slug: { Args: { title_text: string }; Returns: string }
+      get_story_owner: { Args: { _story_id: string }; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -759,26 +747,11 @@ export type Database = {
         Args: { _actor: string; _target: string }
         Returns: boolean
       }
-      is_pg_net_exception_acceptable: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
-      is_user_suspended: {
-        Args: { _user: string }
-        Returns: boolean
-      }
-      is_user_verified: {
-        Args: { _user_id: string }
-        Returns: boolean
-      }
-      is_username_available: {
-        Args: { username: string }
-        Returns: boolean
-      }
-      is_valid_email_domain: {
-        Args: { email_param: string }
-        Returns: boolean
-      }
+      is_pg_net_exception_acceptable: { Args: never; Returns: boolean }
+      is_user_suspended: { Args: { _user: string }; Returns: boolean }
+      is_user_verified: { Args: { _user_id: string }; Returns: boolean }
+      is_username_available: { Args: { username: string }; Returns: boolean }
+      is_valid_email_domain: { Args: { email_param: string }; Returns: boolean }
       log_file_access: {
         Args: {
           p_action: string
@@ -800,14 +773,8 @@ export type Database = {
         }
         Returns: undefined
       }
-      normalize_city_name: {
-        Args: { city_input: string }
-        Returns: string
-      }
-      normalize_phone_number: {
-        Args: { phone_input: string }
-        Returns: string
-      }
+      normalize_city_name: { Args: { city_input: string }; Returns: string }
+      normalize_phone_number: { Args: { phone_input: string }; Returns: string }
       use_invite_code: {
         Args: { invite_code: string; new_user_id: string }
         Returns: boolean
@@ -821,10 +788,7 @@ export type Database = {
         }
         Returns: boolean
       }
-      validate_phone_number: {
-        Args: { phone_param: string }
-        Returns: boolean
-      }
+      validate_phone_number: { Args: { phone_param: string }; Returns: boolean }
       validate_story_content: {
         Args: { content_param: string }
         Returns: boolean
@@ -833,10 +797,7 @@ export type Database = {
         Args: { phone_param: string }
         Returns: boolean
       }
-      validate_username: {
-        Args: { username_param: string }
-        Returns: boolean
-      }
+      validate_username: { Args: { username_param: string }; Returns: boolean }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
