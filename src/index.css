@@ -171,7 +171,7 @@
     --shadow-lg: 0 10px 30px -10px rgba(0, 0, 0, 0.7);
     --shadow-xl: 0 20px 40px -10px rgba(0, 0, 0, 0.8);
     --shadow-card: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
-    --shadow-glow: 0 0 0 3px hsl(14 100% 60% / 0.35);
+    --shadow-glow: 0 0 0 3px hsl(38 95% 58% / 0.35);
 
     --sidebar-background: 0 0% 0%;
     --sidebar-foreground: 0 0% 95%;
