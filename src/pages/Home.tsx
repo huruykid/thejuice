@@ -10,7 +10,6 @@ import PullToRefreshIndicator from "@/components/PullToRefreshIndicator";
 import { usePullToRefresh } from "@/hooks/usePullToRefresh";
 import { useInfiniteStories } from "@/hooks/useStories";
 import { useAuth } from "@/hooks/useAuth";
-import juiceLogo from "@/assets/juice-wordmark.png.asset.json";
 
 interface HomeProps {
   onCreateStory?: () => void;
