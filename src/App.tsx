@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useState } from "react";
 import { SecurityProvider } from "@/components/SecurityProvider";
 import AppShell from "@/components/layout/AppShell";
+import PublicLayout from "@/components/layout/PublicLayout";
 import Index from "./pages/Index";
 import Landing from "./pages/Landing";
 import HowItWorks from "./pages/HowItWorks";
@@ -98,9 +99,9 @@ const App = () => {
         <Sonner />
         <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Landing />} />
-          <Route path="/how-it-works" element={<HowItWorks />} />
-          <Route path="/tea-app-comparison" element={<TeaAppComparison />} />
+          <Route path="/" element={<PublicLayout><Landing /></PublicLayout>} />
+          <Route path="/how-it-works" element={<PublicLayout><HowItWorks /></PublicLayout>} />
+          <Route path="/tea-app-comparison" element={<PublicLayout><TeaAppComparison /></PublicLayout>} />
           <Route path="/app" element={<Index />} />
           <Route path="/explore" element={
             <ProtectedRoute>
@@ -153,11 +154,11 @@ const App = () => {
             </ProtectedRoute>
           } />
           {/* SEO Landing Pages */}
-          <Route path="/dating-stories-for-men" element={<DatingStoriesForMen />} />
-          <Route path="/anonymous-dating-reviews" element={<AnonymousDatingReviews />} />
-          <Route path="/mens-dating-advice" element={<MensDatingAdvice />} />
-          <Route path="/male-dating-community" element={<MaleDatingCommunity />} />
-          <Route path="/competitor-analysis" element={<CompetitorAnalysis />} />
+          <Route path="/dating-stories-for-men" element={<PublicLayout><DatingStoriesForMen /></PublicLayout>} />
+          <Route path="/anonymous-dating-reviews" element={<PublicLayout><AnonymousDatingReviews /></PublicLayout>} />
+          <Route path="/mens-dating-advice" element={<PublicLayout><MensDatingAdvice /></PublicLayout>} />
+          <Route path="/male-dating-community" element={<PublicLayout><MaleDatingCommunity /></PublicLayout>} />
+          <Route path="/competitor-analysis" element={<PublicLayout><CompetitorAnalysis /></PublicLayout>} />
           <Route path="/viral-marketing-hub" element={
             <ProtectedRoute>
               <ViralMarketingHub />
@@ -169,11 +170,11 @@ const App = () => {
             </ProtectedRoute>
           } />
           {/* Blog Routes */}
-          <Route path="/blog" element={<Blog />} />
-          <Route path="/blog/:slug" element={<BlogPost />} />
+          <Route path="/blog" element={<PublicLayout><Blog /></PublicLayout>} />
+          <Route path="/blog/:slug" element={<PublicLayout><BlogPost /></PublicLayout>} />
           {/* Legal */}
-          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-          <Route path="/support" element={<Support />} />
+          <Route path="/privacy-policy" element={<PublicLayout><PrivacyPolicy /></PublicLayout>} />
+          <Route path="/support" element={<PublicLayout><Support /></PublicLayout>} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
