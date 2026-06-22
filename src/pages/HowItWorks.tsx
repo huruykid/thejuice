@@ -151,8 +151,8 @@ const HowItWorks = () => {
                   </Card>
                 </div>
                 
-                <div className="flex-1 flex justify-center">
-                  <div className="w-80 h-80 bg-gradient-primary rounded-3xl flex items-center justify-center">
+                <div className="hidden lg:flex flex-1 justify-center">
+                  <div className="w-64 h-64 bg-gradient-primary rounded-3xl flex items-center justify-center">
                     <div className="text-white text-6xl">
                       {step.number === 1 && "👤"}
                       {step.number === 2 && "📸"}
