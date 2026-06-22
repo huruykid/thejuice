@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -24,7 +25,17 @@ const Blog = () => {
 
   return (
     <div className="min-h-screen bg-gradient-soft p-4">
+      <Helmet>
+        <title>The Juice App Blog — Dating Insights for Men</title>
+        <meta name="description" content="Stories, advice, and insights for modern men navigating dating and relationships." />
+        <link rel="canonical" href="https://thejuice.lovable.app/blog" />
+        <meta property="og:title" content="The Juice App Blog" />
+        <meta property="og:description" content="Stories, advice, and insights for modern men navigating dating and relationships." />
+        <meta property="og:url" content="https://thejuice.lovable.app/blog" />
+        <meta property="og:type" content="website" />
+      </Helmet>
       <div className="max-w-4xl mx-auto">
+        <main>
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-primary mb-4">
@@ -156,6 +167,7 @@ const Blog = () => {
             )}
           </div>
         )}
+        </main>
       </div>
     </div>
   );

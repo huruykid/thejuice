@@ -1,19 +1,11 @@
 import { Button } from "@/components/ui/button";
+import { Helmet } from "react-helmet-async";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { BookOpen, Users, Shield, MessageSquare, ArrowRight, Lightbulb, Heart, AlertTriangle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
 
 const MensDatingAdvice = () => {
   const navigate = useNavigate();
-
-  useEffect(() => {
-    document.title = "Men's Dating Advice - Real Tips from Experienced Men | Tea App for Men";
-    const metaDescription = document.querySelector('meta[name="description"]');
-    if (metaDescription) {
-      metaDescription.setAttribute('content', "Get real dating advice from experienced men. Anonymous tips, honest insights, and practical dating guidance from guys who have been there. Join the community.");
-    }
-  }, []);
 
   const adviceCategories = [
     {
@@ -53,12 +45,21 @@ const MensDatingAdvice = () => {
 
   return (
     <div className="min-h-screen bg-gradient-soft">
+      <Helmet>
+        <title>Men's Dating Advice from Real Guys</title>
+        <meta name="description" content="Honest dating advice from experienced verified men. Practical tips on first dates, apps, red flags, and relationships." />
+        <link rel="canonical" href="https://thejuice.lovable.app/mens-dating-advice" />
+        <meta property="og:title" content="Men's Dating Advice from Real Guys" />
+        <meta property="og:description" content="Honest dating advice from experienced verified men." />
+        <meta property="og:url" content="https://thejuice.lovable.app/mens-dating-advice" />
+        <meta property="og:type" content="website" />
+      </Helmet>
       {/* Header */}
       <header className="sticky top-0 bg-white/80 backdrop-blur-lg border-b border-juice-orange/10 z-40">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <img src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" alt="Tea App for Men" className="h-8 w-8" />
-            <h1 className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">Tea App for Men</h1>
+            <span className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">Tea App for Men</span>
           </div>
           <Button onClick={() => navigate("/app")} variant="juice">
             Get Advice Now
@@ -66,6 +67,7 @@ const MensDatingAdvice = () => {
         </div>
       </header>
 
+      <main>
       {/* Hero Section */}
       <section className="py-20 px-4">
         <div className="max-w-4xl mx-auto text-center">
@@ -263,6 +265,7 @@ const MensDatingAdvice = () => {
           </Card>
         </div>
       </section>
+      </main>
 
       {/* SEO Footer */}
       <footer className="py-12 px-4 bg-white/80 border-t border-juice-orange/10">

@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Helmet } from "react-helmet-async";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Shield, MessageSquare, Eye, Users, CheckCircle, Star, ArrowRight, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -80,8 +81,29 @@ const HowItWorks = () => {
     }
   ];
 
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      { "@type": "Question", "name": "Is my identity really anonymous?", "acceptedAnswer": { "@type": "Answer", "text": "Yes, completely. Your real name and photo are never shown to other users. Only your anonymous username and the stories you choose to share are visible to the community." } },
+      { "@type": "Question", "name": "Why do you need verification?", "acceptedAnswer": { "@type": "Answer", "text": "Verification ensures our community consists of real men sharing authentic experiences. It helps prevent fake accounts and maintains the quality of stories and advice shared." } },
+      { "@type": "Question", "name": "What happens to my verification photo?", "acceptedAnswer": { "@type": "Answer", "text": "Your verification selfie is used only for account verification and is never shared publicly or with other users. It's stored securely and only accessible to our verification team." } },
+      { "@type": "Question", "name": "Can women join the app?", "acceptedAnswer": { "@type": "Answer", "text": "This platform is designed specifically for men to share their dating experiences in a judgment-free environment." } }
+    ]
+  };
+
   return (
     <div className="min-h-screen bg-gradient-soft">
+      <Helmet>
+        <title>How The Juice App Works — Anonymous Dating for Men</title>
+        <meta name="description" content="Sign up, verify, share, and read real anonymous dating stories from verified men. Here's how The Juice App works." />
+        <link rel="canonical" href="https://thejuice.lovable.app/how-it-works" />
+        <meta property="og:title" content="How The Juice App Works" />
+        <meta property="og:description" content="Sign up, verify, share, and read real anonymous dating stories from verified men." />
+        <meta property="og:url" content="https://thejuice.lovable.app/how-it-works" />
+        <meta property="og:type" content="website" />
+        <script type="application/ld+json">{JSON.stringify(faqSchema)}</script>
+      </Helmet>
       {/* Header */}
       <header className="sticky top-0 bg-white/80 backdrop-blur-lg border-b border-juice-orange/10 z-40">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
@@ -91,6 +113,7 @@ const HowItWorks = () => {
               size="sm" 
               onClick={() => navigate("/")}
               className="mr-2"
+              aria-label="Back"
             >
               <ArrowLeft className="h-4 w-4" />
             </Button>
@@ -102,6 +125,7 @@ const HowItWorks = () => {
         </div>
       </header>
 
+      <main>
       {/* Hero Section */}
       <section className="py-16 px-4">
         <div className="max-w-4xl mx-auto text-center">
@@ -270,6 +294,7 @@ const HowItWorks = () => {
           </Card>
         </div>
       </section>
+      </main>
     </div>
   );
 };
