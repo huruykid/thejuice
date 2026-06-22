@@ -33,6 +33,8 @@ import Support from "./pages/Support";
 import { useAuth } from "./hooks/useAuth";
 import { useScreenshotProtection } from "./hooks/useScreenshotProtection";
 import { useIosCaptureProtection } from "./hooks/useIosCaptureProtection";
+import { useTheme } from "./hooks/useTheme";
+import NearYou from "./pages/NearYou";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
@@ -68,12 +70,24 @@ const ExploreWrapper = () => {
   );
 };
 
+const NearYouWrapper = () => {
+  const [showCreateStory, setShowCreateStory] = useState(false);
+  return (
+    <AppShell onCreateStory={() => setShowCreateStory(true)}>
+      <NearYou onCreateStory={() => setShowCreateStory(true)} />
+      {showCreateStory && <CreateStory onClose={() => setShowCreateStory(false)} />}
+    </AppShell>
+  );
+};
+
 const queryClient = new QueryClient();
 
 const App = () => {
   // Enable screenshot protection across the entire app (web + iOS native)
   useScreenshotProtection();
   useIosCaptureProtection();
+  // Initialise theme (light / dark / system) at the root so the toggle works app-wide
+  useTheme();
   
   return (
 
@@ -91,6 +105,11 @@ const App = () => {
           <Route path="/explore" element={
             <ProtectedRoute>
               <ExploreWrapper />
+            </ProtectedRoute>
+          } />
+          <Route path="/near-you" element={
+            <ProtectedRoute>
+              <NearYouWrapper />
             </ProtectedRoute>
           } />
           <Route path="/profile" element={

@@ -100,12 +100,9 @@ export default {
 				'soft': 'var(--shadow-sm)',
 				'card': 'var(--shadow-card)',
 				'glow': 'var(--shadow-glow)',
-				'brut': '6px 6px 0 0 hsl(var(--foreground))',
-				'brut-sm': '4px 4px 0 0 hsl(var(--foreground))',
-				'brut-lg': '8px 8px 0 0 hsl(var(--foreground))'
 			},
 			fontFamily: {
-				sans: ['Barlow', 'system-ui', 'sans-serif'],
+				sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'sans-serif'],
 				display: ['"Bebas Neue"', 'Impact', 'sans-serif'],
 			},
 			transitionTimingFunction: {

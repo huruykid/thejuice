@@ -243,6 +243,7 @@ export type Database = {
         Row: {
           anonymous_username: string
           city: string | null
+          city_id: string | null
           created_at: string
           date_of_birth: string | null
           id: string
@@ -254,6 +255,7 @@ export type Database = {
         Insert: {
           anonymous_username: string
           city?: string | null
+          city_id?: string | null
           created_at?: string
           date_of_birth?: string | null
           id?: string
@@ -265,6 +267,7 @@ export type Database = {
         Update: {
           anonymous_username?: string
           city?: string | null
+          city_id?: string | null
           created_at?: string
           date_of_birth?: string | null
           id?: string
@@ -273,7 +276,15 @@ export type Database = {
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_city_id_fkey"
+            columns: ["city_id"]
+            isOneToOne: false
+            referencedRelation: "cities"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       rate_limits: {
         Row: {

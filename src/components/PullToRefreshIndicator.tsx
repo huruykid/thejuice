@@ -28,15 +28,15 @@ const PullToRefreshIndicator = ({ pullDistance, status }: Props) => {
       aria-hidden
     >
       <div
-        className={`flex h-10 w-10 items-center justify-center rounded-full bg-white/90 shadow-soft backdrop-blur ${
-          isArmed ? "ring-2 ring-juice-orange" : "ring-1 ring-black/5"
+        className={`flex h-10 w-10 items-center justify-center rounded-full bg-background shadow-soft backdrop-blur ${
+          isArmed ? "ring-2 ring-primary" : "ring-1 ring-border"
         }`}
       >
         {isRefreshing ? (
-          <Loader2 className="h-4 w-4 animate-spin text-juice-orange" />
+          <Loader2 className="h-4 w-4 animate-spin text-primary" />
         ) : (
           <ArrowDown
-            className={`h-4 w-4 text-juice-orange transition-transform duration-150 ${
+            className={`h-4 w-4 text-primary transition-transform duration-150 ${
               isArmed ? "rotate-180" : ""
             }`}
           />

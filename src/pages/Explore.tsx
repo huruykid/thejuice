@@ -1,73 +1,59 @@
 import { useState, useEffect, useCallback } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { Search, TrendingUp, Hash, Users, Phone, User, MessageCircle } from "lucide-react";
+import { Search, Hash, MessageCircle, Flag } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent } from "@/components/ui/card";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import StoryCard from "@/components/StoryCard";
 import Navigation from "@/components/Navigation";
-import StoryCardSkeleton from "@/components/StoryCardSkeleton";
 import ScrollToTopButton from "@/components/ScrollToTopButton";
 import PullToRefreshIndicator from "@/components/PullToRefreshIndicator";
 import { usePullToRefresh } from "@/hooks/usePullToRefresh";
-import ProfileSearch from "@/components/ProfileSearch";
-import { StoryPreview } from "@/components/StoryPreview";
 import { StoryModal } from "@/components/StoryModal";
 import { useUnifiedSearch } from "@/hooks/useUnifiedSearch";
 import { useTopTags } from "@/hooks/useTopTags";
 import { useAuth } from "@/hooks/useAuth";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useStories } from "@/hooks/useStories";
-import { useTrendingStories } from "@/hooks/useTrendingStories";
 import type { Story } from "@/hooks/useStories";
 
 interface ExploreProps {
   onCreateStory?: () => void;
 }
 
+/** Pull the first available image off a story (covers image_urls / image_url). */
+const firstImage = (story: any): string | null => {
+  const arr = story?.image_urls;
+  if (Array.isArray(arr) && arr.length > 0) return arr[0];
+  if (typeof story?.image_url === "string") return story.image_url;
+  return null;
+};
+
 const Explore = ({ onCreateStory }: ExploreProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const [selectedStory, setSelectedStory] = useState<any>(null);
-  const [showTrending, setShowTrending] = useState(false);
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
-  const { 
-    data: allStories,
-    isLoading: allStoriesLoading
-  } = useStories();
-
-  const { 
-    searchResults, 
+  const { data: allStories, isLoading: allStoriesLoading } = useStories();
+  const {
+    searchResults,
     isSearching: searchLoading,
     performSearch,
-    clearResults
+    clearResults,
   } = useUnifiedSearch();
-
-  const {
-    data: trendingStories,
-    isLoading: trendingLoading,
-  } = useTrendingStories();
-
-  const { data: topTags, isLoading: tagsLoading } = useTopTags();
+  const { data: topTags } = useTopTags();
 
   const handleRefresh = useCallback(async () => {
-    await queryClient.invalidateQueries({ queryKey: ['stories'] });
-    await queryClient.invalidateQueries({ queryKey: ['trending-stories'] });
-    await queryClient.invalidateQueries({ queryKey: ['top-tags'] });
+    await queryClient.invalidateQueries({ queryKey: ["stories"] });
+    await queryClient.invalidateQueries({ queryKey: ["top-tags"] });
   }, [queryClient]);
+
   const { pullDistance, status } = usePullToRefresh({
     onRefresh: handleRefresh,
     disabled: !!searchQuery,
   });
 
-  // Search when query changes
   useEffect(() => {
     if (debouncedSearchQuery) {
       performSearch(debouncedSearchQuery);
@@ -76,212 +62,118 @@ const Explore = ({ onCreateStory }: ExploreProps) => {
     }
   }, [debouncedSearchQuery]);
 
-  // Determine what stories to show based on current filters
-  const getDisplayStories = () => {
+  const getDisplayStories = (): Story[] => {
     if (debouncedSearchQuery && searchResults) {
-      return searchResults.filter(result => result.type === 'story').map(result => result.story).filter(Boolean);
+      return searchResults
+        .filter((r) => r.type === "story")
+        .map((r) => r.story)
+        .filter(Boolean) as Story[];
     }
-    
     if (selectedTag) {
-      return allStories?.filter(story => 
-        story.story_tags?.some(tag => tag.tag === selectedTag)
-      ) || [];
+      return (allStories?.filter((s) =>
+        s.story_tags?.some((t) => t.tag === selectedTag)
+      ) ?? []) as Story[];
     }
-    
-    return showTrending ? trendingStories : allStories;
+    return (allStories ?? []) as Story[];
   };
 
-  const displayStories = getDisplayStories() || [];
-  const isLoading = allStoriesLoading || searchLoading || trendingLoading;
-
-  const handleStoryClick = (story: Story) => {
-    setSelectedStory(story);
-  };
-
-  const formatPhoneDisplay = (phone: string | null): string => {
-    if (!phone) return '';
-    if (phone.startsWith('+1') && phone.length === 12) {
-      const digits = phone.substring(2);
-      return `+1 (${digits.substring(0,3)}) ${digits.substring(3,6)}-${digits.substring(6)}`;
-    }
-    return phone;
-  };
+  const displayStories = getDisplayStories();
+  const isLoading = allStoriesLoading || searchLoading;
 
   return (
     <div className="min-h-screen bg-background pb-20 lg:pb-8">
       <PullToRefreshIndicator pullDistance={pullDistance} status={status} />
-      {/* Header */}
-      <div className="sticky top-0 bg-white/80 backdrop-blur-lg border-b border-juice-blue/10 z-40">
-        <div className="p-4 max-w-md lg:max-w-2xl mx-auto">
-          <h1 className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-4">
-            Explore Stories
-          </h1>
-          
-          {/* Enhanced Search Bar */}
-          <div className="space-y-3">
-            <form onSubmit={(e) => e.preventDefault()} className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search by @username or phone number"
-                className="pl-10 rounded-2xl border-juice-blue/20 focus:border-juice-blue"
-              />
-            </form>
-            
-            {/* Popular Tags */}
-            {!searchQuery && topTags && topTags.length > 0 && (
-              <div className="flex flex-wrap gap-2">
-                {topTags.slice(0, 6).map((tag) => (
-                  <Badge
+
+      <header className="sticky top-0 z-40 bg-background/95 backdrop-blur border-b border-border">
+        <div className="px-3 py-2 max-w-3xl mx-auto space-y-2">
+          <form onSubmit={(e) => e.preventDefault()} className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search stories, @users, or tags"
+              className="pl-9 h-9 bg-muted border-0 text-sm rounded-lg focus-visible:ring-1 focus-visible:ring-primary/40"
+            />
+          </form>
+          {!searchQuery && topTags && topTags.length > 0 && (
+            <div className="flex gap-2 overflow-x-auto pb-1 -mx-3 px-3 scrollbar-none">
+              {topTags.slice(0, 8).map((tag) => {
+                const active = selectedTag === tag.tag;
+                return (
+                  <button
                     key={tag.tag}
-                    variant="secondary"
-                    className="cursor-pointer hover:bg-juice-blue/20 transition-colors"
-                    onClick={() => {
-                      setSelectedTag(tag.tag);
-                      setSearchQuery(`#${tag.tag}`);
-                    }}
+                    onClick={() => setSelectedTag(active ? null : tag.tag)}
+                    className={`flex-shrink-0 inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+                      active
+                        ? "bg-foreground text-background"
+                        : "bg-muted text-foreground hover:bg-card-hover"
+                    }`}
                   >
-                    <Hash className="h-3 w-3 mr-1" />
+                    <Hash className="h-3 w-3" />
                     {tag.tag}
-                  </Badge>
-                ))}
-              </div>
-            )}
-          </div>
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
+      </header>
+
+      <div className="max-w-3xl mx-auto">
+        {isLoading && displayStories.length === 0 ? (
+          <div className="grid grid-cols-3 gap-0.5">
+            {Array.from({ length: 12 }).map((_, i) => (
+              <div key={i} className="aspect-square bg-muted animate-pulse" />
+            ))}
+          </div>
+        ) : displayStories.length === 0 ? (
+          <div className="px-6 py-20 text-center">
+            <h3 className="text-lg font-semibold mb-1">No stories found</h3>
+            <p className="text-sm text-muted-foreground">
+              Try a different search or tag.
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-3 gap-0.5">
+            {displayStories.map((story: any) => {
+              const img = firstImage(story);
+              return (
+                <button
+                  key={story.id}
+                  onClick={() => setSelectedStory(story)}
+                  className="relative aspect-square overflow-hidden bg-muted group"
+                >
+                  {img ? (
+                    <img
+                      src={img}
+                      alt={story.content?.slice(0, 60) || "Story"}
+                      loading="lazy"
+                      className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-[1.02]"
+                    />
+                  ) : (
+                    <div className="absolute inset-0 bg-primary text-primary-foreground p-3 flex items-center justify-center text-center">
+                      <p className="text-[11px] sm:text-xs font-semibold leading-tight line-clamp-6">
+                        "{story.content}"
+                      </p>
+                    </div>
+                  )}
+                  <div className="absolute inset-0 bg-foreground/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4 text-background text-xs font-semibold">
+                    <span className="flex items-center gap-1">
+                      <Flag className="h-3.5 w-3.5" fill="currentColor" />
+                      {(story as any).reaction_count ?? 0}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <MessageCircle className="h-3.5 w-3.5" fill="currentColor" />
+                      {story.comments_count ?? 0}
+                    </span>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        )}
       </div>
 
-      {/* Content */}
-      <div className="max-w-md lg:max-w-2xl mx-auto px-4 py-6">
-        <Tabs defaultValue="stories" className="mb-6">
-          <TabsList className="grid w-full grid-cols-2 bg-juice-lavender/50 rounded-2xl p-1">
-            <TabsTrigger
-              value="stories"
-              className="rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-card flex items-center gap-2"
-              onClick={() => setShowTrending(false)}
-            >
-              <TrendingUp className="h-4 w-4" />
-              Latest
-            </TabsTrigger>
-            <TabsTrigger
-              value="trending"
-              className="rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-card flex items-center gap-2"
-              onClick={() => setShowTrending(true)}
-            >
-              <TrendingUp className="h-4 w-4" />
-              Trending
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="stories" className="mt-6">
-            {searchQuery ? (
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-lg font-semibold text-foreground">
-                    Search Results for "{searchQuery}"
-                  </h2>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      setSearchQuery("");
-                      setSelectedTag(null);
-                    }}
-                  >
-                    Clear
-                  </Button>
-                </div>
-                
-                {searchLoading ? (
-                  <div className="text-center py-12">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-                    <div className="text-lg">Searching...</div>
-                  </div>
-                ) : searchResults && searchResults.length === 0 ? (
-                  <div className="text-center py-12">
-                    <Search className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                    <h3 className="text-lg font-semibold text-foreground mb-2">
-                      No results found
-                    </h3>
-                    <p className="text-muted-foreground text-sm">
-                      Try searching for different keywords or usernames
-                    </p>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {displayStories.map((story) => (
-                      <StoryCard 
-                        key={story.id}
-                        story={story} 
-                        authorName={story.profiles?.anonymous_username || 'Anonymous'}
-                        user_id={user?.id}
-                      />
-                    ))}
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div className="space-y-6">
-                {/* Stories Grid */}
-                {isLoading ? (
-                  <div className="space-y-4">
-                    {Array.from({ length: 4 }).map((_, i) => (
-                      <StoryCardSkeleton key={i} />
-                    ))}
-                  </div>
-                ) : displayStories.length === 0 ? (
-                  <div className="text-center py-12">
-                    <TrendingUp className="h-12 w-12 text-juice-blue mx-auto mb-4" />
-                    <h3 className="text-lg font-semibold text-foreground mb-2">
-                      No stories yet
-                    </h3>
-                    <p className="text-muted-foreground mb-4">
-                      Be the first to share a story
-                    </p>
-                    <Button 
-                      onClick={onCreateStory}
-                      className="bg-gradient-to-r from-juice-orange to-juice-pink hover:from-juice-orange/90 hover:to-juice-pink/90"
-                    >
-                      Share Your Story
-                    </Button>
-                  </div>
-                ) : (
-                  <>
-                    {/* Header */}
-                    <div className="flex items-center justify-between">
-                      <h2 className="text-lg font-semibold text-foreground">
-                        {showTrending ? "Trending Stories" : "Latest Stories"}
-                      </h2>
-                      <span className="text-sm text-muted-foreground">
-                        {displayStories.length} stories
-                      </span>
-                    </div>
-
-                    {/* Stories List */}
-                    <div className="space-y-4">
-                      {displayStories.map((story) => (
-                        <StoryCard 
-                          key={story.id}
-                          story={story} 
-                          authorName={story.profiles?.anonymous_username || 'Anonymous'}
-                          user_id={user?.id}
-                        />
-                      ))}
-                    </div>
-                  </>
-                )}
-              </div>
-            )}
-          </TabsContent>
-
-          <TabsContent value="trending" className="mt-6">
-            {/* Same content as stories tab but with trending filter */}
-          </TabsContent>
-        </Tabs>
-      </div>
-
-      {/* Story Modal */}
       <StoryModal
         story={selectedStory}
         isOpen={!!selectedStory}
