@@ -1,72 +1,85 @@
-## Goal
+## Essentials interaction bundle
 
-Give `/app`, `/explore`, `/activity`, `/profile`, `/codename/:id`, `/author/:id`, `/privacy-settings` a true desktop layout on screens ≥ `lg` (1024px), while keeping the current mobile UI byte-for-byte identical on phones (the Capacitor iOS target).
+Adds pull-to-refresh, optimistic reactions, double-tap to like, skeleton loaders, and scroll-to-top — keeping the mobile-first feel intact and working on desktop too.
 
-## What changes
+### 1. Pull-to-refresh (mobile + desktop)
 
-### 1. New `AppShell` layout (`src/components/layout/AppShell.tsx`)
-- Wraps every authenticated route.
-- Detects breakpoint with Tailwind (`hidden lg:flex` / `lg:hidden`) — no JS state needed, so SSR/mobile behavior is unchanged.
-- Layout on `lg+`:
+**New hook `src/hooks/usePullToRefresh.ts`** — generic touch/pointer-based PTR with rubber-band resistance.
 
-```text
-┌──────────────────────────────────────────────────────────────┐
-│  ┌─────────┐ ┌──────────────────────┐ ┌──────────────────┐   │
-│  │ Sidebar │ │     Main column      │ │  Right rail      │   │
-│  │  nav    │ │ (feed / page content)│ │  (trending,      │   │
-│  │ + logo  │ │  max-w-2xl           │ │   top tags,      │   │
-│  │ + CTA   │ │                      │ │   suggested)     │   │
-│  └─────────┘ └──────────────────────┘ └──────────────────┘   │
-└──────────────────────────────────────────────────────────────┘
-```
+- Attaches `pointerdown / pointermove / pointerup` to a target element.
+- Activates only when the scroll container is at `scrollTop === 0`.
+- Tracks pull distance with damping (`distance = Math.pow(rawDelta, 0.8)`).
+- Two thresholds: `armDistance` (60px, show "Release to refresh") and `triggerDistance` (90px, fire `onRefresh`).
+- Returns `{ bind, pullDistance, isRefreshing, status }` so the consumer can render its own indicator.
+- Works with mouse pointer events on desktop too (drag down from the top), so it's not mobile-only.
 
-- On mobile (`<lg`): renders `{children}` only, plus the existing `<Navigation />` bottom bar — zero visual diff.
+**New component `src/components/PullToRefreshIndicator.tsx`** — a small animated arrow / spinner that translates with `pullDistance`, rotates on arm, becomes a spinner on refresh. Uses semantic tokens.
 
-### 2. New `DesktopSidebar` (`src/components/layout/DesktopSidebar.tsx`)
-- Built on shadcn `Sidebar` with `collapsible="icon"`.
-- Items: Home, Explore, Activity, Profile, + "Share your story" primary button at the top, + "Privacy" and "Sign out" at the bottom.
-- Uses `NavLink` + `useLocation` for active route highlight.
-- Hidden under `lg` (`hidden lg:flex`).
+**Wire into Home feed** (`src/pages/Home.tsx`):
+- Wrap the feed in the PTR container.
+- `onRefresh` calls `queryClient.invalidateQueries({ queryKey: ['stories', 'infinite'] })` and `await refetch()` so the existing infinite-scroll state is preserved (we re-fetch from page 0, react-query keeps the rest consistent).
+- Show the `PullToRefreshIndicator` at the top of the feed.
 
-### 3. New `DesktopRightRail` (`src/components/layout/DesktopRightRail.tsx`)
-- Reuses existing hooks: `useTrendingStories`, `useTopTags`.
-- Shows: Trending stories (top 5), Top tags, "Suggested codenames" placeholder.
-- Hidden under `xl` (so 1024–1279 = sidebar + feed only, 1280+ = three columns).
+### 2. Optimistic reactions
 
-### 4. Wire AppShell into routes
-- In `src/App.tsx`, wrap the authenticated routes (`/app`, `/explore`, `/profile`, `/activity`, `/codename/:id`, `/author/:profileId`, `/privacy-settings`) in `<AppShell>` inside `ProtectedRoute`.
-- Each page currently renders its own `<Navigation />` bottom bar. The bottom nav stays — but on `lg+`, `AppShell` hides it with a wrapper `<div className="lg:hidden">…</div>` injected via the page (or by giving `Navigation` itself a `lg:hidden` class — simpler, single change).
-- Pages keep their own `max-w-md mx-auto` content wrapper for now; on `lg+`, `AppShell` provides the outer 3-column grid and pages naturally center inside the middle column. Stretching the feed wider (e.g. `lg:max-w-2xl`) is done page-by-page where it makes sense (Home, Explore, Activity).
+**Update `src/hooks/useReactions.ts`** to add `onMutate` / `onError` / `onSettled` for optimistic UI:
 
-### 5. Small page tweaks
-- `Home.tsx`, `Explore.tsx`, `Activity.tsx`, `Profile.tsx`: change the inner `max-w-md mx-auto` to `max-w-md lg:max-w-2xl mx-auto`, and the sticky top header to `lg:hidden` (because the desktop sidebar already brands the app).
-- `Navigation.tsx`: add `lg:hidden` to the root `<nav>` so the bottom bar disappears on desktop.
+- On click: immediately update both the infinite stories cache (`['stories', 'infinite', ...]`) and the per-story reaction-counts cache so the heart fills and the count bumps instantly.
+- Snapshot previous data; roll back on error and toast "Couldn't react, try again".
+- `onSettled`: invalidate to reconcile with the server.
+- Same pattern across `['stories']`, `['search-stories']`, `['trending-stories']`, `['reaction-counts', storyId]`.
 
-### 6. Marketing pages and onboarding
-- Untouched. Landing/Blog/SEO pages are already responsive. Auth + onboarding screens (`AuthScreen`, `ProfileCreation`, `RefactoredSelfieCapture`, etc.) stay mobile-centered for now (they're short flows, look fine centered on desktop).
+No DB / RLS changes.
 
-## Technical notes
+### 3. Double-tap to like
 
-- **Mobile is unchanged.** All desktop styling is gated behind `lg:` Tailwind classes. No behavior changes below 1024px, so the Capacitor iOS bundle renders identically.
-- **No new dependencies.** Reuses shadcn `Sidebar` already in the project.
-- **No design system changes.** Uses existing semantic tokens (`bg-background`, `border-juice-orange/10`, `gradient-text`).
-- **Out of scope:** redesigning individual cards/modals for desktop, adding desktop-only features (keyboard shortcuts, hover previews, multi-pane story view), tablet (`md`) layout — tablet keeps the mobile layout for now.
+**Update `src/components/StoryCard.tsx`**:
+- Add a tap-handler that detects two taps within 300ms on the card body (not on the existing buttons — use `e.target` guard).
+- On double-tap: trigger `like` reaction via the optimistic mutation (only if not already liked).
+- Render a transient heart burst overlay: a centered `<Heart>` that scales from 0 → 1.4 → 1, fades out over 700ms (CSS keyframe, no new deps).
+- Works on desktop via `dblclick` too, so it's not mobile-only.
 
-## Files touched
+### 4. Skeleton loaders
+
+**Update `src/components/ui/loading-skeleton.tsx`** (or add a new `StoryCardSkeleton`) — a shimmer block that mirrors StoryCard's shape: avatar circle, two text lines, image placeholder, action row.
+
+**Wire into Home + Explore**:
+- Initial load: render 6 skeletons in the same column layout (single column on mobile, masonry on desktop).
+- Infinite-scroll loading next page: append 3 skeletons at the bottom instead of the current "Loading more stories…" text.
+
+### 5. Scroll-to-top button
+
+**New component `src/components/ScrollToTopButton.tsx`**:
+- Fixed bottom-right (above the mobile tab bar with `bottom-24 lg:bottom-8`).
+- Appears after `window.scrollY > 600`, fades in/out.
+- On click: `window.scrollTo({ top: 0, behavior: 'smooth' })`.
+- Wired into Home and Explore.
+
+### Files touched
 
 Created:
-- `src/components/layout/AppShell.tsx`
-- `src/components/layout/DesktopSidebar.tsx`
-- `src/components/layout/DesktopRightRail.tsx`
+- `src/hooks/usePullToRefresh.ts`
+- `src/components/PullToRefreshIndicator.tsx`
+- `src/components/StoryCardSkeleton.tsx`
+- `src/components/ScrollToTopButton.tsx`
 
 Edited:
-- `src/App.tsx` (wrap authenticated routes)
-- `src/components/Navigation.tsx` (add `lg:hidden`)
-- `src/pages/Home.tsx`, `Explore.tsx`, `Activity.tsx`, `Profile.tsx` (widen content + hide mobile top header on `lg+`)
+- `src/pages/Home.tsx` — wire PTR, skeletons, scroll-to-top.
+- `src/pages/Explore.tsx` — skeletons + scroll-to-top (PTR optional, will include if it fits cleanly).
+- `src/hooks/useReactions.ts` — optimistic update.
+- `src/components/StoryCard.tsx` — double-tap handler + heart-burst overlay.
 
-## Acceptance
+### Out of scope (not in this bundle)
 
-- iPhone preview (390×844): pixel-identical to today.
-- Desktop (≥1024): left sidebar with nav + CTA, centered feed up to `max-w-2xl`, no bottom tab bar.
-- Wide desktop (≥1280): adds a right rail with trending / top tags.
-- All existing routes still work; active route highlighted in sidebar.
+- Realtime "N new stories" pill via Supabase subscription.
+- Long-press action sheet, swipe gestures.
+- Keyboard shortcuts (j/k/l/c).
+- Offline banner.
+
+We can add any of these in a follow-up.
+
+### Acceptance
+
+- iPhone (390×844): drag down from the top of the feed → indicator appears, snaps back, feed refreshes. Double-tap a card → heart burst, count goes up instantly. Scroll past one screen → up-arrow appears.
+- Desktop (≥1024): same PTR via mouse drag from top, same double-click behavior, same up-arrow, same skeletons in masonry columns.
+- Mobile single-column layout and existing iOS Capacitor behavior unchanged otherwise.
