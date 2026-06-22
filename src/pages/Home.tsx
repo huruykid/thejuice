@@ -3,7 +3,6 @@ import Navigation from "@/components/Navigation";
 import StoryCard from "@/components/StoryCard";
 import { Button } from "@/components/ui/button";
 import { useInfiniteStories } from "@/hooks/useStories";
-import { useTrendingStories } from "@/hooks/useTrendingStories";
 import { useAuth } from "@/hooks/useAuth";
 import LoadingSkeleton from "@/components/ui/loading-skeleton";
 
@@ -21,12 +20,6 @@ const Home = ({ onCreateStory }: HomeProps) => {
     fetchNextPage,
     hasNextPage,
   } = useInfiniteStories();
-  
-  const { 
-    isLoading: trendingLoading 
-  } = useTrendingStories();
-
-  const isLoading = storiesLoading || trendingLoading;
 
   const stories = useMemo(
     () => data?.pages.flatMap((p) => p) ?? [],
