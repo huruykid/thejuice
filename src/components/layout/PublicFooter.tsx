@@ -6,8 +6,14 @@ export const PublicFooter = () => {
       <div className="max-w-6xl mx-auto px-4 py-10 grid gap-8 md:grid-cols-3 text-sm">
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <img src="/juice-logo.png" alt="" className="h-6 w-6" />
-            <span className="font-bold text-primary">Juice</span>
+            <img
+              src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png"
+              alt=""
+              className="h-6 w-6"
+            />
+            <span className="font-bold bg-gradient-primary bg-clip-text text-transparent">
+              The Juice App
+            </span>
           </div>
           <p className="text-muted-foreground">
             Anonymous dating stories and reviews — by men, for men.
