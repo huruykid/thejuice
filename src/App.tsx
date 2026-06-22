@@ -17,6 +17,8 @@ import Explore from "./pages/Explore";
 import Profile from "./pages/Profile";
 import Activity from "./pages/Activity";
 import AdminVerifications from "./pages/AdminVerifications";
+import AdminPosts from "./pages/AdminPosts";
+import SharePublic from "./pages/SharePublic";
 import PrivacySettings from "./pages/PrivacySettings";
 import AuthorStories from "./pages/AuthorStories";
 import CreateStory from "./components/CreateStory";
@@ -139,6 +141,12 @@ const App = () => {
               <AdminVerifications />
             </ProtectedRoute>
           } />
+          <Route path="/admin/posts" element={
+            <ProtectedRoute>
+              <AdminPosts />
+            </ProtectedRoute>
+          } />
+          <Route path="/share" element={<SharePublic />} />
           <Route path="/privacy-settings" element={
             <ProtectedRoute>
               <AppShell showRightRail={false}>

@@ -9,6 +9,8 @@ import ScrollToTopButton from "@/components/ScrollToTopButton";
 import PullToRefreshIndicator from "@/components/PullToRefreshIndicator";
 import { usePullToRefresh } from "@/hooks/usePullToRefresh";
 import { useInfiniteStories } from "@/hooks/useStories";
+import { useHasApprovedPost } from "@/hooks/useHasApprovedPost";
+import UnlockBanner from "@/components/UnlockBanner";
 import { useAuth } from "@/hooks/useAuth";
 
 interface HomeProps {
@@ -20,6 +22,10 @@ const Home = ({ onCreateStory }: HomeProps) => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
+  const { data: hasApprovedPost, isLoading: gateLoading } =
+    useHasApprovedPost(user?.id);
+  const feedMode: "community" | "seed" = hasApprovedPost ? "community" : "seed";
+
   const {
     data,
     isLoading: storiesLoading,
@@ -27,7 +33,7 @@ const Home = ({ onCreateStory }: HomeProps) => {
     fetchNextPage,
     hasNextPage,
     refetch,
-  } = useInfiniteStories();
+  } = useInfiniteStories(undefined, feedMode);
 
   const stories = useMemo(
     () => data?.pages.flatMap((p) => p) ?? [],
@@ -77,7 +83,10 @@ const Home = ({ onCreateStory }: HomeProps) => {
 
       {/* Feed — IG full-bleed on mobile, narrow column on desktop */}
       <div className="max-w-xl mx-auto sm:px-0 py-0 sm:py-2">
-        {storiesLoading && stories.length === 0 ? (
+        {feedMode === "seed" && (
+          <UnlockBanner onCreateStory={onCreateStory} />
+        )}
+        {(storiesLoading || gateLoading) && stories.length === 0 ? (
           <div>
             {Array.from({ length: 4 }).map((_, i) => (
               <StoryCardSkeleton key={i} />

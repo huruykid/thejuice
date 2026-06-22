@@ -469,17 +469,21 @@ export type Database = {
           id: string
           image_url: string | null
           is_flagged: boolean
+          is_seed: boolean
           location: string | null
           loyalty_rating: number | null
           normalized_location: string | null
           overall_vibe_rating: number | null
           profile_id: string | null
           reactions_count: number
+          rejected_at: string | null
+          rejection_reason: string | null
           status: string
           subject_name: string | null
           subject_phone: string | null
+          submitted_anonymously: boolean
           updated_at: string
-          user_id: string
+          user_id: string | null
           view_count: number
         }
         Insert: {
@@ -494,17 +498,21 @@ export type Database = {
           id?: string
           image_url?: string | null
           is_flagged?: boolean
+          is_seed?: boolean
           location?: string | null
           loyalty_rating?: number | null
           normalized_location?: string | null
           overall_vibe_rating?: number | null
           profile_id?: string | null
           reactions_count?: number
+          rejected_at?: string | null
+          rejection_reason?: string | null
           status?: string
           subject_name?: string | null
           subject_phone?: string | null
+          submitted_anonymously?: boolean
           updated_at?: string
-          user_id: string
+          user_id?: string | null
           view_count?: number
         }
         Update: {
@@ -519,17 +527,21 @@ export type Database = {
           id?: string
           image_url?: string | null
           is_flagged?: boolean
+          is_seed?: boolean
           location?: string | null
           loyalty_rating?: number | null
           normalized_location?: string | null
           overall_vibe_rating?: number | null
           profile_id?: string | null
           reactions_count?: number
+          rejected_at?: string | null
+          rejection_reason?: string | null
           status?: string
           subject_name?: string | null
           subject_phone?: string | null
+          submitted_anonymously?: boolean
           updated_at?: string
-          user_id?: string
+          user_id?: string | null
           view_count?: number
         }
         Relationships: [
@@ -800,6 +812,7 @@ export type Database = {
         Args: { invite_code: string; new_user_id: string }
         Returns: boolean
       }
+      user_has_approved_post: { Args: { _user_id: string }; Returns: boolean }
       validate_file_upload: {
         Args: {
           bucket_name: string

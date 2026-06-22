@@ -57,14 +57,19 @@ export const useStories = () => {
  */
 export const STORIES_PAGE_SIZE = 12;
 
-export const useInfiniteStories = (pageSize: number = STORIES_PAGE_SIZE) => {
+export type FeedMode = "community" | "seed";
+
+export const useInfiniteStories = (
+  pageSize: number = STORIES_PAGE_SIZE,
+  mode: FeedMode = "community"
+) => {
   return useInfiniteQuery({
-    queryKey: ['stories', 'infinite', pageSize],
+    queryKey: ['stories', 'infinite', pageSize, mode],
     initialPageParam: 0,
     queryFn: async ({ pageParam = 0 }): Promise<Story[]> => {
       const from = (pageParam as number) * pageSize;
       const to = from + pageSize - 1;
-      const { data, error } = await (supabase as any)
+      let query = (supabase as any)
         .from('stories')
         .select(`
           *,
@@ -77,8 +82,10 @@ export const useInfiniteStories = (pageSize: number = STORIES_PAGE_SIZE) => {
           )
         `)
         .eq('status', 'approved')
+        .eq('is_seed', mode === 'seed')
         .order('created_at', { ascending: false })
         .range(from, to);
+      const { data, error } = await query;
 
       if (error) throw error;
       return data || [];
@@ -199,6 +206,7 @@ export const useCreateStory = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['stories'] });
       queryClient.invalidateQueries({ queryKey: ['stories', 'mine'] });
+      queryClient.invalidateQueries({ queryKey: ['has-approved-post'] });
     },
   });
 };
