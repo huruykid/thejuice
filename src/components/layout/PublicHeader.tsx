@@ -18,8 +18,14 @@ export const PublicHeader = () => {
     <header className="sticky top-0 z-40 w-full border-b border-border bg-background/80 backdrop-blur-md">
       <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2" aria-label="Juice home">
-          <img src="/juice-logo.png" alt="" className="h-7 w-7" />
-          <span className="font-bold text-lg text-primary">Juice</span>
+          <img
+            src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png"
+            alt=""
+            className="h-7 w-7"
+          />
+          <span className="text-lg font-bold bg-gradient-primary bg-clip-text text-transparent">
+            The Juice App
+          </span>
         </Link>
 
         {/* Desktop nav */}
