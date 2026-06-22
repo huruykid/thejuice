@@ -5,7 +5,6 @@ import { handleCorsPreFlight, createSecureResponse, createSecureErrorResponse, a
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
 interface WelcomeEmailRequest {
-  email: string;
   username?: string;
 }
 
@@ -19,9 +18,14 @@ const handler = async (req: Request): Promise<Response> => {
     const auth = await authenticateRequest(req);
     if (auth instanceof Response) return auth;
 
-    const { email, username }: WelcomeEmailRequest = await req.json();
+    const { username }: WelcomeEmailRequest = await req.json().catch(() => ({}));
 
-    console.log(`Sending welcome email to: ${email}`);
+    const email = auth.email;
+    if (!email) {
+      return createSecureErrorResponse('No email associated with account', 400);
+    }
+
+    console.log(`Sending welcome email to authenticated user`);
 
     const emailResponse = await resend.emails.send({
       from: "SipJuice <noreply@sipjuice.app>",
