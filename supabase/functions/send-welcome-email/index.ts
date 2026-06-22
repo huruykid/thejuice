@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "npm:resend@2.0.0";
-import { handleCorsPreFlight, createSecureResponse, createSecureErrorResponse } from '../_shared/security.ts';
+import { handleCorsPreFlight, createSecureResponse, createSecureErrorResponse, authenticateRequest } from '../_shared/security.ts';
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
@@ -16,6 +16,9 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
+    const auth = await authenticateRequest(req);
+    if (auth instanceof Response) return auth;
+
     const { email, username }: WelcomeEmailRequest = await req.json();
 
     console.log(`Sending welcome email to: ${email}`);
