@@ -156,10 +156,9 @@ const AuthScreen = ({ onAuthSuccess }: AuthScreenProps) => {
                 {isSignUp ? "Join Juice" : (isReturningUser ? "Welcome Back" : "Welcome to Juice")}
               </h2>
               <p className="text-muted-foreground">
-                {isSignUp 
-                  ? "Create your account" 
-                  : <>Sign in to share and<br />discover dating stories</>
-                }
+                {isSignUp
+                  ? "Create your account"
+                  : "Sign in to share and discover dating stories"}
               </p>
             </div>
 
