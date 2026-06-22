@@ -6,6 +6,7 @@ import StoryCardSkeleton from "@/components/StoryCardSkeleton";
 import ScrollToTopButton from "@/components/ScrollToTopButton";
 import PullToRefreshIndicator from "@/components/PullToRefreshIndicator";
 import CitySheet from "@/components/CitySheet";
+import Navigation from "@/components/Navigation";
 import { usePullToRefresh } from "@/hooks/usePullToRefresh";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
@@ -155,6 +156,7 @@ const NearYou = ({ onCreateStory }: NearYouProps) => {
         currentCityId={cityId}
       />
       <ScrollToTopButton />
+      <Navigation onCreateStory={onCreateStory} />
     </div>
   );
 };
