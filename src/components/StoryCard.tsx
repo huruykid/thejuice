@@ -1,6 +1,5 @@
-import { Heart, MessageCircle, Flag, Star, Trash2, ShieldCheck, MapPin, MoreVertical } from "lucide-react";
+import { Heart, MessageCircle, Flag, Trash2, MapPin, MoreVertical, Send, Bookmark } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import {
   DropdownMenu,
@@ -291,50 +290,42 @@ const StoryCard = ({
   return (
     <>
       <div
-        className="relative bg-card border-2 border-foreground shadow-brut overflow-hidden mb-8 select-none"
+        className="relative bg-background border-b border-border mb-2 select-none"
         onClick={handleCardClick}
       >
         {showHeartBurst && (
           <div className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center">
             <Heart
-              className="h-24 w-24 text-primary drop-shadow-[4px_4px_0_hsl(var(--foreground))]"
+              className="h-24 w-24 text-primary drop-shadow-lg"
               fill="currentColor"
               style={{ animation: "heart-burst 700ms ease-out forwards" }}
             />
           </div>
         )}
-        {/* Header — black bar w/ avatar tile */}
-        <div className="p-4 border-b-2 border-foreground bg-foreground text-background">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-accent text-foreground border-2 border-background flex items-center justify-center">
-                <span className="font-display text-lg leading-none pt-0.5">
-                  {(story.subject_name || subjectName || 'A').charAt(0).toUpperCase()}
-                </span>
-              </div>
-              <div className="leading-tight">
-                <p className="font-display text-xl leading-none pt-1 uppercase">
-                  {story.subject_name || subjectName || 'Anonymous'}
-                </p>
-                <button
-                  onClick={(e) => { e.stopPropagation(); handleAuthorClick(); }}
-                  className="text-[10px] uppercase font-bold tracking-widest text-primary hover:text-accent transition-colors"
-                >
-                  Spilled by @{authorName}
-                </button>
-              </div>
+        {/* IG Header — avatar + name on left, more on right */}
+        <div className="flex items-center justify-between px-4 py-2.5">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary-dark flex items-center justify-center text-primary-foreground text-xs font-semibold flex-shrink-0">
+              {(story.subject_name || subjectName || 'A').charAt(0).toUpperCase()}
             </div>
-            <div className="flex items-center gap-1">
-              <span className="text-[10px] font-bold uppercase tracking-widest opacity-80">
-                {formatDate(story.created_at)}
-              </span>
-              {/* Story menu */}
-              <DropdownMenu>
+            <div className="min-w-0 leading-tight">
+              <p className="text-sm font-semibold text-foreground truncate">
+                {story.subject_name || subjectName || 'Anonymous'}
+              </p>
+              <button
+                onClick={(e) => { e.stopPropagation(); handleAuthorClick(); }}
+                className="text-xs text-muted-foreground hover:text-foreground transition-colors truncate"
+              >
+                @{authorName} · {formatDate(story.created_at)}
+              </button>
+            </div>
+          </div>
+          <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="h-8 w-8 p-0 text-background hover:bg-background/10 hover:text-background"
+                    className="h-8 w-8 p-0 text-foreground hover:bg-muted"
                   >
                     <MoreVertical className="h-4 w-4" />
                   </Button>
@@ -368,22 +359,20 @@ const StoryCard = ({
                   )}
                 </DropdownMenuContent>
               </DropdownMenu>
-            </div>
-          </div>
         </div>
 
-        {/* Image Carousel */}
+        {/* Media — IG full-bleed */}
         {imageUrls.length > 0 && (
-          <div className="relative border-b-2 border-foreground">
+          <div className="relative bg-muted">
             <Carousel className="w-full">
               <CarouselContent>
                 {imageUrls.map((url, index) => (
                   <CarouselItem key={index}>
-                    <div className="bg-muted">
+                    <div className="bg-muted aspect-square flex items-center justify-center overflow-hidden">
                       <img
                         src={url}
                         alt={`Story image ${index + 1}`}
-                        className="w-full h-auto object-contain cursor-pointer"
+                        className="w-full h-full object-cover cursor-pointer"
                         loading="lazy"
                         onClick={() => window.open(url, '_blank')}
                       />
@@ -403,7 +392,7 @@ const StoryCard = ({
                 {imageUrls.map((_, index) => (
                   <div
                     key={index}
-                    className="w-2 h-2 bg-background border border-foreground"
+                    className="w-1.5 h-1.5 rounded-full bg-background/80 ring-1 ring-foreground/20"
                   />
                 ))}
               </div>
@@ -411,88 +400,116 @@ const StoryCard = ({
           </div>
         )}
 
-        {/* Content */}
-        <div className="p-5 space-y-3">
-          <p className="text-foreground text-lg leading-snug font-medium whitespace-pre-wrap">
-            {story.content}
-          </p>
-          
-          {/* Location - moved here after story content and images */}
-          {(story.location || story.cities) && (
-            <div className="flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-muted-foreground">
-              <MapPin className="h-3 w-3" />
-              <span>
-                {story.cities 
-                  ? `${story.cities.city_name}, ${story.cities.state_province}`
-                  : story.location
-                }
-                {story.distance && (
-                  <span className="ml-1 text-primary">
-                    • {formatDistance(story.distance)} away
-                  </span>
-                )}
-              </span>
-            </div>
-          )}
-
-          {/* Tags */}
-          {story.story_tags && story.story_tags.length > 0 && (
-            <div className="flex flex-wrap gap-2">
-              {story.story_tags.map((storyTag, index) => (
-                <span key={index} className="brut-tag">
-                  {tagEmojis[storyTag.tag.toLowerCase()] || '🏷️'} {storyTag.tag}
-                </span>
-              ))}
-            </div>
-          )}
-
-        </div>
-
-        {/* Vote bar — two big Bebas buttons, equal weight */}
-        <div className="grid grid-cols-2 border-t-4 border-foreground">
+        {/* IG action row — icon buttons left + right */}
+        <div className="flex items-center justify-between px-3 pt-2 pb-1">
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => handleReaction('red_flag')}
+              aria-label="Red flag"
+              className="p-2 -ml-1 rounded-full hover:bg-muted active:scale-95 transition-all"
+            >
+              <Flag
+                className={`h-6 w-6 ${
+                  isRedFlagged ? "text-primary" : "text-foreground"
+                }`}
+                strokeWidth={isRedFlagged ? 2.4 : 1.8}
+                fill={isRedFlagged ? "currentColor" : "none"}
+              />
+            </button>
+            <button
+              onClick={() => handleReaction('green_flag')}
+              aria-label="Green flag"
+              className="p-2 rounded-full hover:bg-muted active:scale-95 transition-all"
+            >
+              <Flag
+                className={`h-6 w-6 ${
+                  isGreenFlagged ? "text-juice-green" : "text-foreground"
+                }`}
+                strokeWidth={isGreenFlagged ? 2.4 : 1.8}
+                fill={isGreenFlagged ? "currentColor" : "none"}
+              />
+            </button>
+            <button
+              onClick={handleComment}
+              aria-label="Comment"
+              className="p-2 rounded-full hover:bg-muted active:scale-95 transition-all"
+            >
+              <MessageCircle className="h-6 w-6 text-foreground" strokeWidth={1.8} />
+            </button>
+            <button
+              aria-label="Share"
+              className="p-2 rounded-full hover:bg-muted active:scale-95 transition-all"
+              onClick={(e) => { e.stopPropagation(); }}
+            >
+              <Send className="h-6 w-6 text-foreground" strokeWidth={1.8} />
+            </button>
+          </div>
           <button
-            onClick={() => handleReaction('green_flag')}
-            className={`py-4 flex flex-col items-center justify-center border-r-2 border-foreground transition-colors active:translate-y-[1px] ${
-              isGreenFlagged
-                ? 'bg-success text-success-foreground'
-                : 'bg-background hover:bg-success/15 text-foreground'
-            }`}
+            aria-label="Save"
+            className="p-2 -mr-1 rounded-full hover:bg-muted active:scale-95 transition-all"
           >
-            <span className="font-display text-2xl leading-none pt-1">
-              {reactionCounts?.green_flag || 0}
-            </span>
-            <span className="font-black text-[11px] uppercase tracking-tighter mt-1">
-              Green Flag
-            </span>
-          </button>
-          <button
-            onClick={() => handleReaction('red_flag')}
-            className={`py-4 flex flex-col items-center justify-center transition-colors active:translate-y-[1px] ${
-              isRedFlagged
-                ? 'bg-primary text-primary-foreground'
-                : 'bg-background hover:bg-primary/15 text-foreground'
-            }`}
-          >
-            <span className="font-display text-2xl leading-none pt-1">
-              {reactionCounts?.red_flag || 0}
-            </span>
-            <span className="font-black text-[11px] uppercase tracking-tighter mt-1">
-              Red Flag
-            </span>
+            <Bookmark className="h-6 w-6 text-foreground" strokeWidth={1.8} />
           </button>
         </div>
 
-        {/* Footer strip — comments + views */}
-        <button
-          onClick={handleComment}
-          className="w-full px-4 py-2 border-t-2 border-foreground flex justify-between items-center text-[11px] font-black uppercase tracking-wider hover:bg-accent transition-colors"
-        >
-          <span className="flex items-center gap-2">
-            <MessageCircle className="h-3.5 w-3.5" strokeWidth={2.5} />
-            {story.comments_count} Comments
+        {/* Counts line */}
+        <div className="px-4 text-sm font-semibold text-foreground">
+          {(reactionCounts?.red_flag || 0) + (reactionCounts?.green_flag || 0)} flags
+          {(reactionCounts?.green_flag || 0) > 0 && (
+            <span className="ml-2 text-xs font-normal text-muted-foreground">
+              {reactionCounts?.green_flag} green · {reactionCounts?.red_flag || 0} red
+            </span>
+          )}
+        </div>
+
+        {/* Caption — bold subject + story */}
+        <div className="px-4 pt-1 pb-1 text-sm leading-snug text-foreground">
+          <span className="font-semibold mr-1.5">
+            {story.subject_name || subjectName || 'anonymous'}
           </span>
-          <span className="text-primary">Spill the tea →</span>
-        </button>
+          <span className="whitespace-pre-wrap">{story.content}</span>
+        </div>
+
+        {/* Tags as IG hashtag-blue */}
+        {story.story_tags && story.story_tags.length > 0 && (
+          <div className="px-4 pt-0.5 text-sm leading-tight">
+            {story.story_tags.map((t, i) => (
+              <span key={i} className="ig-tag mr-1.5">
+                #{t.tag.replace(/\s+/g, '')}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {/* Comments link */}
+        {story.comments_count > 0 && (
+          <button
+            onClick={handleComment}
+            className="block px-4 pt-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            View all {story.comments_count} comments
+          </button>
+        )}
+
+        {/* Location + time muted footer */}
+        {(story.location || story.cities) && (
+          <div className="px-4 pt-1 pb-3 flex items-center gap-1 text-xs text-muted-foreground">
+            <MapPin className="h-3 w-3" />
+            <span>
+              {story.cities
+                ? `${story.cities.city_name}${story.cities.state_province ? ', ' + story.cities.state_province : ''}`
+                : story.location}
+              {story.distance && (
+                <span className="ml-1 text-primary">· {formatDistance(story.distance)} away</span>
+              )}
+            </span>
+          </div>
+        )}
+        {!(story.location || story.cities) && (
+          <div className="px-4 pt-0.5 pb-3 text-[11px] uppercase tracking-wide text-muted-foreground">
+            {formatDate(story.created_at)}
+          </div>
+        )}
       </div>
 
       {showComments && (

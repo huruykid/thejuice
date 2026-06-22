@@ -1,85 +1,104 @@
-## Essentials interaction bundle
+## Instagram-bones redesign — sequential plan
 
-Adds pull-to-refresh, optimistic reactions, double-tap to like, skeleton loaders, and scroll-to-top — keeping the mobile-first feel intact and working on desktop too.
+Goal: keep Instagram's structural language (hairline dividers, mono ink, square media, icon-row actions, 5-tab bottom nav, grid Explore) but with our juice-orange as the single saturated accent. Light + dark, both first-class.
 
-### 1. Pull-to-refresh (mobile + desktop)
+---
 
-**New hook `src/hooks/usePullToRefresh.ts`** — generic touch/pointer-based PTR with rubber-band resistance.
+### Open decision before we build (please confirm)
 
-- Attaches `pointerdown / pointermove / pointerup` to a target element.
-- Activates only when the scroll container is at `scrollTop === 0`.
-- Tracks pull distance with damping (`distance = Math.pow(rawDelta, 0.8)`).
-- Two thresholds: `armDistance` (60px, show "Release to refresh") and `triggerDistance` (90px, fire `onRefresh`).
-- Returns `{ bind, pullDistance, isRefreshing, status }` so the consumer can render its own indicator.
-- Works with mouse pointer events on desktop too (drag down from the top), so it's not mobile-only.
+**Location / "Near You" feed.** Your project memory currently says *"No location features or geolocation allowed"* and *"Location Disabled."* But the `stories` table already has a `city_id` (joined to `cities`) — that's a **tag**, not device GPS.
 
-**New component `src/components/PullToRefreshIndicator.tsx`** — a small animated arrow / spinner that translates with `pullDistance`, rotates on arm, becomes a spinner on refresh. Uses semantic tokens.
+Two ways to give you an IG-style local feed without breaking the memory:
 
-**Wire into Home feed** (`src/pages/Home.tsx`):
-- Wrap the feed in the PTR container.
-- `onRefresh` calls `queryClient.invalidateQueries({ queryKey: ['stories', 'infinite'] })` and `await refetch()` so the existing infinite-scroll state is preserved (we re-fetch from page 0, react-query keeps the rest consistent).
-- Show the `PullToRefreshIndicator` at the top of the feed.
+- **A. City tab (recommended)** — user picks a city in their profile (or one-tap from a search). Feed filters by that `city_id`. Zero device permissions, no GPS, no IP lookup. Compatible with current memory.
+- **B. Skip it** — no near-you tab. Explore stays as a global discovery grid.
 
-### 2. Optimistic reactions
+Default I'll use unless you say otherwise: **A**.
 
-**Update `src/hooks/useReactions.ts`** to add `onMutate` / `onError` / `onSettled` for optimistic UI:
+---
 
-- On click: immediately update both the infinite stories cache (`['stories', 'infinite', ...]`) and the per-story reaction-counts cache so the heart fills and the count bumps instantly.
-- Snapshot previous data; roll back on error and toast "Couldn't react, try again".
-- `onSettled`: invalidate to reconcile with the server.
-- Same pattern across `['stories']`, `['search-stories']`, `['trending-stories']`, `['reaction-counts', storyId]`.
+### Sequential build order
 
-No DB / RLS changes.
+**Step 1 — Tokens & theme foundation**
+- Rewrite `src/index.css` `:root` and `.dark` blocks to IG-grade neutrals:
+  - Light: `bg #ffffff`, `surface #fafafa`, `ink #0a0a0a`, `muted #737373`, `hairline #dbdbdb`
+  - Dark: `bg #000000`, `surface #121212`, `ink #fafafa`, `muted #a8a8a8`, `hairline #262626`
+- Single saturated accent stays juice-orange `#ff5722` — used only for: Spill/Create button, active tab dot, active flag-vote fill, link color.
+- `--radius: 0.5rem` (IG uses subtle rounding on inputs/avatars, not the brutalist 0 we just shipped).
+- Drop the brutalist `shadow-brut*` tokens; switch to flat hairline borders.
+- Typography: SF Pro / Inter for body (Instagram's actual stack), keep Bebas off; one display weight reserved for the wordmark only.
+- Add `ThemeProvider` + a `useTheme` hook with `localStorage` persistence and `prefers-color-scheme` default. Toggle lives in Profile.
 
-### 3. Double-tap to like
+**Step 2 — Top header (mobile + desktop)**
+- Mobile: 44px sticky bar. Left = "Juice" wordmark (one custom display font). Right = heart icon (Activity) + DM/comments icon. Hairline bottom border. No glass blur, no gradient.
+- Desktop ≥ `lg`: leaves the existing left sidebar in place but restyles it to IG's desktop sidebar (icon + label, 240px collapsed to 72px below `xl`).
 
-**Update `src/components/StoryCard.tsx`**:
-- Add a tap-handler that detects two taps within 300ms on the card body (not on the existing buttons — use `e.target` guard).
-- On double-tap: trigger `like` reaction via the optimistic mutation (only if not already liked).
-- Render a transient heart burst overlay: a centered `<Heart>` that scales from 0 → 1.4 → 1, fades out over 700ms (CSS keyframe, no new deps).
-- Works on desktop via `dblclick` too, so it's not mobile-only.
+**Step 3 — Bottom tab nav (mobile only)**
+- 5 tabs, equal width, 48px tall, hairline top border, no center notch:
+  `Home · Explore · Create (+) · Near You · Profile`
+- Active = filled glyph + juice-orange 4px dot under it (IG pattern).
+- Activity moves into the header heart icon to free a slot for Near You (matches current IG).
 
-### 4. Skeleton loaders
+**Step 4 — `StoryCard` (the IG post)**
+- Remove the brutalist black header + offset shadow. New shape:
+  - **Top row**: 32px circular avatar with subject initial → subject name (semibold) + "Spilled by @author" muted small → `MoreVertical` on the right.
+  - **Media**: full-bleed square (1:1) on first image; carousel dots if multiple. No border, no rounding.
+  - **Action row** (under media, full IG rhythm): `🚩 Red Flag` `🟢 Green Flag` `💬 Comments` on the left, `Share` on the right. Outlined icons; tapped state fills with juice-orange (red flag) / juice-green (green flag).
+  - **Counts line**: `1,204 flags · 64 comments`.
+  - **Caption**: `@subjectName` bold inline, then story text. "more" truncation at ~3 lines.
+  - **Tags**: small muted hashtag-style chips, no border.
+  - **Time + location** muted footer.
+- Keeps every existing handler: `handleReaction`, `handleComment`, `handleDelete`, double-tap → green flag, heart burst (recolored juice-orange).
 
-**Update `src/components/ui/loading-skeleton.tsx`** (or add a new `StoryCardSkeleton`) — a shimmer block that mirrors StoryCard's shape: avatar circle, two text lines, image placeholder, action row.
+**Step 5 — Explore page (IG grid)**
+- Rewrite `src/pages/Explore.tsx` as a 3-column edge-to-edge grid of square thumbnails for stories with images. Stories without images render as text tiles (juice-orange background, condensed quote, ink text) so the grid stays full.
+- Tapping a tile opens the existing `StoryCard` view (full post) in a route or modal.
+- Top of Explore: search bar (subject/tag/city), then the grid.
+- Infinite scroll reuses `useInfiniteStories` with a new ordering option.
 
-**Wire into Home + Explore**:
-- Initial load: render 6 skeletons in the same column layout (single column on mobile, masonry on desktop).
-- Infinite-scroll loading next page: append 3 skeletons at the bottom instead of the current "Loading more stories…" text.
+**Step 6 — Near You page (city-filtered, no GPS)**
+- New route `/near-you`, wired to the bottom-nav slot.
+- Profile gains a "Your city" picker (typeahead over existing `cities` table). Stored on `profiles` (new nullable column `city_id` if not present — check before migrating).
+- Hook `useInfiniteStoriesByCity(cityId)` filters `stories` server-side by `city_id`.
+- Empty state when no city set: "Pick your city" CTA → opens profile picker sheet.
+- If no city is set and the user dismisses, fall back to global feed with a banner.
 
-### 5. Scroll-to-top button
+**Step 7 — Comments modal**
+- Restyle `CommentsModal` to IG's bottom-sheet pattern: drag handle, avatar + comment rows, reply nesting, send bar pinned to bottom with juice-orange send button when text is present.
 
-**New component `src/components/ScrollToTopButton.tsx`**:
-- Fixed bottom-right (above the mobile tab bar with `bottom-24 lg:bottom-8`).
-- Appears after `window.scrollY > 600`, fades in/out.
-- On click: `window.scrollTo({ top: 0, behavior: 'smooth' })`.
-- Wired into Home and Explore.
+**Step 8 — Profile**
+- IG-style header: avatar, codename, stat row (`stories · flags received · comments`), Edit Profile + Theme toggle buttons, then a 3-tab segmented control (`Posts · Liked · Saved`) over a square grid of the user's stories.
 
-### Files touched
+**Step 9 — QA pass**
+- Capture mobile + desktop screenshots in both themes with Playwright.
+- Verify: vote tap states, double-tap heart burst, infinite scroll, pull-to-refresh indicator still themed correctly, bottom-nav active dot, Explore grid alignment, Near You empty state, dark-mode contrast on every surface touched.
 
-Created:
-- `src/hooks/usePullToRefresh.ts`
-- `src/components/PullToRefreshIndicator.tsx`
-- `src/components/StoryCardSkeleton.tsx`
-- `src/components/ScrollToTopButton.tsx`
+---
 
-Edited:
-- `src/pages/Home.tsx` — wire PTR, skeletons, scroll-to-top.
-- `src/pages/Explore.tsx` — skeletons + scroll-to-top (PTR optional, will include if it fits cleanly).
-- `src/hooks/useReactions.ts` — optimistic update.
-- `src/components/StoryCard.tsx` — double-tap handler + heart-burst overlay.
+### Out of scope (explicit)
 
-### Out of scope (not in this bundle)
+- Auth screens, onboarding, welcome screen, More panel admin views — keep current look for now. Easy follow-up.
+- DMs / direct messaging — IG has them, you don't, not adding.
+- Stories / reels at the top of the feed — not implementing unless you ask.
+- Algorithmic ranking — feed stays chronological.
+- Any device geolocation or IP-based location — explicitly excluded per project memory.
 
-- Realtime "N new stories" pill via Supabase subscription.
-- Long-press action sheet, swipe gestures.
-- Keyboard shortcuts (j/k/l/c).
-- Offline banner.
+---
 
-We can add any of these in a follow-up.
+### Technical notes (skip if not relevant)
 
-### Acceptance
+- `index.css`: full token rewrite, both `:root` and `.dark`. Add semantic tokens `--surface`, `--hairline`, `--icon`, `--icon-active`.
+- `tailwind.config.ts`: drop `shadow-brut*`, set `borderRadius.DEFAULT` to `0.5rem`, restore `fontFamily.sans` to Inter (already installed transitively, otherwise add `@fontsource/inter`).
+- `main.tsx`: keep Bebas Neue import only for the wordmark; add Inter weights 400/500/600/700.
+- New: `src/components/ThemeToggle.tsx`, `src/hooks/useTheme.ts`, `src/pages/NearYou.tsx`, `src/hooks/useInfiniteStoriesByCity.ts`, `src/components/CitySheet.tsx`.
+- Modify: `App.tsx` (add `/near-you` route + ThemeProvider), `Navigation.tsx`, `StoryCard.tsx`, `Home.tsx`, `Explore.tsx`, `Profile.tsx`, `CommentsModal.tsx`, `PullToRefreshIndicator.tsx`, `ScrollToTopButton.tsx`, `StoryCardSkeleton.tsx`.
+- Possible migration: add `city_id uuid` to `profiles` if not already there. Will check `profiles` schema before writing migration.
+- Reuses all existing hooks: `useReactions`, `useStories`, `useInfiniteStories`, `useReactionCounts`, `usePullToRefresh`.
 
-- iPhone (390×844): drag down from the top of the feed → indicator appears, snaps back, feed refreshes. Double-tap a card → heart burst, count goes up instantly. Scroll past one screen → up-arrow appears.
-- Desktop (≥1024): same PTR via mouse drag from top, same double-click behavior, same up-arrow, same skeletons in masonry columns.
-- Mobile single-column layout and existing iOS Capacitor behavior unchanged otherwise.
+---
+
+### Estimate
+
+~8–10 file edits, 4 new files, 1 small migration (only if `profiles.city_id` doesn't exist). One build pass with screenshot QA.
+
+Confirm A vs B on the Near You question (or just approve to accept A) and I'll ship it.

@@ -6,41 +6,45 @@
 
 @layer base {
   :root {
-    /* THE JUICE — Brutalist Pop tokens
-       White stock + ink black + saturated orange + acid yellow */
+    /* THE JUICE — Instagram-bones light theme.
+       Mono neutrals, hairline dividers, juice-orange as the single accent. */
     --background: 0 0% 100%;
-    --background-secondary: 0 0% 96%;
+    --background-secondary: 0 0% 98%;
     --foreground: 0 0% 4%;
+    --surface: 0 0% 98%;
+    --hairline: 0 0% 86%;
+    --icon: 0 0% 4%;
+    --icon-muted: 0 0% 45%;
 
     /* Card & Surface Colors */
     --card: 0 0% 100%;
     --card-foreground: 0 0% 4%;
-    --card-hover: 54 100% 95%;
+    --card-hover: 0 0% 96%;
 
     /* Popover & Modal Colors */
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 4%;
 
-    /* Primary — Juice Orange #ff5722 */
+    /* Primary — Juice Orange #ff5722 (single accent) */
     --primary: 14 100% 57%;
     --primary-light: 14 100% 67%;
     --primary-dark: 14 100% 47%;
     --primary-foreground: 0 0% 100%;
 
-    /* Secondary — flat ink */
+    /* Secondary — neutral fill */
     --secondary: 0 0% 96%;
     --secondary-foreground: 0 0% 4%;
 
     /* Muted Tones */
-    --muted: 0 0% 94%;
-    --muted-foreground: 0 0% 32%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45%;
 
-    /* Accent — Acid Yellow #ffeb3b */
-    --accent: 54 100% 62%;
-    --accent-light: 54 100% 72%;
-    --accent-foreground: 0 0% 4%;
+    /* Accent — collapses to primary in IG mode */
+    --accent: 14 100% 57%;
+    --accent-light: 14 100% 67%;
+    --accent-foreground: 0 0% 100%;
 
-    /* Success & Error States — kept saturated for flag chrome */
+    /* Success & Error States — used for flag voting fills */
     --success: 142 72% 34%;
     --success-light: 142 72% 44%;
     --success-foreground: 0 0% 100%;
@@ -49,112 +53,134 @@
     --destructive-light: 14 100% 67%;
     --destructive-foreground: 0 0% 100%;
 
-    /* Interactive Elements — borders are INK, not gray */
-    --border: 0 0% 4%;
-    --border-light: 0 0% 88%;
+    /* Interactive Elements — hairline borders, IG-grade */
+    --border: 0 0% 86%;
+    --border-light: 0 0% 92%;
     --input: 0 0% 96%;
     --ring: 14 100% 57%;
 
-    /* Juice App Specific Colors — collapsed to the Brutalist Pop palette */
+    /* Juice App Specific Colors — flattened to the IG accent system */
     --juice-orange: 14 100% 57%;
     --juice-orange-light: 14 100% 67%;
     --juice-orange-dark: 14 100% 47%;
     --juice-pink: 14 100% 57%;
     --juice-purple: 0 0% 4%;
-    --juice-blue: 0 0% 4%;
+    --juice-blue: 210 100% 50%;
     --juice-green: 142 72% 38%;
-    --juice-lavender: 54 100% 90%;
+    --juice-lavender: 0 0% 96%;
 
-    /* Gradients — flattened. Brutalism is honest about color. */
+    /* Gradients — flat. IG doesn't gradient. */
     --gradient-primary: linear-gradient(135deg, hsl(14 100% 57%), hsl(14 100% 57%));
     --gradient-secondary: linear-gradient(135deg, hsl(0 0% 4%), hsl(0 0% 4%));
     --gradient-success: linear-gradient(135deg, hsl(142 72% 38%), hsl(142 72% 38%));
     --gradient-card: linear-gradient(145deg, hsl(0 0% 100%), hsl(0 0% 100%));
     --gradient-overlay: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.4) 100%);
 
-    /* Shadows — hard offset, no blur. Posters, not glass. */
+    /* Shadows — subtle. IG-grade lift only. */
     --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow-sm: 3px 3px 0 0 hsl(0 0% 4%);
-    --shadow-md: 4px 4px 0 0 hsl(0 0% 4%);
-    --shadow-lg: 6px 6px 0 0 hsl(0 0% 4%);
-    --shadow-xl: 8px 8px 0 0 hsl(0 0% 4%);
-    --shadow-card: 6px 6px 0 0 hsl(0 0% 4%);
-    --shadow-glow: 0 0 0 3px hsl(14 100% 57% / 0.4);
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 4px 12px -2px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 10px 30px -10px rgba(0, 0, 0, 0.15);
+    --shadow-xl: 0 20px 40px -10px rgba(0, 0, 0, 0.18);
+    --shadow-card: 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    --shadow-glow: 0 0 0 3px hsl(14 100% 57% / 0.25);
 
     /* Animation Curves */
     --transition-smooth: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-bounce: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
     --transition-spring: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 
-    /* Layout — squared off. No soft corners. */
-    --radius: 0rem;
-    --radius-sm: 0rem;
-    --radius-lg: 0rem;
+    /* Layout — IG uses subtle rounding. */
+    --radius: 0.5rem;
+    --radius-sm: 0.25rem;
+    --radius-lg: 0.75rem;
 
     /* Sidebar */
     --sidebar-background: 0 0% 100%;
     --sidebar-foreground: 0 0% 4%;
     --sidebar-primary: 14 100% 57%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 54 100% 90%;
+    --sidebar-accent: 0 0% 96%;
     --sidebar-accent-foreground: 0 0% 4%;
-    --sidebar-border: 0 0% 4%;
+    --sidebar-border: 0 0% 86%;
     --sidebar-ring: 14 100% 57%;
   }
 
   .dark {
-    /* Dark Mode - Modern & Sophisticated */
-    --background: 240 10% 4%;
-    --background-secondary: 240 10% 6%;
+    /* IG-bones dark theme — true black background, near-white ink. */
+    --background: 0 0% 0%;
+    --background-secondary: 0 0% 7%;
     --foreground: 0 0% 98%;
+    --surface: 0 0% 7%;
+    --hairline: 0 0% 15%;
+    --icon: 0 0% 98%;
+    --icon-muted: 0 0% 65%;
 
-    --card: 240 10% 6%;
+    --card: 0 0% 0%;
     --card-foreground: 0 0% 98%;
-    --card-hover: 240 10% 8%;
+    --card-hover: 0 0% 7%;
 
-    --popover: 240 10% 6%;
+    --popover: 0 0% 7%;
     --popover-foreground: 0 0% 98%;
 
-    --primary: 25 95% 65%;
-    --primary-light: 25 95% 75%;
-    --primary-dark: 25 95% 55%;
+    --primary: 14 100% 60%;
+    --primary-light: 14 100% 70%;
+    --primary-dark: 14 100% 50%;
     --primary-foreground: 0 0% 0%;
 
-    --secondary: 210 10% 12%;
-    --secondary-foreground: 0 0% 90%;
+    --secondary: 0 0% 10%;
+    --secondary-foreground: 0 0% 95%;
 
-    --muted: 210 10% 10%;
-    --muted-foreground: 210 5% 60%;
+    --muted: 0 0% 10%;
+    --muted-foreground: 0 0% 65%;
 
-    --accent: 210 85% 65%;
-    --accent-light: 210 85% 75%;
+    --accent: 14 100% 60%;
+    --accent-light: 14 100% 70%;
     --accent-foreground: 0 0% 0%;
 
-    --success: 142 76% 50%;
-    --success-light: 142 76% 60%;
-    --destructive: 0 85% 65%;
-    --destructive-light: 0 85% 75%;
+    --success: 142 72% 44%;
+    --success-light: 142 72% 54%;
+    --success-foreground: 0 0% 0%;
+    --destructive: 14 100% 60%;
+    --destructive-light: 14 100% 70%;
+    --destructive-foreground: 0 0% 0%;
 
-    --border: 210 10% 15%;
-    --border-light: 210 10% 18%;
-    --input: 210 10% 10%;
-    --ring: 25 95% 65%;
+    --border: 0 0% 15%;
+    --border-light: 0 0% 20%;
+    --input: 0 0% 10%;
+    --ring: 14 100% 60%;
 
-    --gradient-primary: linear-gradient(135deg, hsl(25 95% 65%), hsl(35 95% 70%), hsl(210 85% 65%));
-    --gradient-secondary: linear-gradient(135deg, hsl(210 85% 60%), hsl(220 85% 70%));
-    --gradient-card: linear-gradient(145deg, hsl(210 10% 6%), hsl(210 10% 8%));
+    --juice-orange: 14 100% 60%;
+    --juice-orange-light: 14 100% 70%;
+    --juice-orange-dark: 14 100% 50%;
+    --juice-pink: 14 100% 60%;
+    --juice-purple: 0 0% 98%;
+    --juice-blue: 210 100% 60%;
+    --juice-green: 142 72% 44%;
+    --juice-lavender: 0 0% 10%;
 
-    --shadow-card: 0 8px 32px -8px rgba(0, 0, 0, 0.4);
-    --shadow-glow: 0 0 40px rgba(25, 95%, 65%, 0.2);
+    --gradient-primary: linear-gradient(135deg, hsl(14 100% 60%), hsl(14 100% 60%));
+    --gradient-secondary: linear-gradient(135deg, hsl(0 0% 98%), hsl(0 0% 98%));
+    --gradient-success: linear-gradient(135deg, hsl(142 72% 44%), hsl(142 72% 44%));
+    --gradient-card: linear-gradient(145deg, hsl(0 0% 0%), hsl(0 0% 0%));
+    --gradient-overlay: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.5) 100%);
 
-    --sidebar-background: 240 10% 4%;
+    --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
+    --shadow-md: 0 4px 12px -2px rgba(0, 0, 0, 0.6);
+    --shadow-lg: 0 10px 30px -10px rgba(0, 0, 0, 0.7);
+    --shadow-xl: 0 20px 40px -10px rgba(0, 0, 0, 0.8);
+    --shadow-card: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
+    --shadow-glow: 0 0 0 3px hsl(14 100% 60% / 0.35);
+
+    --sidebar-background: 0 0% 0%;
     --sidebar-foreground: 0 0% 95%;
-    --sidebar-primary: 25 95% 65%;
+    --sidebar-primary: 14 100% 60%;
     --sidebar-primary-foreground: 0 0% 0%;
-    --sidebar-accent: 210 10% 8%;
+    --sidebar-accent: 0 0% 10%;
     --sidebar-accent-foreground: 0 0% 95%;
-    --sidebar-border: 210 10% 15%;
-    --sidebar-ring: 25 95% 65%;
+    --sidebar-border: 0 0% 15%;
+    --sidebar-ring: 14 100% 60%;
   }
 }
 
@@ -177,7 +203,8 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-display tracking-tight uppercase;
+    @apply font-sans tracking-tight;
+    font-weight: 600;
   }
 
   /* Modern Scrollbar */
@@ -199,16 +226,16 @@
 }
 
 @layer components {
-  /* Glass Effect — kept for legacy but flattened to solid */
+  /* Glass / surface — flattened to solid IG chrome */
   .glass {
-    @apply bg-background border-b-2 border-foreground;
+    @apply bg-background border-b border-border;
   }
 
   .glass-dark {
-    @apply bg-foreground text-background border-b-2 border-foreground;
+    @apply bg-foreground text-background border-b border-border;
   }
 
-  /* Gradient Text — flattened to solid ink for brutalist legibility */
+  /* Gradient Text — flattened to solid ink */
   .gradient-text {
     @apply text-foreground;
   }
@@ -222,25 +249,30 @@
     @apply transition-colors duration-150 hover:bg-muted/50 active:bg-muted;
   }
 
-  /* Modern Card — brutalist surface: ink border + offset shadow */
+  /* Modern Card — IG surface: hairline border, no shadow */
   .modern-card {
-    @apply bg-card border-2 border-foreground shadow-brut-sm transition-all duration-150;
+    @apply bg-card border border-border rounded-lg transition-colors duration-150;
   }
 
   /* Floating Action Button */
   .fab {
-    @apply fixed bottom-6 right-6 w-14 h-14 bg-primary border-2 border-foreground shadow-brut-sm flex items-center justify-center text-primary-foreground z-50;
+    @apply fixed bottom-6 right-6 w-14 h-14 bg-primary rounded-full shadow-lg flex items-center justify-center text-primary-foreground z-50;
   }
 
-  /* Brutalist primitives */
-  .brut-card {
-    @apply bg-card border-2 border-foreground shadow-brut-sm;
+  /* IG primitives */
+  .ig-card {
+    @apply bg-card border border-border rounded-lg overflow-hidden;
   }
-  .brut-tag {
-    @apply inline-flex items-center bg-accent text-accent-foreground border-2 border-foreground px-2 py-0.5 text-[10px] font-black uppercase tracking-tighter;
+  .ig-hairline {
+    @apply border-border;
   }
-  .brut-tag-ink {
-    @apply inline-flex items-center bg-foreground text-background px-2 py-1 text-[10px] font-black uppercase tracking-tighter;
+  .ig-tag {
+    @apply text-[13px] font-medium text-primary hover:text-primary-dark transition-colors;
+  }
+  /* IG-style wordmark — keep Bebas only here */
+  .ig-wordmark {
+    font-family: 'Bebas Neue', Impact, sans-serif;
+    @apply text-2xl tracking-tight leading-none;
   }
 
   /* Screenshot Protection */
