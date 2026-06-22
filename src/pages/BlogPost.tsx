@@ -4,7 +4,7 @@ import { Helmet } from 'react-helmet-async';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useBlogPost } from '@/hooks/useBlogPosts';
-import { ArrowLeft, Calendar, Clock, Eye, Share2 } from 'lucide-react';
+import { Calendar, Clock, Eye, Share2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import Breadcrumbs from '@/components/layout/Breadcrumbs';
