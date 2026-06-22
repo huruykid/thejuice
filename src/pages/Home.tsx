@@ -55,86 +55,75 @@ const Home = ({ onCreateStory }: HomeProps) => {
   }, [hasNextPage, isFetchingNextPage, fetchNextPage, stories.length]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background-secondary to-background pb-20 lg:pb-8">
+    <div className="min-h-screen bg-background pb-20 lg:pb-8">
       <PullToRefreshIndicator pullDistance={pullDistance} status={status} />
-      {/* Modern Header with Glass Effect */}
-      <div className="sticky top-0 z-40 glass border-b border-white/10 lg:hidden">
-        <div className="flex items-center justify-between p-4 max-w-md mx-auto">
-          <div className="flex items-center gap-3">
-            <div className="relative">
-              <img 
-                src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" 
-                alt="Juice" 
-                className="h-10 w-10 rounded-2xl shadow-lg animate-float" 
-              />
-              <div className="absolute -inset-0.5 bg-gradient-primary rounded-2xl opacity-30 blur-sm"></div>
+      {/* Brutalist Header */}
+      <header className="sticky top-0 z-40 bg-background border-b-4 border-foreground lg:hidden">
+        <div className="flex items-center justify-between px-4 py-3 max-w-md mx-auto">
+          <div className="flex items-center gap-2">
+            <div className="w-9 h-9 bg-primary border-2 border-foreground flex items-center justify-center">
+              <span className="font-display text-xl text-primary-foreground leading-none pt-0.5">J</span>
             </div>
-            <h1 className="text-lg font-display font-bold gradient-text">
-              The Juice App
+            <h1 className="font-display text-3xl leading-none pt-1 tracking-tight">
+              THE JUICE
             </h1>
           </div>
+          <div className="w-10 h-10 border-2 border-foreground bg-accent flex items-center justify-center">
+            <div className="w-4 h-4 border-2 border-foreground" />
+          </div>
         </div>
-      </div>
+      </header>
 
       {/* Enhanced Content Section */}
-      <div className="max-w-md lg:max-w-5xl xl:max-w-6xl mx-auto px-4 py-8">
+      <div className="max-w-[640px] mx-auto px-4 py-6">
         {storiesLoading && stories.length === 0 ? (
-          <div className="space-y-4 lg:space-y-0 lg:columns-2 xl:columns-3 lg:gap-4">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="lg:break-inside-avoid lg:mb-4">
-                <StoryCardSkeleton />
-              </div>
+          <div className="space-y-8">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <StoryCardSkeleton key={i} />
             ))}
           </div>
         ) : stories.length > 0 ? (
           <>
-            {/* Single column on mobile, masonry-like CSS columns on desktop */}
-            <div className="space-y-4 lg:space-y-0 lg:columns-2 xl:columns-3 lg:gap-4">
+            {/* Single-column chronological feed on every breakpoint */}
+            <div className="space-y-8">
               {stories.map((story) => (
-                <div
+                <StoryCard
                   key={story.id}
-                  className="lg:break-inside-avoid lg:mb-4"
-                >
-                  <StoryCard
-                    story={story}
-                    authorName={story.profiles?.anonymous_username || 'Anonymous'}
-                    user_id={user?.id}
-                  />
-                </div>
+                  story={story}
+                  authorName={story.profiles?.anonymous_username || 'Anonymous'}
+                  user_id={user?.id}
+                />
               ))}
               {isFetchingNextPage &&
-                Array.from({ length: 3 }).map((_, i) => (
-                  <div key={`sk-${i}`} className="lg:break-inside-avoid lg:mb-4">
-                    <StoryCardSkeleton />
-                  </div>
+                Array.from({ length: 2 }).map((_, i) => (
+                  <StoryCardSkeleton key={`sk-${i}`} />
                 ))}
             </div>
 
             {/* Infinite-scroll sentinel + loader */}
             <div ref={sentinelRef} className="h-1" aria-hidden />
             {!hasNextPage && (
-              <div className="py-6 text-center text-xs text-muted-foreground/70">
-                You're all caught up.
+              <div className="py-8 text-center">
+                <span className="brut-tag-ink">You're all caught up</span>
               </div>
             )}
           </>
         ) : (
-          <div className="text-center py-16">
-            <div className="modern-card p-8 max-w-sm mx-auto">
-              <div className="text-6xl mb-6 animate-float">📝</div>
-              <h3 className="text-xl font-display font-semibold text-foreground mb-3">
-                No stories yet
+          <div className="py-16">
+            <div className="brut-card p-8 max-w-sm mx-auto text-center">
+              <div className="font-display text-6xl text-primary mb-3 leading-none">📝</div>
+              <h3 className="font-display text-3xl text-foreground mb-2 leading-none pt-2">
+                NO TEA YET
               </h3>
-              <p className="text-muted-foreground mb-6">
-                Be the first to share your dating story and get the conversation started!
+              <p className="text-foreground/80 mb-6 font-medium">
+                Be the first to spill. Get the gossip started.
               </p>
-              <Button
-                variant="gradient"
+              <button
                 onClick={onCreateStory}
-                className="animate-bounce-in"
+                className="font-display text-xl bg-primary text-primary-foreground border-2 border-foreground shadow-brut-sm px-6 py-3 uppercase active:translate-x-[3px] active:translate-y-[3px] active:shadow-none transition-all"
               >
-                Share Your Story
-              </Button>
+                Spill the Tea
+              </button>
             </div>
           </div>
         )}
