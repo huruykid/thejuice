@@ -9,19 +9,23 @@ const Navigation = ({ onCreateStory }: NavigationProps) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const tabs = [
-    { icon: Home, label: "Home", path: "/app" },
-    { icon: Search, label: "Explore", path: "/explore" },
-    { icon: null, label: "Spill", action: "create" as const },
-    { icon: Bell, label: "Activity", path: "/activity" },
-    { icon: User, label: "Profile", path: "/profile" },
+  type Tab =
+    | { kind: "nav"; icon: typeof Home; label: string; path: string }
+    | { kind: "create"; label: string };
+
+  const tabs: Tab[] = [
+    { kind: "nav", icon: Home, label: "Home", path: "/app" },
+    { kind: "nav", icon: Search, label: "Explore", path: "/explore" },
+    { kind: "create", label: "Spill" },
+    { kind: "nav", icon: Bell, label: "Activity", path: "/activity" },
+    { kind: "nav", icon: User, label: "Profile", path: "/profile" },
   ];
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t-4 border-foreground lg:hidden">
       <div className="grid grid-cols-5 h-16 max-w-md mx-auto">
         {tabs.map((tab, i) => {
-          if (tab.action === "create") {
+          if (tab.kind === "create") {
             return (
               <button
                 key={i}
@@ -38,12 +42,12 @@ const Navigation = ({ onCreateStory }: NavigationProps) => {
               </button>
             );
           }
-          const Icon = tab.icon!;
+          const Icon = tab.icon;
           const active = location.pathname === tab.path;
           return (
             <button
               key={i}
-              onClick={() => navigate(tab.path!)}
+              onClick={() => navigate(tab.path)}
               className={`flex flex-col items-center justify-center gap-0.5 border-l-2 border-foreground first:border-l-0 transition-colors ${
                 active ? "bg-accent" : "bg-background hover:bg-accent/40"
               }`}
