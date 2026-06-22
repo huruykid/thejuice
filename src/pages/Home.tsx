@@ -1,9 +1,8 @@
-import { useState, useEffect } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import Navigation from "@/components/Navigation";
 import StoryCard from "@/components/StoryCard";
 import { Button } from "@/components/ui/button";
-import { useStories } from "@/hooks/useStories";
-import { useTrendingStories } from "@/hooks/useTrendingStories";
+import { useInfiniteStories } from "@/hooks/useStories";
 import { useAuth } from "@/hooks/useAuth";
 import LoadingSkeleton from "@/components/ui/loading-skeleton";
 
@@ -14,18 +13,33 @@ interface HomeProps {
 const Home = ({ onCreateStory }: HomeProps) => {
   const { user } = useAuth();
   
-  const { 
-    data: stories, 
-    isLoading: storiesLoading, 
-    refetch: refetchStories 
-  } = useStories();
-  
-  const { 
-    data: trendingStories, 
-    isLoading: trendingLoading 
-  } = useTrendingStories();
+  const {
+    data,
+    isLoading: storiesLoading,
+    isFetchingNextPage,
+    fetchNextPage,
+    hasNextPage,
+  } = useInfiniteStories();
 
-  const isLoading = storiesLoading || trendingLoading;
+  const stories = useMemo(
+    () => data?.pages.flatMap((p) => p) ?? [],
+    [data]
+  );
+
+  // Infinite scroll: load the next page when sentinel enters the viewport.
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el || !hasNextPage || isFetchingNextPage) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) fetchNextPage();
+      },
+      { rootMargin: "600px 0px" }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage, stories.length]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background-secondary to-background pb-20 lg:pb-8">
@@ -49,41 +63,60 @@ const Home = ({ onCreateStory }: HomeProps) => {
       </div>
 
       {/* Enhanced Content Section */}
-      <div className="max-w-md lg:max-w-2xl mx-auto px-4 py-8">
-        {/* Stories */}
-        <div className="space-y-4">
-          {isLoading ? (
-            <LoadingSkeleton type="general" message="Loading stories..." />
-          ) : stories && stories.length > 0 ? (
-            stories.map((story) => (
-              <StoryCard 
-                key={story.id}
-                story={story} 
-                authorName={story.profiles?.anonymous_username || 'Anonymous'} 
-                user_id={user?.id}
-              />
-            ))
-          ) : (
-            <div className="text-center py-16">
-              <div className="modern-card p-8 max-w-sm mx-auto">
-                <div className="text-6xl mb-6 animate-float">📝</div>
-                <h3 className="text-xl font-display font-semibold text-foreground mb-3">
-                  No stories yet
-                </h3>
-                <p className="text-muted-foreground mb-6">
-                  Be the first to share your dating story and get the conversation started!
-                </p>
-                <Button 
-                  variant="gradient" 
-                  onClick={onCreateStory}
-                  className="animate-bounce-in"
+      <div className="max-w-md lg:max-w-5xl xl:max-w-6xl mx-auto px-4 py-8">
+        {storiesLoading && stories.length === 0 ? (
+          <LoadingSkeleton type="general" message="Loading stories..." />
+        ) : stories.length > 0 ? (
+          <>
+            {/* Single column on mobile, masonry-like CSS columns on desktop */}
+            <div className="space-y-4 lg:space-y-0 lg:columns-2 xl:columns-3 lg:gap-4">
+              {stories.map((story) => (
+                <div
+                  key={story.id}
+                  className="lg:break-inside-avoid lg:mb-4"
                 >
-                  Share Your Story
-                </Button>
-              </div>
+                  <StoryCard
+                    story={story}
+                    authorName={story.profiles?.anonymous_username || 'Anonymous'}
+                    user_id={user?.id}
+                  />
+                </div>
+              ))}
             </div>
-          )}
-        </div>
+
+            {/* Infinite-scroll sentinel + loader */}
+            <div ref={sentinelRef} className="h-1" aria-hidden />
+            {isFetchingNextPage && (
+              <div className="py-6 text-center text-sm text-muted-foreground">
+                Loading more stories…
+              </div>
+            )}
+            {!hasNextPage && (
+              <div className="py-6 text-center text-xs text-muted-foreground/70">
+                You're all caught up.
+              </div>
+            )}
+          </>
+        ) : (
+          <div className="text-center py-16">
+            <div className="modern-card p-8 max-w-sm mx-auto">
+              <div className="text-6xl mb-6 animate-float">📝</div>
+              <h3 className="text-xl font-display font-semibold text-foreground mb-3">
+                No stories yet
+              </h3>
+              <p className="text-muted-foreground mb-6">
+                Be the first to share your dating story and get the conversation started!
+              </p>
+              <Button
+                variant="gradient"
+                onClick={onCreateStory}
+                className="animate-bounce-in"
+              >
+                Share Your Story
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
 
       <Navigation onCreateStory={onCreateStory} />
