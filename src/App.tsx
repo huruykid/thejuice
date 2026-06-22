@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useState } from "react";
 import { SecurityProvider } from "@/components/SecurityProvider";
+import AppShell from "@/components/layout/AppShell";
 import Index from "./pages/Index";
 import Landing from "./pages/Landing";
 import HowItWorks from "./pages/HowItWorks";
@@ -58,12 +59,12 @@ const ExploreWrapper = () => {
   const [showCreateStory, setShowCreateStory] = useState(false);
   
   return (
-    <>
+    <AppShell onCreateStory={() => setShowCreateStory(true)}>
       <Explore onCreateStory={() => setShowCreateStory(true)} />
       {showCreateStory && (
         <CreateStory onClose={() => setShowCreateStory(false)} />
       )}
-    </>
+    </AppShell>
   );
 };
 
@@ -94,17 +95,23 @@ const App = () => {
           } />
           <Route path="/profile" element={
             <ProtectedRoute>
-              <Profile />
+              <AppShell>
+                <Profile />
+              </AppShell>
             </ProtectedRoute>
           } />
           <Route path="/activity" element={
             <ProtectedRoute>
-              <Activity />
+              <AppShell>
+                <Activity />
+              </AppShell>
             </ProtectedRoute>
           } />
           <Route path="/codename/:codenameId" element={
             <ProtectedRoute>
-              <CodenameProfile />
+              <AppShell>
+                <CodenameProfile />
+              </AppShell>
             </ProtectedRoute>
           } />
           <Route path="/admin/verifications" element={
@@ -114,12 +121,16 @@ const App = () => {
           } />
           <Route path="/privacy-settings" element={
             <ProtectedRoute>
-              <PrivacySettings />
+              <AppShell showRightRail={false}>
+                <PrivacySettings />
+              </AppShell>
             </ProtectedRoute>
           } />
           <Route path="/author/:profileId" element={
             <ProtectedRoute>
-              <AuthorStories />
+              <AppShell>
+                <AuthorStories />
+              </AppShell>
             </ProtectedRoute>
           } />
           {/* SEO Landing Pages */}
