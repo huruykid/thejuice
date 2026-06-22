@@ -38,7 +38,7 @@ Allow: /*.svg
 Allow: /*.webp
 
 # Sitemap location
-Sitemap: https://sipjuice.app/sitemap.xml
+Sitemap: https://thejuice.lovable.app/sitemap.xml
 
 # Crawl delay for polite crawling
 Crawl-delay: 1
