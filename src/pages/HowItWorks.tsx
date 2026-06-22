@@ -12,7 +12,7 @@ const HowItWorks = () => {
       number: 1,
       title: "Create Your Anonymous Profile",
       description: "Sign up with just an email and create your anonymous username. No real names required.",
-      icon: <Users className="h-8 w-8 text-juice-orange" />,
+      icon: <Users className="h-6 w-6 md:h-8 md:w-8 text-juice-orange" />,
       details: [
         "Choose a unique anonymous username",
         "Add basic info like age and city",
@@ -24,7 +24,7 @@ const HowItWorks = () => {
       number: 2,
       title: "Verify Your Account",
       description: "Quick selfie verification ensures our community stays authentic and trustworthy.",
-      icon: <Shield className="h-8 w-8 text-juice-orange" />,
+      icon: <Shield className="h-6 w-6 md:h-8 md:w-8 text-juice-orange" />,
       details: [
         "Take a simple verification selfie",
         "Our team reviews within 24 hours",
@@ -36,7 +36,7 @@ const HowItWorks = () => {
       number: 3,
       title: "Share Your Dating Stories",
       description: "Rate and review your dating experiences with complete anonymity and honesty.",
-      icon: <MessageSquare className="h-8 w-8 text-juice-orange" />,
+      icon: <MessageSquare className="h-6 w-6 md:h-8 md:w-8 text-juice-orange" />,
       details: [
         "Rate dates on 4 key metrics",
         "Share detailed experiences",
@@ -48,7 +48,7 @@ const HowItWorks = () => {
       number: 4,
       title: "Read Real Insights",
       description: "Get genuine insights from verified men in your area about their dating experiences.",
-      icon: <Eye className="h-8 w-8 text-juice-orange" />,
+      icon: <Eye className="h-6 w-6 md:h-8 md:w-8 text-juice-orange" />,
       details: [
         "Browse stories by location",
         "Filter by ratings and experiences",
@@ -108,12 +108,12 @@ const HowItWorks = () => {
 
       <main>
       {/* Hero Section */}
-      <section className="py-16 px-4">
+      <section className="py-10 md:py-16 px-4">
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
+          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
             How The Tea App for Men Works
           </h1>
-          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             From signup to sharing stories, here's your complete guide to joining the most honest 
             men's dating community online.
           </p>
@@ -121,28 +121,28 @@ const HowItWorks = () => {
       </section>
 
       {/* Steps Section */}
-      <section className="py-16 px-4">
+      <section className="py-8 md:py-16 px-4">
         <div className="max-w-6xl mx-auto">
-          <div className="space-y-16">
+          <div className="space-y-8 md:space-y-16">
             {steps.map((step, index) => (
-              <div key={step.number} className={`flex flex-col lg:flex-row items-center gap-12 ${index % 2 === 1 ? 'lg:flex-row-reverse' : ''}`}>
+              <div key={step.number} className={`flex flex-col lg:flex-row items-center gap-6 lg:gap-12 ${index % 2 === 1 ? 'lg:flex-row-reverse' : ''}`}>
                 <div className="flex-1">
                   <Card className="border-0 shadow-card bg-white/80 backdrop-blur-sm">
-                    <CardHeader className="text-center lg:text-left">
-                      <div className="flex items-center justify-center lg:justify-start gap-4 mb-4">
-                        <div className="w-12 h-12 bg-juice-orange rounded-full flex items-center justify-center text-white font-bold text-lg">
+                    <CardHeader className="text-center lg:text-left pb-3 md:pb-6">
+                      <div className="flex items-center justify-center lg:justify-start gap-3 md:gap-4 mb-2 md:mb-4">
+                        <div className="w-10 h-10 md:w-12 md:h-12 bg-juice-orange rounded-full flex items-center justify-center text-white font-bold text-base md:text-lg">
                           {step.number}
                         </div>
                         {step.icon}
                       </div>
-                      <CardTitle className="text-2xl mb-2">{step.title}</CardTitle>
-                      <CardDescription className="text-lg">{step.description}</CardDescription>
+                      <CardTitle className="text-xl md:text-2xl mb-1 md:mb-2">{step.title}</CardTitle>
+                      <CardDescription className="text-base md:text-lg">{step.description}</CardDescription>
                     </CardHeader>
-                    <CardContent>
-                      <ul className="space-y-3">
+                    <CardContent className="pt-0 md:pt-6">
+                      <ul className="space-y-2 md:space-y-3">
                         {step.details.map((detail, i) => (
                           <li key={i} className="flex items-center gap-3">
-                            <CheckCircle className="h-5 w-5 text-juice-orange flex-shrink-0" />
+                            <CheckCircle className="h-4 w-4 md:h-5 md:w-5 text-juice-orange flex-shrink-0" />
                             <span className="text-muted-foreground">{detail}</span>
                           </li>
                         ))}
@@ -168,9 +168,9 @@ const HowItWorks = () => {
       </section>
 
       {/* Features Grid */}
-      <section className="py-16 px-4 bg-white/50">
+      <section className="py-10 md:py-16 px-4 bg-white/50">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
+          <div className="text-center mb-8 md:mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
               Why Men Choose Our Platform
             </h2>
@@ -200,9 +200,9 @@ const HowItWorks = () => {
       </section>
 
       {/* FAQ Section */}
-      <section className="py-16 px-4">
+      <section className="py-10 md:py-16 px-4">
         <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-12">
+          <div className="text-center mb-8 md:mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
               Frequently Asked Questions
             </h2>
@@ -257,7 +257,7 @@ const HowItWorks = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 px-4">
+      <section className="py-10 md:py-16 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <Card className="border-0 shadow-card bg-gradient-primary text-white">
             <CardContent className="p-12">
