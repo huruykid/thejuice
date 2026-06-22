@@ -92,10 +92,10 @@ const Explore = ({ onCreateStory }: ExploreProps) => {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <div className="min-h-screen bg-background pb-20 lg:pb-8">
       {/* Header */}
       <div className="sticky top-0 bg-white/80 backdrop-blur-lg border-b border-juice-blue/10 z-40">
-        <div className="p-4 max-w-md mx-auto">
+        <div className="p-4 max-w-md lg:max-w-2xl mx-auto">
           <h1 className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-4">
             Explore Stories
           </h1>
@@ -136,7 +136,7 @@ const Explore = ({ onCreateStory }: ExploreProps) => {
       </div>
 
       {/* Content */}
-      <div className="max-w-md mx-auto px-4 py-6">
+      <div className="max-w-md lg:max-w-2xl mx-auto px-4 py-6">
         <Tabs defaultValue="stories" className="mb-6">
           <TabsList className="grid w-full grid-cols-2 bg-juice-lavender/50 rounded-2xl p-1">
             <TabsTrigger
