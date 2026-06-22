@@ -40,7 +40,7 @@ const Profile = () => {
   if (statsLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-juice-orange/5 to-juice-pink/5 pb-20">
-        <div className="container mx-auto px-4 py-6 max-w-md">
+        <div className="container mx-auto px-4 py-6 max-w-md lg:max-w-2xl">
           <LoadingSkeleton type="profile" message="Loading your profile..." />
         </div>
         <Navigation />
@@ -50,7 +50,7 @@ const Profile = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-juice-orange/5 to-juice-pink/5 pb-20">
-      <div className="container mx-auto px-4 py-6 max-w-md">
+      <div className="container mx-auto px-4 py-6 max-w-md lg:max-w-2xl">
         {/* Header */}
         <div className="text-center mb-6">
           <div className="w-20 h-20 bg-gradient-to-br from-juice-orange to-juice-pink rounded-full mx-auto mb-4 flex items-center justify-center">
