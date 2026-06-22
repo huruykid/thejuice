@@ -5,43 +5,57 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-medium ring-offset-background transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 active:scale-[0.95] hover:scale-[1.02] cursor-pointer touch-manipulation",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 active:opacity-80 cursor-pointer touch-manipulation",
   {
     variants: {
       variant: {
-        default: "bg-gradient-primary text-white hover:shadow-glow hover:scale-[1.02] transition-all duration-200 font-semibold active:scale-[0.95]",
-        destructive: "bg-gradient-to-r from-destructive to-destructive-light text-destructive-foreground hover:shadow-lg hover:scale-[1.02] transition-all duration-200 active:scale-[0.95]",
-        outline: "border border-border bg-background hover:bg-card-hover hover:border-primary/50 transition-all duration-200 active:scale-[0.95]",
-        secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80 hover:scale-[1.02] transition-all duration-200 active:scale-[0.95]",
-        ghost: "hover:bg-muted/60 hover:text-foreground transition-all duration-200 active:scale-[0.95]",
-        link: "text-primary underline-offset-4 hover:underline transition-all duration-200 active:scale-[0.95]",
-        
-        // Modern Instagram/Tinder-inspired variants
-        gradient: "bg-gradient-primary text-white hover:shadow-glow hover:scale-[1.02] transition-all duration-200 font-semibold rounded-2xl active:scale-[0.95]",
-        "gradient-secondary": "bg-gradient-secondary text-white hover:shadow-lg hover:scale-[1.02] transition-all duration-200 font-medium rounded-2xl active:scale-[0.95]",
-        success: "bg-gradient-success text-success-foreground hover:shadow-lg hover:scale-[1.02] transition-all duration-200 font-medium active:scale-[0.95]",
-        
-        // Juice App specific variants
-        juice: "bg-gradient-primary text-white hover:shadow-glow hover:scale-[1.02] transition-all duration-200 rounded-2xl font-semibold active:scale-[0.95]",
-        "juice-soft": "bg-juice-lavender text-juice-purple hover:bg-juice-pink/20 hover:text-juice-purple transition-all duration-200 rounded-xl active:scale-[0.95]",
-        "juice-outline": "border-2 border-primary text-primary bg-background hover:bg-primary hover:text-white transition-all duration-200 rounded-xl font-medium active:scale-[0.95]",
-        
-        // Interactive voting buttons
-        "flag-green": "bg-success/10 border border-success/20 text-success hover:bg-success hover:text-white transition-all duration-200 rounded-full active:scale-[0.95]",
-        "flag-red": "bg-destructive/10 border border-destructive/20 text-destructive hover:bg-destructive hover:text-white transition-all duration-200 rounded-full active:scale-[0.95]",
-        
-        // Glass effect buttons
-        glass: "bg-white/10 backdrop-blur-lg border border-white/20 text-foreground hover:bg-white/20 transition-all duration-200 active:scale-[0.95]",
-        "glass-dark": "bg-black/10 backdrop-blur-lg border border-black/20 text-foreground hover:bg-black/20 transition-all duration-200 active:scale-[0.95]",
+        // PRIMARY — solid orange. The single hero CTA. Subtle glow allowed here only.
+        default:
+          "bg-primary text-primary-foreground font-semibold shadow-[0_0_0_1px_hsl(var(--primary)/0.4),0_8px_24px_-8px_hsl(var(--primary)/0.45)] hover:bg-primary-light disabled:bg-muted disabled:text-muted-foreground disabled:shadow-none",
+        // SECONDARY — ghost/outline on dark.
+        secondary:
+          "bg-transparent text-foreground border border-border hover:bg-card-hover hover:border-border-light",
+        // TERTIARY — text-only.
+        ghost:
+          "bg-transparent text-foreground hover:bg-card-hover",
+        // Outline kept as alias of secondary for shadcn compatibility.
+        outline:
+          "bg-transparent text-foreground border border-border hover:bg-card-hover hover:border-border-light",
+        // Destructive — solid, no gradient.
+        destructive:
+          "bg-destructive text-destructive-foreground hover:bg-destructive-light",
+        // Text link.
+        link:
+          "text-primary underline-offset-4 hover:underline px-0 h-auto",
+
+        // ── Compatibility aliases ────────────────────────────────────────
+        // All gradient/juice variants collapse to the disciplined primary
+        // so legacy call-sites stop dragging back the multi-gradient look.
+        gradient: "bg-primary text-primary-foreground font-semibold hover:bg-primary-light",
+        "gradient-secondary": "bg-transparent text-foreground border border-border hover:bg-card-hover",
+        success: "bg-success text-success-foreground hover:bg-success-light",
+        juice: "bg-primary text-primary-foreground font-semibold hover:bg-primary-light",
+        "juice-soft": "bg-primary/10 text-primary border border-primary/20 hover:bg-primary/15",
+        "juice-outline": "bg-transparent text-primary border border-primary hover:bg-primary hover:text-primary-foreground",
+
+        // Voting affordances — single-color, rounded pill.
+        "flag-green":
+          "bg-success/10 border border-success/30 text-success hover:bg-success/15 rounded-full",
+        "flag-red":
+          "bg-destructive/10 border border-destructive/30 text-destructive hover:bg-destructive/15 rounded-full",
+
+        // Glass — kept for overlays/modals.
+        glass: "bg-card/60 backdrop-blur-lg border border-border text-foreground hover:bg-card/80",
+        "glass-dark": "bg-background/70 backdrop-blur-lg border border-border text-foreground hover:bg-background/85",
       },
       size: {
         default: "h-11 px-6 py-2.5",
         sm: "h-9 px-4 text-sm",
-        lg: "h-13 px-8 text-base",
-        xl: "h-16 px-12 text-lg",
+        lg: "h-12 px-8 text-base",
+        xl: "h-14 px-10 text-base",
         icon: "h-11 w-11",
         "icon-sm": "h-8 w-8",
-        "icon-lg": "h-14 w-14",
+        "icon-lg": "h-12 w-12",
       },
     },
     defaultVariants: {
