@@ -55,17 +55,6 @@ const MensDatingAdvice = () => {
         <meta property="og:type" content="website" />
       </Helmet>
       {/* Header */}
-      <header className="sticky top-0 bg-white/80 backdrop-blur-lg border-b border-juice-orange/10 z-40">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <img src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" alt="Tea App for Men" className="h-8 w-8" />
-            <span className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">Tea App for Men</span>
-          </div>
-          <Button onClick={() => navigate("/app")} variant="juice">
-            Get Advice Now
-          </Button>
-        </div>
-      </header>
 
       <main>
       {/* Hero Section */}
