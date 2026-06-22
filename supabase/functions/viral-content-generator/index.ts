@@ -1,7 +1,7 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-import { corsHeaders, createSecureResponse, createSecureErrorResponse } from '../_shared/security.ts';
+import { corsHeaders, createSecureResponse, createSecureErrorResponse, authenticateRequest, requireAdmin } from '../_shared/security.ts';
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -9,6 +9,11 @@ serve(async (req) => {
   }
 
   try {
+    const auth = await authenticateRequest(req);
+    if (auth instanceof Response) return auth;
+    const adminCheck = await requireAdmin(auth.userId);
+    if (adminCheck) return adminCheck;
+
     const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
     if (!openAIApiKey) {
       throw new Error('OpenAI API key not configured');
@@ -206,6 +211,6 @@ Topic: ${prompt}`
 
   } catch (error) {
     console.error('Error in viral-content-generator:', error);
-    return createSecureErrorResponse(error.message, 500);
+    return createSecureErrorResponse('Internal server error', 500);
   }
 });
