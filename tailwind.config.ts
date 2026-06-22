@@ -102,8 +102,8 @@ export default {
 				'glow': 'var(--shadow-glow)',
 			},
 			fontFamily: {
-				sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'sans-serif'],
-				display: ['"Bebas Neue"', 'Impact', 'sans-serif'],
+				sans: ['Barlow', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'sans-serif'],
+				display: ['"Barlow Condensed"', 'Impact', 'Barlow', 'sans-serif'],
 			},
 			transitionTimingFunction: {
 				'smooth': 'var(--transition-smooth)',
