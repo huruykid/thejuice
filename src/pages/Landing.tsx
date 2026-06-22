@@ -56,10 +56,10 @@ const Landing = () => {
   }];
   return <div className="min-h-screen bg-gradient-soft">
       {/* Header */}
-      <header className="sticky top-0 bg-card/80 backdrop-blur-lg border-b border-border z-40">
+      <header className="sticky top-0 bg-white/80 backdrop-blur-lg border-b border-juice-orange/10 z-40">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <img src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" alt="The Juice App" className="h-8 w-8" />
+            <img src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" alt="Tea App" className="h-8 w-8" />
             <h1 className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">The Juice App</h1>
           </div>
           <div className="flex items-center gap-4">
@@ -77,7 +77,7 @@ const Landing = () => {
       <section className="py-20 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6">
-            The Juice Every Guy Has Been{" "}
+            The Tea App Every Guy Has Been{" "}
             <span className="bg-gradient-primary bg-clip-text text-transparent">
               Waiting For
             </span>
@@ -91,8 +91,8 @@ const Landing = () => {
               Sign up now
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
-            <Button size="lg" variant="secondary" onClick={() => window.open('https://instagram.com/sipjuiceapp', '_blank')} className="text-lg px-8">
-              Follow on Instagram
+            <Button size="lg" onClick={() => window.open('https://instagram.com/sipjuiceapp', '_blank')} className="text-lg px-8">
+              Join the Brotherhood
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
             <Button size="lg" variant="outline" onClick={handleLearnMore} className="text-lg px-8">
@@ -106,11 +106,11 @@ const Landing = () => {
       </section>
 
       {/* Features Section */}
-      <section className="py-20 px-4 bg-card/50">
+      <section className="py-20 px-4 bg-white/50">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Why The Juice App?
+              Why The Tea App for Men?
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               Built specifically for men who want honest, authentic dating insights
@@ -118,7 +118,7 @@ const Landing = () => {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {features.map((feature, index) => <Card key={index} className="text-center border-0 shadow-card bg-card/80 backdrop-blur-sm">
+            {features.map((feature, index) => <Card key={index} className="text-center border-0 shadow-card bg-white/80 backdrop-blur-sm">
                 <CardHeader>
                   <div className="mx-auto mb-4 p-3 bg-juice-orange/10 rounded-full w-fit">
                     {feature.icon}
@@ -149,7 +149,7 @@ const Landing = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="text-center">
-              <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center text-primary-foreground font-bold text-xl mx-auto mb-4">
+              <div className="w-16 h-16 bg-juice-orange rounded-full flex items-center justify-center text-white font-bold text-xl mx-auto mb-4">
                 1
               </div>
               <h3 className="text-xl font-semibold mb-2">Verify Your Account</h3>
@@ -157,7 +157,7 @@ const Landing = () => {
             </div>
             
             <div className="text-center">
-              <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center text-primary-foreground font-bold text-xl mx-auto mb-4">
+              <div className="w-16 h-16 bg-juice-orange rounded-full flex items-center justify-center text-white font-bold text-xl mx-auto mb-4">
                 2
               </div>
               <h3 className="text-xl font-semibold mb-2">Share Your Story</h3>
@@ -165,7 +165,7 @@ const Landing = () => {
             </div>
             
             <div className="text-center">
-              <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center text-primary-foreground font-bold text-xl mx-auto mb-4">
+              <div className="w-16 h-16 bg-juice-orange rounded-full flex items-center justify-center text-white font-bold text-xl mx-auto mb-4">
                 3
               </div>
               <h3 className="text-xl font-semibold mb-2">Read Real Tea</h3>
@@ -176,7 +176,7 @@ const Landing = () => {
       </section>
 
       {/* Testimonials */}
-      <section className="py-20 px-4 bg-card/50">
+      <section className="py-20 px-4 bg-white/50">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
@@ -188,7 +188,7 @@ const Landing = () => {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {testimonials.map((testimonial, index) => <Card key={index} className="border-0 shadow-card bg-card/80 backdrop-blur-sm">
+            {testimonials.map((testimonial, index) => <Card key={index} className="border-0 shadow-card bg-white/80 backdrop-blur-sm">
                 <CardContent className="p-6">
                   <Quote className="h-8 w-8 text-juice-orange mb-4" />
                   <p className="text-foreground mb-4 italic">"{testimonial.quote}"</p>
@@ -207,7 +207,7 @@ const Landing = () => {
       {/* CTA Section */}
       <section className="py-20 px-4">
         <div className="max-w-4xl mx-auto text-center">
-          <Card className="border-0 shadow-card bg-gradient-primary text-primary-foreground">
+          <Card className="border-0 shadow-card bg-gradient-primary text-white">
             <CardContent className="p-12">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">
                 Ready to Join the Community?
@@ -228,13 +228,13 @@ const Landing = () => {
       </section>
 
       {/* Footer */}
-      <footer className="py-12 px-4 bg-card/80 border-t border-border">
+      <footer className="py-12 px-4 bg-white/80 border-t border-juice-orange/10">
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div className="space-y-4">
               <div className="flex items-center gap-2">
-                <img src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" alt="The Juice App" className="h-6 w-6" />
-                <span className="font-bold text-foreground">The Juice App</span>
+                <img src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" alt="Tea App" className="h-6 w-6" />
+                <span className="font-bold text-foreground">The Tea App for Men</span>
               </div>
               <p className="text-sm text-muted-foreground">
                 The dating community designed specifically for men to share honest experiences.
@@ -271,8 +271,8 @@ const Landing = () => {
             </div>
           </div>
           
-          <div className="border-t border-border mt-8 pt-8 text-center text-sm text-muted-foreground">
-            <p>&copy; 2024 The Juice App. All rights reserved.</p>
+          <div className="border-t border-juice-orange/10 mt-8 pt-8 text-center text-sm text-muted-foreground">
+            <p>&copy; 2024 The Tea App for Men. All rights reserved.</p>
           </div>
         </div>
       </footer>

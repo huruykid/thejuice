@@ -1,111 +1,161 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* The Juice App — "After Hours" dark design system
- * Single-accent (Juice Orange) on near-black. Restraint over decoration.
- * All values are HSL channels so Tailwind can compose with /<alpha>. */
+/* Modern Instagram/Tinder-Inspired Design System */
 
 @layer base {
   :root {
-    /* Surfaces (dark canvas) */
-    --background: 240 7% 6%;          /* #0E0E10 */
-    --background-secondary: 240 6% 8%;
-    --foreground: 60 5% 96%;          /* #F5F5F4 */
+    /* Core Brand Colors - Vibrant & Modern */
+    --background: 0 0% 99%;
+    --background-secondary: 320 20% 98%;
+    --foreground: 240 10% 8%;
 
-    --card: 240 6% 10%;               /* #17171A */
-    --card-foreground: 60 5% 96%;
-    --card-hover: 240 6% 13%;
+    /* Card & Surface Colors */
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 8%;
+    --card-hover: 320 15% 98%;
 
-    --popover: 240 6% 10%;
-    --popover-foreground: 60 5% 96%;
+    /* Popover & Modal Colors */
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 8%;
 
-    /* Single accent — Juice Orange */
-    --primary: 16 100% 60%;           /* #FF6B35 */
-    --primary-light: 22 100% 65%;
-    --primary-dark: 22 89% 47%;       /* #E2540E pressed */
-    --primary-foreground: 240 10% 5%;
+    /* Primary Brand - Juice Orange */
+    --primary: 25 95% 60%;
+    --primary-light: 25 95% 70%;
+    --primary-dark: 25 95% 50%;
+    --primary-foreground: 0 0% 100%;
 
-    /* Secondary = elevated surface, NOT a competing color */
-    --secondary: 240 6% 13%;          /* #1F1F23 elevated surface */
-    --secondary-foreground: 60 5% 96%;
+    /* Secondary Colors - Masculine Blue */
+    --secondary: 210 100% 96%;
+    --secondary-foreground: 210 20% 20%;
 
-    /* Muted */
-    --muted: 240 6% 12%;
-    --muted-foreground: 240 5% 65%;   /* #A1A1AA */
+    /* Muted Tones */
+    --muted: 210 10% 96%;
+    --muted-foreground: 210 8% 46%;
 
-    /* Accent collapses to the single primary (kill blue competition) */
-    --accent: 16 100% 60%;
-    --accent-light: 22 100% 65%;
-    --accent-foreground: 240 10% 5%;
+    /* Accent Colors - Bold Blue */
+    --accent: 210 85% 55%;
+    --accent-light: 210 85% 70%;
+    --accent-foreground: 0 0% 100%;
 
-    /* Semantic */
-    --success: 160 64% 52%;           /* #34D399 */
-    --success-light: 160 64% 60%;
-    --success-foreground: 240 10% 5%;
-    --warning: 43 96% 56%;            /* #FBBF24 */
-    --destructive: 0 91% 71%;         /* #F87171 */
-    --destructive-light: 0 91% 78%;
-    --destructive-foreground: 240 10% 5%;
+    /* Success & Error States */
+    --success: 142 76% 36%;
+    --success-light: 142 76% 50%;
+    --success-foreground: 0 0% 100%;
+    
+    --destructive: 0 85% 60%;
+    --destructive-light: 0 85% 70%;
+    --destructive-foreground: 0 0% 100%;
 
-    /* Hairlines + form fields */
-    --border: 240 6% 18%;             /* subtle on dark */
-    --border-light: 240 6% 22%;
-    --input: 240 6% 13%;
-    --ring: 16 100% 60%;
+    /* Interactive Elements */
+    --border: 240 15% 90%;
+    --border-light: 240 10% 94%;
+    --input: 240 10% 96%;
+    --ring: 25 95% 60%;
 
-    /* Legacy juice-* aliases collapse to the single accent so old refs
-     * stay on-brand instead of bringing back the multi-color palette. */
-    --juice-orange: 16 100% 60%;
-    --juice-orange-light: 22 100% 65%;
-    --juice-orange-dark: 22 89% 47%;
-    --juice-pink: 16 100% 60%;
-    --juice-purple: 16 100% 60%;
-    --juice-blue: 16 100% 60%;
-    --juice-green: 160 64% 52%;
-    --juice-lavender: 240 6% 13%;
+    /* Juice App Specific Colors */
+    --juice-orange: 25 95% 60%;
+    --juice-orange-light: 25 95% 70%;
+    --juice-orange-dark: 25 95% 50%;
+    --juice-pink: 320 85% 70%;
+    --juice-purple: 280 85% 70%;
+    --juice-blue: 200 85% 60%;
+    --juice-green: 142 76% 50%;
+    --juice-lavender: 260 40% 90%;
 
-    /* One reserved gradient — used ONLY on the hero CTA. */
-    --gradient-primary: linear-gradient(135deg, hsl(16 100% 60%), hsl(22 89% 47%));
-    --gradient-secondary: linear-gradient(135deg, hsl(240 6% 13%), hsl(240 6% 10%));
-    --gradient-success: linear-gradient(135deg, hsl(160 64% 52%), hsl(160 64% 42%));
-    --gradient-card: linear-gradient(180deg, hsl(240 6% 11%), hsl(240 6% 9%));
-    --gradient-overlay: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.6) 100%);
+    /* Modern Gradients - Masculine Orange/Blue Style */
+    --gradient-primary: linear-gradient(135deg, hsl(25 95% 60%), hsl(35 95% 65%), hsl(210 85% 60%));
+    --gradient-secondary: linear-gradient(135deg, hsl(210 85% 55%), hsl(220 85% 65%));
+    --gradient-success: linear-gradient(135deg, hsl(142 76% 50%), hsl(120 85% 60%));
+    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%), hsl(25 15% 98%));
+    --gradient-overlay: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.3) 100%);
 
-    /* Two shadows only. Subtle border + lift on dark. */
-    --shadow-xs: 0 1px 1px 0 rgba(0,0,0,0.4);
-    --shadow-sm: 0 1px 2px 0 rgba(0,0,0,0.5);
-    --shadow-md: 0 2px 6px -1px rgba(0,0,0,0.5);
-    --shadow-lg: 0 8px 24px -8px rgba(0,0,0,0.6);
-    --shadow-xl: 0 16px 40px -12px rgba(0,0,0,0.7);
-    --shadow-card: 0 1px 2px rgba(0,0,0,0.4), 0 8px 24px -12px rgba(0,0,0,0.6);
-    --shadow-modal: 0 24px 60px -12px rgba(0,0,0,0.75);
-    --shadow-glow: 0 0 32px rgba(255,107,53,0.25);
+    /* Modern Shadows - Soft & Layered */
+    --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    --shadow-card: 0 8px 32px -8px rgba(25, 95%, 60%, 0.15);
+    --shadow-glow: 0 0 40px rgba(25, 95%, 60%, 0.3);
 
-    /* Motion */
-    --transition-smooth: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-bounce: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-spring: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Modern Animation Curves - Optimized for responsiveness */
+    --transition-smooth: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    --transition-spring: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 
-    /* Radius scale: sm 8, md 12 (default card), lg 16, pill ∞ */
-    --radius: 0.75rem;       /* 12px */
-    --radius-sm: 0.5rem;     /* 8px  */
-    --radius-lg: 1rem;       /* 16px */
+    /* Spacing & Layout */
+    --radius: 1.2rem;
+    --radius-sm: 0.8rem;
+    --radius-lg: 1.6rem;
 
-    /* Sidebar — same dark surface system */
-    --sidebar-background: 240 7% 6%;
-    --sidebar-foreground: 60 5% 90%;
-    --sidebar-primary: 16 100% 60%;
-    --sidebar-primary-foreground: 240 10% 5%;
-    --sidebar-accent: 240 6% 12%;
-    --sidebar-accent-foreground: 60 5% 96%;
-    --sidebar-border: 240 6% 18%;
-    --sidebar-ring: 16 100% 60%;
+    /* Sidebar */
+    --sidebar-background: 0 0% 99%;
+    --sidebar-foreground: 240 10% 15%;
+    --sidebar-primary: 25 95% 60%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 25 15% 96%;
+    --sidebar-accent-foreground: 210 10% 15%;
+    --sidebar-border: 210 15% 90%;
+    --sidebar-ring: 25 95% 60%;
   }
 
-  /* The app is dark by default. `.dark` mirrors :root so any
-   * legacy `dark:` utility variants still resolve correctly. */
-  .dark { color-scheme: dark; }
+  .dark {
+    /* Dark Mode - Modern & Sophisticated */
+    --background: 240 10% 4%;
+    --background-secondary: 240 10% 6%;
+    --foreground: 0 0% 98%;
+
+    --card: 240 10% 6%;
+    --card-foreground: 0 0% 98%;
+    --card-hover: 240 10% 8%;
+
+    --popover: 240 10% 6%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 25 95% 65%;
+    --primary-light: 25 95% 75%;
+    --primary-dark: 25 95% 55%;
+    --primary-foreground: 0 0% 0%;
+
+    --secondary: 210 10% 12%;
+    --secondary-foreground: 0 0% 90%;
+
+    --muted: 210 10% 10%;
+    --muted-foreground: 210 5% 60%;
+
+    --accent: 210 85% 65%;
+    --accent-light: 210 85% 75%;
+    --accent-foreground: 0 0% 0%;
+
+    --success: 142 76% 50%;
+    --success-light: 142 76% 60%;
+    --destructive: 0 85% 65%;
+    --destructive-light: 0 85% 75%;
+
+    --border: 210 10% 15%;
+    --border-light: 210 10% 18%;
+    --input: 210 10% 10%;
+    --ring: 25 95% 65%;
+
+    --gradient-primary: linear-gradient(135deg, hsl(25 95% 65%), hsl(35 95% 70%), hsl(210 85% 65%));
+    --gradient-secondary: linear-gradient(135deg, hsl(210 85% 60%), hsl(220 85% 70%));
+    --gradient-card: linear-gradient(145deg, hsl(210 10% 6%), hsl(210 10% 8%));
+
+    --shadow-card: 0 8px 32px -8px rgba(0, 0, 0, 0.4);
+    --shadow-glow: 0 0 40px rgba(25, 95%, 65%, 0.2);
+
+    --sidebar-background: 240 10% 4%;
+    --sidebar-foreground: 0 0% 95%;
+    --sidebar-primary: 25 95% 65%;
+    --sidebar-primary-foreground: 0 0% 0%;
+    --sidebar-accent: 210 10% 8%;
+    --sidebar-accent-foreground: 0 0% 95%;
+    --sidebar-border: 210 10% 15%;
+    --sidebar-ring: 25 95% 65%;
+  }
 }
 
 @layer base {
@@ -114,11 +164,8 @@
   }
 
   body {
-    @apply bg-background text-foreground antialiased;
-    font-family: 'Geist Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
-    font-feature-settings: 'ss01', 'cv11';
-    line-height: 1.55;
-    color-scheme: dark;
+    @apply bg-background text-foreground font-['Inter'] antialiased;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
     /* Prevent screenshots and screen recording */
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -130,9 +177,7 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Geist Sans', ui-sans-serif, system-ui, sans-serif;
-    @apply font-semibold tracking-tight;
-    line-height: 1.3;
+    @apply font-['Poppins'] font-semibold tracking-tight;
   }
 
   /* Modern Scrollbar */
@@ -141,50 +186,50 @@
   }
 
   ::-webkit-scrollbar-track {
-    @apply bg-background;
+    @apply bg-muted;
   }
 
   ::-webkit-scrollbar-thumb {
-    @apply bg-border rounded-full;
+    @apply bg-muted-foreground/30 rounded-full;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    @apply bg-muted-foreground/40;
+    @apply bg-muted-foreground/50;
   }
 }
 
 @layer components {
-  /* Glass — dark-mode tuned */
+  /* Glass Effect */
   .glass {
-    @apply bg-card/70 backdrop-blur-xl border border-border;
+    @apply bg-white/80 backdrop-blur-xl border border-white/20;
   }
 
   .glass-dark {
-    @apply bg-background/80 backdrop-blur-xl border border-border;
+    @apply bg-black/20 backdrop-blur-xl border border-white/10;
   }
 
-  /* Reserved gradient — use sparingly (hero word / logo only) */
+  /* Gradient Text */
   .gradient-text {
-    @apply bg-gradient-to-r from-primary to-primary-light bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent;
   }
 
-  /* Interactive — restrained motion (no scale-up) */
+  /* Interactive Elements - Optimized for instant feedback */
   .interactive {
-    @apply transition-colors duration-150 active:opacity-80;
+    @apply transition-all duration-200 hover:scale-[1.02] active:scale-[0.95];
   }
 
   .tap-highlight {
-    @apply transition-colors duration-150 hover:bg-card-hover active:bg-card-hover;
+    @apply transition-colors duration-150 hover:bg-muted/50 active:bg-muted;
   }
 
-  /* Card */
+  /* Modern Card */
   .modern-card {
-    @apply bg-card border border-border rounded-xl shadow-card transition-colors duration-150;
+    @apply bg-card border border-border/50 rounded-2xl shadow-md hover:shadow-lg transition-all duration-300;
   }
 
-  /* Floating Action Button — single accent */
+  /* Floating Action Button */
   .fab {
-    @apply fixed bottom-6 right-6 w-14 h-14 bg-primary text-primary-foreground rounded-full shadow-lg transition-colors duration-150 flex items-center justify-center z-50;
+    @apply fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-r from-primary to-accent rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center text-white z-50;
   }
 
   /* Screenshot Protection */

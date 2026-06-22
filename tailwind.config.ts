@@ -102,8 +102,8 @@ export default {
 				'glow': 'var(--shadow-glow)'
 			},
 			fontFamily: {
-				sans: ['Geist Sans', 'ui-sans-serif', 'system-ui', 'sans-serif'],
-				display: ['Geist Sans', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+				sans: ['Inter', 'system-ui', 'sans-serif'],
+				display: ['Poppins', 'system-ui', 'sans-serif'],
 			},
 			transitionTimingFunction: {
 				'smooth': 'var(--transition-smooth)',

@@ -4,7 +4,7 @@ export const useScreenshotProtection = () => {
   const [isScreenshotAttempted, setIsScreenshotAttempted] = useState(false);
 
   useEffect(() => {
-    let blurTimeout: ReturnType<typeof setTimeout>;
+    let blurTimeout: NodeJS.Timeout;
 
     // Detect common screenshot key combinations
     const handleKeyDown = (e: KeyboardEvent) => {

@@ -1,4 +1,4 @@
-import { MessageCircle, Flag, Trash2, Shield, MapPin, MoreVertical } from "lucide-react";
+import { Heart, MessageCircle, Flag, Star, Trash2, ShieldCheck, MapPin, MoreVertical } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
@@ -253,13 +253,13 @@ const StoryCard = ({
 
   return (
     <>
-      <div className="bg-card rounded-xl shadow-card border border-border overflow-hidden mb-4 transition-colors duration-150 hover:border-border-light">
+      <div className="bg-white rounded-3xl shadow-soft border border-juice-orange/10 overflow-hidden mb-4">
         {/* Header */}
-        <div className="p-4 border-b border-border">
+        <div className="p-4 border-b border-juice-orange/10">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-primary/10 border border-primary/20 rounded-full flex items-center justify-center">
-                <span className="text-sm font-semibold text-primary">
+              <div className="w-8 h-8 bg-juice-orange/20 rounded-full flex items-center justify-center">
+                <span className="text-sm font-bold text-juice-orange">
                   {(subjectName || 'Anonymous').charAt(0).toUpperCase()}
                 </span>
               </div>
@@ -274,7 +274,7 @@ const StoryCard = ({
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
+                    className="h-8 w-8 p-0"
                   >
                     <MoreVertical className="h-4 w-4" />
                   </Button>
@@ -283,7 +283,7 @@ const StoryCard = ({
                   {canDelete && (
                     <DropdownMenuItem
                       onClick={handleDelete}
-                      className="text-destructive focus:text-destructive"
+                      className="text-red-600 hover:text-red-700"
                     >
                       <Trash2 className="h-4 w-4 mr-2" />
                       Delete Story
@@ -353,7 +353,7 @@ const StoryCard = ({
 
         {/* Content */}
         <div className="p-4 space-y-3">
-          <p className="text-foreground leading-[1.55] whitespace-pre-wrap">{story.content}</p>
+          <p className="text-foreground leading-relaxed whitespace-pre-wrap">{story.content}</p>
           
           {/* Location - moved here after story content and images */}
           {(story.location || story.cities) && (
@@ -365,7 +365,7 @@ const StoryCard = ({
                   : story.location
                 }
                 {story.distance && (
-                  <span className="ml-1 text-primary font-medium">
+                  <span className="ml-1 text-juice-blue font-medium">
                     • {formatDistance(story.distance)} away
                   </span>
                 )}
@@ -388,12 +388,12 @@ const StoryCard = ({
 
         {/* Actions */}
         <div className="px-4 pb-4">
-          <div className="flex items-center justify-between pt-3 border-t border-border">
+          <div className="flex items-center justify-between pt-3 border-t border-juice-orange/10">
             <Button
               variant="ghost"
               size="sm"
               onClick={handleComment}
-              className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
+              className="flex items-center gap-2 text-muted-foreground"
             >
               <MessageCircle className="h-4 w-4" />
               <span className="text-sm">{story.comments_count}</span>
@@ -404,13 +404,13 @@ const StoryCard = ({
                 variant="outline"
                 size="sm"
                 onClick={() => handleReaction('green_flag')}
-                className={`flex items-center gap-2 px-3 py-1 rounded-full border transition-colors duration-150 ${
+                className={`flex items-center gap-2 px-3 py-1 rounded-full border-2 transition-all ${
                   isGreenFlagged 
-                    ? 'bg-success/15 border-success/40 text-success' 
-                    : 'border-border text-muted-foreground hover:border-success/40 hover:bg-success/10 hover:text-success'
+                    ? 'bg-green-50 border-green-500 text-green-700' 
+                    : 'border-gray-300 text-gray-600 hover:border-green-400 hover:bg-green-50'
                 }`}
               >
-                <Flag className="h-4 w-4" />
+                <Flag className="h-4 w-4 text-green-500" />
                 <span className="text-sm font-medium">{reactionCounts?.green_flag || 0}</span>
               </Button>
 
@@ -418,51 +418,31 @@ const StoryCard = ({
                 variant="outline"
                 size="sm"
                 onClick={() => handleReaction('red_flag')}
-                className={`flex items-center gap-2 px-3 py-1 rounded-full border transition-colors duration-150 ${
+                className={`flex items-center gap-2 px-3 py-1 rounded-full border-2 transition-all ${
                   isRedFlagged 
-                    ? 'bg-destructive/15 border-destructive/40 text-destructive' 
-                    : 'border-border text-muted-foreground hover:border-destructive/40 hover:bg-destructive/10 hover:text-destructive'
+                    ? 'bg-red-50 border-red-500 text-red-700' 
+                    : 'border-gray-300 text-gray-600 hover:border-red-400 hover:bg-red-50'
                 }`}
               >
-                <Flag className="h-4 w-4" />
+                <Flag className="h-4 w-4 text-red-500" />
                 <span className="text-sm font-medium">{reactionCounts?.red_flag || 0}</span>
               </Button>
             </div>
           </div>
-
+          
           {/* Author attribution */}
-          <div className="pt-2 mt-2">
+          <div className="pt-2 border-t border-juice-orange/5 mt-2">
             <div className="flex items-center justify-between">
-              <button
+              <button 
                 onClick={handleAuthorClick}
-                className="text-xs text-muted-foreground hover:text-primary transition-colors duration-150"
+                className="text-xs text-muted-foreground hover:text-juice-blue transition-smooth cursor-pointer"
               >
                 Posted by: {authorName}
               </button>
               <span className="text-xs text-muted-foreground">
-                {formatViewCount(story.view_count || 0)} views
+                1,421 views
               </span>
             </div>
-          </div>
-
-          {/* Trust strip — moderation + report. Always visible. */}
-          <div className="mt-3 pt-3 border-t border-border flex items-center justify-between text-[11px] text-muted-foreground">
-            <div className="flex items-center gap-1.5">
-              <Shield className="h-3 w-3 text-success/80" />
-              <span>Moderated · post responsibly</span>
-            </div>
-            {!canDelete && story.user_id && (
-              <ReportContentDialog targetType="story" targetId={story.id}>
-                <button
-                  type="button"
-                  className="flex items-center gap-1 hover:text-foreground transition-colors duration-150"
-                  aria-label="Report this story"
-                >
-                  <Flag className="h-3 w-3" />
-                  <span>Report</span>
-                </button>
-              </ReportContentDialog>
-            )}
           </div>
         </div>
       </div>

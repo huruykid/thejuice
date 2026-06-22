@@ -29,12 +29,12 @@ const InviteManager = () => {
   const { toast } = useToast();
 
   const copyToClipboard = async (code: string) => {
-    const shareText = `Finally, men have a voice. Join The Juice App — where the stories are real and the juice is anonymous.
+    const shareText = `Finally, men have a voice. Join the Tea App for Men - where the stories are real and the juice is anonymous.
 👉 https://sipjuice.app?invite=${code}
 
 Use my invite code: ${code}
 
-#fortheboys #thejuiceapp #getthejuice`;
+#fortheboys #teaappformen #getthejuice`;
 
     try {
       await navigator.clipboard.writeText(shareText);
@@ -59,12 +59,12 @@ Use my invite code: ${code}
   };
 
   const shareInvite = async (code: string) => {
-    const shareText = `Finally, men have a voice. Join The Juice App — where the stories are real and the juice is anonymous.
+    const shareText = `Finally, men have a voice. Join the Tea App for Men - where the stories are real and the juice is anonymous.
 👉 https://sipjuice.app?invite=${code}
 
 Use my invite code: ${code}
 
-#fortheboys #thejuiceapp #getthejuice`;
+#fortheboys #teaappformen #getthejuice`;
     
     if (navigator.share) {
       try {
