@@ -87,15 +87,15 @@ const Landing = () => {
             No judgment, just real talk about modern dating.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" onClick={handleGetStarted} variant="juice" className="text-lg px-8">
+            <Button size="xl" onClick={handleGetStarted} variant="juice">
               Sign up now
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
-            <Button size="lg" onClick={() => window.open('https://instagram.com/sipjuiceapp', '_blank')} className="text-lg px-8">
+            <Button size="xl" onClick={() => window.open('https://instagram.com/sipjuiceapp', '_blank')}>
               Join the Brotherhood
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
-            <Button size="lg" variant="outline" onClick={handleLearnMore} className="text-lg px-8">
+            <Button size="xl" variant="outline" onClick={handleLearnMore}>
               How It Works
             </Button>
           </div>
@@ -215,7 +215,7 @@ const Landing = () => {
               <p className="text-xl mb-8 opacity-90">
                 Connect with verified men sharing real dating experiences in your area
               </p>
-              <Button size="lg" variant="secondary" onClick={() => navigate("/app")} className="text-lg px-8">
+              <Button size="xl" variant="secondary" onClick={() => navigate("/app")}>
                 Get Started Now
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>

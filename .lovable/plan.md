@@ -1,43 +1,18 @@
-# Auth screen — padding & spacing fix
+## Goal
+Give the landing page hero and bottom CTAs proper vertical breathing room so they read as hero-weight buttons, not toolbar buttons.
 
-## What's wrong now
+## Problem
+The hero buttons use `size="lg"` (fixed `h-13` / 52px) but override the text to `text-lg`. Larger text + an icon inside a fixed-height box leaves cramped vertical padding. Industry hero CTAs sit at 56–64px tall.
 
-On both mobile (390×844) and desktop (1280+), the logo+title sit pinned near the top while the card floats independently in the middle. The `flex-1` spacer between them creates a large empty void — ~280px on mobile, ~650px on desktop — that makes the page feel broken rather than composed.
+## Changes (src/pages/Landing.tsx only)
 
-Desktop has a second issue: the card is `max-w-md` (~448px) alone in a 1280px viewport with nothing balancing it.
+1. **Hero CTAs** (lines ~89–101): swap `size="lg" ... className="text-lg px-8"` to `size="xl"` and drop the `text-lg` override (xl already includes it).
+2. **Bottom CTA** (line ~218, "Get Started Now"): same swap to `size="xl"` for consistency.
+3. **Header "Get Started"** (line ~69): leave as-is — header buttons should stay compact.
 
-## Plan
-
-Restructure `src/components/AuthScreen.tsx` so the hero (icon + wordmark + tagline) and the card render as **one centered stack** instead of two independently-positioned blocks.
-
-### Layout changes
-
-1. Replace the outer `flex flex-col` + `flex-1 flex items-center justify-center` with a single centered container:
-   - Outer: `min-h-screen flex items-center justify-center px-4 py-12`
-   - Inner stack: `w-full max-w-md flex flex-col items-center gap-8`
-2. Place hero (icon + "The Juice App" + tagline) directly above the card inside that stack. No spacer, no `flex-1`.
-3. Keep the "← Back" button as `absolute top-4 left-4` so it stays anchored to the viewport corner on both breakpoints.
-
-### Spacing tokens (responsive)
-
-- Outer page padding: `px-4 py-8 sm:py-12`
-- Hero → card gap: `gap-6 sm:gap-8`
-- Icon size: `h-14 w-14 sm:h-16 sm:w-16`
-- Wordmark: `text-3xl sm:text-4xl`
-- Tagline margin: `mt-2`
-- Card inner padding: `p-6 sm:p-8` (currently `p-8` is tight on 390px)
-- Card → segmented-tabs gap and tabs → heading gap: keep `space-y-6`
-- Form field gap: keep `space-y-4`
-
-### Desktop balance
-
-Keep `max-w-md` for the card (auth forms shouldn't stretch wide), but the centered hero+card stack now reads as a single intentional composition rather than two stranded elements.
-
-## Files
-
-- `src/components/AuthScreen.tsx` — only file touched. Pure layout/className changes, no logic changes.
+No changes to `button.tsx` — the `xl` size already exists (`h-16 px-12 text-lg`) and was designed for exactly this.
 
 ## Out of scope
-
-- Auth flow, tab toggle behavior, copy, colors — all stay as-is.
-- Other pages (Home, UnverifiedHome, Landing) — separate spacing pass if needed.
+- Reducing the 3-button hero down to 2 (separate concern from earlier conversation).
+- Label consistency across CTAs (separate concern).
+- Any mobile-specific changes — `xl` works at both breakpoints.
