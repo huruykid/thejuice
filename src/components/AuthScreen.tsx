@@ -8,7 +8,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useUserSession } from "@/hooks/useUserSession";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import SelfieCapture from './SelfieCapture';
 
@@ -102,6 +102,16 @@ const AuthScreen = ({ onAuthSuccess }: AuthScreenProps) => {
 
   return (
     <div className="min-h-screen bg-gradient-soft flex flex-col">
+      {/* Back to landing */}
+      <button
+        onClick={() => navigate("/")}
+        className="absolute top-4 left-4 flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+        aria-label="Back to landing"
+      >
+        <ArrowLeft className="h-4 w-4" />
+        Back
+      </button>
+
       {/* Logo */}
       <div className="flex flex-col items-center justify-center pt-16 pb-8">
         <button 
@@ -121,6 +131,28 @@ const AuthScreen = ({ onAuthSuccess }: AuthScreenProps) => {
       <div className="flex-1 flex items-center justify-center px-6">
         <Card className="w-full max-w-md bg-white/90 backdrop-blur-sm rounded-3xl shadow-soft border-0">
           <div className="p-8 space-y-6">
+            {/* Segmented tabs */}
+            <div className="grid grid-cols-2 gap-1 p-1 bg-muted rounded-full">
+              <button
+                type="button"
+                onClick={() => { setIsSignUp(false); setPassword(""); }}
+                className={`py-2 text-sm font-semibold rounded-full transition-colors ${
+                  !isSignUp ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"
+                }`}
+              >
+                Sign in
+              </button>
+              <button
+                type="button"
+                onClick={() => { setIsSignUp(true); setPassword(""); }}
+                className={`py-2 text-sm font-semibold rounded-full transition-colors ${
+                  isSignUp ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"
+                }`}
+              >
+                Create account
+              </button>
+            </div>
+
             <div className="text-center space-y-3">
               <h2 className="text-2xl font-bold text-foreground">
                 {isSignUp ? "Join Juice" : (isReturningUser ? "Welcome Back" : "Welcome to Juice")}
@@ -182,23 +214,6 @@ const AuthScreen = ({ onAuthSuccess }: AuthScreenProps) => {
               </Button>
             </form>
 
-            <div className="text-center space-y-2">
-              <Button
-                variant="ghost"
-                onClick={() => {
-                  setIsSignUp(!isSignUp);
-                  setEmail("");
-                  setPassword("");
-                }}
-                className="text-juice-orange hover:text-juice-orange/80 hover:bg-transparent"
-              >
-                {isSignUp 
-                  ? "Already have an account? Sign in" 
-                  : "Need an account? Create one" 
-                }
-              </Button>
-              
-            </div>
           </div>
         </Card>
       </div>
