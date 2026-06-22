@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Search, TrendingUp, Hash, Users, Phone, User, MessageCircle } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -8,6 +9,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import StoryCard from "@/components/StoryCard";
 import Navigation from "@/components/Navigation";
+import StoryCardSkeleton from "@/components/StoryCardSkeleton";
+import ScrollToTopButton from "@/components/ScrollToTopButton";
+import PullToRefreshIndicator from "@/components/PullToRefreshIndicator";
+import { usePullToRefresh } from "@/hooks/usePullToRefresh";
 import ProfileSearch from "@/components/ProfileSearch";
 import { StoryPreview } from "@/components/StoryPreview";
 import { StoryModal } from "@/components/StoryModal";
@@ -29,6 +34,7 @@ const Explore = ({ onCreateStory }: ExploreProps) => {
   const [selectedStory, setSelectedStory] = useState<any>(null);
   const [showTrending, setShowTrending] = useState(false);
   const { user } = useAuth();
+  const queryClient = useQueryClient();
 
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
@@ -50,6 +56,16 @@ const Explore = ({ onCreateStory }: ExploreProps) => {
   } = useTrendingStories();
 
   const { data: topTags, isLoading: tagsLoading } = useTopTags();
+
+  const handleRefresh = useCallback(async () => {
+    await queryClient.invalidateQueries({ queryKey: ['stories'] });
+    await queryClient.invalidateQueries({ queryKey: ['trending-stories'] });
+    await queryClient.invalidateQueries({ queryKey: ['top-tags'] });
+  }, [queryClient]);
+  const { pullDistance, status } = usePullToRefresh({
+    onRefresh: handleRefresh,
+    disabled: !!searchQuery,
+  });
 
   // Search when query changes
   useEffect(() => {
@@ -93,6 +109,7 @@ const Explore = ({ onCreateStory }: ExploreProps) => {
 
   return (
     <div className="min-h-screen bg-background pb-20 lg:pb-8">
+      <PullToRefreshIndicator pullDistance={pullDistance} status={status} />
       {/* Header */}
       <div className="sticky top-0 bg-white/80 backdrop-blur-lg border-b border-juice-blue/10 z-40">
         <div className="p-4 max-w-md lg:max-w-2xl mx-auto">
@@ -208,11 +225,10 @@ const Explore = ({ onCreateStory }: ExploreProps) => {
               <div className="space-y-6">
                 {/* Stories Grid */}
                 {isLoading ? (
-                  <div className="text-center py-12">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-                    <div className="text-lg">
-                      Loading stories...
-                    </div>
+                  <div className="space-y-4">
+                    {Array.from({ length: 4 }).map((_, i) => (
+                      <StoryCardSkeleton key={i} />
+                    ))}
                   </div>
                 ) : displayStories.length === 0 ? (
                   <div className="text-center py-12">
@@ -274,6 +290,7 @@ const Explore = ({ onCreateStory }: ExploreProps) => {
       />
 
       <Navigation onCreateStory={onCreateStory} />
+      <ScrollToTopButton />
     </div>
   );
 };

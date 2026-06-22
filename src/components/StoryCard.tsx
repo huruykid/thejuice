@@ -15,7 +15,7 @@ import { useDeleteStory } from "@/hooks/useStories";
 import { useToggleReaction } from "@/hooks/useReactions";
 import { useReactionCounts } from "@/hooks/useReactionCounts";
 import { supabase } from "@/integrations/supabase/client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { formatDistance } from "@/lib/distance";
@@ -75,6 +75,8 @@ const StoryCard = ({
   const [showComments, setShowComments] = useState(false);
   const [isRedFlagged, setIsRedFlagged] = useState(false);
   const [isGreenFlagged, setIsGreenFlagged] = useState(false);
+  const [showHeartBurst, setShowHeartBurst] = useState(false);
+  const lastTapRef = useRef<number>(0);
   const { toast } = useToast();
   const navigate = useNavigate();
   const deleteStory = useDeleteStory();
@@ -136,6 +138,17 @@ const StoryCard = ({
         return;
       }
 
+      // Optimistic local toggle so the button responds instantly.
+      const prevRed = isRedFlagged;
+      const prevGreen = isGreenFlagged;
+      if (reactionType === 'green_flag') {
+        setIsGreenFlagged(!prevGreen);
+        if (!prevGreen && prevRed) setIsRedFlagged(false);
+      } else if (reactionType === 'red_flag') {
+        setIsRedFlagged(!prevRed);
+        if (!prevRed && prevGreen) setIsGreenFlagged(false);
+      }
+
       const result = await toggleReaction.mutateAsync({ 
         storyId: story.id, 
         reactionType 
@@ -166,11 +179,35 @@ const StoryCard = ({
       }
     } catch (error) {
       console.error('Reaction error:', error);
+      // Roll back optimistic toggle.
+      setIsRedFlagged((v) => v);
+      setIsGreenFlagged((v) => v);
       toast({
         title: "Error",
         description: "Failed to toggle reaction. Please try again.",
         variant: "destructive"
       });
+    }
+  };
+
+  // Detect double-tap on the card body (ignoring buttons / interactive children).
+  const handleCardClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    const target = e.target as HTMLElement;
+    if (target.closest('button, a, [role="button"], input, textarea')) return;
+    const now = Date.now();
+    if (now - lastTapRef.current < 300) {
+      lastTapRef.current = 0;
+      triggerDoubleTap();
+    } else {
+      lastTapRef.current = now;
+    }
+  };
+
+  const triggerDoubleTap = () => {
+    setShowHeartBurst(true);
+    window.setTimeout(() => setShowHeartBurst(false), 700);
+    if (!isGreenFlagged) {
+      handleReaction('green_flag');
     }
   };
 
@@ -253,7 +290,19 @@ const StoryCard = ({
 
   return (
     <>
-      <div className="bg-white rounded-3xl shadow-soft border border-juice-orange/10 overflow-hidden mb-4">
+      <div
+        className="relative bg-white rounded-3xl shadow-soft border border-juice-orange/10 overflow-hidden mb-4 select-none"
+        onClick={handleCardClick}
+      >
+        {showHeartBurst && (
+          <div className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center">
+            <Heart
+              className="h-24 w-24 text-juice-orange drop-shadow-lg"
+              fill="currentColor"
+              style={{ animation: "heart-burst 700ms ease-out forwards" }}
+            />
+          </div>
+        )}
         {/* Header */}
         <div className="p-4 border-b border-juice-orange/10">
           <div className="flex items-center justify-between">

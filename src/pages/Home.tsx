@@ -1,10 +1,14 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import Navigation from "@/components/Navigation";
 import StoryCard from "@/components/StoryCard";
+import StoryCardSkeleton from "@/components/StoryCardSkeleton";
+import ScrollToTopButton from "@/components/ScrollToTopButton";
+import PullToRefreshIndicator from "@/components/PullToRefreshIndicator";
+import { usePullToRefresh } from "@/hooks/usePullToRefresh";
 import { Button } from "@/components/ui/button";
 import { useInfiniteStories } from "@/hooks/useStories";
 import { useAuth } from "@/hooks/useAuth";
-import LoadingSkeleton from "@/components/ui/loading-skeleton";
 
 interface HomeProps {
   onCreateStory?: () => void;
@@ -12,19 +16,28 @@ interface HomeProps {
 
 const Home = ({ onCreateStory }: HomeProps) => {
   const { user } = useAuth();
-  
+  const queryClient = useQueryClient();
+
   const {
     data,
     isLoading: storiesLoading,
     isFetchingNextPage,
     fetchNextPage,
     hasNextPage,
+    refetch,
   } = useInfiniteStories();
 
   const stories = useMemo(
     () => data?.pages.flatMap((p) => p) ?? [],
     [data]
   );
+
+  // Pull-to-refresh: reset the infinite feed back to page 0, then refetch.
+  const handleRefresh = useCallback(async () => {
+    await queryClient.resetQueries({ queryKey: ['stories', 'infinite'] });
+    await refetch();
+  }, [queryClient, refetch]);
+  const { pullDistance, status } = usePullToRefresh({ onRefresh: handleRefresh });
 
   // Infinite scroll: load the next page when sentinel enters the viewport.
   const sentinelRef = useRef<HTMLDivElement | null>(null);
@@ -43,6 +56,7 @@ const Home = ({ onCreateStory }: HomeProps) => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background-secondary to-background pb-20 lg:pb-8">
+      <PullToRefreshIndicator pullDistance={pullDistance} status={status} />
       {/* Modern Header with Glass Effect */}
       <div className="sticky top-0 z-40 glass border-b border-white/10 lg:hidden">
         <div className="flex items-center justify-between p-4 max-w-md mx-auto">
@@ -65,7 +79,13 @@ const Home = ({ onCreateStory }: HomeProps) => {
       {/* Enhanced Content Section */}
       <div className="max-w-md lg:max-w-5xl xl:max-w-6xl mx-auto px-4 py-8">
         {storiesLoading && stories.length === 0 ? (
-          <LoadingSkeleton type="general" message="Loading stories..." />
+          <div className="space-y-4 lg:space-y-0 lg:columns-2 xl:columns-3 lg:gap-4">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="lg:break-inside-avoid lg:mb-4">
+                <StoryCardSkeleton />
+              </div>
+            ))}
+          </div>
         ) : stories.length > 0 ? (
           <>
             {/* Single column on mobile, masonry-like CSS columns on desktop */}
@@ -82,15 +102,16 @@ const Home = ({ onCreateStory }: HomeProps) => {
                   />
                 </div>
               ))}
+              {isFetchingNextPage &&
+                Array.from({ length: 3 }).map((_, i) => (
+                  <div key={`sk-${i}`} className="lg:break-inside-avoid lg:mb-4">
+                    <StoryCardSkeleton />
+                  </div>
+                ))}
             </div>
 
             {/* Infinite-scroll sentinel + loader */}
             <div ref={sentinelRef} className="h-1" aria-hidden />
-            {isFetchingNextPage && (
-              <div className="py-6 text-center text-sm text-muted-foreground">
-                Loading more stories…
-              </div>
-            )}
             {!hasNextPage && (
               <div className="py-6 text-center text-xs text-muted-foreground/70">
                 You're all caught up.
@@ -120,6 +141,7 @@ const Home = ({ onCreateStory }: HomeProps) => {
       </div>
 
       <Navigation onCreateStory={onCreateStory} />
+      <ScrollToTopButton />
     </div>
   );
 };
