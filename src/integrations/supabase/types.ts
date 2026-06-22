@@ -755,6 +755,7 @@ export type Database = {
       generate_city_slug: { Args: { city_name_param: string }; Returns: string }
       generate_invite_code: { Args: never; Returns: string }
       generate_slug: { Args: { title_text: string }; Returns: string }
+      generate_user_invite_code: { Args: never; Returns: string }
       get_story_owner: { Args: { _story_id: string }; Returns: string }
       has_role: {
         Args: {
@@ -808,6 +809,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      validate_invite_code: { Args: { code_param: string }; Returns: boolean }
       validate_phone_number: { Args: { phone_param: string }; Returns: boolean }
       validate_story_content: {
         Args: { content_param: string }

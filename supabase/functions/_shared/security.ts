@@ -94,7 +94,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 export const authenticateRequest = async (
   req: Request
-): Promise<{ userId: string; token: string } | Response> => {
+): Promise<{ userId: string; token: string; email: string | null } | Response> => {
   const authHeader = req.headers.get('Authorization');
   if (!authHeader?.startsWith('Bearer ')) {
     return createSecureErrorResponse('Unauthorized', 401);
@@ -108,7 +108,7 @@ export const authenticateRequest = async (
   if (error || !data?.user) {
     return createSecureErrorResponse('Unauthorized', 401);
   }
-  return { userId: data.user.id, token };
+  return { userId: data.user.id, token, email: data.user.email ?? null };
 };
 
 export const requireAdmin = async (
