@@ -102,10 +102,31 @@ const AuthScreen = ({ onAuthSuccess }: AuthScreenProps) => {
 
   return (
     <div className="relative min-h-screen bg-gradient-soft flex items-center justify-center px-4 py-8 sm:py-12">
-      {/* Back to landing */}
+      {/* Desktop top bar */}
+      <header className="hidden sm:flex absolute top-0 left-0 right-0 items-center justify-between px-6 lg:px-10 py-5">
+        <button
+          onClick={() => navigate("/")}
+          className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+          aria-label="Juice home"
+        >
+          <img src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" alt="Juice" className="h-8 w-8" />
+          <span className="text-lg font-bold bg-gradient-primary bg-clip-text text-transparent">
+            The Juice App
+          </span>
+        </button>
+        <button
+          onClick={() => navigate("/")}
+          className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back to site
+        </button>
+      </header>
+
+      {/* Mobile back chevron */}
       <button
         onClick={() => navigate("/")}
-        className="absolute top-4 left-4 flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+        className="sm:hidden absolute top-4 left-4 flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
         aria-label="Back to landing"
       >
         <ArrowLeft className="h-4 w-4" />
