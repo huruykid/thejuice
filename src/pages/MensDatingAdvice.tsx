@@ -37,20 +37,20 @@ const MensDatingAdvice = () => {
   const quickTips = [
     "Be yourself - authenticity attracts the right person",
     "Listen more than you talk on first dates",
-    "Don't ignore red flags for the sake of being nice",
+    "Ignoring red flags doesn't make them disappear",
     "Confidence comes from self-respect, not arrogance",
-    "Quality connections matter more than quantity",
+    "One real connection beats ten mediocre ones",
     "Set clear boundaries and stick to them"
   ];
 
   return (
     <div className="min-h-screen bg-gradient-soft">
       <Helmet>
-        <title>Men's Dating Advice from Real Guys</title>
-        <meta name="description" content="Honest dating advice from experienced verified men. Practical tips on first dates, apps, red flags, and relationships." />
+        <title>Men's Dating Advice from Verified Men | Juice</title>
+        <meta name="description" content="Real dating advice from verified men on Juice — first dates, red flags, dating apps, and building relationships that last." />
         <link rel="canonical" href="https://thejuice.lovable.app/mens-dating-advice" />
-        <meta property="og:title" content="Men's Dating Advice from Real Guys" />
-        <meta property="og:description" content="Honest dating advice from experienced verified men." />
+        <meta property="og:title" content="Men's Dating Advice from Verified Men | Juice" />
+        <meta property="og:description" content="Real dating advice from verified men — first dates, red flags, dating apps, and relationships that last." />
         <meta property="og:url" content="https://thejuice.lovable.app/mens-dating-advice" />
         <meta property="og:type" content="website" />
       </Helmet>
@@ -61,25 +61,25 @@ const MensDatingAdvice = () => {
       <section className="py-20 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6">
-            Real Dating Advice from{" "}
+            Dating Advice from{" "}
             <span className="bg-gradient-primary bg-clip-text text-transparent">
-              Experienced Men
+              Men Who've Actually Been There
             </span>
           </h1>
           <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Get honest, practical dating advice from thousands of men who've been in your shoes. Learn from real experiences, not theory.
+            Practical advice from verified men — not coaches, not influencers, not theory.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" onClick={() => navigate("/app")} className="text-lg px-8">
-              Get Dating Advice
+              Read Advice from Verified Men
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
             <Button size="lg" variant="outline" onClick={() => navigate("/how-it-works")} className="text-lg px-8">
-              How It Works
+              See How It Works
             </Button>
           </div>
           <p className="text-sm text-muted-foreground mt-4">
-            Join 10,000+ men sharing real dating wisdom
+            Verified members only — apply to join
           </p>
         </div>
       </section>
@@ -89,9 +89,9 @@ const MensDatingAdvice = () => {
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
             <Lightbulb className="h-12 w-12 text-juice-orange mx-auto mb-4" />
-            <h2 className="text-3xl font-bold text-foreground mb-4">Quick Dating Tips from Men</h2>
+            <h2 className="text-3xl font-bold text-foreground mb-4">6 Things Verified Men Wish They'd Known Earlier</h2>
             <p className="text-xl text-muted-foreground">
-              Essential advice that every guy should know
+              Essential advice — short, blunt, hard-won.
             </p>
           </div>
           
@@ -113,10 +113,10 @@ const MensDatingAdvice = () => {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Dating Advice Categories
+              Advice for Every Stage of Dating
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Get specific advice for every stage of your dating journey
+              Specific guidance, sorted by where you are right now.
             </p>
           </div>
           
@@ -158,10 +158,10 @@ const MensDatingAdvice = () => {
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Why Our Dating Advice Actually Works
+              Why Juice Advice Hits Different
             </h2>
             <p className="text-xl text-muted-foreground">
-              Real advice from real men, not pickup artists or theorists
+              From men with skin in the game — not pickup artists.
             </p>
           </div>
           
@@ -191,60 +191,19 @@ const MensDatingAdvice = () => {
         </div>
       </section>
 
-      {/* Success Stories Preview */}
-      <section className="py-20 px-4">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Men Getting Real Results
-            </h2>
-            <p className="text-xl text-muted-foreground">
-              See how our community's advice has helped men succeed in dating
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Card className="border-0 shadow-card bg-white/80">
-              <CardContent className="p-6 text-center">
-                <div className="text-3xl font-bold text-juice-orange mb-2">85%</div>
-                <p className="text-sm text-muted-foreground">
-                  of men report improved dating confidence after joining
-                </p>
-              </CardContent>
-            </Card>
-            <Card className="border-0 shadow-card bg-white/80">
-              <CardContent className="p-6 text-center">
-                <div className="text-3xl font-bold text-juice-orange mb-2">3x</div>
-                <p className="text-sm text-muted-foreground">
-                  more successful dates on average compared to before
-                </p>
-              </CardContent>
-            </Card>
-            <Card className="border-0 shadow-card bg-white/80">
-              <CardContent className="p-6 text-center">
-                <div className="text-3xl font-bold text-juice-orange mb-2">92%</div>
-                <p className="text-sm text-muted-foreground">
-                  would recommend our advice to other men
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
-
       {/* CTA Section */}
       <section className="py-20 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <Card className="border-0 shadow-card bg-gradient-primary text-white">
             <CardContent className="p-12">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                Ready to Get Better at Dating?
+                Stop guessing. Read what verified men have figured out.
               </h2>
               <p className="text-xl mb-8 opacity-90">
-                Join thousands of men learning from real dating experiences and advice
+                Real dating experience and advice from a verified community of men.
               </p>
               <Button size="lg" variant="secondary" onClick={() => navigate("/app")} className="text-lg px-8">
-                Get Dating Advice Now
+                Read Verified Advice
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
               <p className="text-sm mt-4 opacity-75">
@@ -259,8 +218,8 @@ const MensDatingAdvice = () => {
       {/* SEO Footer */}
       <footer className="py-12 px-4 bg-white/80 border-t border-juice-orange/10">
         <div className="max-w-4xl mx-auto text-center text-sm text-muted-foreground">
-          <p>Men's Dating Advice | Dating Tips for Men | Male Dating Guidance | Tea App for Men</p>
-          <p className="mt-2">&copy; 2024 Tea App for Men. All rights reserved.</p>
+          <p>Men's Dating Advice | Dating Tips for Men | Male Dating Guidance | Juice</p>
+          <p className="mt-2">&copy; 2024 Juice. All rights reserved.</p>
         </div>
       </footer>
     </div>

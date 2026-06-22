@@ -44,11 +44,11 @@ const AnonymousDatingReviews = () => {
   return (
     <div className="min-h-screen bg-gradient-soft">
       <Helmet>
-        <title>Anonymous Dating Reviews by Real Men</title>
-        <meta name="description" content="Honest, anonymous dating reviews from verified men. Rate dates, relationships, and interactions with complete privacy." />
+        <title>Anonymous Dating Reviews from Verified Men | Juice</title>
+        <meta name="description" content="Read anonymous date reviews from verified men. Rate first dates, apps, and relationships — your identity stays hidden." />
         <link rel="canonical" href="https://thejuice.lovable.app/anonymous-dating-reviews" />
-        <meta property="og:title" content="Anonymous Dating Reviews by Real Men" />
-        <meta property="og:description" content="Honest, anonymous dating reviews from verified men." />
+        <meta property="og:title" content="Anonymous Dating Reviews from Verified Men | Juice" />
+        <meta property="og:description" content="Read anonymous date reviews from verified men — your identity stays hidden." />
         <meta property="og:url" content="https://thejuice.lovable.app/anonymous-dating-reviews" />
         <meta property="og:type" content="website" />
       </Helmet>
@@ -59,21 +59,21 @@ const AnonymousDatingReviews = () => {
       <section className="py-20 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6">
-            Anonymous Dating Reviews{" "}
+            Anonymous Dating Reviews —{" "}
             <span className="bg-gradient-primary bg-clip-text text-transparent">
-              by Real Men
+              Written by Verified Men
             </span>
           </h1>
           <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Read and write honest, anonymous reviews of dating experiences. Rate your dates, relationships, and interactions with complete privacy and anonymity.
+            Read honest date reviews from verified men. Write your own anonymously — no names, no trace.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" onClick={() => navigate("/app")} className="text-lg px-8">
-              Read Reviews Now
+              Browse Verified Reviews
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
             <Button size="lg" variant="outline" onClick={() => navigate("/app")} className="text-lg px-8">
-              Write a Review
+              Submit a Review
             </Button>
           </div>
         </div>
@@ -84,9 +84,9 @@ const AnonymousDatingReviews = () => {
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
             <Shield className="h-16 w-16 text-juice-orange mx-auto mb-4" />
-            <h2 className="text-3xl font-bold text-foreground mb-4">100% Anonymous Reviews</h2>
+            <h2 className="text-3xl font-bold text-foreground mb-4">Your identity never touches the review</h2>
             <p className="text-xl text-muted-foreground">
-              Your identity is completely protected. Review anonymously with zero risk.
+              Your identity is protected. Review with zero risk.
             </p>
           </div>
           
@@ -115,7 +115,7 @@ const AnonymousDatingReviews = () => {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              What Can You Review Anonymously?
+              What Men Review on Juice
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               Rate and review all your dating experiences with complete anonymity
@@ -160,7 +160,7 @@ const AnonymousDatingReviews = () => {
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Our 4-Category Rating System
+              4 Things Every Review Covers
             </h2>
             <p className="text-xl text-muted-foreground">
               Rate your experiences across these key areas
@@ -192,7 +192,7 @@ const AnonymousDatingReviews = () => {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Why Anonymous Reviews Matter
+              Why Anonymity Unlocks Honesty
             </h2>
           </div>
           
@@ -216,7 +216,7 @@ const AnonymousDatingReviews = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  Your anonymous reviews help other guys make better dating decisions
+                  Your anonymous reviews help other men make better dating decisions
                 </p>
               </CardContent>
             </Card>
@@ -242,13 +242,13 @@ const AnonymousDatingReviews = () => {
           <Card className="border-0 shadow-card bg-gradient-primary text-white">
             <CardContent className="p-12">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                Start Reading Anonymous Reviews
+                The most honest dating reviews you'll ever read
               </h2>
               <p className="text-xl mb-8 opacity-90">
-                Join thousands of men sharing honest, anonymous dating reviews
+                Join a verified community of men sharing honest dating reviews.
               </p>
               <Button size="lg" variant="secondary" onClick={() => navigate("/app")} className="text-lg px-8">
-                Read Reviews Now
+                Browse Reviews
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
               <p className="text-sm mt-4 opacity-75">
@@ -263,8 +263,8 @@ const AnonymousDatingReviews = () => {
       {/* SEO Footer */}
       <footer className="py-12 px-4 bg-white/80 border-t border-juice-orange/10">
         <div className="max-w-4xl mx-auto text-center text-sm text-muted-foreground">
-          <p>Anonymous Dating Reviews | Men's Dating Ratings | Anonymous Dating Experiences | Tea App for Men</p>
-          <p className="mt-2">&copy; 2024 Tea App for Men. All rights reserved.</p>
+          <p>Anonymous Dating Reviews | Men's Dating Ratings | Anonymous Dating Experiences | Juice</p>
+          <p className="mt-2">&copy; 2024 Juice. All rights reserved.</p>
         </div>
       </footer>
     </div>

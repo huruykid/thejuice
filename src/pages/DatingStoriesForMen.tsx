@@ -8,10 +8,10 @@ const DatingStoriesForMen = () => {
   const navigate = useNavigate();
 
   const stats = [
-    { icon: <Users className="h-8 w-8 text-juice-orange" />, number: "10,000+", label: "Men Sharing Stories" },
-    { icon: <MessageSquare className="h-8 w-8 text-juice-orange" />, number: "50,000+", label: "Dating Stories Shared" },
-    { icon: <Eye className="h-8 w-8 text-juice-orange" />, number: "100%", label: "Anonymous & Safe" },
-    { icon: <Shield className="h-8 w-8 text-juice-orange" />, number: "Verified", label: "Real Men Only" }
+    { icon: <Users className="h-8 w-8 text-juice-orange" />, number: "Verified", label: "Members only" },
+    { icon: <MessageSquare className="h-8 w-8 text-juice-orange" />, number: "Anonymous", label: "Every story, every time" },
+    { icon: <Eye className="h-8 w-8 text-juice-orange" />, number: "100%", label: "Identity protected" },
+    { icon: <Shield className="h-8 w-8 text-juice-orange" />, number: "Manual", label: "Approval to join" }
   ];
 
   const storyTypes = [
@@ -32,7 +32,7 @@ const DatingStoriesForMen = () => {
     },
     {
       title: "Red Flag Warnings",
-      description: "Men sharing warning signs and red flags to help other guys avoid problems",
+      description: "Men sharing warning signs and red flags to help others avoid problems",
       icon: <Shield className="h-6 w-6 text-juice-orange" />
     }
   ];
@@ -40,11 +40,11 @@ const DatingStoriesForMen = () => {
   return (
     <div className="min-h-screen bg-gradient-soft">
       <Helmet>
-        <title>Dating Stories for Men — Anonymous & Real</title>
-        <meta name="description" content="Read real anonymous dating stories from verified men. Honest reviews and advice from guys who've been there." />
+        <title>Men's Anonymous Dating Stories | Juice</title>
+        <meta name="description" content="Read anonymous dating stories from verified men — first dates, red flags, app experiences, and relationship lessons." />
         <link rel="canonical" href="https://thejuice.lovable.app/dating-stories-for-men" />
-        <meta property="og:title" content="Dating Stories for Men — Anonymous & Real" />
-        <meta property="og:description" content="Read real anonymous dating stories from verified men." />
+        <meta property="og:title" content="Men's Anonymous Dating Stories | Juice" />
+        <meta property="og:description" content="Read anonymous dating stories from verified men — first dates, red flags, app experiences, and relationship lessons." />
         <meta property="og:url" content="https://thejuice.lovable.app/dating-stories-for-men" />
         <meta property="og:type" content="website" />
       </Helmet>
@@ -55,21 +55,21 @@ const DatingStoriesForMen = () => {
       <section className="py-20 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6">
-            Real Dating Stories from{" "}
+            Dating Stories from{" "}
             <span className="bg-gradient-primary bg-clip-text text-transparent">
-              Real Men
+              Verified Men — Anonymous & Unfiltered
             </span>
           </h1>
           <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Read anonymous dating experiences, honest relationship reviews, and get real advice from thousands of verified men who've been there.
+            Read anonymous dating experiences from verified men. Honest, unrated by influencers, unsponsored.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" onClick={() => navigate("/app")} className="text-lg px-8">
-              Read Stories Now
+              Browse Stories
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
             <Button size="lg" variant="outline" onClick={() => navigate("/how-it-works")} className="text-lg px-8">
-              How It Works
+              See How It Works
             </Button>
           </div>
         </div>
@@ -97,7 +97,7 @@ const DatingStoriesForMen = () => {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              What Kind of Dating Stories Do Men Share?
+              What Men Share on Juice
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               From first dates to long-term relationships - men share it all anonymously
@@ -130,7 +130,7 @@ const DatingStoriesForMen = () => {
       <section className="py-20 px-4 bg-white/50">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-8">
-            Why Men Choose Our Platform for Dating Stories
+            Why Juice, Not Reddit or DMs
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="space-y-4">
@@ -158,13 +158,13 @@ const DatingStoriesForMen = () => {
           <Card className="border-0 shadow-card bg-gradient-primary text-white">
             <CardContent className="p-12">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                Ready to Read Real Dating Stories?
+                The story you need is already in there.
               </h2>
               <p className="text-xl mb-8 opacity-90">
-                Join thousands of men sharing and reading authentic dating experiences
+                Join a verified community of men sharing authentic dating experiences.
               </p>
               <Button size="lg" variant="secondary" onClick={() => navigate("/app")} className="text-lg px-8">
-                Start Reading Now
+                Browse Stories
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
               <p className="text-sm mt-4 opacity-75">
@@ -179,8 +179,8 @@ const DatingStoriesForMen = () => {
       {/* SEO Footer */}
       <footer className="py-12 px-4 bg-white/80 border-t border-juice-orange/10">
         <div className="max-w-4xl mx-auto text-center text-sm text-muted-foreground">
-          <p>Dating Stories for Men | Anonymous Dating Experiences | Men's Dating Community | Tea App for Men</p>
-          <p className="mt-2">&copy; 2024 Tea App for Men. All rights reserved.</p>
+          <p>Dating Stories for Men | Anonymous Dating Experiences | Men's Dating Community | Juice</p>
+          <p className="mt-2">&copy; 2024 Juice. All rights reserved.</p>
         </div>
       </footer>
     </div>
