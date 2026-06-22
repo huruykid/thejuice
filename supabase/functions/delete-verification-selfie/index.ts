@@ -71,22 +71,38 @@ Deno.serve(async (req) => {
 
     console.log(`Starting selfie deletion for verification ${verificationId}`)
 
-    // Extract file path from URL
+    // Extract file path from URL. Files are stored at `{subjectUserId}/{fileName}`
+    // in the `verification-selfies` bucket. Use the segments AFTER the bucket name
+    // so the deletion targets the actual subject's folder (NOT the admin's id).
     const url = new URL(selfieUrl)
-    const pathParts = url.pathname.split('/')
-    const fileName = pathParts[pathParts.length - 1]
-    const filePath = `${user.id}/${fileName}`
+    const pathParts = url.pathname.split('/').filter(Boolean)
+    const bucketIdx = pathParts.indexOf('verification-selfies')
+    if (bucketIdx === -1 || bucketIdx >= pathParts.length - 2) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid selfie URL' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+    const filePath = pathParts.slice(bucketIdx + 1).join('/')
 
     console.log(`Deleting file: ${filePath}`)
 
-    // Delete the file from storage
-    const { error: deleteError } = await supabase.storage
+    // Delete the file from storage and verify it was actually removed
+    const { data: removedFiles, error: deleteError } = await supabase.storage
       .from('verification-selfies')
       .remove([filePath])
 
+    const storageDeleted = !deleteError && Array.isArray(removedFiles) && removedFiles.length > 0
+
     if (deleteError) {
       console.error('Failed to delete file from storage:', deleteError)
-      // Continue with database update even if file deletion fails
+    }
+    if (!storageDeleted) {
+      console.error('Storage deletion did not remove any files for path:', filePath)
+      return new Response(
+        JSON.stringify({ error: 'Failed to delete selfie file from storage' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
     }
 
     // Update the verification record to clear selfie_url and add audit info
@@ -117,7 +133,7 @@ Deno.serve(async (req) => {
         file_path: filePath,
         original_url: selfieUrl,
         deleted_at: new Date().toISOString(),
-        storage_deletion_success: !deleteError
+        storage_deletion_success: storageDeleted
       }
     })
 
@@ -131,7 +147,7 @@ Deno.serve(async (req) => {
       JSON.stringify({ 
         success: true, 
         message: 'Selfie deleted successfully',
-        storage_deleted: !deleteError
+        storage_deleted: storageDeleted
       }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )

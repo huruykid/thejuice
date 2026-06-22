@@ -1,10 +1,9 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-import { corsHeaders, createSecureResponse, createSecureErrorResponse, checkRateLimit, createRateLimitErrorResponse } from '../_shared/security.ts';
+import { corsHeaders, createSecureResponse, createSecureErrorResponse, checkRateLimit, createRateLimitErrorResponse, authenticateRequest } from '../_shared/security.ts';
 
 interface ModerationRequest {
   content: string;
-  userId: string;
   contentType: 'story' | 'comment' | 'profile';
 }
 
@@ -22,18 +21,19 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    // Get user IP for rate limiting
-    const userIP = req.headers.get('x-forwarded-for') || 'unknown';
-    
-    // Apply rate limiting (10 requests per minute per IP)
-    if (!checkRateLimit(`moderation_${userIP}`, 10, 60000)) {
+    const auth = await authenticateRequest(req);
+    if (auth instanceof Response) return auth;
+    const userId = auth.userId;
+
+    // Per-user rate limit (10 requests per minute)
+    if (!checkRateLimit(`moderation_${userId}`, 10, 60000)) {
       return createRateLimitErrorResponse();
     }
 
-    const { content, userId, contentType }: ModerationRequest = await req.json();
+    const { content, contentType }: ModerationRequest = await req.json();
 
-    if (!content || !userId || !contentType) {
-      return createSecureErrorResponse('Missing required fields: content, userId, contentType');
+    if (!content || !contentType) {
+      return createSecureErrorResponse('Missing required fields: content, contentType');
     }
 
     // Initialize Supabase client

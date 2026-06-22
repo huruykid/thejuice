@@ -87,3 +87,45 @@ export const createRateLimitErrorResponse = (): Response => {
     429
   );
 };
+
+// Authenticate caller via Authorization header.
+// Returns { userId } on success or a Response (401) to be returned directly.
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+export const authenticateRequest = async (
+  req: Request
+): Promise<{ userId: string; token: string } | Response> => {
+  const authHeader = req.headers.get('Authorization');
+  if (!authHeader?.startsWith('Bearer ')) {
+    return createSecureErrorResponse('Unauthorized', 401);
+  }
+  const token = authHeader.replace('Bearer ', '');
+  const supabase = createClient(
+    Deno.env.get('SUPABASE_URL') ?? '',
+    Deno.env.get('SUPABASE_ANON_KEY') ?? ''
+  );
+  const { data, error } = await supabase.auth.getUser(token);
+  if (error || !data?.user) {
+    return createSecureErrorResponse('Unauthorized', 401);
+  }
+  return { userId: data.user.id, token };
+};
+
+export const requireAdmin = async (
+  userId: string
+): Promise<Response | null> => {
+  const supabase = createClient(
+    Deno.env.get('SUPABASE_URL') ?? '',
+    Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+  );
+  const { data, error } = await supabase
+    .from('user_roles')
+    .select('role')
+    .eq('user_id', userId)
+    .eq('role', 'admin')
+    .maybeSingle();
+  if (error || !data) {
+    return createSecureErrorResponse('Forbidden', 403);
+  }
+  return null;
+};
