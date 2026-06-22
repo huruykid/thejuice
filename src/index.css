@@ -6,99 +6,100 @@
 
 @layer base {
   :root {
-    /* Core Brand Colors - Vibrant & Modern */
-    --background: 0 0% 99%;
-    --background-secondary: 320 20% 98%;
-    --foreground: 240 10% 8%;
+    /* THE JUICE — Brutalist Pop tokens
+       White stock + ink black + saturated orange + acid yellow */
+    --background: 0 0% 100%;
+    --background-secondary: 0 0% 96%;
+    --foreground: 0 0% 4%;
 
     /* Card & Surface Colors */
     --card: 0 0% 100%;
-    --card-foreground: 240 10% 8%;
-    --card-hover: 320 15% 98%;
+    --card-foreground: 0 0% 4%;
+    --card-hover: 54 100% 95%;
 
     /* Popover & Modal Colors */
     --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 8%;
+    --popover-foreground: 0 0% 4%;
 
-    /* Primary Brand - Juice Orange */
-    --primary: 25 95% 60%;
-    --primary-light: 25 95% 70%;
-    --primary-dark: 25 95% 50%;
+    /* Primary — Juice Orange #ff5722 */
+    --primary: 14 100% 57%;
+    --primary-light: 14 100% 67%;
+    --primary-dark: 14 100% 47%;
     --primary-foreground: 0 0% 100%;
 
-    /* Secondary Colors - Masculine Blue */
-    --secondary: 210 100% 96%;
-    --secondary-foreground: 210 20% 20%;
+    /* Secondary — flat ink */
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 4%;
 
     /* Muted Tones */
-    --muted: 210 10% 96%;
-    --muted-foreground: 210 8% 46%;
+    --muted: 0 0% 94%;
+    --muted-foreground: 0 0% 32%;
 
-    /* Accent Colors - Bold Blue */
-    --accent: 210 85% 55%;
-    --accent-light: 210 85% 70%;
-    --accent-foreground: 0 0% 100%;
+    /* Accent — Acid Yellow #ffeb3b */
+    --accent: 54 100% 62%;
+    --accent-light: 54 100% 72%;
+    --accent-foreground: 0 0% 4%;
 
-    /* Success & Error States */
-    --success: 142 76% 36%;
-    --success-light: 142 76% 50%;
+    /* Success & Error States — kept saturated for flag chrome */
+    --success: 142 72% 34%;
+    --success-light: 142 72% 44%;
     --success-foreground: 0 0% 100%;
-    
-    --destructive: 0 85% 60%;
-    --destructive-light: 0 85% 70%;
+
+    --destructive: 14 100% 57%;
+    --destructive-light: 14 100% 67%;
     --destructive-foreground: 0 0% 100%;
 
-    /* Interactive Elements */
-    --border: 240 15% 90%;
-    --border-light: 240 10% 94%;
-    --input: 240 10% 96%;
-    --ring: 25 95% 60%;
+    /* Interactive Elements — borders are INK, not gray */
+    --border: 0 0% 4%;
+    --border-light: 0 0% 88%;
+    --input: 0 0% 96%;
+    --ring: 14 100% 57%;
 
-    /* Juice App Specific Colors */
-    --juice-orange: 25 95% 60%;
-    --juice-orange-light: 25 95% 70%;
-    --juice-orange-dark: 25 95% 50%;
-    --juice-pink: 320 85% 70%;
-    --juice-purple: 280 85% 70%;
-    --juice-blue: 200 85% 60%;
-    --juice-green: 142 76% 50%;
-    --juice-lavender: 260 40% 90%;
+    /* Juice App Specific Colors — collapsed to the Brutalist Pop palette */
+    --juice-orange: 14 100% 57%;
+    --juice-orange-light: 14 100% 67%;
+    --juice-orange-dark: 14 100% 47%;
+    --juice-pink: 14 100% 57%;
+    --juice-purple: 0 0% 4%;
+    --juice-blue: 0 0% 4%;
+    --juice-green: 142 72% 38%;
+    --juice-lavender: 54 100% 90%;
 
-    /* Modern Gradients - Masculine Orange/Blue Style */
-    --gradient-primary: linear-gradient(135deg, hsl(25 95% 60%), hsl(35 95% 65%), hsl(210 85% 60%));
-    --gradient-secondary: linear-gradient(135deg, hsl(210 85% 55%), hsl(220 85% 65%));
-    --gradient-success: linear-gradient(135deg, hsl(142 76% 50%), hsl(120 85% 60%));
-    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%), hsl(25 15% 98%));
-    --gradient-overlay: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.3) 100%);
+    /* Gradients — flattened. Brutalism is honest about color. */
+    --gradient-primary: linear-gradient(135deg, hsl(14 100% 57%), hsl(14 100% 57%));
+    --gradient-secondary: linear-gradient(135deg, hsl(0 0% 4%), hsl(0 0% 4%));
+    --gradient-success: linear-gradient(135deg, hsl(142 72% 38%), hsl(142 72% 38%));
+    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%), hsl(0 0% 100%));
+    --gradient-overlay: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.4) 100%);
 
-    /* Modern Shadows - Soft & Layered */
+    /* Shadows — hard offset, no blur. Posters, not glass. */
     --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
-    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
-    --shadow-card: 0 8px 32px -8px rgba(25, 95%, 60%, 0.15);
-    --shadow-glow: 0 0 40px rgba(25, 95%, 60%, 0.3);
+    --shadow-sm: 3px 3px 0 0 hsl(0 0% 4%);
+    --shadow-md: 4px 4px 0 0 hsl(0 0% 4%);
+    --shadow-lg: 6px 6px 0 0 hsl(0 0% 4%);
+    --shadow-xl: 8px 8px 0 0 hsl(0 0% 4%);
+    --shadow-card: 6px 6px 0 0 hsl(0 0% 4%);
+    --shadow-glow: 0 0 0 3px hsl(14 100% 57% / 0.4);
 
-    /* Modern Animation Curves - Optimized for responsiveness */
+    /* Animation Curves */
     --transition-smooth: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-bounce: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
     --transition-spring: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 
-    /* Spacing & Layout */
-    --radius: 1.2rem;
-    --radius-sm: 0.8rem;
-    --radius-lg: 1.6rem;
+    /* Layout — squared off. No soft corners. */
+    --radius: 0rem;
+    --radius-sm: 0rem;
+    --radius-lg: 0rem;
 
     /* Sidebar */
-    --sidebar-background: 0 0% 99%;
-    --sidebar-foreground: 240 10% 15%;
-    --sidebar-primary: 25 95% 60%;
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 0 0% 4%;
+    --sidebar-primary: 14 100% 57%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 25 15% 96%;
-    --sidebar-accent-foreground: 210 10% 15%;
-    --sidebar-border: 210 15% 90%;
-    --sidebar-ring: 25 95% 60%;
+    --sidebar-accent: 54 100% 90%;
+    --sidebar-accent-foreground: 0 0% 4%;
+    --sidebar-border: 0 0% 4%;
+    --sidebar-ring: 14 100% 57%;
   }
 
   .dark {
