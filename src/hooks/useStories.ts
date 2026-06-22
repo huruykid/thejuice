@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { sanitizeText, validateStoryContent, validateRating, validateTag } from '@/lib/security';
 
@@ -47,6 +47,42 @@ export const useStories = () => {
       if (error) throw error;
       return data || [];
     },
+  });
+};
+
+/**
+ * Paginated stories feed. Uses Supabase `range()` to fetch a page at a time.
+ * `getNextPageParam` returns `undefined` once we get fewer rows than the page size.
+ */
+export const STORIES_PAGE_SIZE = 12;
+
+export const useInfiniteStories = (pageSize: number = STORIES_PAGE_SIZE) => {
+  return useInfiniteQuery({
+    queryKey: ['stories', 'infinite', pageSize],
+    initialPageParam: 0,
+    queryFn: async ({ pageParam = 0 }): Promise<Story[]> => {
+      const from = (pageParam as number) * pageSize;
+      const to = from + pageSize - 1;
+      const { data, error } = await (supabase as any)
+        .from('stories')
+        .select(`
+          *,
+          profiles (
+            id,
+            anonymous_username
+          ),
+          story_tags (
+            tag
+          )
+        `)
+        .order('created_at', { ascending: false })
+        .range(from, to);
+
+      if (error) throw error;
+      return data || [];
+    },
+    getNextPageParam: (lastPage, allPages) =>
+      lastPage.length < pageSize ? undefined : allPages.length,
   });
 };
 
