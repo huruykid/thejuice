@@ -212,7 +212,7 @@ const BlogPost = () => {
               </p>
             </div>
             
-            <Button onClick={sharePost} variant="outline">
+            <Button onClick={sharePost} variant="outline" size="sm">
               <Share2 className="w-4 h-4 mr-2" />
               Share this post
             </Button>
