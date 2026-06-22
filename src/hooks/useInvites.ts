@@ -61,51 +61,13 @@ export const useInvites = () => {
   // Generate new invite code
   const generateInviteMutation = useMutation({
     mutationFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('User not authenticated');
+      // Server-side function performs rate limit, quota check, code generation,
+      // insert, and stats decrement atomically.
+      const { data, error } = await (supabase as any)
+        .rpc('generate_user_invite_code');
 
-      // Check rate limiting first
-      const { data: rateLimitOk, error: rateLimitError } = await (supabase as any)
-        .rpc('check_invite_generation_rate_limit', { user_id_param: user.id });
-
-      if (rateLimitError) throw rateLimitError;
-      if (!rateLimitOk) {
-        throw new Error('Rate limit exceeded. You can only generate 5 invite codes per hour.');
-      }
-
-      // Check if user has remaining invites
-      if (inviteStats && inviteStats.invites_remaining <= 0) {
-        throw new Error('No invites remaining');
-      }
-
-      // Generate invite code
-      const { data: codeData, error: codeError } = await (supabase as any)
-        .rpc('generate_invite_code');
-
-      if (codeError) throw codeError;
-
-      // Insert the invite code
-      const { error: insertError } = await (supabase as any)
-        .from('invite_codes')
-        .insert({
-          code: codeData,
-          created_by: user.id
-        });
-
-      if (insertError) throw insertError;
-
-      // Update user's invite stats
-      const { error: updateError } = await (supabase as any)
-        .from('user_invite_stats')
-        .update({
-          invites_remaining: inviteStats!.invites_remaining - 1,
-          invites_sent: inviteStats!.invites_sent + 1
-        })
-        .eq('user_id', user.id);
-
-      if (updateError) throw updateError;
-
-      return codeData;
+      if (error) throw error;
+      return data as string;
     },
     onSuccess: (code) => {
       toast({
@@ -128,14 +90,8 @@ export const useInvites = () => {
   const validateInviteCode = async (code: string): Promise<boolean> => {
     try {
       const { data, error } = await (supabase as any)
-        .from('invite_codes')
-        .select('id')
-        .eq('code', code.toUpperCase())
-        .is('used_by', null)
-        .gt('expires_at', new Date().toISOString())
-        .single();
-
-      return !error && !!data;
+        .rpc('validate_invite_code', { code_param: code });
+      return !error && data === true;
     } catch {
       return false;
     }
