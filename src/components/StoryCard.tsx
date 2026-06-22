@@ -291,39 +291,50 @@ const StoryCard = ({
   return (
     <>
       <div
-        className="relative bg-white rounded-3xl shadow-soft border border-juice-orange/10 overflow-hidden mb-4 select-none"
+        className="relative bg-card border-2 border-foreground shadow-brut overflow-hidden mb-8 select-none"
         onClick={handleCardClick}
       >
         {showHeartBurst && (
           <div className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center">
             <Heart
-              className="h-24 w-24 text-juice-orange drop-shadow-lg"
+              className="h-24 w-24 text-primary drop-shadow-[4px_4px_0_hsl(var(--foreground))]"
               fill="currentColor"
               style={{ animation: "heart-burst 700ms ease-out forwards" }}
             />
           </div>
         )}
-        {/* Header */}
-        <div className="p-4 border-b border-juice-orange/10">
+        {/* Header — black bar w/ avatar tile */}
+        <div className="p-4 border-b-2 border-foreground bg-foreground text-background">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-juice-orange/20 rounded-full flex items-center justify-center">
-                <span className="text-sm font-bold text-juice-orange">
-                  {(subjectName || 'Anonymous').charAt(0).toUpperCase()}
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-accent text-foreground border-2 border-background flex items-center justify-center">
+                <span className="font-display text-lg leading-none pt-0.5">
+                  {(story.subject_name || subjectName || 'A').charAt(0).toUpperCase()}
                 </span>
               </div>
-              <span className="text-sm font-medium text-foreground">{story.subject_name || subjectName || 'Anonymous'}</span>
+              <div className="leading-tight">
+                <p className="font-display text-xl leading-none pt-1 uppercase">
+                  {story.subject_name || subjectName || 'Anonymous'}
+                </p>
+                <button
+                  onClick={(e) => { e.stopPropagation(); handleAuthorClick(); }}
+                  className="text-[10px] uppercase font-bold tracking-widest text-primary hover:text-accent transition-colors"
+                >
+                  Spilled by @{authorName}
+                </button>
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-muted-foreground">{formatDate(story.created_at)}</span>
-              
+            <div className="flex items-center gap-1">
+              <span className="text-[10px] font-bold uppercase tracking-widest opacity-80">
+                {formatDate(story.created_at)}
+              </span>
               {/* Story menu */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="h-8 w-8 p-0"
+                    className="h-8 w-8 p-0 text-background hover:bg-background/10 hover:text-background"
                   >
                     <MoreVertical className="h-4 w-4" />
                   </Button>
@@ -332,7 +343,7 @@ const StoryCard = ({
                   {canDelete && (
                     <DropdownMenuItem
                       onClick={handleDelete}
-                      className="text-red-600 hover:text-red-700"
+                      className="text-destructive hover:text-destructive"
                     >
                       <Trash2 className="h-4 w-4 mr-2" />
                       Delete Story
@@ -363,7 +374,7 @@ const StoryCard = ({
 
         {/* Image Carousel */}
         {imageUrls.length > 0 && (
-          <div className="relative">
+          <div className="relative border-b-2 border-foreground">
             <Carousel className="w-full">
               <CarouselContent>
                 {imageUrls.map((url, index) => (
@@ -392,7 +403,7 @@ const StoryCard = ({
                 {imageUrls.map((_, index) => (
                   <div
                     key={index}
-                    className="w-1.5 h-1.5 rounded-full bg-white/60"
+                    className="w-2 h-2 bg-background border border-foreground"
                   />
                 ))}
               </div>
@@ -401,20 +412,22 @@ const StoryCard = ({
         )}
 
         {/* Content */}
-        <div className="p-4 space-y-3">
-          <p className="text-foreground leading-relaxed whitespace-pre-wrap">{story.content}</p>
+        <div className="p-5 space-y-3">
+          <p className="text-foreground text-lg leading-snug font-medium whitespace-pre-wrap">
+            {story.content}
+          </p>
           
           {/* Location - moved here after story content and images */}
           {(story.location || story.cities) && (
-            <div className="flex items-center gap-1 text-sm text-muted-foreground">
+            <div className="flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-muted-foreground">
               <MapPin className="h-3 w-3" />
-              <span className="text-xs">
+              <span>
                 {story.cities 
                   ? `${story.cities.city_name}, ${story.cities.state_province}`
                   : story.location
                 }
                 {story.distance && (
-                  <span className="ml-1 text-juice-blue font-medium">
+                  <span className="ml-1 text-primary">
                     • {formatDistance(story.distance)} away
                   </span>
                 )}
@@ -426,74 +439,60 @@ const StoryCard = ({
           {story.story_tags && story.story_tags.length > 0 && (
             <div className="flex flex-wrap gap-2">
               {story.story_tags.map((storyTag, index) => (
-                <Badge key={index} variant="secondary" className="text-xs">
+                <span key={index} className="brut-tag">
                   {tagEmojis[storyTag.tag.toLowerCase()] || '🏷️'} {storyTag.tag}
-                </Badge>
+                </span>
               ))}
             </div>
           )}
 
         </div>
 
-        {/* Actions */}
-        <div className="px-4 pb-4">
-          <div className="flex items-center justify-between pt-3 border-t border-juice-orange/10">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleComment}
-              className="flex items-center gap-2 text-muted-foreground"
-            >
-              <MessageCircle className="h-4 w-4" />
-              <span className="text-sm">{story.comments_count}</span>
-            </Button>
-            
-            <div className="flex items-center gap-3">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => handleReaction('green_flag')}
-                className={`flex items-center gap-2 px-3 py-1 rounded-full border-2 transition-all ${
-                  isGreenFlagged 
-                    ? 'bg-green-50 border-green-500 text-green-700' 
-                    : 'border-gray-300 text-gray-600 hover:border-green-400 hover:bg-green-50'
-                }`}
-              >
-                <Flag className="h-4 w-4 text-green-500" />
-                <span className="text-sm font-medium">{reactionCounts?.green_flag || 0}</span>
-              </Button>
-
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => handleReaction('red_flag')}
-                className={`flex items-center gap-2 px-3 py-1 rounded-full border-2 transition-all ${
-                  isRedFlagged 
-                    ? 'bg-red-50 border-red-500 text-red-700' 
-                    : 'border-gray-300 text-gray-600 hover:border-red-400 hover:bg-red-50'
-                }`}
-              >
-                <Flag className="h-4 w-4 text-red-500" />
-                <span className="text-sm font-medium">{reactionCounts?.red_flag || 0}</span>
-              </Button>
-            </div>
-          </div>
-          
-          {/* Author attribution */}
-          <div className="pt-2 border-t border-juice-orange/5 mt-2">
-            <div className="flex items-center justify-between">
-              <button 
-                onClick={handleAuthorClick}
-                className="text-xs text-muted-foreground hover:text-juice-blue transition-smooth cursor-pointer"
-              >
-                Posted by: {authorName}
-              </button>
-              <span className="text-xs text-muted-foreground">
-                1,421 views
-              </span>
-            </div>
-          </div>
+        {/* Vote bar — two big Bebas buttons, equal weight */}
+        <div className="grid grid-cols-2 border-t-4 border-foreground">
+          <button
+            onClick={() => handleReaction('green_flag')}
+            className={`py-4 flex flex-col items-center justify-center border-r-2 border-foreground transition-colors active:translate-y-[1px] ${
+              isGreenFlagged
+                ? 'bg-success text-success-foreground'
+                : 'bg-background hover:bg-success/15 text-foreground'
+            }`}
+          >
+            <span className="font-display text-2xl leading-none pt-1">
+              {reactionCounts?.green_flag || 0}
+            </span>
+            <span className="font-black text-[11px] uppercase tracking-tighter mt-1">
+              Green Flag
+            </span>
+          </button>
+          <button
+            onClick={() => handleReaction('red_flag')}
+            className={`py-4 flex flex-col items-center justify-center transition-colors active:translate-y-[1px] ${
+              isRedFlagged
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-background hover:bg-primary/15 text-foreground'
+            }`}
+          >
+            <span className="font-display text-2xl leading-none pt-1">
+              {reactionCounts?.red_flag || 0}
+            </span>
+            <span className="font-black text-[11px] uppercase tracking-tighter mt-1">
+              Red Flag
+            </span>
+          </button>
         </div>
+
+        {/* Footer strip — comments + views */}
+        <button
+          onClick={handleComment}
+          className="w-full px-4 py-2 border-t-2 border-foreground flex justify-between items-center text-[11px] font-black uppercase tracking-wider hover:bg-accent transition-colors"
+        >
+          <span className="flex items-center gap-2">
+            <MessageCircle className="h-3.5 w-3.5" strokeWidth={2.5} />
+            {story.comments_count} Comments
+          </span>
+          <span className="text-primary">Spill the tea →</span>
+        </button>
       </div>
 
       {showComments && (
