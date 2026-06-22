@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
 import { useMySubmissions } from "@/hooks/useStories";
+import juiceLogo from "@/assets/juice-wordmark.png.asset.json";
 
 interface UnverifiedHomeProps {
   onCreateStory: () => void;
@@ -30,7 +31,9 @@ const UnverifiedHome = ({ onCreateStory, onStartVerification }: UnverifiedHomePr
       {/* Header */}
       <header className="sticky top-0 z-40 bg-background/95 backdrop-blur border-b border-border">
         <div className="flex items-center justify-between px-4 h-12 max-w-xl mx-auto">
-          <h1 className="ig-wordmark text-primary">Juice</h1>
+          <h1 className="flex items-center">
+            <img src={juiceLogo.url} alt="The Juice App" className="h-7 w-auto" />
+          </h1>
           <button
             onClick={onStartVerification}
             className="text-xs font-semibold text-primary"
