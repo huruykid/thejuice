@@ -164,7 +164,7 @@
   }
 
   body {
-    @apply bg-background text-foreground font-['Inter'] antialiased;
+    @apply bg-background text-foreground font-sans antialiased;
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
     /* Prevent screenshots and screen recording */
     -webkit-user-select: none;
@@ -177,7 +177,7 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-['Poppins'] font-semibold tracking-tight;
+    @apply font-display tracking-tight uppercase;
   }
 
   /* Modern Scrollbar */
@@ -199,18 +199,18 @@
 }
 
 @layer components {
-  /* Glass Effect */
+  /* Glass Effect — kept for legacy but flattened to solid */
   .glass {
-    @apply bg-white/80 backdrop-blur-xl border border-white/20;
+    @apply bg-background border-b-2 border-foreground;
   }
 
   .glass-dark {
-    @apply bg-black/20 backdrop-blur-xl border border-white/10;
+    @apply bg-foreground text-background border-b-2 border-foreground;
   }
 
-  /* Gradient Text */
+  /* Gradient Text — flattened to solid ink for brutalist legibility */
   .gradient-text {
-    @apply bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent;
+    @apply text-foreground;
   }
 
   /* Interactive Elements - Optimized for instant feedback */
@@ -222,14 +222,25 @@
     @apply transition-colors duration-150 hover:bg-muted/50 active:bg-muted;
   }
 
-  /* Modern Card */
+  /* Modern Card — brutalist surface: ink border + offset shadow */
   .modern-card {
-    @apply bg-card border border-border/50 rounded-2xl shadow-md hover:shadow-lg transition-all duration-300;
+    @apply bg-card border-2 border-foreground shadow-brut-sm transition-all duration-150;
   }
 
   /* Floating Action Button */
   .fab {
-    @apply fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-r from-primary to-accent rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center text-white z-50;
+    @apply fixed bottom-6 right-6 w-14 h-14 bg-primary border-2 border-foreground shadow-brut-sm flex items-center justify-center text-primary-foreground z-50;
+  }
+
+  /* Brutalist primitives */
+  .brut-card {
+    @apply bg-card border-2 border-foreground shadow-brut-sm;
+  }
+  .brut-tag {
+    @apply inline-flex items-center bg-accent text-accent-foreground border-2 border-foreground px-2 py-0.5 text-[10px] font-black uppercase tracking-tighter;
+  }
+  .brut-tag-ink {
+    @apply inline-flex items-center bg-foreground text-background px-2 py-1 text-[10px] font-black uppercase tracking-tighter;
   }
 
   /* Screenshot Protection */
