@@ -76,7 +76,7 @@ const Landing = () => {
             Share your dating stories anonymously, get verified insights, and connect with guys who actually get it. 
             No judgment, just real talk about modern dating.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row flex-wrap gap-4 justify-center">
             <Button size="xl" onClick={handleGetStarted} variant="juice-outline">
               Sign up now
               <ArrowRight className="ml-2 h-5 w-5" />
