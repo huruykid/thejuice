@@ -64,7 +64,7 @@ const Home = ({ onCreateStory }: HomeProps) => {
 
       {/* Enhanced Content Section */}
       <div className="max-w-md lg:max-w-5xl xl:max-w-6xl mx-auto px-4 py-8">
-        {isLoading && stories.length === 0 ? (
+        {storiesLoading && stories.length === 0 ? (
           <LoadingSkeleton type="general" message="Loading stories..." />
         ) : stories.length > 0 ? (
           <>
