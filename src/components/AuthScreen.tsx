@@ -204,7 +204,7 @@ const AuthScreen = ({ onAuthSuccess }: AuthScreenProps) => {
                 type="submit"
                 variant="juice"
                 size="lg"
-                className="w-full"
+                className="w-full h-14 text-base"
                 disabled={loading}
               >
                 {loading ? "Please wait..." : (isSignUp ? "Create Account" : "Sign In")}
