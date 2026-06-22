@@ -84,7 +84,6 @@ Deno.serve(async (req) => {
       )
     }
     const filePath = pathParts.slice(bucketIdx + 1).join('/')
-    const fileName = pathParts[pathParts.length - 1]
 
     console.log(`Deleting file: ${filePath}`)
 
