@@ -158,11 +158,40 @@ const CreateStory = ({
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-4">
       <Card className="w-full max-w-md bg-white rounded-t-3xl sm:rounded-3xl max-h-[90vh] overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-juice-blue/10">
+        <div className="flex items-center justify-between px-6 pt-6 pb-4">
           <h2 className="text-xl font-bold text-foreground">Share Your Story</h2>
           <Button variant="ghost" size="icon" onClick={onClose}>
             <X className="h-5 w-5" />
           </Button>
+        </div>
+
+        {/* Step progress */}
+        <div className="px-6 pb-4 border-b border-juice-blue/10">
+          <div className="flex items-center justify-between mb-2">
+            {['Person', 'Story', 'Details'].map((label, i) => (
+              <div key={i} className="flex items-center gap-1.5">
+                <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold transition-colors ${
+                  i < step
+                    ? 'bg-primary text-primary-foreground'
+                    : i === step
+                    ? 'bg-primary text-primary-foreground ring-2 ring-primary/30'
+                    : 'bg-muted text-muted-foreground'
+                }`}>
+                  {i < step ? '✓' : i + 1}
+                </div>
+                <span className={`text-xs font-medium transition-colors ${
+                  i === step ? 'text-foreground' : 'text-muted-foreground'
+                }`}>
+                  {label}
+                </span>
+                {i < 2 && (
+                  <div className={`flex-1 h-px w-8 mx-1 transition-colors ${
+                    i < step ? 'bg-primary' : 'bg-border'
+                  }`} />
+                )}
+              </div>
+            ))}
+          </div>
         </div>
 
         <div className="overflow-y-auto max-h-[calc(90vh-200px)]">

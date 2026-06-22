@@ -1,4 +1,4 @@
-import { Home, Search, PlusSquare, User, MapPin } from "lucide-react";
+import { Home, Search, Plus, User, MapPin } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 
 interface NavigationProps {
@@ -31,9 +31,11 @@ const Navigation = ({ onCreateStory }: NavigationProps) => {
                 key={i}
                 onClick={onCreateStory}
                 aria-label="Create story"
-                className="flex items-center justify-center group"
+                className="flex items-center justify-center"
               >
-                <PlusSquare className="h-7 w-7 text-foreground" strokeWidth={1.8} />
+                <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-primary text-primary-foreground shadow-sm active:scale-95 transition-transform">
+                  <Plus className="h-5 w-5" strokeWidth={2.5} />
+                </div>
               </button>
             );
           }
