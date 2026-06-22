@@ -6,8 +6,8 @@ import { useAuth } from './useAuth';
 export const useSessionTimeout = (timeoutMinutes: number = 30) => {
   const { user, signOut } = useAuth();
   const { toast } = useToast();
-  const timeoutRef = useRef<NodeJS.Timeout>();
-  const warningRef = useRef<NodeJS.Timeout>();
+  const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
+  const warningRef = useRef<ReturnType<typeof setTimeout>>();
   const lastActivityRef = useRef<number>(Date.now());
 
   const resetTimeout = () => {
