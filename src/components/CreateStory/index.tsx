@@ -20,7 +20,13 @@ export interface StoryData {
   personPhone: string;
 }
 
-const CreateStory = ({ onClose }: { onClose: () => void }) => {
+const CreateStory = ({
+  onClose,
+  isUnverified = false,
+}: {
+  onClose: () => void;
+  isUnverified?: boolean;
+}) => {
   const [step, setStep] = useState(0);
   const [showSuccess, setShowSuccess] = useState(false);
   const [uploadedImages, setUploadedImages] = useState<File[]>([]);
@@ -111,6 +117,13 @@ const CreateStory = ({ onClose }: { onClose: () => void }) => {
       await createStory.mutateAsync(storyPayload);
 
       setShowSuccess(true);
+      if (isUnverified) {
+        toast({
+          title: "Submitted!",
+          description:
+            "An admin will review it before it goes live. Verify your account to read everyone else's stories.",
+        });
+      }
       setTimeout(() => {
         onClose();
       }, 2500);
