@@ -6,7 +6,6 @@ import StoryCardSkeleton from "@/components/StoryCardSkeleton";
 import ScrollToTopButton from "@/components/ScrollToTopButton";
 import PullToRefreshIndicator from "@/components/PullToRefreshIndicator";
 import { usePullToRefresh } from "@/hooks/usePullToRefresh";
-import { Button } from "@/components/ui/button";
 import { useInfiniteStories } from "@/hooks/useStories";
 import { useAuth } from "@/hooks/useAuth";
 
