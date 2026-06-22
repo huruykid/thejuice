@@ -1,5 +1,6 @@
 import React from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useBlogPost } from '@/hooks/useBlogPosts';
@@ -52,8 +53,35 @@ const BlogPost = () => {
 
   const estimatedReadTime = post.read_time_minutes || Math.ceil(post.content.split(' ').length / 200);
 
+  const canonical = `https://thejuice.lovable.app/blog/${post.slug}`;
+  const articleSchema = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": post.title,
+    "description": post.excerpt || undefined,
+    "image": post.featured_image_url || undefined,
+    "datePublished": post.created_at,
+    "mainEntityOfPage": canonical,
+    "publisher": {
+      "@type": "Organization",
+      "name": "The Juice App",
+      "logo": { "@type": "ImageObject", "url": "https://thejuice.lovable.app/juice-logo.png" }
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-soft">
+      <Helmet>
+        <title>{post.title.length > 60 ? `${post.title.slice(0, 57)}...` : post.title}</title>
+        {post.excerpt && <meta name="description" content={post.excerpt.slice(0, 160)} />}
+        <link rel="canonical" href={canonical} />
+        <meta property="og:title" content={post.title} />
+        {post.excerpt && <meta property="og:description" content={post.excerpt.slice(0, 160)} />}
+        <meta property="og:url" content={canonical} />
+        <meta property="og:type" content="article" />
+        {post.featured_image_url && <meta property="og:image" content={post.featured_image_url} />}
+        <script type="application/ld+json">{JSON.stringify(articleSchema)}</script>
+      </Helmet>
       {/* Header */}
       <div className="bg-white/80 backdrop-blur-sm border-b sticky top-0 z-10">
         <div className="max-w-4xl mx-auto px-4 py-4">
@@ -74,6 +102,7 @@ const BlogPost = () => {
       </div>
 
       {/* Article */}
+      <main>
       <article className="max-w-4xl mx-auto px-4 py-8">
         {/* Article Header */}
         <header className="mb-8">
@@ -146,9 +175,9 @@ const BlogPost = () => {
             }
             if (paragraph.startsWith('#')) {
               return (
-                <h1 key={index} className="text-3xl font-bold mt-8 mb-4 text-primary">
+                <h2 key={index} className="text-3xl font-bold mt-8 mb-4 text-primary">
                   {paragraph.replace('#', '').trim()}
-                </h1>
+                </h2>
               );
             }
             
@@ -195,6 +224,7 @@ const BlogPost = () => {
           </div>
         </footer>
       </article>
+      </main>
 
       {/* Call to Action */}
       <div className="bg-gradient-to-r from-primary/10 to-primary/5 border-t mt-12">

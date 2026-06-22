@@ -1,20 +1,11 @@
 import { Button } from "@/components/ui/button";
+import { Helmet } from "react-helmet-async";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users, Shield, MessageSquare, Star, ArrowRight, Heart, ThumbsUp, Eye } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
 
 const DatingStoriesForMen = () => {
   const navigate = useNavigate();
-
-  useEffect(() => {
-    // SEO: Update page title and meta description dynamically
-    document.title = "Dating Stories for Men - Real Anonymous Experiences | Tea App for Men";
-    const metaDescription = document.querySelector('meta[name="description"]');
-    if (metaDescription) {
-      metaDescription.setAttribute('content', "Read real dating stories from men. Anonymous experiences, honest reviews, and dating advice from guys who have been there. Join thousands sharing their stories.");
-    }
-  }, []);
 
   const stats = [
     { icon: <Users className="h-8 w-8 text-juice-orange" />, number: "10,000+", label: "Men Sharing Stories" },
@@ -48,12 +39,21 @@ const DatingStoriesForMen = () => {
 
   return (
     <div className="min-h-screen bg-gradient-soft">
+      <Helmet>
+        <title>Dating Stories for Men — Anonymous & Real</title>
+        <meta name="description" content="Read real anonymous dating stories from verified men. Honest reviews and advice from guys who've been there." />
+        <link rel="canonical" href="https://thejuice.lovable.app/dating-stories-for-men" />
+        <meta property="og:title" content="Dating Stories for Men — Anonymous & Real" />
+        <meta property="og:description" content="Read real anonymous dating stories from verified men." />
+        <meta property="og:url" content="https://thejuice.lovable.app/dating-stories-for-men" />
+        <meta property="og:type" content="website" />
+      </Helmet>
       {/* Header */}
       <header className="sticky top-0 bg-white/80 backdrop-blur-lg border-b border-juice-orange/10 z-40">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <img src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" alt="Tea App for Men" className="h-8 w-8" />
-            <h1 className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">Tea App for Men</h1>
+            <span className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">Tea App for Men</span>
           </div>
           <Button onClick={() => navigate("/app")} variant="juice">
             Join Now
@@ -61,6 +61,7 @@ const DatingStoriesForMen = () => {
         </div>
       </header>
 
+      <main>
       {/* Hero Section */}
       <section className="py-20 px-4">
         <div className="max-w-4xl mx-auto text-center">
@@ -184,6 +185,7 @@ const DatingStoriesForMen = () => {
           </Card>
         </div>
       </section>
+      </main>
 
       {/* SEO Footer */}
       <footer className="py-12 px-4 bg-white/80 border-t border-juice-orange/10">

@@ -1,19 +1,11 @@
 import { Button } from "@/components/ui/button";
+import { Helmet } from "react-helmet-async";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { TrendingUp, Target, Users, Zap, BarChart3, Search, Share2, Crown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
 
 const CompetitorAnalysis = () => {
   const navigate = useNavigate();
-
-  useEffect(() => {
-    document.title = "The Tea App Men Have Been Waiting For - Finally! | Tea App for Men";
-    const metaDescription = document.querySelector('meta[name="description"]');
-    if (metaDescription) {
-      metaDescription.setAttribute('content', "While women have Tea app, men had nothing... until now. The Tea App for Men is here - anonymous dating stories, reviews, and advice from verified men. Join the revolution.");
-    }
-  }, []);
 
   const competitorGaps = [
     {
@@ -69,12 +61,21 @@ const CompetitorAnalysis = () => {
 
   return (
     <div className="min-h-screen bg-gradient-soft">
+      <Helmet>
+        <title>The Tea App Men Have Been Waiting For</title>
+        <meta name="description" content="Women have Tea app — now men do too. Anonymous dating stories, reviews, and advice from verified men." />
+        <link rel="canonical" href="https://thejuice.lovable.app/competitor-analysis" />
+        <meta property="og:title" content="The Tea App Men Have Been Waiting For" />
+        <meta property="og:description" content="Women have Tea app — now men do too." />
+        <meta property="og:url" content="https://thejuice.lovable.app/competitor-analysis" />
+        <meta property="og:type" content="website" />
+      </Helmet>
       {/* Header */}
       <header className="sticky top-0 bg-white/80 backdrop-blur-lg border-b border-juice-orange/10 z-40">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <img src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" alt="Tea App for Men" className="h-8 w-8" />
-            <h1 className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">Tea App for Men</h1>
+            <span className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">Tea App for Men</span>
           </div>
           <Button onClick={() => navigate("/app")} variant="juice">
             Join the Revolution
@@ -82,6 +83,7 @@ const CompetitorAnalysis = () => {
         </div>
       </header>
 
+      <main>
       {/* Hero Section */}
       <section className="py-20 px-4">
         <div className="max-w-4xl mx-auto text-center">
@@ -281,6 +283,7 @@ const CompetitorAnalysis = () => {
           </Card>
         </div>
       </section>
+      </main>
 
       {/* SEO Footer */}
       <footer className="py-12 px-4 bg-white/80 border-t border-juice-orange/10">
