@@ -447,6 +447,8 @@ export type Database = {
       }
       stories: {
         Row: {
+          approved_at: string | null
+          approved_by: string | null
           city_id: string | null
           comments_count: number
           communication_rating: number | null
@@ -462,6 +464,7 @@ export type Database = {
           overall_vibe_rating: number | null
           profile_id: string | null
           reactions_count: number
+          status: string
           subject_name: string | null
           subject_phone: string | null
           updated_at: string
@@ -469,6 +472,8 @@ export type Database = {
           view_count: number
         }
         Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
           city_id?: string | null
           comments_count?: number
           communication_rating?: number | null
@@ -484,6 +489,7 @@ export type Database = {
           overall_vibe_rating?: number | null
           profile_id?: string | null
           reactions_count?: number
+          status?: string
           subject_name?: string | null
           subject_phone?: string | null
           updated_at?: string
@@ -491,6 +497,8 @@ export type Database = {
           view_count?: number
         }
         Update: {
+          approved_at?: string | null
+          approved_by?: string | null
           city_id?: string | null
           comments_count?: number
           communication_rating?: number | null
@@ -506,6 +514,7 @@ export type Database = {
           overall_vibe_rating?: number | null
           profile_id?: string | null
           reactions_count?: number
+          status?: string
           subject_name?: string | null
           subject_phone?: string | null
           updated_at?: string
