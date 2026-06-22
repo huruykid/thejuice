@@ -1,23 +1,50 @@
-## Part A — Button spacing fixes (recommend shipping all)
+## Goal
 
-1. **`src/components/ui/button.tsx:40`** — change `lg: "h-13 px-8 text-base"` → `lg: "h-14 px-8 text-base"`. This single edit restores 17 cramped hero/CTA buttons across HowItWorks, BlogPost, AnonymousDatingReviews, CompetitorAnalysis, DatingStoriesForMen, MaleDatingCommunity, MensDatingAdvice, TeaAppComparison.
-2. **`src/pages/Landing.tsx:208`** — promote the "Get Started Now" CTA from `size="default"` → `size="xl"` so it matches the hero.
-3. **`src/pages/BlogPost.tsx`** — standardize both Share buttons to `size="sm"` (header at line 97 already is; bump footer line 215 down from default).
+Run a UX copy agent across all 10 marketing pages, audit through a **conversion-first** lens (with virality, readability, SEO as secondary lenses), then ship the recommended copy changes.
 
-Out of scope for this pass:
-- Adding a missing hero CTA on `TeaAppComparison.tsx` — that's a content decision, not a spacing fix. Flagging only.
+## Pages in scope
 
-## Part B — Font direction
+`Landing`, `HowItWorks`, `Blog`, `BlogPost`, `AnonymousDatingReviews`, `CompetitorAnalysis`, `DatingStoriesForMen`, `MaleDatingCommunity`, `MensDatingAdvice`, `TeaAppComparison`.
 
-Pick ONE pairing to apply. I'll then:
-1. Add the Google Fonts `<link>` to `index.html`.
-2. Update `tailwind.config.ts` `fontFamily.sans` / `fontFamily.display` to the new families.
-3. Apply `font-display` to `h1`/`h2` in `src/index.css` so the display font actually renders (it currently doesn't).
-4. Tune `leading-tight` / `leading-none` on hero headlines if Barlow Condensed is chosen.
+## What the agent audits per page
 
-The three options:
-- **DM Serif Display + DM Sans** — credible, broadsheet, review-platform trust.
-- **Barlow Condensed 800 + Barlow** — punchy, sports-mag, community-movement energy.
-- **Playfair Display SC + Source Sans 3** — secret-society small-caps, anonymity vibe.
+For every page, the agent extracts and rates each copy element:
 
-I'll ask you to pick the pairing once this plan is approved.
+1. **Hero H1** — clarity of value prop, specificity, hook strength (does it stop the scroll?).
+2. **Hero subhead** — does it answer "what + who for + why now" in one line?
+3. **Primary CTA label** — action verb, low friction, outcome-oriented (e.g. "Get Started" → "See real stories now").
+4. **Secondary CTA** — complementary, not competing.
+5. **Section headers** — scannable, benefit-led, not feature-led.
+6. **Body paragraphs** — readability (Flesch grade ≤ 8 for marketing), sentence length, jargon.
+7. **Social proof / trust copy** — specific numbers vs vague ("thousands of men" → "12,400 verified men").
+8. **CTA card at the bottom** — repeats and sharpens the hero promise.
+9. **Meta title + description** (SEO secondary lens) — under 60 / 160 chars, keyword aligned with H1.
+10. **One viral/shareable line per page** — a pull-quote-worthy sentence that would survive being screenshotted to X / IG.
+
+## Brand voice constraints the agent must hold
+
+- Anonymous, men-only, story-driven. Confidential without being seedy.
+- No "guys" / "bro" cringe. No fake urgency ("ACT NOW").
+- Don't promise things the product can't deliver (no "find your soulmate").
+- Respect existing memory: no invite codes, no location features, no phone-number references.
+
+## Deliverable from the agent
+
+A structured report containing, for each page:
+
+- File:line of each copy block audited.
+- Current copy → proposed copy.
+- One-line rationale tied to the conversion lens (with virality/readability/SEO callouts where they apply).
+- A page-level "biggest win" flag.
+
+Plus a one-paragraph **sitewide voice summary** at the top — the consistent tone the rewrites converge on.
+
+## After the agent returns
+
+I'll review its proposals, then ship the changes in a single batch of file edits — keeping work in JSX text nodes and `<Helmet>` meta tags only. No component restructuring, no business-logic changes.
+
+## Out of scope
+
+- In-app copy (onboarding, empty states inside `/app`) — you opted for marketing pages only.
+- Visual/layout changes — copy text only.
+- A reusable "copy agent" UI inside the app — this is a one-shot audit, not a feature.
