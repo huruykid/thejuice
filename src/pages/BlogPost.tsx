@@ -73,7 +73,7 @@ const BlogPost = () => {
   return (
     <div className="min-h-screen bg-gradient-soft">
       <Helmet>
-        <title>{post.title.length > 60 ? `${post.title.slice(0, 57)}...` : post.title}</title>
+        <title>{post.title.length > 57 ? `${post.title.slice(0, 54)}… | Juice` : `${post.title} | Juice`}</title>
         {post.excerpt && <meta name="description" content={post.excerpt.slice(0, 160)} />}
         <link rel="canonical" href={canonical} />
         <meta property="og:title" content={post.title} />
@@ -96,7 +96,7 @@ const BlogPost = () => {
           />
           <Button variant="outline" size="sm" onClick={sharePost}>
             <Share2 className="w-4 h-4 mr-2" />
-            Share
+            Share Story
           </Button>
         </div>
         {/* Article Header */}
@@ -214,7 +214,7 @@ const BlogPost = () => {
             
             <Button onClick={sharePost} variant="outline" size="sm">
               <Share2 className="w-4 h-4 mr-2" />
-              Share this post
+              Share this story
             </Button>
           </div>
         </footer>
@@ -224,13 +224,13 @@ const BlogPost = () => {
       {/* Call to Action */}
       <div className="bg-gradient-to-r from-primary/10 to-primary/5 border-t mt-12">
         <div className="max-w-4xl mx-auto px-4 py-12 text-center">
-          <h3 className="text-2xl font-bold mb-4">Join Tea App for Men</h3>
+          <h3 className="text-2xl font-bold mb-4">Read more stories like this one</h3>
           <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
-            Be part of the first honest, safe space for men to share dating experiences and get real advice from the community.
+            Juice is a verified, anonymous space where men share real dating stories. Apply to read them all.
           </p>
           <Link to="/auth">
             <Button size="lg">
-              Join the Community
+              Request Access
             </Button>
           </Link>
         </div>

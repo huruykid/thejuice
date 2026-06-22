@@ -32,7 +32,7 @@ const Landing = () => {
   }, {
     icon: <Users className="h-6 w-6 text-juice-orange" />,
     title: "Men-Only Community",
-    description: "Finally, a space where guys can be honest about dating without judgment."
+    description: "A space where men can be honest about dating without consequences."
   }, {
     icon: <MessageSquare className="h-6 w-6 text-juice-orange" />,
     title: "Rate Real Experiences",
@@ -43,7 +43,7 @@ const Landing = () => {
     description: "Share the good, bad, and ugly without backlash or social consequences."
   }];
   const testimonials = [{
-    quote: "Finally, an app where I can get honest dating advice from other guys who've been there.",
+    quote: "Finally, an app where I can get honest dating advice from men who've actually been there.",
     author: "Mike, 28",
     rating: 5
   }, {
@@ -51,17 +51,17 @@ const Landing = () => {
     author: "James, 32",
     rating: 5
   }, {
-    quote: "Wish I had this before my last relationship. The red flags were all there in other guys' stories.",
+    quote: "Wish I had this before my last relationship. The red flags were all there in other men's stories.",
     author: "David, 26",
     rating: 5
   }];
   return <div className="min-h-screen bg-gradient-soft">
       <Helmet>
-        <title>The Juice App — Anonymous Dating Stories for Men</title>
-        <meta name="description" content="Verified men share anonymous dating stories, honest ratings, and real advice. Join 10,000+ guys keeping it real about modern dating." />
+        <title>Juice — Anonymous Dating Stories & Reviews for Men</title>
+        <meta name="description" content="Verified men share anonymous dating stories and honest date ratings. No names, no drama. Apply to join." />
         <link rel="canonical" href="https://thejuice.lovable.app/" />
-        <meta property="og:title" content="The Juice App — Anonymous Dating Stories for Men" />
-        <meta property="og:description" content="Verified men share anonymous dating stories, honest ratings, and real advice." />
+        <meta property="og:title" content="Juice — Anonymous Dating Stories & Reviews for Men" />
+        <meta property="og:description" content="Verified men share anonymous dating stories and honest date ratings. No names, no drama." />
         <meta property="og:url" content="https://thejuice.lovable.app/" />
         <meta property="og:type" content="website" />
       </Helmet>
@@ -70,27 +70,22 @@ const Landing = () => {
       <section className="py-20 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6">
-            The <span className="text-juice-orange">Tea App</span> Every Guy Has Been Waiting For
+            The Dating Stories App <span className="text-juice-orange">Built for Men</span>
           </h1>
           <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Share your dating stories anonymously, get verified insights, and connect with guys who actually get it. 
-            No judgment, just real talk about modern dating.
+            Share dating experiences anonymously. Read verified stories from men who've been there. No names. No judgment.
           </p>
           <div className="flex flex-col sm:flex-row flex-wrap gap-4 justify-center">
             <Button size="xl" onClick={handleGetStarted} variant="juice-outline">
-              Sign up now
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
-            <Button size="xl" onClick={() => window.open('https://instagram.com/sipjuiceapp', '_blank')}>
-              Join the Brotherhood
+              Request Access
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
             <Button size="xl" variant="outline" onClick={handleLearnMore}>
-              How It Works
+              See How It Works
             </Button>
           </div>
           <p className="text-sm text-muted-foreground mt-4">
-            Join 10,000+ men already sharing their stories
+            Verified members only — apply to join
           </p>
         </div>
       </section>
@@ -100,7 +95,7 @@ const Landing = () => {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Why The Tea App for Men?
+              Why Juice?
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               Built specifically for men who want honest, authentic dating insights
@@ -130,7 +125,7 @@ const Landing = () => {
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              How It Works
+              Three Steps to Your First Story
             </h2>
             <p className="text-xl text-muted-foreground">
               Get started in minutes and join the conversation
@@ -158,8 +153,8 @@ const Landing = () => {
               <div className="w-16 h-16 bg-juice-orange rounded-full flex items-center justify-center text-white font-bold text-xl mx-auto mb-4">
                 3
               </div>
-              <h3 className="text-xl font-semibold mb-2">Read Real Tea</h3>
-              <p className="text-muted-foreground">Get insights from verified men in your area and learn from their experiences.</p>
+              <h3 className="text-xl font-semibold mb-2">Read Real Stories</h3>
+              <p className="text-muted-foreground">Read verified stories and learn from what other men experienced.</p>
             </div>
           </div>
         </div>
@@ -170,7 +165,7 @@ const Landing = () => {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              What Guys Are Saying
+              From Verified Members
             </h2>
             <p className="text-xl text-muted-foreground">
               Real feedback from our verified community
@@ -200,17 +195,17 @@ const Landing = () => {
           <Card className="border-0 shadow-card bg-gradient-primary text-white">
             <CardContent className="p-12">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                Ready to Join the Community?
+                Your story deserves a safe place.
               </h2>
               <p className="text-xl mb-8 opacity-90">
-                Connect with verified men sharing real dating experiences in your area
+                Juice is the only verified, anonymous space built for men to rate and share dating experiences honestly.
               </p>
               <Button size="xl" variant="secondary" onClick={() => navigate("/app")}>
-                Get Started Now
+                Request Your Access
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
               <p className="text-sm mt-4 opacity-75">
-                Free to join • Anonymous sharing • Verified community
+                Free • Anonymous • Verified men only
               </p>
             </CardContent>
           </Card>
@@ -224,8 +219,8 @@ const Landing = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div className="space-y-4">
               <div className="flex items-center gap-2">
-                <img src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" alt="Tea App" className="h-6 w-6" />
-                <span className="font-bold text-foreground">The Tea App for Men</span>
+                <img src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" alt="Juice" className="h-6 w-6" />
+                <span className="font-bold text-foreground">Juice</span>
               </div>
               <p className="text-sm text-muted-foreground">
                 The dating community designed specifically for men to share honest experiences.
@@ -263,7 +258,7 @@ const Landing = () => {
           </div>
           
           <div className="border-t border-juice-orange/10 mt-8 pt-8 text-center text-sm text-muted-foreground">
-            <p>&copy; 2024 The Tea App for Men. All rights reserved.</p>
+            <p>&copy; 2024 Juice. All rights reserved.</p>
           </div>
         </div>
       </footer>

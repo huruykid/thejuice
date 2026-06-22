@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Helmet } from "react-helmet-async";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { TrendingUp, Target, Users, Zap, BarChart3, Search, Share2, Crown } from "lucide-react";
+import { TrendingUp, Target, Users, Zap, BarChart3, Search, Share2, Crown, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const CompetitorAnalysis = () => {
@@ -53,20 +53,20 @@ const CompetitorAnalysis = () => {
   ];
 
   const marketStats = [
-    { stat: "4M+", label: "Women using Tea app", subtext: "Zero male equivalent exists" },
+    { stat: "4M+", label: "Women using Tea app (reported)", subtext: "Zero male equivalent exists" },
     { stat: "#1", label: "Tea app ranking", subtext: "Proving demand for dating reviews" },
     { stat: "50M+", label: "Single men in US", subtext: "Completely underserved market" },
-    { stat: "0", label: "Competing male apps", subtext: "Total blue ocean opportunity" }
+    { stat: "—", label: "Equivalent verified app for men", subtext: "Until Juice" }
   ];
 
   return (
     <div className="min-h-screen bg-gradient-soft">
       <Helmet>
-        <title>The Tea App Men Have Been Waiting For</title>
-        <meta name="description" content="Women have Tea app — now men do too. Anonymous dating stories, reviews, and advice from verified men." />
+        <title>Juice vs. Tea App — The Male Dating Review Alternative</title>
+        <meta name="description" content="Juice is the first verified, anonymous dating review platform built for men — where Tea App left a gap." />
         <link rel="canonical" href="https://thejuice.lovable.app/competitor-analysis" />
-        <meta property="og:title" content="The Tea App Men Have Been Waiting For" />
-        <meta property="og:description" content="Women have Tea app — now men do too." />
+        <meta property="og:title" content="Juice vs. Tea App — The Male Dating Review Alternative" />
+        <meta property="og:description" content="Juice is the first verified, anonymous dating review platform built for men." />
         <meta property="og:url" content="https://thejuice.lovable.app/competitor-analysis" />
         <meta property="og:type" content="website" />
       </Helmet>
@@ -78,31 +78,27 @@ const CompetitorAnalysis = () => {
         <div className="max-w-4xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 bg-juice-orange/10 text-juice-orange px-4 py-2 rounded-full text-sm font-medium mb-6">
             <TrendingUp className="w-4 h-4" />
-            VIRAL OPPORTUNITY: Women's Tea app hit #1 with 4M users
+            The category men have been left out of — until now
           </div>
           
           <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6">
-            Women Have Tea App.{" "}
+            Men finally have their own{" "}
             <span className="bg-gradient-primary bg-clip-text text-transparent">
-              Now Men Do Too.
+              dating review platform.
             </span>
           </h1>
           <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-            While women dominate dating discourse with the viral Tea app, men have been completely left out. Until now. 
-            Finally, a platform where men can anonymously share dating experiences.
+            Men have never had a verified, anonymous space to share dating experiences honestly. Juice changes that.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" onClick={() => navigate("/app")} className="text-lg px-8">
-              Be Part of History
-              <Crown className="ml-2 h-5 w-5" />
+              Request Access
+              <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
             <Button size="lg" variant="outline" onClick={() => navigate("/how-it-works")} className="text-lg px-8">
-              Why Now?
+              See How It Works
             </Button>
           </div>
-          <p className="text-sm text-muted-foreground mt-4">
-            First 10,000 men get founding member status
-          </p>
         </div>
       </section>
 
@@ -110,8 +106,8 @@ const CompetitorAnalysis = () => {
       <section className="py-16 px-4 bg-white/50">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-foreground mb-4">The Opportunity Is Massive</h2>
-            <p className="text-xl text-muted-foreground">While women's Tea app explodes, men have zero options</p>
+            <h2 className="text-3xl font-bold text-foreground mb-4">The Market Gap Is Real</h2>
+            <p className="text-xl text-muted-foreground">Men have had no verified, anonymous space to share dating reviews</p>
           </div>
           
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
@@ -131,10 +127,10 @@ const CompetitorAnalysis = () => {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Why The Competition Can't Touch Us
+              What No Other Platform Offers
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              We identified every gap in the market and built the perfect solution
+              We built what was missing.
             </p>
           </div>
           
@@ -171,10 +167,10 @@ const CompetitorAnalysis = () => {
           <div className="text-center mb-12">
             <Zap className="h-12 w-12 text-juice-orange mx-auto mb-4" />
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Our Viral Growth Strategy
+              Why Juice Is Spreading
             </h2>
             <p className="text-xl text-muted-foreground">
-              How we'll dominate the conversation and capture massive market share
+              How the conversation is already shifting.
             </p>
           </div>
           
@@ -218,7 +214,7 @@ const CompetitorAnalysis = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  Tea app proves demand exists. We're perfectly positioned to capture the male market.
+                  Men want a space like this. Juice is the only one built for them.
                 </p>
               </CardContent>
             </Card>
@@ -256,18 +252,15 @@ const CompetitorAnalysis = () => {
           <Card className="border-0 shadow-card bg-gradient-primary text-white">
             <CardContent className="p-12">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                The Revolution Starts Now
+                Be among the first verified members
               </h2>
               <p className="text-xl mb-8 opacity-90">
-                Be among the first 10,000 men to join the platform that will change everything
+                Juice is the only verified, anonymous dating review platform built for men.
               </p>
               <Button size="lg" variant="secondary" onClick={() => navigate("/app")} className="text-lg px-8">
-                Join the Revolution
-                <Crown className="ml-2 h-5 w-5" />
+                Request Access
+                <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
-              <p className="text-sm mt-4 opacity-75">
-                Founding members get exclusive perks • Limited time only
-              </p>
             </CardContent>
           </Card>
         </div>
@@ -277,8 +270,8 @@ const CompetitorAnalysis = () => {
       {/* SEO Footer */}
       <footer className="py-12 px-4 bg-white/80 border-t border-juice-orange/10">
         <div className="max-w-4xl mx-auto text-center text-sm text-muted-foreground">
-          <p>Tea App for Men | Male Tea App | Men's Dating Reviews | Anonymous Male Dating Community</p>
-          <p className="mt-2">&copy; 2024 Tea App for Men. All rights reserved.</p>
+          <p>Juice vs Tea App | Men's Dating Reviews | Anonymous Male Dating Community</p>
+          <p className="mt-2">&copy; 2024 Juice. All rights reserved.</p>
         </div>
       </footer>
     </div>

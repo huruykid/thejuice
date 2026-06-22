@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Helmet } from "react-helmet-async";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Check, X, ArrowLeft, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -44,9 +45,9 @@ const TeaAppComparison = () => {
       oursBetter: true
     },
     {
-      feature: "Local Focus",
-      original: "Global stories",
-      ours: "Location-based experiences",
+      feature: "Story Depth",
+      original: "Free-form posts",
+      ours: "Structured 4-metric rating per experience",
       oursBetter: true
     },
     {
@@ -82,16 +83,24 @@ const TeaAppComparison = () => {
 
   return (
     <div className="min-h-screen bg-gradient-soft">
-      {/* Header */}
+      <Helmet>
+        <title>Juice vs. Tea App — Anonymous Dating Reviews for Men</title>
+        <meta name="description" content="See how Juice compares to Tea App — verified members, structured ratings, and full anonymity built specifically for men." />
+        <link rel="canonical" href="https://thejuice.lovable.app/tea-app-comparison" />
+        <meta property="og:title" content="Juice vs. Tea App — Anonymous Dating Reviews for Men" />
+        <meta property="og:description" content="See how Juice compares to Tea App — built specifically for men." />
+        <meta property="og:url" content="https://thejuice.lovable.app/tea-app-comparison" />
+        <meta property="og:type" content="website" />
+      </Helmet>
 
       {/* Hero Section */}
       <section className="py-16 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
-            Tea App for Men vs Original Tea App
+            Juice vs. Tea App — A Side-by-Side Comparison
           </h1>
           <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-            See how we've evolved the Tea App concept specifically for men's dating experiences and needs.
+            Same concept — built properly for men. Here's what's different.
           </p>
         </div>
       </section>
@@ -101,10 +110,10 @@ const TeaAppComparison = () => {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Key Differences
+              Feature by Feature
             </h2>
             <p className="text-xl text-muted-foreground">
-              Why men are choosing our platform over the original
+              Why verified men prefer Juice
             </p>
           </div>
 
@@ -114,8 +123,8 @@ const TeaAppComparison = () => {
                 <thead>
                   <tr className="border-b border-juice-orange/10">
                     <th className="text-left p-4 font-semibold text-foreground">Feature</th>
-                    <th className="text-left p-4 font-semibold text-muted-foreground">Original Tea App</th>
-                    <th className="text-left p-4 font-semibold text-juice-orange">Tea App for Men</th>
+                    <th className="text-left p-4 font-semibold text-muted-foreground">Tea App</th>
+                    <th className="text-left p-4 font-semibold text-juice-orange">Juice</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -143,10 +152,10 @@ const TeaAppComparison = () => {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Our Unique Advantages
+              What Only Juice Offers
             </h2>
             <p className="text-xl text-muted-foreground">
-              Why thousands of men are making the switch
+              What makes the difference
             </p>
           </div>
           
@@ -180,27 +189,27 @@ const TeaAppComparison = () => {
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              The Numbers Don't Lie
+              By the Numbers
             </h2>
             <p className="text-xl text-muted-foreground">
-              Men are finding more value in our focused approach
+              Operational specifics from how Juice is built
             </p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <Card className="text-center border-0 shadow-card bg-white/80 backdrop-blur-sm">
               <CardContent className="p-8">
-                <div className="text-4xl font-bold text-juice-orange mb-2">95%</div>
-                <div className="text-lg font-semibold text-foreground mb-2">Satisfaction Rate</div>
-                <div className="text-sm text-muted-foreground">Men report higher satisfaction with our male-focused community</div>
+                <div className="text-4xl font-bold text-juice-orange mb-2">4</div>
+                <div className="text-lg font-semibold text-foreground mb-2">Rating Metrics</div>
+                <div className="text-sm text-muted-foreground">Every review covers communication, safety, vibe, and loyalty</div>
               </CardContent>
             </Card>
             
             <Card className="text-center border-0 shadow-card bg-white/80 backdrop-blur-sm">
               <CardContent className="p-8">
-                <div className="text-4xl font-bold text-juice-orange mb-2">3x</div>
-                <div className="text-lg font-semibold text-foreground mb-2">More Engagement</div>
-                <div className="text-sm text-muted-foreground">Higher story engagement compared to mixed-gender platforms</div>
+                <div className="text-4xl font-bold text-juice-orange mb-2">100%</div>
+                <div className="text-lg font-semibold text-foreground mb-2">Manual Approval</div>
+                <div className="text-sm text-muted-foreground">Every member is reviewed before joining — no auto sign-ups</div>
               </CardContent>
             </Card>
             
@@ -221,13 +230,13 @@ const TeaAppComparison = () => {
           <Card className="border-0 shadow-card bg-gradient-primary text-white">
             <CardContent className="p-12">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                Ready to Experience the Difference?
+                One platform, built for how men actually date.
               </h2>
               <p className="text-xl mb-8 opacity-90">
-                Join the dating community that actually understands men's experiences
+                Verified members. Anonymous stories. No drama from the other side of the equation.
               </p>
               <Button size="lg" variant="secondary" onClick={() => navigate("/app")} className="text-lg px-8">
-                Join Tea App for Men
+                Request Access to Juice
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
               <p className="text-sm mt-4 opacity-75">

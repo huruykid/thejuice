@@ -27,11 +27,11 @@ const Blog = () => {
   return (
     <div className="min-h-screen bg-gradient-soft p-4">
       <Helmet>
-        <title>The Juice App Blog — Dating Insights for Men</title>
-        <meta name="description" content="Stories, advice, and insights for modern men navigating dating and relationships." />
+        <title>Juice Blog — Men's Dating Stories, Advice & Reviews</title>
+        <meta name="description" content="Anonymous dating stories, honest reviews, and real advice from verified men. No fluff, no filters." />
         <link rel="canonical" href="https://thejuice.lovable.app/blog" />
-        <meta property="og:title" content="The Juice App Blog" />
-        <meta property="og:description" content="Stories, advice, and insights for modern men navigating dating and relationships." />
+        <meta property="og:title" content="Juice Blog — Men's Dating Stories, Advice & Reviews" />
+        <meta property="og:description" content="Anonymous dating stories, honest reviews, and real advice from verified men." />
         <meta property="og:url" content="https://thejuice.lovable.app/blog" />
         <meta property="og:type" content="website" />
       </Helmet>
@@ -43,10 +43,10 @@ const Blog = () => {
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-primary mb-4">
-            Tea App for Men Blog
+            Juice — Dating Stories & Advice for Men
           </h1>
           <p className="text-lg text-muted-foreground mb-8">
-            Insights, stories, and advice for modern men navigating dating and relationships
+            Real stories. Honest ratings. Advice from verified men.
           </p>
           
           {user && (
@@ -94,7 +94,7 @@ const Blog = () => {
             <CardContent>
               <Link to={`/blog/${posts[0].slug}`}>
                 <Button className="group">
-                  Read More 
+                  Read the Full Story
                   <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </Link>
@@ -149,7 +149,7 @@ const Blog = () => {
                 
                 <Link to={`/blog/${post.slug}`}>
                   <Button variant="outline" size="sm" className="group">
-                    Read More 
+                    Read Story
                     <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                   </Button>
                 </Link>
@@ -160,9 +160,9 @@ const Blog = () => {
 
         {(!posts || posts.length === 0) && (
           <div className="text-center py-12">
-            <h3 className="text-xl font-semibold mb-2">No blog posts yet</h3>
+            <h3 className="text-xl font-semibold mb-2">Nothing here yet.</h3>
             <p className="text-muted-foreground mb-4">
-              Be the first to create content for the Tea App for Men community!
+              The first story is the most important one.
             </p>
             {user && (
               <Link to="/viral-marketing-hub">

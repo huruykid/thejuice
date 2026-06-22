@@ -30,15 +30,15 @@ const MaleDatingCommunity = () => {
       title: "Supportive Environment",
       description: "A judgment-free zone where men support each other",
       icon: <Heart className="h-6 w-6 text-juice-orange" />,
-      benefits: ["No toxic masculinity", "Emotional support", "Constructive advice", "Brotherhood"]
+      benefits: ["No toxic masculinity", "Emotional support", "Constructive advice", "Real community"]
     }
   ];
 
   const communityStats = [
-    { number: "10,000+", label: "Active Members", description: "Verified men sharing experiences" },
-    { number: "50,000+", label: "Stories Shared", description: "Real dating experiences posted" },
-    { number: "500+", label: "Daily Interactions", description: "Comments, reactions, and discussions" },
-    { number: "24/7", label: "Community Support", description: "Always someone online to help" }
+    { number: "Verified", label: "Members Only", description: "Manual approval keeps it real" },
+    { number: "Anonymous", label: "By Default", description: "Identity stays hidden, always" },
+    { number: "24/7", label: "Community Activity", description: "Stories and discussions any time" },
+    { number: "Zero", label: "Public Profiles", description: "Nothing about you is searchable" }
   ];
 
   const whatMenShare = [
@@ -53,11 +53,11 @@ const MaleDatingCommunity = () => {
   return (
     <div className="min-h-screen bg-gradient-soft">
       <Helmet>
-        <title>Male Dating Community — Verified Men Only</title>
-        <meta name="description" content="Join the largest anonymous male dating community. Verified men share stories, advice, and experiences in a judgment-free space." />
+        <title>Juice — Verified Male Dating Community</title>
+        <meta name="description" content="A verified, anonymous space where men share real dating stories and advice — judgment-free, identity-protected." />
         <link rel="canonical" href="https://thejuice.lovable.app/male-dating-community" />
-        <meta property="og:title" content="Male Dating Community — Verified Men Only" />
-        <meta property="og:description" content="Anonymous male dating community for verified men only." />
+        <meta property="og:title" content="Juice — Verified Male Dating Community" />
+        <meta property="og:description" content="A verified, anonymous space where men share real dating stories and advice." />
         <meta property="og:url" content="https://thejuice.lovable.app/male-dating-community" />
         <meta property="og:type" content="website" />
       </Helmet>
@@ -68,25 +68,25 @@ const MaleDatingCommunity = () => {
       <section className="py-20 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6">
-            The Largest Male Dating{" "}
+            A Verified Dating Community —{" "}
             <span className="bg-gradient-primary bg-clip-text text-transparent">
-              Community Online
+              Built for Men
             </span>
           </h1>
           <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Connect with thousands of verified men sharing real dating stories, advice, and experiences. A judgment-free community where guys actually help each other.
+            Verified men share real dating stories, advice, and honest experiences — with full anonymity and no judgment.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" onClick={() => navigate("/app")} className="text-lg px-8">
-              Join the Community
+              Request Access
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
             <Button size="lg" variant="outline" onClick={() => navigate("/how-it-works")} className="text-lg px-8">
-              Learn More
+              See How It Works
             </Button>
           </div>
           <p className="text-sm text-muted-foreground mt-4">
-            Free to join • Verified men only • 100% anonymous
+            Free • Verified men only • 100% anonymous
           </p>
         </div>
       </section>
@@ -95,8 +95,8 @@ const MaleDatingCommunity = () => {
       <section className="py-16 px-4 bg-white/50">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-foreground mb-4">Our Growing Community</h2>
-            <p className="text-xl text-muted-foreground">Real numbers from real men making real connections</p>
+            <h2 className="text-3xl font-bold text-foreground mb-4">How the Community Works</h2>
+            <p className="text-xl text-muted-foreground">What makes Juice different at a structural level</p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
@@ -116,10 +116,10 @@ const MaleDatingCommunity = () => {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Why Men Choose Our Community
+              What Sets Juice Apart
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              The features that make our community different from all the rest
+              The features that matter most.
             </p>
           </div>
           
@@ -161,7 +161,7 @@ const MaleDatingCommunity = () => {
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              What Men Share in Our Community
+              Real Topics. Real Talk.
             </h2>
             <p className="text-xl text-muted-foreground">
               Real topics from real men helping each other succeed in dating
@@ -184,7 +184,7 @@ const MaleDatingCommunity = () => {
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Our Community Standards
+              How We Keep It Honest
             </h2>
             <p className="text-xl text-muted-foreground">
               What makes our community a safe and supportive space for all men
@@ -237,17 +237,17 @@ const MaleDatingCommunity = () => {
           <Card className="border-0 shadow-card bg-gradient-primary text-white">
             <CardContent className="p-12">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                Ready to Join the Brotherhood?
+                Verified stories from men who've been where you are.
               </h2>
               <p className="text-xl mb-8 opacity-90">
-                Connect with thousands of men who understand your dating journey
+                Juice is a private, verified space — no public profiles, no drama.
               </p>
               <Button size="lg" variant="secondary" onClick={() => navigate("/app")} className="text-lg px-8">
-                Join the Community Now
+                Request Access
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
               <p className="text-sm mt-4 opacity-75">
-                Free forever • Verified men only • Anonymous and safe
+                Free • Verified • Anonymous
               </p>
             </CardContent>
           </Card>
@@ -258,8 +258,8 @@ const MaleDatingCommunity = () => {
       {/* SEO Footer */}
       <footer className="py-12 px-4 bg-white/80 border-t border-juice-orange/10">
         <div className="max-w-4xl mx-auto text-center text-sm text-muted-foreground">
-          <p>Male Dating Community | Men's Dating Support | Anonymous Male Community | Tea App for Men</p>
-          <p className="mt-2">&copy; 2024 Tea App for Men. All rights reserved.</p>
+          <p>Male Dating Community | Men's Dating Support | Anonymous Male Community | Juice</p>
+          <p className="mt-2">&copy; 2024 Juice. All rights reserved.</p>
         </div>
       </footer>
     </div>

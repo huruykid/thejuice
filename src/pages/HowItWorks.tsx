@@ -41,16 +41,16 @@ const HowItWorks = () => {
         "Rate dates on 4 key metrics",
         "Share detailed experiences",
         "Add photos (optional and anonymous)",
-        "Help other guys learn from your experiences"
+        "Help other men learn from your experiences"
       ]
     },
     {
       number: 4,
       title: "Read Real Insights",
-      description: "Get genuine insights from verified men in your area about their dating experiences.",
+      description: "Read genuine insights from verified men about their real dating experiences.",
       icon: <Eye className="h-6 w-6 md:h-8 md:w-8 text-juice-orange" />,
       details: [
-        "Browse stories by location",
+        "Browse verified stories by experience type",
         "Filter by ratings and experiences",
         "Learn from red flags others encountered",
         "Make better dating decisions"
@@ -86,7 +86,7 @@ const HowItWorks = () => {
     "@type": "FAQPage",
     "mainEntity": [
       { "@type": "Question", "name": "Is my identity really anonymous?", "acceptedAnswer": { "@type": "Answer", "text": "Yes, completely. Your real name and photo are never shown to other users. Only your anonymous username and the stories you choose to share are visible to the community." } },
-      { "@type": "Question", "name": "Why do you need verification?", "acceptedAnswer": { "@type": "Answer", "text": "Verification ensures our community consists of real men sharing authentic experiences. It helps prevent fake accounts and maintains the quality of stories and advice shared." } },
+      { "@type": "Question", "name": "Why do you need verification?", "acceptedAnswer": { "@type": "Answer", "text": "Verification keeps fake accounts out. Every story you read comes from a real, manually approved member." } },
       { "@type": "Question", "name": "What happens to my verification photo?", "acceptedAnswer": { "@type": "Answer", "text": "Your verification selfie is used only for account verification and is never shared publicly or with other users. It's stored securely and only accessible to our verification team." } },
       { "@type": "Question", "name": "Can women join the app?", "acceptedAnswer": { "@type": "Answer", "text": "This platform is designed specifically for men to share their dating experiences in a judgment-free environment." } }
     ]
@@ -95,11 +95,11 @@ const HowItWorks = () => {
   return (
     <div className="min-h-screen bg-gradient-soft">
       <Helmet>
-        <title>How The Juice App Works — Anonymous Dating for Men</title>
-        <meta name="description" content="Sign up, verify, share, and read real anonymous dating stories from verified men. Here's how The Juice App works." />
+        <title>How Juice Works — Anonymous Dating Stories for Men</title>
+        <meta name="description" content="Four steps: create an anonymous profile, verify, share your story, and read real experiences from verified men." />
         <link rel="canonical" href="https://thejuice.lovable.app/how-it-works" />
-        <meta property="og:title" content="How The Juice App Works" />
-        <meta property="og:description" content="Sign up, verify, share, and read real anonymous dating stories from verified men." />
+        <meta property="og:title" content="How Juice Works" />
+        <meta property="og:description" content="Four steps: create an anonymous profile, verify, share your story, and read real experiences from verified men." />
         <meta property="og:url" content="https://thejuice.lovable.app/how-it-works" />
         <meta property="og:type" content="website" />
         <script type="application/ld+json">{JSON.stringify(faqSchema)}</script>
@@ -111,11 +111,10 @@ const HowItWorks = () => {
       <section className="py-10 md:py-16 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-            How The Tea App for Men Works
+            How Juice Works
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            From signup to sharing stories, here's your complete guide to joining the most honest 
-            men's dating community online.
+            Four steps. Full anonymity. Verified men only.
           </p>
         </div>
       </section>
@@ -172,7 +171,7 @@ const HowItWorks = () => {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-8 md:mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Why Men Choose Our Platform
+              What Makes Juice Different
             </h2>
             <p className="text-xl text-muted-foreground">
               Built specifically for authentic male experiences
@@ -204,7 +203,7 @@ const HowItWorks = () => {
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-8 md:mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Frequently Asked Questions
+              Common Questions
             </h2>
           </div>
           
@@ -226,7 +225,7 @@ const HowItWorks = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  Verification ensures our community consists of real men sharing authentic experiences. It helps prevent fake accounts and maintains the quality of stories and advice shared.
+                  Verification keeps fake accounts out. Every story you read comes from a real, manually approved member.
                 </p>
               </CardContent>
             </Card>
@@ -262,13 +261,13 @@ const HowItWorks = () => {
           <Card className="border-0 shadow-card bg-gradient-primary text-white">
             <CardContent className="p-12">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                Ready to Share Your Story?
+                Your story is safe here.
               </h2>
               <p className="text-xl mb-8 opacity-90">
-                Join thousands of verified men sharing honest dating experiences
+                Join a verified community of men sharing honest dating experiences.
               </p>
               <Button size="lg" variant="secondary" onClick={() => navigate("/app")} className="text-lg px-8">
-                Get Started Now
+                Request Access
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </CardContent>
