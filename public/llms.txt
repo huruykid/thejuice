@@ -1,0 +1,23 @@
+# Juice
+
+> Juice is an anonymous, men-only social platform for sharing and reading honest dating reviews. Verified men post structured reviews using codenames and a 4-metric rating system (Communication, Loyalty, Emotional Safety, Overall Vibe).
+
+Juice uses manual user approval (no invite codes), never retains phone numbers after approval, and has no location features. The web experience is the marketing and SEO surface; the app itself is iOS-first via Capacitor.
+
+## Pages
+
+- [Home](/): What Juice is and who it's for.
+- [How It Works](/how-it-works): Walkthrough of verification, codenames, the 4-metric review system, and privacy guarantees.
+- [Anonymous Dating Reviews](/anonymous-dating-reviews): Why anonymous reviews matter and how Juice structures them.
+- [Dating Stories for Men](/dating-stories-for-men): The story-driven side of the platform.
+- [Men's Dating Advice](/mens-dating-advice): Practical advice grounded in real, verified experiences.
+- [Male Dating Community](/male-dating-community): What the verified men-only community looks like.
+- [Tea App Comparison](/tea-app-comparison): How Juice compares to other anonymous dating-review apps.
+- [Competitor Analysis](/competitor-analysis): Landscape of related apps and how Juice is different.
+- [Privacy Policy](/privacy-policy): How user data is handled.
+- [Support](/support): Help and contact.
+
+## Blog
+
+- [Anonymous Dating Reviews — How It Works](/blog/anonymous-dating-reviews-how-it-works): Pillar guide to anonymous dating reviews on Juice.
+- [Men Finally Have a Voice in Dating](/blog/men-finally-have-a-voice-in-dating-and-its-going-viral): Why an honest, men-only review community is gaining traction.
