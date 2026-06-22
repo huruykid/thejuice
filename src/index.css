@@ -25,11 +25,11 @@
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 4%;
 
-    /* Primary — Juice Orange #ff5722 (single accent) */
-    --primary: 14 100% 57%;
-    --primary-light: 14 100% 67%;
-    --primary-dark: 14 100% 47%;
-    --primary-foreground: 0 0% 100%;
+    /* Primary — Logo amber #f8b038 (single accent) */
+    --primary: 38 93% 60%;
+    --primary-light: 38 93% 70%;
+    --primary-dark: 38 95% 47%;
+    --primary-foreground: 0 0% 4%;
 
     /* Secondary — neutral fill */
     --secondary: 0 0% 96%;
@@ -39,38 +39,38 @@
     --muted: 0 0% 96%;
     --muted-foreground: 0 0% 45%;
 
-    /* Accent — collapses to primary in IG mode */
-    --accent: 14 100% 57%;
-    --accent-light: 14 100% 67%;
-    --accent-foreground: 0 0% 100%;
+    /* Accent — collapses to primary */
+    --accent: 38 93% 60%;
+    --accent-light: 38 93% 70%;
+    --accent-foreground: 0 0% 4%;
 
     /* Success & Error States — used for flag voting fills */
     --success: 142 72% 34%;
     --success-light: 142 72% 44%;
     --success-foreground: 0 0% 100%;
 
-    --destructive: 14 100% 57%;
-    --destructive-light: 14 100% 67%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive: 38 93% 60%;
+    --destructive-light: 38 93% 70%;
+    --destructive-foreground: 0 0% 4%;
 
     /* Interactive Elements — hairline borders, IG-grade */
     --border: 0 0% 86%;
     --border-light: 0 0% 92%;
     --input: 0 0% 96%;
-    --ring: 14 100% 57%;
+    --ring: 38 93% 60%;
 
-    /* Juice App Specific Colors — flattened to the IG accent system */
-    --juice-orange: 14 100% 57%;
-    --juice-orange-light: 14 100% 67%;
-    --juice-orange-dark: 14 100% 47%;
-    --juice-pink: 14 100% 57%;
+    /* Juice App Specific Colors — all mirror primary */
+    --juice-orange: 38 93% 60%;
+    --juice-orange-light: 38 93% 70%;
+    --juice-orange-dark: 38 95% 47%;
+    --juice-pink: 38 93% 60%;
     --juice-purple: 0 0% 4%;
     --juice-blue: 210 100% 50%;
     --juice-green: 142 72% 38%;
     --juice-lavender: 0 0% 96%;
 
     /* Gradients — flat. IG doesn't gradient. */
-    --gradient-primary: linear-gradient(135deg, hsl(14 100% 57%), hsl(14 100% 57%));
+    --gradient-primary: linear-gradient(135deg, hsl(38 93% 60%), hsl(38 95% 47%));
     --gradient-secondary: linear-gradient(135deg, hsl(0 0% 4%), hsl(0 0% 4%));
     --gradient-success: linear-gradient(135deg, hsl(142 72% 38%), hsl(142 72% 38%));
     --gradient-card: linear-gradient(145deg, hsl(0 0% 100%), hsl(0 0% 100%));
@@ -83,7 +83,7 @@
     --shadow-lg: 0 10px 30px -10px rgba(0, 0, 0, 0.15);
     --shadow-xl: 0 20px 40px -10px rgba(0, 0, 0, 0.18);
     --shadow-card: 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-    --shadow-glow: 0 0 0 3px hsl(14 100% 57% / 0.25);
+    --shadow-glow: 0 0 0 3px hsl(38 93% 60% / 0.25);
 
     /* Animation Curves */
     --transition-smooth: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -98,12 +98,12 @@
     /* Sidebar */
     --sidebar-background: 0 0% 100%;
     --sidebar-foreground: 0 0% 4%;
-    --sidebar-primary: 14 100% 57%;
-    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-primary: 38 93% 60%;
+    --sidebar-primary-foreground: 0 0% 4%;
     --sidebar-accent: 0 0% 96%;
     --sidebar-accent-foreground: 0 0% 4%;
     --sidebar-border: 0 0% 86%;
-    --sidebar-ring: 14 100% 57%;
+    --sidebar-ring: 38 93% 60%;
   }
 
   .dark {
@@ -123,9 +123,9 @@
     --popover: 0 0% 7%;
     --popover-foreground: 0 0% 98%;
 
-    --primary: 14 100% 60%;
-    --primary-light: 14 100% 70%;
-    --primary-dark: 14 100% 50%;
+    --primary: 38 95% 58%;
+    --primary-light: 38 95% 68%;
+    --primary-dark: 38 95% 48%;
     --primary-foreground: 0 0% 0%;
 
     --secondary: 0 0% 10%;
@@ -134,32 +134,32 @@
     --muted: 0 0% 10%;
     --muted-foreground: 0 0% 65%;
 
-    --accent: 14 100% 60%;
-    --accent-light: 14 100% 70%;
+    --accent: 38 95% 58%;
+    --accent-light: 38 95% 68%;
     --accent-foreground: 0 0% 0%;
 
     --success: 142 72% 44%;
     --success-light: 142 72% 54%;
     --success-foreground: 0 0% 0%;
-    --destructive: 14 100% 60%;
-    --destructive-light: 14 100% 70%;
+    --destructive: 38 95% 58%;
+    --destructive-light: 38 95% 68%;
     --destructive-foreground: 0 0% 0%;
 
     --border: 0 0% 15%;
     --border-light: 0 0% 20%;
     --input: 0 0% 10%;
-    --ring: 14 100% 60%;
+    --ring: 38 95% 58%;
 
-    --juice-orange: 14 100% 60%;
-    --juice-orange-light: 14 100% 70%;
-    --juice-orange-dark: 14 100% 50%;
-    --juice-pink: 14 100% 60%;
+    --juice-orange: 38 95% 58%;
+    --juice-orange-light: 38 95% 68%;
+    --juice-orange-dark: 38 95% 48%;
+    --juice-pink: 38 95% 58%;
     --juice-purple: 0 0% 98%;
     --juice-blue: 210 100% 60%;
     --juice-green: 142 72% 44%;
     --juice-lavender: 0 0% 10%;
 
-    --gradient-primary: linear-gradient(135deg, hsl(14 100% 60%), hsl(14 100% 60%));
+    --gradient-primary: linear-gradient(135deg, hsl(38 95% 58%), hsl(38 95% 58%));
     --gradient-secondary: linear-gradient(135deg, hsl(0 0% 98%), hsl(0 0% 98%));
     --gradient-success: linear-gradient(135deg, hsl(142 72% 44%), hsl(142 72% 44%));
     --gradient-card: linear-gradient(145deg, hsl(0 0% 0%), hsl(0 0% 0%));
@@ -171,16 +171,16 @@
     --shadow-lg: 0 10px 30px -10px rgba(0, 0, 0, 0.7);
     --shadow-xl: 0 20px 40px -10px rgba(0, 0, 0, 0.8);
     --shadow-card: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
-    --shadow-glow: 0 0 0 3px hsl(14 100% 60% / 0.35);
+    --shadow-glow: 0 0 0 3px hsl(38 95% 58% / 0.35);
 
     --sidebar-background: 0 0% 0%;
     --sidebar-foreground: 0 0% 95%;
-    --sidebar-primary: 14 100% 60%;
+    --sidebar-primary: 38 95% 58%;
     --sidebar-primary-foreground: 0 0% 0%;
     --sidebar-accent: 0 0% 10%;
     --sidebar-accent-foreground: 0 0% 95%;
     --sidebar-border: 0 0% 15%;
-    --sidebar-ring: 14 100% 60%;
+    --sidebar-ring: 38 95% 58%;
   }
 }
 
