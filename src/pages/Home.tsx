@@ -10,6 +10,7 @@ import PullToRefreshIndicator from "@/components/PullToRefreshIndicator";
 import { usePullToRefresh } from "@/hooks/usePullToRefresh";
 import { useInfiniteStories } from "@/hooks/useStories";
 import { useAuth } from "@/hooks/useAuth";
+import juiceLogo from "@/assets/juice-wordmark.png.asset.json";
 
 interface HomeProps {
   onCreateStory?: () => void;
@@ -62,7 +63,9 @@ const Home = ({ onCreateStory }: HomeProps) => {
       {/* IG-style sticky header */}
       <header className="sticky top-0 z-40 bg-background/95 backdrop-blur border-b border-border lg:hidden">
         <div className="flex items-center justify-between px-4 h-12 max-w-md mx-auto">
-          <h1 className="ig-wordmark text-primary">Juice</h1>
+          <h1 className="flex items-center">
+            <img src={juiceLogo.url} alt="The Juice App" className="h-7 w-auto" />
+          </h1>
           <button
             onClick={() => navigate('/activity')}
             aria-label="Activity"

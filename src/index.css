@@ -269,10 +269,16 @@
   .ig-tag {
     @apply text-[13px] font-medium text-primary hover:text-primary-dark transition-colors;
   }
-  /* IG-style wordmark — keep Bebas only here */
+  /* Brand wordmark */
   .ig-wordmark {
     font-family: 'Bebas Neue', Impact, sans-serif;
     @apply text-2xl tracking-tight leading-none;
+  }
+
+  /* Apply the brand display font to all headings */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Bebas Neue', Impact, sans-serif;
+    letter-spacing: 0.01em;
   }
 
   /* Screenshot Protection */
