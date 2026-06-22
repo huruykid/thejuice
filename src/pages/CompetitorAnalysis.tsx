@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Helmet } from "react-helmet-async";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { TrendingUp, Target, Users, Zap, BarChart3, Search, Share2, Crown } from "lucide-react";
+import { TrendingUp, Target, Users, Zap, BarChart3, Search, Share2, Crown, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const CompetitorAnalysis = () => {
