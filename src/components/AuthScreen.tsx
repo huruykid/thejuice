@@ -101,7 +101,7 @@ const AuthScreen = ({ onAuthSuccess }: AuthScreenProps) => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-soft flex flex-col">
+    <div className="relative min-h-screen bg-gradient-soft flex items-center justify-center px-4 py-8 sm:py-12">
       {/* Back to landing */}
       <button
         onClick={() => navigate("/")}
@@ -112,25 +112,23 @@ const AuthScreen = ({ onAuthSuccess }: AuthScreenProps) => {
         Back
       </button>
 
-      {/* Logo */}
-      <div className="flex flex-col items-center justify-center pt-16 pb-8">
-        <button 
+      <div className="w-full max-w-md flex flex-col items-center gap-6 sm:gap-8">
+        {/* Hero */}
+        <button
           onClick={() => navigate("/")}
           className="flex flex-col items-center gap-3 hover:opacity-80 transition-opacity cursor-pointer"
         >
-          <img src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" alt="Juice" className="h-16 w-16" />
-          <h1 className="text-4xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+          <img src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" alt="Juice" className="h-14 w-14 sm:h-16 sm:w-16" />
+          <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-primary bg-clip-text text-transparent">
             The Juice App
           </h1>
+          <p className="text-base sm:text-lg text-muted-foreground">
+            We Got the Juice. Now You Do Too.
+          </p>
         </button>
-        <p className="text-lg text-muted-foreground mt-2">
-          We Got the Juice. Now You Do Too.
-        </p>
-      </div>
 
-      <div className="flex-1 flex items-center justify-center px-6">
-        <Card className="w-full max-w-md bg-white/90 backdrop-blur-sm rounded-3xl shadow-soft border-0">
-          <div className="p-8 space-y-6">
+        <Card className="w-full bg-white/90 backdrop-blur-sm rounded-3xl shadow-soft border-0">
+          <div className="p-6 sm:p-8 space-y-6">
             {/* Segmented tabs */}
             <div className="grid grid-cols-2 gap-1 p-1 bg-muted rounded-full">
               <button
