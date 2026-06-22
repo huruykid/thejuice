@@ -87,7 +87,7 @@ const Blog = () => {
                 )}
                 <div className="flex items-center gap-1">
                   <Eye className="w-4 h-4" />
-                  {posts[0].views} views
+                  {posts[0].views.toLocaleString()} views
                 </div>
               </div>
             </CardHeader>
@@ -133,7 +133,7 @@ const Blog = () => {
                   )}
                   <div className="flex items-center gap-1">
                     <Eye className="w-4 h-4" />
-                    {post.views}
+                    {post.views.toLocaleString()}
                   </div>
                 </div>
                 
