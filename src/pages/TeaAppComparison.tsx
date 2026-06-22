@@ -83,28 +83,6 @@ const TeaAppComparison = () => {
   return (
     <div className="min-h-screen bg-gradient-soft">
       {/* Header */}
-      <header className="sticky top-0 bg-white/80 backdrop-blur-lg border-b border-juice-orange/10 z-40">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={() => navigate(-1)}
-              className="mr-2"
-            >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back
-            </Button>
-            <img src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" alt="Tea App" className="h-8 w-8" />
-            <span className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-              The Tea App for Men
-            </span>
-          </div>
-          <Button onClick={() => navigate("/app")} variant="juice">
-            Get Started
-          </Button>
-        </div>
-      </header>
 
       {/* Hero Section */}
       <section className="py-16 px-4">

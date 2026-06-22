@@ -65,24 +65,6 @@ const Landing = () => {
         <meta property="og:url" content="https://thejuice.lovable.app/" />
         <meta property="og:type" content="website" />
       </Helmet>
-      {/* Header */}
-      <header className="sticky top-0 bg-white/80 backdrop-blur-lg border-b border-juice-orange/10 z-40">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <img src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" alt="Tea App" className="h-8 w-8" />
-            <span className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">The Juice App</span>
-          </div>
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" onClick={() => navigate("/blog")} className="hidden md:flex">
-              Blog
-            </Button>
-            <Button onClick={() => navigate("/app")} variant="juice">
-              Get Started
-            </Button>
-          </div>
-        </div>
-      </header>
-
       <main>
       {/* Hero Section */}
       <section className="py-20 px-4">
