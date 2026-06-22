@@ -3,16 +3,11 @@ import { useEffect, useState, useCallback } from "react";
 export type Theme = "light" | "dark" | "system";
 const KEY = "juice-theme";
 
-const apply = (t: Theme) => {
+const apply = (_t: Theme) => {
+  // Light mode only — product decision. Ignore stored/system theme.
   const root = document.documentElement;
-  const resolved =
-    t === "system"
-      ? window.matchMedia("(prefers-color-scheme: dark)").matches
-        ? "dark"
-        : "light"
-      : t;
-  root.classList.toggle("dark", resolved === "dark");
-  root.style.colorScheme = resolved;
+  root.classList.remove("dark");
+  root.style.colorScheme = "light";
 };
 
 export const useTheme = () => {

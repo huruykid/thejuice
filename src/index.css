@@ -269,16 +269,18 @@
   .ig-tag {
     @apply text-[13px] font-medium text-primary hover:text-primary-dark transition-colors;
   }
-  /* Brand wordmark */
+  /* Brand wordmark — Instagram-style sans, "Juice" gets the amber accent */
   .ig-wordmark {
-    font-family: 'Bebas Neue', Impact, sans-serif;
-    @apply text-2xl tracking-tight leading-none;
+    @apply font-sans font-extrabold tracking-tight leading-none text-[22px] text-foreground;
+  }
+  .ig-wordmark .accent {
+    @apply text-primary;
   }
 
-  /* Apply the brand display font to all headings */
+  /* Headings stay in the body sans — IG-grade typography */
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Bebas Neue', Impact, sans-serif;
-    letter-spacing: 0.01em;
+    @apply font-sans tracking-tight;
+    font-weight: 700;
   }
 
   /* Screenshot Protection */
