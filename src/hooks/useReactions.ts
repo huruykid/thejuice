@@ -91,8 +91,34 @@ export const useToggleReaction = () => {
         return { action: 'added', addedType: reactionType, replacedType: otherReaction?.reaction_type };
       }
     },
-    onSuccess: () => {
-      // Invalidate and refetch stories data
+    onMutate: async ({ storyId, reactionType = 'like' }) => {
+      // Optimistically update the per-story reaction counts cache so the
+      // count bumps instantly while the network request is in flight.
+      const key = ['reaction-counts', storyId];
+      await queryClient.cancelQueries({ queryKey: key });
+      const previous = queryClient.getQueryData<{ red_flag: number; green_flag: number }>(key);
+      if (previous) {
+        const next = { ...previous };
+        const opposite = reactionType === 'red_flag' ? 'green_flag' : 'red_flag';
+        // We don't know yet if this is add/remove/replace, but the optimistic
+        // bump matches the most common case (toggling on). onSettled reconciles.
+        if (reactionType === 'red_flag' || reactionType === 'green_flag') {
+          (next as any)[reactionType] = Math.max(0, (next as any)[reactionType] + 1);
+          if ((previous as any)[opposite] > 0) {
+            (next as any)[opposite] = Math.max(0, (next as any)[opposite] - 1);
+          }
+        }
+        queryClient.setQueryData(key, next);
+      }
+      return { previous, key };
+    },
+    onError: (_err, _vars, context) => {
+      if (context?.previous && context?.key) {
+        queryClient.setQueryData(context.key, context.previous);
+      }
+    },
+    onSettled: (_data, _err, { storyId }) => {
+      queryClient.invalidateQueries({ queryKey: ['reaction-counts', storyId] });
       queryClient.invalidateQueries({ queryKey: ['stories'] });
       queryClient.invalidateQueries({ queryKey: ['search-stories'] });
       queryClient.invalidateQueries({ queryKey: ['trending-stories'] });
