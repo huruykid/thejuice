@@ -10,6 +10,7 @@ import VerificationRejected from "@/components/VerificationRejected";
 import OnboardingSuccess from "@/components/OnboardingSuccess";
 import EnhancedProgress from "@/components/ui/enhanced-progress";
 import LoadingSkeleton from "@/components/ui/loading-skeleton";
+import AppShell from "@/components/layout/AppShell";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
 import { useVerification } from "@/hooks/useVerification";
@@ -149,12 +150,12 @@ const Index = () => {
         }
         
         return (
-          <>
+          <AppShell onCreateStory={() => setShowCreateStory(true)}>
             <Home onCreateStory={() => setShowCreateStory(true)} />
             {showCreateStory && (
               <CreateStory onClose={() => setShowCreateStory(false)} />
             )}
-          </>
+          </AppShell>
         );
       }
     }
@@ -231,12 +232,12 @@ const Index = () => {
 
   // Fallback - show main app (should not reach here normally)
   return (
-    <>
+    <AppShell onCreateStory={() => setShowCreateStory(true)}>
       <Home onCreateStory={() => setShowCreateStory(true)} />
       {showCreateStory && (
         <CreateStory onClose={() => setShowCreateStory(false)} />
       )}
-    </>
+    </AppShell>
   );
 };
 

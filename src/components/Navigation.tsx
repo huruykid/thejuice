@@ -11,7 +11,7 @@ const Navigation = ({ onCreateStory }: NavigationProps) => {
   const location = useLocation();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-lg border-t border-juice-orange/10 z-50">
+    <nav className="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-lg border-t border-juice-orange/10 z-50 lg:hidden">
       <div className="flex items-center justify-around py-2 px-4 max-w-md mx-auto">
         <Button 
           variant="ghost" 

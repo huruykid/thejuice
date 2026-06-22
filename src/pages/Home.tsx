@@ -28,9 +28,9 @@ const Home = ({ onCreateStory }: HomeProps) => {
   const isLoading = storiesLoading || trendingLoading;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background-secondary to-background pb-20">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background-secondary to-background pb-20 lg:pb-8">
       {/* Modern Header with Glass Effect */}
-      <div className="sticky top-0 z-40 glass border-b border-white/10">
+      <div className="sticky top-0 z-40 glass border-b border-white/10 lg:hidden">
         <div className="flex items-center justify-between p-4 max-w-md mx-auto">
           <div className="flex items-center gap-3">
             <div className="relative">
@@ -49,7 +49,7 @@ const Home = ({ onCreateStory }: HomeProps) => {
       </div>
 
       {/* Enhanced Content Section */}
-      <div className="max-w-md mx-auto px-4 py-8">
+      <div className="max-w-md lg:max-w-2xl mx-auto px-4 py-8">
         {/* Stories */}
         <div className="space-y-4">
           {isLoading ? (

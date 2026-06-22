@@ -24,7 +24,7 @@ const Activity = () => {
   };
   if (isLoading) {
     return <div className="min-h-screen bg-gradient-to-br from-juice-orange/5 to-juice-pink/5 pb-20">
-        <div className="container mx-auto px-4 py-6 max-w-md">
+        <div className="container mx-auto px-4 py-6 max-w-md lg:max-w-2xl">
           {/* Header */}
           <div className="flex items-center mb-6">
             <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="mr-3">
@@ -57,7 +57,7 @@ const Activity = () => {
       </div>;
   }
   return <div className="min-h-screen bg-gradient-to-br from-juice-orange/5 to-juice-pink/5 pb-20">
-      <div className="container mx-auto px-4 py-6 max-w-md">
+      <div className="container mx-auto px-4 py-6 max-w-md lg:max-w-2xl">
         {/* Header */}
         <div className="flex items-center mb-6">
           <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="mr-3">
