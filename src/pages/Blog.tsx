@@ -8,6 +8,7 @@ import { useBlogPosts } from '@/hooks/useBlogPosts';
 import { useAuth } from '@/hooks/useAuth';
 import { Calendar, Clock, Eye, ArrowRight } from 'lucide-react';
 import { format } from 'date-fns';
+import Breadcrumbs from '@/components/layout/Breadcrumbs';
 
 const Blog = () => {
   const { data: posts, isLoading } = useBlogPosts(true);
@@ -36,6 +37,9 @@ const Blog = () => {
       </Helmet>
       <div className="max-w-4xl mx-auto">
         <main>
+        <div className="mb-6">
+          <Breadcrumbs items={[{ label: 'Home', to: '/' }, { label: 'Blog' }]} />
+        </div>
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-primary mb-4">
