@@ -91,8 +91,8 @@ const Landing = () => {
               Sign up now
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
-            <Button size="lg" onClick={() => window.open('https://instagram.com/sipjuiceapp', '_blank')} className="text-lg px-8">
-              Join the Brotherhood
+            <Button size="lg" variant="secondary" onClick={() => window.open('https://instagram.com/sipjuiceapp', '_blank')} className="text-lg px-8">
+              Follow on Instagram
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
             <Button size="lg" variant="outline" onClick={handleLearnMore} className="text-lg px-8">
@@ -110,7 +110,7 @@ const Landing = () => {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Why The Tea App for Men?
+              Why The Juice App?
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               Built specifically for men who want honest, authentic dating insights
@@ -233,8 +233,8 @@ const Landing = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div className="space-y-4">
               <div className="flex items-center gap-2">
-                <img src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" alt="Tea App" className="h-6 w-6" />
-                <span className="font-bold text-foreground">The Tea App for Men</span>
+                <img src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" alt="The Juice App" className="h-6 w-6" />
+                <span className="font-bold text-foreground">The Juice App</span>
               </div>
               <p className="text-sm text-muted-foreground">
                 The dating community designed specifically for men to share honest experiences.
@@ -272,7 +272,7 @@ const Landing = () => {
           </div>
           
           <div className="border-t border-juice-orange/10 mt-8 pt-8 text-center text-sm text-muted-foreground">
-            <p>&copy; 2024 The Tea App for Men. All rights reserved.</p>
+            <p>&copy; 2024 The Juice App. All rights reserved.</p>
           </div>
         </div>
       </footer>
