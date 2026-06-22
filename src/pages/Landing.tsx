@@ -70,17 +70,14 @@ const Landing = () => {
       <section className="py-20 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6">
-            The Tea App Every Guy Has Been{" "}
-            <span className="bg-gradient-primary bg-clip-text text-transparent">
-              Waiting For
-            </span>
+            The <span className="text-juice-orange">Tea App</span> Every Guy Has Been Waiting For
           </h1>
           <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
             Share your dating stories anonymously, get verified insights, and connect with guys who actually get it. 
             No judgment, just real talk about modern dating.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="xl" onClick={handleGetStarted} variant="juice">
+            <Button size="xl" onClick={handleGetStarted} variant="juice-outline">
               Sign up now
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
