@@ -206,6 +206,7 @@ export const useCreateStory = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['stories'] });
       queryClient.invalidateQueries({ queryKey: ['stories', 'mine'] });
+      queryClient.invalidateQueries({ queryKey: ['has-approved-post'] });
     },
   });
 };
