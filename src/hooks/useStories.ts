@@ -42,6 +42,7 @@ export const useStories = () => {
             tag
           )
         `)
+        .eq('status', 'approved')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -75,6 +76,7 @@ export const useInfiniteStories = (pageSize: number = STORIES_PAGE_SIZE) => {
             tag
           )
         `)
+        .eq('status', 'approved')
         .order('created_at', { ascending: false })
         .range(from, to);
 
@@ -154,20 +156,18 @@ export const useCreateStory = () => {
       const { data: { user } } = await (supabase as any).auth.getUser();
       if (!user) throw new Error('User must be authenticated');
 
-      // Get user's profile
-      const { data: profile, error: profileError } = await (supabase as any)
+      // Get user's profile (may not exist for unverified users — they post as Anonymous)
+      const { data: profile } = await (supabase as any)
         .from('profiles')
         .select('id')
         .eq('user_id', user.id)
-        .single();
-
-      if (profileError) throw profileError;
+        .maybeSingle();
 
       // Create the story
       const { data: story, error: storyError } = await (supabase as any)
         .from('stories')
         .insert({
-          profile_id: profile.id,
+          profile_id: profile?.id ?? null,
           content: sanitizedContent,
           city_id: city_id || null,
           image_url: imageUrl || null,
@@ -198,6 +198,33 @@ export const useCreateStory = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['stories'] });
+      queryClient.invalidateQueries({ queryKey: ['stories', 'mine'] });
+    },
+  });
+};
+
+/**
+ * Current user's own submissions, all statuses (pending/approved/rejected).
+ * Used by UnverifiedHome's "Your submissions" list.
+ */
+export const useMySubmissions = (userId?: string) => {
+  return useQuery({
+    queryKey: ['stories', 'mine', userId],
+    enabled: !!userId,
+    queryFn: async () => {
+      const { data, error } = await (supabase as any)
+        .from('stories')
+        .select('id, content, status, created_at, image_url')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      return data as Array<{
+        id: string;
+        content: string;
+        status: 'pending' | 'approved' | 'rejected';
+        created_at: string;
+        image_url: string | null;
+      }>;
     },
   });
 };
