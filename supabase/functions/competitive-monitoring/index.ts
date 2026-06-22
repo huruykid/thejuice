@@ -214,6 +214,6 @@ PROVIDE:
 
   } catch (error) {
     console.error('Error in competitive-monitoring:', error);
-    return createSecureErrorResponse(error.message, 500);
+    return createSecureErrorResponse('Internal server error', 500);
   }
 });

@@ -74,7 +74,7 @@ const handler = async (req: Request): Promise<Response> => {
     return createSecureResponse({ success: true, emailResponse });
   } catch (error: any) {
     console.error("Error in send-welcome-email function:", error);
-    return createSecureErrorResponse(error.message, 500);
+    return createSecureErrorResponse('Internal server error', 500);
   }
 };
 

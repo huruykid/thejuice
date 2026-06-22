@@ -144,6 +144,6 @@ Provide strategic recommendations for market domination.`
 
   } catch (error) {
     console.error('Error in competitive-analysis:', error);
-    return createSecureErrorResponse(error.message, 500);
+    return createSecureErrorResponse('Internal server error', 500);
   }
 });

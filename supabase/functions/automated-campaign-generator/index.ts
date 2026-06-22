@@ -244,6 +244,6 @@ Provide the complete automation blueprint with specific daily, weekly, and month
 
   } catch (error) {
     console.error('Error in automated-campaign-generator:', error);
-    return createSecureErrorResponse(error.message, 500);
+    return createSecureErrorResponse('Internal server error', 500);
   }
 });
