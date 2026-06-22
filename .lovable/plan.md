@@ -1,18 +1,63 @@
 ## Goal
-Give the landing page hero and bottom CTAs proper vertical breathing room so they read as hero-weight buttons, not toolbar buttons.
 
-## Problem
-The hero buttons use `size="lg"` (fixed `h-13` / 52px) but override the text to `text-lg`. Larger text + an icon inside a fixed-height box leaves cramped vertical padding. Industry hero CTAs sit at 56–64px tall.
+Right now `/blog`, `/`, `/how-it-works`, and the SEO landing pages each have their own ad-hoc header (or none at all). A visitor landing on `/blog` from Google has no way to reach the rest of the site. Add a single reusable public header + footer used across every public/marketing page.
 
-## Changes (src/pages/Landing.tsx only)
+## What this adds
 
-1. **Hero CTAs** (lines ~89–101): swap `size="lg" ... className="text-lg px-8"` to `size="xl"` and drop the `text-lg` override (xl already includes it).
-2. **Bottom CTA** (line ~218, "Get Started Now"): same swap to `size="xl"` for consistency.
-3. **Header "Get Started"** (line ~69): leave as-is — header buttons should stay compact.
+**`PublicHeader`** — sticky top bar, mobile-first
 
-No changes to `button.tsx` — the `xl` size already exists (`h-16 px-12 text-lg`) and was designed for exactly this.
+```text
+[ Juice logo ]                          [ ☰ menu ]
+```
 
-## Out of scope
-- Reducing the 3-button hero down to 2 (separate concern from earlier conversation).
-- Label consistency across CTAs (separate concern).
-- Any mobile-specific changes — `xl` works at both breakpoints.
+- Logo on the left → links to `/`
+- Hamburger drawer on mobile, inline links on desktop (≥768px)
+- Links: **Home · Blog · How It Works · Sign In**
+- "Sign In" is a filled CTA button (uses existing primary token)
+- Active route gets an underline / accent color
+- Solid background with subtle bottom border; sticky so it follows scroll
+
+**`PublicFooter`** — at the bottom of every public page
+
+- Small brand mark + tagline
+- Same nav links (Home, Blog, How It Works, Sign In)
+- Legal: Privacy Policy, Support
+- Copyright line
+
+**Breadcrumb on blog pages**
+- `/blog` shows `Home › Blog`
+- `/blog/:slug` shows `Home › Blog › {post title}`
+- Placed directly under the header, above the page title
+- Marked up with `BreadcrumbList` JSON-LD for SEO
+
+## Pages that get the new chrome
+
+Wrap each of these in a new `<PublicLayout>` (header + `<main>` + footer):
+
+- `src/pages/Landing.tsx`
+- `src/pages/Blog.tsx`
+- `src/pages/BlogPost.tsx`
+- `src/pages/HowItWorks.tsx`
+- `src/pages/AnonymousDatingReviews.tsx`
+- `src/pages/DatingStoriesForMen.tsx`
+- `src/pages/MaleDatingCommunity.tsx`
+- `src/pages/MensDatingAdvice.tsx`
+- `src/pages/CompetitorAnalysis.tsx`
+- `src/pages/TeaAppComparison.tsx`
+- `src/pages/PrivacyPolicy.tsx`
+- `src/pages/Support.tsx`
+
+Existing per-page back buttons and one-off brand headers are removed in favor of the shared header. The authenticated app shell (`AppShell`, `Home`, `Explore`, etc.) is **not** touched.
+
+## Technical notes
+
+- New files:
+  - `src/components/layout/PublicHeader.tsx`
+  - `src/components/layout/PublicFooter.tsx`
+  - `src/components/layout/PublicLayout.tsx` (wraps children with header + `<main>` + footer)
+  - `src/components/layout/Breadcrumbs.tsx` (renders visible trail + JSON-LD)
+- Uses existing shadcn `Sheet` for the mobile drawer and `Button` for the CTA
+- "Sign In" links to `/` (the existing auth entry) — same destination the current Landing CTA uses
+- All colors use semantic tokens from `index.css` (no hardcoded hex), so the header inherits theme
+- No backend/database changes
+- No new dependencies

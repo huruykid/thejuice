@@ -4,9 +4,10 @@ import { Helmet } from 'react-helmet-async';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useBlogPost } from '@/hooks/useBlogPosts';
-import { ArrowLeft, Calendar, Clock, Eye, Share2 } from 'lucide-react';
+import { Calendar, Clock, Eye, Share2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
+import Breadcrumbs from '@/components/layout/Breadcrumbs';
 
 const BlogPost = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -82,28 +83,22 @@ const BlogPost = () => {
         {post.featured_image_url && <meta property="og:image" content={post.featured_image_url} />}
         <script type="application/ld+json">{JSON.stringify(articleSchema)}</script>
       </Helmet>
-      {/* Header */}
-      <div className="bg-white/80 backdrop-blur-sm border-b sticky top-0 z-10">
-        <div className="max-w-4xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <Link to="/blog">
-              <Button variant="ghost" size="sm">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to Blog
-              </Button>
-            </Link>
-            
-            <Button variant="outline" size="sm" onClick={sharePost}>
-              <Share2 className="w-4 h-4 mr-2" />
-              Share
-            </Button>
-          </div>
-        </div>
-      </div>
-
       {/* Article */}
       <main>
       <article className="max-w-4xl mx-auto px-4 py-8">
+        <div className="mb-6 flex items-center justify-between gap-4">
+          <Breadcrumbs
+            items={[
+              { label: 'Home', to: '/' },
+              { label: 'Blog', to: '/blog' },
+              { label: post.title },
+            ]}
+          />
+          <Button variant="outline" size="sm" onClick={sharePost}>
+            <Share2 className="w-4 h-4 mr-2" />
+            Share
+          </Button>
+        </div>
         {/* Article Header */}
         <header className="mb-8">
           <h1 className="text-4xl font-bold text-primary mb-4 leading-tight">
