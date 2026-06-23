@@ -13,6 +13,7 @@ import {
 import { ArrowLeft, Flag, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import type { Report } from "@/hooks/useReports";
+import { AdminNav } from "@/components/AdminNav";
 
 type StatusFilter = Report["status"] | "all";
 
@@ -85,6 +86,7 @@ const AdminReports = () => {
   return (
     <div className="min-h-screen bg-background pb-20">
       <div className="container mx-auto px-4 py-6 max-w-3xl">
+        <AdminNav />
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
             <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
