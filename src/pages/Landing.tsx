@@ -76,7 +76,7 @@ const Landing = () => {
             Share dating experiences anonymously. Read verified stories from men who've been there. No names. No judgment.
           </p>
           <div className="flex flex-col sm:flex-row flex-wrap gap-4 justify-center">
-            <Button size="xl" onClick={handleGetStarted} variant="juice-outline">
+            <Button size="xl" onClick={handleGetStarted} variant="juice-outline" className="font-bold">
               Request Access
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
