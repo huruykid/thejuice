@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { Heart } from "lucide-react";
@@ -9,9 +9,12 @@ import ScrollToTopButton from "@/components/ScrollToTopButton";
 import PullToRefreshIndicator from "@/components/PullToRefreshIndicator";
 import { usePullToRefresh } from "@/hooks/usePullToRefresh";
 import { useInfiniteStories } from "@/hooks/useStories";
+import { useStoriesByCity } from "@/hooks/useStoriesByCity";
 import { useHasApprovedPost } from "@/hooks/useHasApprovedPost";
 import UnlockBanner from "@/components/UnlockBanner";
 import { useAuth } from "@/hooks/useAuth";
+import { useProfile } from "@/hooks/useProfile";
+import CityFilterChips, { type FeedScope } from "@/components/CityFilterChips";
 
 interface HomeProps {
   onCreateStory?: () => void;
@@ -19,32 +22,59 @@ interface HomeProps {
 
 const Home = ({ onCreateStory }: HomeProps) => {
   const { user } = useAuth();
+  const { profile } = useProfile(user);
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const [scope, setScope] = useState<FeedScope>("all");
+  const cityId = (profile as any)?.city_id as string | null | undefined;
+  // If the user clears their city, fall back to All.
+  useEffect(() => {
+    if (scope === "city" && !cityId) setScope("all");
+  }, [scope, cityId]);
 
   const { data: hasApprovedPost, isLoading: gateLoading } =
     useHasApprovedPost(user?.id);
   const feedMode: "community" | "seed" = hasApprovedPost ? "community" : "seed";
+  const useCity = scope === "city" && !!cityId;
 
   const {
-    data,
-    isLoading: storiesLoading,
-    isFetchingNextPage,
-    fetchNextPage,
-    hasNextPage,
-    refetch,
+    data: allData,
+    isLoading: allLoading,
+    isFetchingNextPage: allFetchingNext,
+    fetchNextPage: allFetchNext,
+    hasNextPage: allHasNext,
+    refetch: refetchAll,
   } = useInfiniteStories(undefined, feedMode);
 
-  const stories = useMemo(
-    () => data?.pages.flatMap((p) => p) ?? [],
-    [data]
-  );
+  const {
+    data: cityData,
+    isLoading: cityLoading,
+    isFetchingNextPage: cityFetchingNext,
+    fetchNextPage: cityFetchNext,
+    hasNextPage: cityHasNext,
+    refetch: refetchCity,
+  } = useStoriesByCity(useCity ? cityId : null);
+
+  const stories = useMemo(() => {
+    const pages = useCity ? cityData?.pages : allData?.pages;
+    return pages?.flatMap((p) => p) ?? [];
+  }, [useCity, allData, cityData]);
+
+  const storiesLoading = useCity ? cityLoading : allLoading;
+  const isFetchingNextPage = useCity ? cityFetchingNext : allFetchingNext;
+  const hasNextPage = useCity ? cityHasNext : allHasNext;
+  const fetchNextPage = useCity ? cityFetchNext : allFetchNext;
 
   // Pull-to-refresh: reset the infinite feed back to page 0, then refetch.
   const handleRefresh = useCallback(async () => {
-    await queryClient.resetQueries({ queryKey: ['stories', 'infinite'] });
-    await refetch();
-  }, [queryClient, refetch]);
+    if (useCity) {
+      await queryClient.resetQueries({ queryKey: ["stories", "by-city", cityId] });
+      await refetchCity();
+    } else {
+      await queryClient.resetQueries({ queryKey: ["stories", "infinite"] });
+      await refetchAll();
+    }
+  }, [queryClient, refetchAll, refetchCity, useCity, cityId]);
   const { pullDistance, status } = usePullToRefresh({ onRefresh: handleRefresh });
 
   // Infinite scroll: load the next page when sentinel enters the viewport.
@@ -80,6 +110,10 @@ const Home = ({ onCreateStory }: HomeProps) => {
           </button>
         </div>
       </header>
+
+      <div className="max-w-xl mx-auto sticky top-12 lg:top-0 z-30 bg-background/95 backdrop-blur border-b border-border">
+        <CityFilterChips scope={scope} onScopeChange={setScope} cityId={cityId} />
+      </div>
 
       {/* Feed — IG full-bleed on mobile, narrow column on desktop */}
       <div className="max-w-xl mx-auto sm:px-0 py-0 sm:py-2">
@@ -119,9 +153,13 @@ const Home = ({ onCreateStory }: HomeProps) => {
           </>
         ) : (
           <div className="px-6 py-20 text-center">
-            <h3 className="text-lg font-semibold mb-1">No stories yet</h3>
+            <h3 className="text-lg font-semibold mb-1">
+              {useCity ? "No juice here yet" : "No stories yet"}
+            </h3>
             <p className="text-sm text-muted-foreground mb-6">
-              Be the first to share your dating story.
+              {useCity
+                ? "Be the first to post from your city."
+                : "Be the first to share your dating story."}
             </p>
             <button
               onClick={onCreateStory}
