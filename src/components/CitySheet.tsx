@@ -67,8 +67,19 @@ const CitySheet = ({ open, onClose, onSelect, currentCityId }: Props) => {
       onSelect?.(city);
       onClose();
     },
-    onError: (e: any) =>
-      toast({ title: "Couldn't update city", description: e?.message, variant: "destructive" }),
+    onError: (e: any) => {
+      const raw: string = e?.message ?? "";
+      let friendly = "Something went wrong saving your city. Please try again.";
+      if (/reserved/i.test(raw) || /username/i.test(raw)) {
+        friendly =
+          "Your profile username is blocking this save. Open Profile and change your username, then pick a city again.";
+      } else if (/permission|denied|rls/i.test(raw)) {
+        friendly = "You don't have permission to update this profile.";
+      } else if (/network|fetch/i.test(raw)) {
+        friendly = "Network issue — check your connection and try again.";
+      }
+      toast({ title: "Couldn't update city", description: friendly, variant: "destructive" });
+    },
   });
 
   const filtered = useMemo(() => cities, [cities]);
