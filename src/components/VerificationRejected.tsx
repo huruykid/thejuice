@@ -1,14 +1,15 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { AlertCircle, Mail } from "lucide-react";
+import { AlertCircle, Mail, RotateCcw } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 interface VerificationRejectedProps {
   notes?: string;
+  onResubmit?: () => void;
 }
 
-const VerificationRejected = ({ notes }: VerificationRejectedProps) => {
+const VerificationRejected = ({ notes, onResubmit }: VerificationRejectedProps) => {
   const handleSignOut = async () => {
     try {
       await supabase.auth.signOut();
@@ -57,15 +58,26 @@ const VerificationRejected = ({ notes }: VerificationRejectedProps) => {
           </div>
 
           <div className="space-y-3">
-            <Button 
+            {onResubmit && (
+              <Button
+                onClick={onResubmit}
+                className="w-full"
+              >
+                <RotateCcw className="mr-2 h-4 w-4" />
+                Resubmit Verification
+              </Button>
+            )}
+
+            <Button
               onClick={handleContactSupport}
+              variant={onResubmit ? "outline" : "default"}
               className="w-full"
             >
               <Mail className="mr-2 h-4 w-4" />
               Contact Support
             </Button>
 
-            <Button 
+            <Button
               onClick={handleSignOut}
               variant="outline"
               className="w-full"
