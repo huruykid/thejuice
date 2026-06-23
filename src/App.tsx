@@ -19,6 +19,7 @@ import Activity from "./pages/Activity";
 import AdminVerifications from "./pages/AdminVerifications";
 import AdminPosts from "./pages/AdminPosts";
 import AdminReports from "./pages/AdminReports";
+import AdminOverview from "./pages/AdminOverview";
 import SharePublic from "./pages/SharePublic";
 import PrivacySettings from "./pages/PrivacySettings";
 import AuthorStories from "./pages/AuthorStories";
@@ -39,6 +40,7 @@ import { useVerification } from "./hooks/useVerification";
 import { useScreenshotProtection } from "./hooks/useScreenshotProtection";
 import { useIosCaptureProtection } from "./hooks/useIosCaptureProtection";
 import { useTheme } from "./hooks/useTheme";
+import ViewAsBar from "./components/ViewAsBar";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
@@ -117,6 +119,7 @@ const App = () => {
         <Toaster />
         <Sonner />
         <BrowserRouter>
+        <ViewAsBar />
         <Routes>
           <Route path="/" element={<PublicLayout><Landing /></PublicLayout>} />
           <Route path="/how-it-works" element={<PublicLayout><HowItWorks /></PublicLayout>} />
@@ -147,6 +150,11 @@ const App = () => {
               <AppShell>
                 <CodenameProfile />
               </AppShell>
+            </ProtectedRoute>
+          } />
+          <Route path="/admin" element={
+            <ProtectedRoute>
+              <AdminOverview />
             </ProtectedRoute>
           } />
           <Route path="/admin/verifications" element={
