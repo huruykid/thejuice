@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/select";
 import { CheckCircle, XCircle, Clock, UserX, User, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { AdminNav } from "@/components/AdminNav";
 
 const REJECTION_REASONS = [
   { id: "identifying", label: "Names a real person identifiably" },
@@ -211,6 +212,7 @@ const AdminPosts = () => {
   return (
     <div className="min-h-screen bg-gradient-soft p-4">
       <div className="max-w-4xl mx-auto space-y-6">
+        <AdminNav />
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold">Post Moderation</h1>
