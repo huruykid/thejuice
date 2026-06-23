@@ -18,6 +18,12 @@ export interface StoryData {
   };
   personName: string;
   personPhone: string;
+  ratings: {
+    communication: number;
+    loyalty: number;
+    vibe: number;
+    respect: number;
+  };
 }
 
 const CreateStory = ({
@@ -41,6 +47,12 @@ const CreateStory = ({
     },
     personName: '',
     personPhone: '',
+    ratings: {
+      communication: 0,
+      loyalty: 0,
+      vibe: 0,
+      respect: 0,
+    },
   });
 
   const createStory = useCreateStory();
@@ -111,7 +123,8 @@ const CreateStory = ({
         location: storyData.metadata.location,
         imageUrl: imageUrls.length > 0 ? JSON.stringify(imageUrls) : undefined,
         subjectName: storyData.personName,
-        subjectPhone: storyData.personPhone
+        subjectPhone: storyData.personPhone,
+        ratings: storyData.ratings,
       };
       
       await createStory.mutateAsync(storyPayload);

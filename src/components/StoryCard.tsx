@@ -10,6 +10,7 @@ import {
 import CommentsModal from "./CommentsModal";
 import { BlockUserDialog } from "./BlockUserDialog";
 import { ReportContentDialog } from "./ReportContentDialog";
+import { FlagRatingDisplay } from "./FlagRating";
 import { useDeleteStory } from "@/hooks/useStories";
 import { useToggleReaction } from "@/hooks/useReactions";
 import { useReactionCounts } from "@/hooks/useReactionCounts";
@@ -469,6 +470,16 @@ const StoryCard = ({
           </span>
           <span className="whitespace-pre-wrap">{story.content}</span>
         </div>
+
+        {/* Author's flag ratings */}
+        <FlagRatingDisplay
+          ratings={{
+            communication: story.communication_rating || 0,
+            loyalty: story.loyalty_rating || 0,
+            vibe: story.overall_vibe_rating || 0,
+            respect: story.emotional_safety_rating || 0,
+          }}
+        />
 
         {/* Tags as IG hashtag-blue */}
         {story.story_tags && story.story_tags.length > 0 && (

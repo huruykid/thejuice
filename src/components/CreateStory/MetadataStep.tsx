@@ -1,8 +1,10 @@
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useCities } from "@/hooks/useCities";
 import type { StoryData } from "./index";
+import { FLAG_CATEGORIES, FlagRatingInput, type FlagValue } from "@/components/FlagRating";
 
 interface MetadataStepProps {
   storyData: StoryData;
@@ -24,6 +26,7 @@ const MetadataStep = ({
   const [cityInput, setCityInput] = useState(storyData.metadata?.location || "");
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
+  const [ack, setAck] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
 
@@ -115,6 +118,28 @@ const MetadataStep = ({
   return (
     <div className="space-y-6 p-6">
       <div>
+        <h3 className="text-lg font-semibold mb-1">Rate the experience</h3>
+        <p className="text-xs text-muted-foreground mb-3">
+          Tap a green or red flag for each. Skip any you don't want to rate.
+        </p>
+        <div className="space-y-2">
+          {FLAG_CATEGORIES.map((cat) => (
+            <FlagRatingInput
+              key={cat.key}
+              category={cat}
+              value={(storyData.ratings[cat.key] || 0) as FlagValue}
+              onChange={(next) =>
+                setStoryData((prev) => ({
+                  ...prev,
+                  ratings: { ...prev.ratings, [cat.key]: next },
+                }))
+              }
+            />
+          ))}
+        </div>
+      </div>
+
+      <div>
         <h3 className="text-lg font-semibold mb-3">Additional Details (Optional)</h3>
         <div className="space-y-4">
           <div className="relative">
@@ -167,14 +192,27 @@ const MetadataStep = ({
           </div>
         </div>
       </div>
-      
+
+      <label className="flex gap-2 items-start text-xs text-muted-foreground cursor-pointer">
+        <Checkbox
+          checked={ack}
+          onCheckedChange={(v) => setAck(Boolean(v))}
+          className="mt-0.5"
+        />
+        <span>
+          This is my real, alleged experience. I understand everything I post
+          should be framed as <em>allegedly</em> what happened and I won't
+          fabricate events, doctor photos, or share details I can't stand behind.
+        </span>
+      </label>
+
       <div className="flex justify-between">
         <Button variant="outline" onClick={onBack}>
           Back
         </Button>
         <Button 
           onClick={onPublish}
-          disabled={isLoading}
+          disabled={isLoading || !ack}
         >
           {isLoading ? (
             <span className="flex items-center gap-2">
