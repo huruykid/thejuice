@@ -1,86 +1,58 @@
-# Admin enhancements
+## Goal
 
-Three additions, all admin-only.
+Notify the 3 existing posters (whose stories have no `image_url`) that we now require a photo, and ask them to repost. Use an AI "UX copy" agent (via Lovable AI Gateway) to draft the email body so the tone matches Juice.
 
-## 1. Pending-count badges in `AdminNav`
+## Affected users
 
-The existing pill nav (`src/components/AdminNav.tsx`) gains a small numeric badge next to each label so workload is visible at a glance.
+The 3 approved, non-seed stories with `image_url = null`:
 
-- New hook `useAdminPendingCounts` runs three lightweight `head: true, count: 'exact'` queries:
-  - `user_verifications` where `verification_status = 'pending'`
-  - `stories` where `status = 'pending'` and `is_seed = false`
-  - `reports` where `status = 'pending'`
-- Counts cached via React Query (30s stale), refetched on window focus.
-- Badge only renders when count > 0. Zero state stays clean.
+- `cbf9224e-6ac7-489f-a825-7f8b5c3f9e48`
+- `3f5e5c01-591c-4431-9352-f4bfbc4d5061`
+- `255d7727-05fd-40b6-b609-9334d99aff77`
 
-## 2. Admin Overview page at `/admin`
+## What to build
 
-New `src/pages/AdminOverview.tsx` becomes the landing page for admins.
+### 1. New edge function: `send-repost-request-email`
 
-Layout:
+Admin-only (uses existing `authenticateRequest` + `requireAdmin` helpers, same pattern as `send-approval-email`).
 
-```text
-[ AdminNav ]
-Admin overview
-Quick read on what needs attention.
+Flow:
 
-[ Pending verifications ] [ Pending posts ] [ Pending reports ]
-        12 →                     3 →                 0 →
+1. Accept `{ userIds: string[] }` (or no body = default to the 3 known users).
+2. For each user:
+  - Look up their auth email via service-role `auth.admin.getUserById` (same approach as `get-user-email`).
+  - Look up their `anonymous_username` from `profiles`.
+  - Call the **UX Copy Agent** (Lovable AI Gateway, `google/gemini-2.5-flash`) with a system prompt describing Juice's voice (anonymous, men-only, direct, warm, no fluff) and ask for:
+    - subject line
+    - 2–3 sentences explaining: photos are now required, their existing story is still live but they're encouraged to repost with a photo so it has more impact, link back to the app.
+  - Return structured JSON via AI SDK `Output.object` so we get `{ subject, bodyParagraphs[] }` reliably.
+  - Render into the existing Juice email HTML template (reuse the visual style from `send-approval-email`) with the AI-generated copy + a "Repost your story" CTA linking to `https://sipjuice.app/app`.
+  - Send via Resend (`RESEND_API_KEY` already configured).
+3. Return per-user `{ userId, status: 'sent' | 'failed', error? }`.
 
-[ Activity last 7 days ]
-- New signups: N
-- Verifications approved: N
-- Posts approved: N
-- Reports resolved: N
+### 2. Admin UI trigger
 
-[ View as ▾ ]   (see section 3)
-```
+Small button on `src/pages/AdminPosts.tsx` (admin-only): **"Email posters without photos"**.
 
-- Stat cards link to their respective admin page.
-- 7-day activity uses simple counts on `profiles.created_at`, `user_verifications` (approved + updated_at), `stories` (approved + approved_at), `reports` (resolved + reviewed_at).
-- Route `/admin` added in `src/App.tsx`, gated by admin role like the others.
-- A new "Overview" item is prepended to `AdminNav`.
+- Queries `stories` where `is_seed = false AND image_url IS NULL`.
+- Shows the count + list of usernames in a confirm dialog.
+- On confirm, invokes `send-repost-request-email` with those user IDs.
+- Toasts the per-user result.
 
-## 3. "View as" UI-only role switcher
+### 3. Safety
 
-Admin can preview the app as a different user type without losing their session.
+- Idempotent-ish: log to `security_audit_logs` (`action = 'repost_request_email_sent'`, `resource_id = userId`) so we don't accidentally spam — admin sees a warning if a user was already emailed in the last 7 days but can override.
+- No retention of email address beyond the function call (matches the project's phone-retention rule).
 
-### How it works
+## Technical details
 
-- New `ViewAsContext` (`src/contexts/ViewAsContext.tsx`) stores a `viewAs` value in `sessionStorage`:
-  - `null` (default — true admin view)
-  - `"logged_out"` — pretend no session
-  - `"unverified_user"` — logged in but no approved verification
-  - `"verified_user"` — logged in, verified, not admin
-- Wrapped around `<App />` in `src/main.tsx` so every page sees it.
-- `useAuth`, `useUserRole`, and `useIsVerified` get a thin override layer that respects `viewAs` when an admin sets it. Non-admins can never toggle — guarded server-side by the existing `has_role` check and client-side by ignoring the override unless the real role is admin.
+- Uses `LOVABLE_API_KEY` (already set) → AI Gateway → `google/gemini-2.5-flash` (cheap, fast, good copy).
+- Uses `RESEND_API_KEY` (already set), `from: "Juice <noreply@sipjuice.app>"`.
+- New file: `supabase/functions/send-repost-request-email/index.ts`.
+- Edit: `src/pages/AdminPosts.tsx` to add the trigger button + dialog.
+- No DB schema changes.
 
-### UI
+## Out of scope
 
-- Floating control rendered only for real admins (new `src/components/ViewAsBar.tsx`):
-  - Fixed bottom-right pill: "Viewing as: Admin ▾"
-  - When active (anything other than admin), bar turns amber and shows "Exit preview" button.
-  - Dropdown options: Admin (default), Logged-out visitor, Unverified user, Verified user.
-- Mounted once in `App.tsx` so it appears on every route.
-- Also surfaced as a section on the Admin Overview page for discoverability.
-
-### Important constraints
-
-- **UI-only.** No real auth changes, no row-level security bypass — the admin's real JWT keeps making requests, so they can technically still see admin data via the network. The preview is for "does this page look right for that user type?", not for security testing.
-- Reset on logout and on tab close (sessionStorage).
-- Never persisted to the database.
-
-## Technical notes
-
-- Files to create:
-  - `src/hooks/useAdminPendingCounts.ts`
-  - `src/pages/AdminOverview.tsx`
-  - `src/contexts/ViewAsContext.tsx`
-  - `src/components/ViewAsBar.tsx`
-- Files to edit:
-  - `src/components/AdminNav.tsx` (add Overview item + badge support)
-  - `src/App.tsx` (add `/admin` route, mount `ViewAsBar`)
-  - `src/main.tsx` (wrap with `ViewAsProvider`)
-  - `src/hooks/useAuth.ts`, `src/hooks/useUserRole.ts`, `src/hooks/useIsVerified.ts` (apply override when admin + viewAs set)
-- No database migrations.
-- No new edge functions.
+- Bulk/marketing sends to the wider user base.
+- Forcing deletion of the 3 existing photo-less stories (they stay live unless you want me to also hide/unapprove them — say the word and I'll add that).
