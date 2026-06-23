@@ -2,6 +2,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { rateLimiter } from '@/lib/security';
 import { useSecurityEventLogger } from './useSecurityAudit';
+import { useViewAs } from '@/contexts/ViewAsContext';
+import { useRealIsAdmin } from './useRealIsAdmin';
 
 export interface UserVerification {
   id: string;
@@ -16,6 +18,8 @@ export interface UserVerification {
 export const useVerification = (userId?: string) => {
   const queryClient = useQueryClient();
   const { logVerificationSubmission, logSuspiciousActivity } = useSecurityEventLogger();
+  const { viewAs } = useViewAs();
+  const { isAdmin: realIsAdmin } = useRealIsAdmin(userId);
 
   // Get user's verification status (always get the most recent one)
   const { data: verification, isLoading, error } = useQuery({
@@ -117,9 +121,22 @@ export const useVerification = (userId?: string) => {
   });
 
   const hasVerification = !!verification;
-  const isVerified = verification?.verification_status === 'approved';
-  const isPending = verification?.verification_status === 'pending';
-  const isRejected = verification?.verification_status === 'rejected';
+  let isVerified = verification?.verification_status === 'approved';
+  let isPending = verification?.verification_status === 'pending';
+  let isRejected = verification?.verification_status === 'rejected';
+
+  // Apply "View as" override for admins previewing other user types.
+  if (realIsAdmin && viewAs) {
+    if (viewAs === 'unverified_user' || viewAs === 'logged_out') {
+      isVerified = false;
+      isPending = false;
+      isRejected = false;
+    } else if (viewAs === 'verified_user') {
+      isVerified = true;
+      isPending = false;
+      isRejected = false;
+    }
+  }
 
   return {
     verification,
