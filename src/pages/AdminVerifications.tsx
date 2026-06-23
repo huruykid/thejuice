@@ -12,7 +12,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { CheckCircle, XCircle, Clock, Search, Filter, Mail, Shield } from 'lucide-react';
+import { CheckCircle, XCircle, Clock, Search, Filter, Mail, Shield, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface VerificationWithProfile {
@@ -509,6 +509,17 @@ const AdminVerifications = () => {
                     disabled={isProcessing}
                   >
                     Cancel
+                  </Button>
+                </div>
+                <div className="pt-3 mt-3 border-t border-border">
+                  <Button
+                    onClick={handleDeleteUser}
+                    disabled={isProcessing}
+                    variant="outline"
+                    className="w-full text-red-600 border-red-300 hover:bg-red-50"
+                  >
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Permanently delete user
                   </Button>
                 </div>
               </CardContent>
