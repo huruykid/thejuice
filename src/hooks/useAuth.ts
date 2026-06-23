@@ -2,12 +2,16 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { User, Session } from '@supabase/supabase-js';
 import { useSecurityMonitoring } from './useSecurityMonitoring';
+import { useViewAs } from '@/contexts/ViewAsContext';
+import { useRealIsAdmin } from './useRealIsAdmin';
 
 export const useAuth = () => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const { trackFailedLogin, trackLoginPattern } = useSecurityMonitoring(user?.id);
+  const { viewAs } = useViewAs();
+  const { isAdmin: realIsAdmin } = useRealIsAdmin(user?.id);
 
   useEffect(() => {
     // Set up auth state listener
@@ -102,9 +106,13 @@ export const useAuth = () => {
     return { error };
   };
 
+  // Apply "View as" override (admins only).
+  const effectiveUser = realIsAdmin && viewAs === 'logged_out' ? null : user;
+  const effectiveSession = realIsAdmin && viewAs === 'logged_out' ? null : session;
+
   return {
-    user,
-    session,
+    user: effectiveUser,
+    session: effectiveSession,
     loading,
     signUp,
     signIn,
