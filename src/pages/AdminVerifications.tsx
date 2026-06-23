@@ -362,6 +362,7 @@ const AdminVerifications = () => {
   return (
     <div className="min-h-screen bg-gradient-soft p-4">
       <div className="max-w-7xl mx-auto space-y-6">
+        <AdminNav />
         {/* Header */}
         <div className="text-center space-y-2">
           <h1 className="text-3xl font-bold">Admin Verifications</h1>
