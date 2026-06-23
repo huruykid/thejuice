@@ -15,11 +15,11 @@ Source of truth for fixing the gaps surfaced in the workflow audit. Update statu
 - [x] G8 — Feed queries (`useStories`, `useInfiniteStories`, `useStoriesByCity`) exclude blocked users
 - [x] G14 — `/admin/reports` page + sidebar link; admins can mark reviewing / action / dismiss
 
-## Bucket C — Admin UX (queued)
-- [ ] G7 — Rejection email on verification reject
-- [ ] G15 — Admin nav links (visible only to admins)
-- [ ] G16 — Admin delete actions on posts / users
-- [ ] Bulk-reject in AdminPosts (with reason)
+## Bucket C — Admin UX (in QA)
+- [x] G7 — Rejection email on verification reject (`send-rejection-email` edge fn, fire-and-forget)
+- [x] G15 — Admin nav links (DesktopSidebar moderation section, admin-only)
+- [x] G16 — Admin delete actions: delete post (RLS-backed) + delete user (`admin-delete-user` edge fn, cascades)
+- [x] Bulk-reject in AdminPosts with reason selector
 
 ## Bucket D — Polish (queued)
 - [ ] G10 — `/activity` deep link auto-opens story on Explore
