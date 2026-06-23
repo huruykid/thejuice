@@ -1,62 +1,86 @@
-## What's already in place
+# Admin enhancements
 
-- `useApproveUser` already sends `send-approval-email` after marking a verification approved.
-- `AdminPosts` already lists pending stories with per-row Approve/Reject.
-- `UnlockBanner` + seed feed already enforce the "post one story to see the community feed" rule for approved-but-not-yet-posted users.
+Three additions, all admin-only.
 
-So the workflow is structurally there. Two real gaps:
+## 1. Pending-count badges in `AdminNav`
 
-1. The approval email copy doesn't mention the "post one story to unlock" requirement, so newly approved users don't know what's expected.
-2. `AdminPosts` has no way to approve in bulk — every story is a separate click.
+The existing pill nav (`src/components/AdminNav.tsx`) gains a small numeric badge next to each label so workload is visible at a glance.
 
-## Changes
+- New hook `useAdminPendingCounts` runs three lightweight `head: true, count: 'exact'` queries:
+  - `user_verifications` where `verification_status = 'pending'`
+  - `stories` where `status = 'pending'` and `is_seed = false`
+  - `reports` where `status = 'pending'`
+- Counts cached via React Query (30s stale), refetched on window focus.
+- Badge only renders when count > 0. Zero state stays clean.
 
-### 1. Update the approval email copy (`supabase/functions/send-approval-email`)
+## 2. Admin Overview page at `/admin`
 
-Rewrite the email so the call-to-action is unambiguous:
+New `src/pages/AdminOverview.tsx` becomes the landing page for admins.
 
-- Subject: `You're in — post one story to unlock the Juice feed`
-- Body, in plain language:
-  - Welcome, your account is approved.
-  - **To unlock the full community feed, post at least one story.** Until then, you'll see editorial/seed posts only.
-  - Every post is reviewed by us before it goes live — usually within 24 hours.
-  - Single CTA button: "Post your first story" → `https://sipjuice.app/app`
-  - Short reminder about anonymity and the "allegedly" framing.
-- Strip the gradient/purple template; use the existing Juice orange brand. Keep it simple — no feature grid.
+Layout:
 
-No schema change. No new secret (Resend already configured).
+```text
+[ AdminNav ]
+Admin overview
+Quick read on what needs attention.
 
-### 2. Add bulk-approve to `AdminPosts` (`src/pages/AdminPosts.tsx`)
+[ Pending verifications ] [ Pending posts ] [ Pending reports ]
+        12 →                     3 →                 0 →
 
-- Add a checkbox to each pending row.
-- Sticky action bar at the top of the pending list: `[ ] Select all on this page  ·  Approve selected (N)  ·  Clear`.
-- Bulk approve = a single `update().in('id', selectedIds)` setting `status='approved'` and `approved_at=now()`. One round-trip, atomic in Postgres.
-- Reject stays per-row only — rejection needs a reason, bulk-rejecting would be sloppy.
-- After bulk approve: clear selection, invalidate `admin-posts` query, toast `"Approved N posts"`.
-- Checkboxes only render on the `pending` filter view (selection is meaningless on approved/rejected lists).
+[ Activity last 7 days ]
+- New signups: N
+- Verifications approved: N
+- Posts approved: N
+- Reports resolved: N
 
-### 3. (Nit) Make sure the admin gets to the queue easily
+[ View as ▾ ]   (see section 3)
+```
 
-Add a small "Pending posts (N)" link in the `DesktopSidebar` (admin only) and in the existing AdminVerifications page header, so once a batch of users is approved you can jump straight to moderating the stories they'll start posting. Uses `useUserRole` to gate visibility; no new route.
+- Stat cards link to their respective admin page.
+- 7-day activity uses simple counts on `profiles.created_at`, `user_verifications` (approved + updated_at), `stories` (approved + approved_at), `reports` (resolved + reviewed_at).
+- Route `/admin` added in `src/App.tsx`, gated by admin role like the others.
+- A new "Overview" item is prepended to `AdminNav`.
 
-## Out of scope (call out, don't build)
+## 3. "View as" UI-only role switcher
 
-- Email when a **post** is approved/rejected. Useful but separate — confirm before adding, since it doubles the email volume.
-- Admin push/realtime notifications for new pending posts.
-- Rate-limiting how many stories one user can submit per day.
-- Auto-approving trusted users after N approved posts.
+Admin can preview the app as a different user type without losing their session.
 
-## Files touched
+### How it works
 
-- `supabase/functions/send-approval-email/index.ts` — rewrite copy + subject.
-- `src/pages/AdminPosts.tsx` — add selection state, bulk-approve mutation, action bar.
-- `src/components/layout/DesktopSidebar.tsx` — add admin-only "Moderation" links.
+- New `ViewAsContext` (`src/contexts/ViewAsContext.tsx`) stores a `viewAs` value in `sessionStorage`:
+  - `null` (default — true admin view)
+  - `"logged_out"` — pretend no session
+  - `"unverified_user"` — logged in but no approved verification
+  - `"verified_user"` — logged in, verified, not admin
+- Wrapped around `<App />` in `src/main.tsx` so every page sees it.
+- `useAuth`, `useUserRole`, and `useIsVerified` get a thin override layer that respects `viewAs` when an admin sets it. Non-admins can never toggle — guarded server-side by the existing `has_role` check and client-side by ignoring the override unless the real role is admin.
 
-## End-to-end flow after this ships
+### UI
 
-1. User submits verification → you approve in `/admin/verifications`.
-2. They get the new email: "you're in — post one story to unlock the feed."
-3. They log in → see the seed feed + `UnlockBanner` prompting them to post.
-4. They submit a story → goes into `pending` queue.
-5. You open `/admin/posts`, tick the good ones, hit **Approve selected** once.
-6. As soon as their first post flips to `approved`, `user_has_approved_post()` returns true and their next visit shows the full community feed.
+- Floating control rendered only for real admins (new `src/components/ViewAsBar.tsx`):
+  - Fixed bottom-right pill: "Viewing as: Admin ▾"
+  - When active (anything other than admin), bar turns amber and shows "Exit preview" button.
+  - Dropdown options: Admin (default), Logged-out visitor, Unverified user, Verified user.
+- Mounted once in `App.tsx` so it appears on every route.
+- Also surfaced as a section on the Admin Overview page for discoverability.
+
+### Important constraints
+
+- **UI-only.** No real auth changes, no row-level security bypass — the admin's real JWT keeps making requests, so they can technically still see admin data via the network. The preview is for "does this page look right for that user type?", not for security testing.
+- Reset on logout and on tab close (sessionStorage).
+- Never persisted to the database.
+
+## Technical notes
+
+- Files to create:
+  - `src/hooks/useAdminPendingCounts.ts`
+  - `src/pages/AdminOverview.tsx`
+  - `src/contexts/ViewAsContext.tsx`
+  - `src/components/ViewAsBar.tsx`
+- Files to edit:
+  - `src/components/AdminNav.tsx` (add Overview item + badge support)
+  - `src/App.tsx` (add `/admin` route, mount `ViewAsBar`)
+  - `src/main.tsx` (wrap with `ViewAsProvider`)
+  - `src/hooks/useAuth.ts`, `src/hooks/useUserRole.ts`, `src/hooks/useIsVerified.ts` (apply override when admin + viewAs set)
+- No database migrations.
+- No new edge functions.
