@@ -25,95 +25,65 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log(`Sending approval email to: ${email}`);
 
+    const greeting = username ? `Hey ${username},` : "Hey,";
     const emailResponse = await resend.emails.send({
-      from: "SipJuice <noreply@sipjuice.app>",
+      from: "Juice <noreply@sipjuice.app>",
       to: [email],
-      subject: "🎉 Welcome to Juice - Your Account is Approved!",
+      subject: "You're in — post one story to unlock the Juice feed",
       html: `
         <!DOCTYPE html>
         <html>
-        <head>
-          <meta charset="utf-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Welcome to Juice!</title>
-          <style>
-            body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-            .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 20px; overflow: hidden; margin-top: 40px; margin-bottom: 40px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
-            .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px 30px; text-align: center; color: white; }
-            .content { padding: 40px 30px; }
-            .emoji { font-size: 48px; margin-bottom: 20px; }
-            .title { font-size: 28px; font-weight: bold; margin: 0 0 10px 0; }
-            .subtitle { font-size: 16px; opacity: 0.9; margin: 0; }
-            .welcome-text { font-size: 18px; margin-bottom: 30px; color: #555; }
-            .feature-list { list-style: none; padding: 0; margin: 30px 0; }
-            .feature-item { display: flex; align-items: center; margin: 15px 0; padding: 15px; background: #f8f9ff; border-radius: 10px; }
-            .feature-emoji { font-size: 24px; margin-right: 15px; }
-            .cta-button { display: inline-block; padding: 15px 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 25px; font-weight: bold; margin: 20px 0; transition: transform 0.2s; }
-            .cta-button:hover { transform: translateY(-2px); }
-            .footer { background: #f8f9ff; padding: 30px; text-align: center; color: #666; border-top: 1px solid #eee; }
-          </style>
-        </head>
-        <body>
-          <div class="container">
-            <div class="header">
-              <div class="emoji">🧃</div>
-              <h1 class="title">Welcome to Juice!</h1>
-              <p class="subtitle">Your account has been approved</p>
-            </div>
-            
-            <div class="content">
-              <p class="welcome-text">
-                Hey ${username || 'there'}! 🎉 Great news - your account has been approved and you're now part of the Juice community!
-              </p>
-              
-              <h3>What you can do now:</h3>
-              <ul class="feature-list">
-                <li class="feature-item">
-                  <span class="feature-emoji">💭</span>
-                  <div>
-                    <strong>Share Your Stories</strong><br>
-                    Tell your dating experiences anonymously and help others learn
-                  </div>
-                </li>
-                <li class="feature-item">
-                  <span class="feature-emoji">🔍</span>
-                  <div>
-                    <strong>Discover Real Experiences</strong><br>
-                    Read authentic stories from people in your area
-                  </div>
-                </li>
-                <li class="feature-item">
-                  <span class="feature-emoji">🤝</span>
-                  <div>
-                    <strong>Connect Safely</strong><br>
-                    Share and discover while maintaining your privacy
-                  </div>
-                </li>
-              </ul>
-
-              <div style="text-align: center;">
-                <a href="https://sipjuice.app" class="cta-button">
-                  🍊 Start Sharing Your Stories
-                </a>
-              </div>
-
-              <p style="margin-top: 30px; color: #666; font-size: 14px;">
-                Remember to keep stories anonymous and respect our community guidelines. 
-                Ready to spill some tea? ☕✨
-              </p>
-            </div>
-
-            <div class="footer">
-              <p>
-                <strong>Juice App</strong><br>
-                The anonymous space for real dating stories
-              </p>
-              <p style="font-size: 12px; margin-top: 20px;">
-                Questions? Just reply to this email - we'd love to hear from you!
-              </p>
-            </div>
-          </div>
-        </body>
+          <head>
+            <meta charset="utf-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+            <title>You're in</title>
+          </head>
+          <body style="margin:0;padding:0;background:#faf7f2;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#1a1a1a;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#faf7f2;padding:32px 16px;">
+              <tr>
+                <td align="center">
+                  <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="max-width:560px;background:#ffffff;border-radius:16px;overflow:hidden;border:1px solid #eee;">
+                    <tr>
+                      <td style="padding:28px 32px 0 32px;">
+                        <div style="font-size:13px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:#f57c00;">The Juice</div>
+                        <h1 style="margin:8px 0 0 0;font-size:24px;line-height:1.25;color:#1a1a1a;">You're in.</h1>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:20px 32px 0 32px;font-size:15px;line-height:1.55;color:#333;">
+                        <p style="margin:0 0 16px 0;">${greeting}</p>
+                        <p style="margin:0 0 16px 0;">Your account is approved. Welcome to the inside.</p>
+                        <p style="margin:0 0 16px 0;">
+                          <strong>One thing first:</strong> to unlock the full community feed, post at least one story.
+                          Until you do, you'll see our editorial seed posts only.
+                        </p>
+                        <p style="margin:0 0 24px 0;color:#555;">
+                          Every post is reviewed by us before it goes live — usually within 24 hours.
+                        </p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:0 32px 8px 32px;" align="left">
+                        <a href="https://sipjuice.app/app"
+                           style="display:inline-block;background:#f57c00;color:#ffffff;text-decoration:none;font-weight:600;font-size:15px;padding:12px 22px;border-radius:10px;">
+                          Post your first story
+                        </a>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:20px 32px 28px 32px;font-size:13px;line-height:1.55;color:#666;border-top:1px solid #f0f0f0;margin-top:24px;">
+                        <p style="margin:16px 0 0 0;">
+                          Keep it anonymous. Frame anything unverified as "allegedly."
+                          Don't name people in ways that identify them. That's how we keep this place useful — and safe.
+                        </p>
+                      </td>
+                    </tr>
+                  </table>
+                  <p style="font-size:12px;color:#999;margin:16px 0 0 0;">The Juice · sipjuice.app</p>
+                </td>
+              </tr>
+            </table>
+          </body>
         </html>
       `,
     });

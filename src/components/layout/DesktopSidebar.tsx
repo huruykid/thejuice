@@ -1,7 +1,9 @@
-import { Home, Search, Bell, User, Plus, Shield, LogOut } from "lucide-react";
+import { Home, Search, Bell, User, Plus, Shield, LogOut, ClipboardList, UserCheck } from "lucide-react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { useUserRole } from "@/hooks/useUserRole";
 
 interface DesktopSidebarProps {
   onCreateStory?: () => void;
@@ -17,6 +19,8 @@ const navItems = [
 const DesktopSidebar = ({ onCreateStory }: DesktopSidebarProps) => {
   const { pathname } = useLocation();
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const { isAdmin } = useUserRole(user?.id);
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
@@ -54,6 +58,36 @@ const DesktopSidebar = ({ onCreateStory }: DesktopSidebarProps) => {
             </NavLink>
           );
         })}
+
+        {isAdmin && (
+          <div className="pt-4 mt-2 border-t border-juice-orange/10">
+            <div className="px-4 pb-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+              Moderation
+            </div>
+            <NavLink
+              to="/admin/posts"
+              className={`flex items-center gap-3 px-4 py-2.5 rounded-xl transition-colors ${
+                pathname === "/admin/posts"
+                  ? "bg-juice-orange/10 text-juice-orange font-semibold"
+                  : "text-foreground/80 hover:bg-muted/60"
+              }`}
+            >
+              <ClipboardList className="h-5 w-5" />
+              <span className="text-sm">Pending posts</span>
+            </NavLink>
+            <NavLink
+              to="/admin/verifications"
+              className={`flex items-center gap-3 px-4 py-2.5 rounded-xl transition-colors ${
+                pathname === "/admin/verifications"
+                  ? "bg-juice-orange/10 text-juice-orange font-semibold"
+                  : "text-foreground/80 hover:bg-muted/60"
+              }`}
+            >
+              <UserCheck className="h-5 w-5" />
+              <span className="text-sm">Verifications</span>
+            </NavLink>
+          </div>
+        )}
 
         {onCreateStory && (
           <div className="pt-4">

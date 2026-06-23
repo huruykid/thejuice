@@ -1,50 +1,62 @@
-## Goal
+## What's already in place
 
-Collapse city browsing into the Home feed using a filter chip — the pattern used by Twitter, Reddit, Yelp, Tinder, and Nextdoor. One feed, one place to look.
+- `useApproveUser` already sends `send-approval-email` after marking a verification approved.
+- `AdminPosts` already lists pending stories with per-row Approve/Reject.
+- `UnlockBanner` + seed feed already enforce the "post one story to see the community feed" rule for approved-but-not-yet-posted users.
 
-## What changes
+So the workflow is structurally there. Two real gaps:
 
-**Home (`/app`)**
-- Add a sticky filter row above the feed with two chips:
-  - **All** (default) — current Home feed
-  - **[City name] ▾** — shows the user's `profiles.city_id` city; if unset, label reads "Pick a city ▾"
-- Tapping the city chip opens the existing `CitySheet` to pick/change city.
-- Selecting "All" clears the filter (does not change the saved profile city — just the active view).
-- Active chip uses the primary color; inactive is muted. Chip row is sticky under the header so it stays reachable while scrolling.
+1. The approval email copy doesn't mention the "post one story to unlock" requirement, so newly approved users don't know what's expected.
+2. `AdminPosts` has no way to approve in bulk — every story is a separate click.
 
-**Data**
-- When "All" is active: existing `useStories` query.
-- When city is active: existing `useStoriesByCity(cityId)` query.
-- Same `StoryCard` rendering for both — no other UI differences.
-- Empty state for a city with no posts: "No juice from [City] yet. Be the first to post."
+## Changes
 
-**Bottom navigation**
-- Remove the "Near You" tab. Reclaim that slot — leave it empty for now (4 tabs instead of 5) so we don't have to invent a new destination this round.
-- `/near-you` route stays mounted and redirects to `/app` so any old links/bookmarks don't 404.
+### 1. Update the approval email copy (`supabase/functions/send-approval-email`)
 
-**Profile**
-- City picker stays on Profile as the "set your default" surface (unchanged). The Home chip is the everyday switcher.
+Rewrite the email so the call-to-action is unambiguous:
 
-## Out of scope
+- Subject: `You're in — post one story to unlock the Juice feed`
+- Body, in plain language:
+  - Welcome, your account is approved.
+  - **To unlock the full community feed, post at least one story.** Until then, you'll see editorial/seed posts only.
+  - Every post is reviewed by us before it goes live — usually within 24 hours.
+  - Single CTA button: "Post your first story" → `https://sipjuice.app/app`
+  - Short reminder about anonymity and the "allegedly" framing.
+- Strip the gradient/purple template; use the existing Juice orange brand. Keep it simple — no feature grid.
 
-- Multi-city selection, radius search, or map view.
-- Inferring city from device location.
-- Saving the chip selection across sessions (resets to "All" each visit — same as Twitter's tab behavior).
+No schema change. No new secret (Resend already configured).
 
-## Technical notes
+### 2. Add bulk-approve to `AdminPosts` (`src/pages/AdminPosts.tsx`)
 
-- New component `CityFilterChips` in `src/components/`, consumed by `src/pages/Home.tsx`.
-- Local `useState<'all' | 'city'>` in Home decides which query hook runs; only one is `enabled` at a time so we don't double-fetch.
-- `CitySheet` already handles persisting `profiles.city_id` — reuse as-is.
-- `/near-you` route in `src/App.tsx` becomes `<Navigate to="/app" replace />`.
-- `Navigation.tsx` / `DesktopSidebar.tsx`: drop the Near You entry.
-- No DB migration. No new dependencies.
+- Add a checkbox to each pending row.
+- Sticky action bar at the top of the pending list: `[ ] Select all on this page  ·  Approve selected (N)  ·  Clear`.
+- Bulk approve = a single `update().in('id', selectedIds)` setting `status='approved'` and `approved_at=now()`. One round-trip, atomic in Postgres.
+- Reject stays per-row only — rejection needs a reason, bulk-rejecting would be sloppy.
+- After bulk approve: clear selection, invalidate `admin-posts` query, toast `"Approved N posts"`.
+- Checkboxes only render on the `pending` filter view (selection is meaningless on approved/rejected lists).
+
+### 3. (Nit) Make sure the admin gets to the queue easily
+
+Add a small "Pending posts (N)" link in the `DesktopSidebar` (admin only) and in the existing AdminVerifications page header, so once a batch of users is approved you can jump straight to moderating the stories they'll start posting. Uses `useUserRole` to gate visibility; no new route.
+
+## Out of scope (call out, don't build)
+
+- Email when a **post** is approved/rejected. Useful but separate — confirm before adding, since it doubles the email volume.
+- Admin push/realtime notifications for new pending posts.
+- Rate-limiting how many stories one user can submit per day.
+- Auto-approving trusted users after N approved posts.
 
 ## Files touched
 
-- `src/pages/Home.tsx` — add chip row, branch query
-- `src/components/CityFilterChips.tsx` — new
-- `src/App.tsx` — redirect `/near-you`
-- `src/components/Navigation.tsx` — remove Near You tab
-- `src/components/layout/DesktopSidebar.tsx` — remove Near You link
-- `src/pages/NearYou.tsx` — delete (or leave dead, your call)
+- `supabase/functions/send-approval-email/index.ts` — rewrite copy + subject.
+- `src/pages/AdminPosts.tsx` — add selection state, bulk-approve mutation, action bar.
+- `src/components/layout/DesktopSidebar.tsx` — add admin-only "Moderation" links.
+
+## End-to-end flow after this ships
+
+1. User submits verification → you approve in `/admin/verifications`.
+2. They get the new email: "you're in — post one story to unlock the feed."
+3. They log in → see the seed feed + `UnlockBanner` prompting them to post.
+4. They submit a story → goes into `pending` queue.
+5. You open `/admin/posts`, tick the good ones, hit **Approve selected** once.
+6. As soon as their first post flips to `approved`, `user_has_approved_post()` returns true and their next visit shows the full community feed.

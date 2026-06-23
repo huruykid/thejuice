@@ -7,6 +7,7 @@ import { useUserRole } from "@/hooks/useUserRole";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -46,6 +47,12 @@ const AdminPosts = () => {
   const [filter, setFilter] = useState<"pending" | "approved" | "rejected" | "all">(
     "pending"
   );
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+
+  // Clear selection whenever the filter changes — selection only applies to pending.
+  useEffect(() => {
+    setSelected(new Set());
+  }, [filter]);
 
   useEffect(() => {
     if (!authLoading && !roleLoading && user && !isAdmin) navigate("/not-found");
@@ -83,6 +90,23 @@ const AdminPosts = () => {
     onError: (e: any) => toast.error(e?.message || "Approval failed"),
   });
 
+  const bulkApprove = useMutation({
+    mutationFn: async (ids: string[]) => {
+      const { error } = await supabase
+        .from("stories")
+        .update({ status: "approved", approved_at: new Date().toISOString() })
+        .in("id", ids);
+      if (error) throw error;
+      return ids.length;
+    },
+    onSuccess: (count) => {
+      toast.success(`Approved ${count} post${count === 1 ? "" : "s"}`);
+      setSelected(new Set());
+      queryClient.invalidateQueries({ queryKey: ["admin-posts"] });
+    },
+    onError: (e: any) => toast.error(e?.message || "Bulk approval failed"),
+  });
+
   const reject = useMutation({
     mutationFn: async ({ id, reasonLabel }: { id: string; reasonLabel: string }) => {
       const { error } = await supabase
@@ -109,6 +133,23 @@ const AdminPosts = () => {
       </div>
     );
   if (!user || !isAdmin) return null;
+
+  const showBulk = filter === "pending";
+  const pendingIds = (posts ?? []).filter((p) => p.status === "pending").map((p) => p.id);
+  const allSelected =
+    showBulk && pendingIds.length > 0 && pendingIds.every((id) => selected.has(id));
+  const toggleAll = () => {
+    if (allSelected) setSelected(new Set());
+    else setSelected(new Set(pendingIds));
+  };
+  const toggleOne = (id: string) => {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
 
   const badge = (s: string) => {
     if (s === "pending")
@@ -156,12 +197,44 @@ const AdminPosts = () => {
           </Select>
         </div>
 
+        {showBulk && pendingIds.length > 0 && (
+          <div className="sticky top-0 z-10 -mx-4 px-4 py-2 bg-background/95 backdrop-blur border-b border-border flex items-center gap-3 flex-wrap">
+            <label className="flex items-center gap-2 text-sm cursor-pointer">
+              <Checkbox checked={allSelected} onCheckedChange={toggleAll} />
+              <span>Select all ({pendingIds.length})</span>
+            </label>
+            <div className="flex-1" />
+            <span className="text-xs text-muted-foreground">
+              {selected.size} selected
+            </span>
+            <Button
+              size="sm"
+              disabled={selected.size === 0 || bulkApprove.isPending}
+              onClick={() => bulkApprove.mutate(Array.from(selected))}
+            >
+              <CheckCircle className="w-4 h-4 mr-1" />
+              Approve selected
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              disabled={selected.size === 0}
+              onClick={() => setSelected(new Set())}
+            >
+              Clear
+            </Button>
+          </div>
+        )}
+
         <div className="space-y-4">
           {(posts ?? []).map((p) => (
             <PostRow
               key={p.id}
               post={p}
               badge={badge}
+              selectable={showBulk && p.status === "pending"}
+              selected={selected.has(p.id)}
+              onToggle={() => toggleOne(p.id)}
               onApprove={() => approve.mutate(p.id)}
               onReject={(reasonLabel) => reject.mutate({ id: p.id, reasonLabel })}
             />
@@ -182,11 +255,17 @@ const AdminPosts = () => {
 const PostRow = ({
   post,
   badge,
+  selectable,
+  selected,
+  onToggle,
   onApprove,
   onReject,
 }: {
   post: PendingPost;
   badge: (s: string) => JSX.Element;
+  selectable: boolean;
+  selected: boolean;
+  onToggle: () => void;
   onApprove: () => void;
   onReject: (reasonLabel: string) => void;
 }) => {
@@ -196,6 +275,13 @@ const PostRow = ({
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between gap-2 flex-wrap">
           <CardTitle className="text-base flex items-center gap-2">
+            {selectable && (
+              <Checkbox
+                checked={selected}
+                onCheckedChange={onToggle}
+                aria-label="Select post for bulk approval"
+              />
+            )}
             {post.submitted_anonymously ? (
               <UserX className="w-4 h-4 text-muted-foreground" />
             ) : (
