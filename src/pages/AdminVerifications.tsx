@@ -142,7 +142,7 @@ const AdminVerifications = () => {
       queryClient.invalidateQueries({ queryKey: ['admin-verifications'] });
       setSelectedVerification(null);
       setNotes('');
-      toast.success('Verification status updated successfully');
+      toast.success('Verification rejected');
     },
     onError: (error) => {
       console.error('Error updating verification:', error);
