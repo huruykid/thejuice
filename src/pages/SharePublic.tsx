@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { sanitizeText, validateStoryContent } from "@/lib/security";
+import { FLAG_CATEGORIES, FlagRatingInput, type FlagValue } from "@/components/FlagRating";
 
 /**
  * Public, no-auth submission flow. An anonymous visitor can submit a story
@@ -22,6 +23,12 @@ const SharePublic = () => {
   const [ack, setAck] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
+  const [ratings, setRatings] = useState<Record<string, FlagValue>>({
+    communication: 0,
+    loyalty: 0,
+    vibe: 0,
+    respect: 0,
+  });
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,6 +55,10 @@ const SharePublic = () => {
         is_seed: false,
         submitted_anonymously: true,
         status: "pending",
+        communication_rating: ratings.communication,
+        loyalty_rating: ratings.loyalty,
+        overall_vibe_rating: ratings.vibe,
+        emotional_safety_rating: ratings.respect,
       });
       if (error) throw error;
       setDone(true);
@@ -116,7 +127,7 @@ const SharePublic = () => {
               <Textarea
                 id="content"
                 rows={8}
-                placeholder="What happened? Stick to your own experience — no fabrication, no identifying details."
+                placeholder="Allegedly, what happened? Stick to your own experience — no fabrication, no identifying details."
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 maxLength={5000}
@@ -126,6 +137,23 @@ const SharePublic = () => {
               </p>
             </div>
 
+            <div className="space-y-2">
+              <Label>Rate the experience</Label>
+              <p className="text-xs text-muted-foreground">
+                Tap a green or red flag for each. Skip any you don't want to rate.
+              </p>
+              {FLAG_CATEGORIES.map((cat) => (
+                <FlagRatingInput
+                  key={cat.key}
+                  category={cat}
+                  value={ratings[cat.key]}
+                  onChange={(next) =>
+                    setRatings((prev) => ({ ...prev, [cat.key]: next }))
+                  }
+                />
+              ))}
+            </div>
+
             <label className="flex gap-2 items-start text-xs text-muted-foreground cursor-pointer">
               <Checkbox
                 checked={ack}
@@ -133,9 +161,9 @@ const SharePublic = () => {
                 className="mt-0.5"
               />
               <span>
-                I'm sharing a real experience. I won't fabricate, exaggerate,
-                or include details that publicly identify someone (last names,
-                photos, addresses, workplaces, phone numbers).
+                This is my real, <em>alleged</em> experience. I won't fabricate
+                or exaggerate, and I won't include details that publicly identify
+                someone (last names, addresses, workplaces, phone numbers).
               </span>
             </label>
 
