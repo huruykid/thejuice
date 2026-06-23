@@ -52,7 +52,7 @@ const CityFilterChips = ({ scope, onScopeChange, cityId }: Props) => {
 
   return (
     <>
-      <div className="flex items-center gap-2 px-4 py-2 overflow-x-auto no-scrollbar">
+      <div className="flex items-center gap-2 px-4 py-2 overflow-x-auto">
         <button
           onClick={() => onScopeChange("all")}
           className={`shrink-0 px-3.5 py-1.5 rounded-full text-sm font-medium transition-colors ${
