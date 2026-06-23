@@ -168,12 +168,22 @@ const PersonDetailsStep = ({
             </div>
           </div>
 
-          {/* Add Photos Section */}
+          {/* Add Photos Section - REQUIRED */}
           <div className="space-y-4">
-            <h4 className="text-sm font-medium">Add Photos (Optional)</h4>
-            
+            <div className="flex items-center justify-between">
+              <h4 className="text-sm font-semibold">Add Photos <span className="text-destructive">*</span></h4>
+              <span className="text-xs text-muted-foreground">At least 1 required</span>
+            </div>
+            <p className="text-xs text-muted-foreground -mt-2">
+              A photo helps other guys recognize who the story is about. Stories without a photo can't be posted.
+            </p>
+
             {imagePreviews.length === 0 ? (
-              <div className="border-2 border-dashed border-juice-blue/30 rounded-lg p-6 text-center hover:border-juice-blue/50 transition-smooth">
+              <div className={`border-2 border-dashed rounded-lg p-8 text-center transition-smooth ${
+                imagePreviews.length === 0
+                  ? 'border-destructive/50 bg-destructive/5 hover:border-destructive'
+                  : 'border-juice-blue/30 hover:border-juice-blue/50'
+              }`}>
                 <input
                   type="file"
                   accept="image/*"
@@ -182,11 +192,11 @@ const PersonDetailsStep = ({
                   className="hidden"
                   id="image-upload"
                 />
-                <label htmlFor="image-upload" className="cursor-pointer flex flex-col items-center gap-2">
-                  <Camera className="h-8 w-8 text-muted-foreground" />
+                <label htmlFor="image-upload" className="cursor-pointer flex flex-col items-center gap-3">
+                  <Camera className="h-10 w-10 text-destructive" />
                   <div>
-                    <p className="text-sm font-medium">Upload photos</p>
-                    <p className="text-xs text-muted-foreground">JPG, PNG up to 5MB each (max 5 photos)</p>
+                    <p className="text-base font-semibold">Tap to upload photos</p>
+                    <p className="text-xs text-muted-foreground mt-1">JPG, PNG up to 5MB each (max 5 photos)</p>
                   </div>
                 </label>
               </div>
@@ -241,7 +251,7 @@ const PersonDetailsStep = ({
         </Button>
         <Button 
           onClick={onNext}
-          disabled={!storyData.personName.trim()}
+          disabled={!storyData.personName.trim() || uploadedImages.length === 0}
         >
           Next
         </Button>
