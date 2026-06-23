@@ -142,10 +142,7 @@ const AdminVerifications = () => {
       queryClient.invalidateQueries({ queryKey: ['admin-verifications'] });
       setSelectedVerification(null);
       setNotes('');
-      // Toast is handled in the useApproveUser hook or will show default success
-      if (!approveUser.isSuccess) {
-        toast.success('Verification status updated successfully');
-      }
+      toast.success('Verification rejected');
     },
     onError: (error) => {
       console.error('Error updating verification:', error);
@@ -201,8 +198,8 @@ const AdminVerifications = () => {
   };
 
   const filteredVerifications = verifications?.filter(verification =>
-    verification.profile?.anonymous_username.toLowerCase().includes(search.toLowerCase()) ||
-    verification.profile?.city.toLowerCase().includes(search.toLowerCase())
+    verification.profile?.anonymous_username?.toLowerCase().includes(search.toLowerCase()) ||
+    verification.profile?.city?.toLowerCase().includes(search.toLowerCase())
   ) || [];
 
   const getStatusBadge = (status: string) => {
