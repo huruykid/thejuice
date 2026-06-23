@@ -190,8 +190,55 @@ const AdminVerifications = () => {
       await updateVerificationMutation.mutateAsync({
         id: selectedVerification.id,
         status: 'rejected',
-        notes
+        notes,
       });
+
+      // Fire-and-forget rejection email (don't block UX on email failure).
+      try {
+        const { data: emailResponse, error: emailError } =
+          await supabase.functions.invoke('get-user-email', {
+            body: { userId: selectedVerification.user_id },
+          });
+        if (!emailError && emailResponse?.email) {
+          const { error: sendErr } = await supabase.functions.invoke(
+            'send-rejection-email',
+            {
+              body: {
+                email: emailResponse.email,
+                username: selectedVerification.profile?.anonymous_username,
+                reason: notes || undefined,
+              },
+            }
+          );
+          if (sendErr) console.warn('Rejection email failed:', sendErr);
+        }
+      } catch (e) {
+        console.warn('Rejection email pipeline failed:', e);
+      }
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleDeleteUser = async () => {
+    if (!selectedVerification) return;
+    const username = selectedVerification.profile?.anonymous_username || 'this user';
+    const ok = window.confirm(
+      `Permanently delete ${username}? This removes their account and all their data. This cannot be undone.`
+    );
+    if (!ok) return;
+    setIsProcessing(true);
+    try {
+      const { error } = await supabase.functions.invoke('admin-delete-user', {
+        body: { userId: selectedVerification.user_id, reason: notes || undefined },
+      });
+      if (error) throw error;
+      toast.success(`Deleted ${username}`);
+      queryClient.invalidateQueries({ queryKey: ['admin-verifications'] });
+      setSelectedVerification(null);
+      setNotes('');
+    } catch (e: any) {
+      toast.error(e?.message || 'Failed to delete user');
     } finally {
       setIsProcessing(false);
     }
