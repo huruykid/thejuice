@@ -40,12 +40,15 @@ const MetadataStep = ({
       ...prev,
       metadata: {
         ...prev.metadata,
-        location: value
+        location: value,
+        // Free-typing invalidates any previously selected city UUID;
+        // the user must reselect from the suggestion list.
+        city_id: null,
       }
     }));
   };
 
-  const handleCitySelect = (cityName: string) => {
+  const handleCitySelect = (cityName: string, cityId: string) => {
     setCityInput(cityName);
     setShowSuggestions(false);
     setSelectedIndex(-1);
@@ -53,7 +56,8 @@ const MetadataStep = ({
       ...prev,
       metadata: {
         ...prev.metadata,
-        location: cityName
+        location: cityName,
+        city_id: cityId,
       }
     }));
   };
@@ -79,7 +83,7 @@ const MetadataStep = ({
         if (selectedIndex >= 0 && cities[selectedIndex]) {
           const city = cities[selectedIndex];
           const cityName = `${city.city_name}, ${city.state_province || city.country}`;
-          handleCitySelect(cityName);
+          handleCitySelect(cityName, city.id);
         }
         break;
       case 'Escape':
@@ -171,7 +175,7 @@ const MetadataStep = ({
                         className={`px-4 py-2 text-sm cursor-pointer hover:bg-gray-100 ${
                           index === selectedIndex ? 'bg-blue-50 text-blue-600' : 'text-gray-900'
                         }`}
-                        onClick={() => handleCitySelect(cityName)}
+                        onClick={() => handleCitySelect(cityName, city.id)}
                       >
                         <div className="font-medium">{city.city_name}</div>
                         <div className="text-xs text-gray-500">
