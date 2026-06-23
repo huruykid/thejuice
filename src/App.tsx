@@ -34,6 +34,7 @@ import BlogPost from "./pages/BlogPost";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import Support from "./pages/Support";
 import { useAuth } from "./hooks/useAuth";
+import { useVerification } from "./hooks/useVerification";
 import { useScreenshotProtection } from "./hooks/useScreenshotProtection";
 import { useIosCaptureProtection } from "./hooks/useIosCaptureProtection";
 import { useTheme } from "./hooks/useTheme";
@@ -56,6 +57,32 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     return <Navigate to="/" replace />;
   }
   
+  return <>{children}</>;
+};
+
+/**
+ * Like ProtectedRoute, but additionally requires an approved verification.
+ * Unverified / pending / rejected users are bounced to /app where Index
+ * renders the correct gating screen (UnverifiedHome, Pending, Rejected, ...).
+ */
+const VerifiedRoute = ({ children }: { children: React.ReactNode }) => {
+  const { user, loading } = useAuth();
+  const { isVerified, isLoading: verificationLoading } = useVerification(user?.id);
+
+  if (loading || (user && verificationLoading)) {
+    return (
+      <div className="min-h-screen bg-gradient-soft flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <img src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" alt="Juice" className="h-16 w-16 mx-auto animate-pulse" />
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) return <Navigate to="/" replace />;
+  if (!isVerified) return <Navigate to="/app" replace />;
+
   return <>{children}</>;
 };
 
@@ -95,9 +122,9 @@ const App = () => {
           <Route path="/tea-app-comparison" element={<PublicLayout><TeaAppComparison /></PublicLayout>} />
           <Route path="/app" element={<Index />} />
           <Route path="/explore" element={
-            <ProtectedRoute>
+            <VerifiedRoute>
               <ExploreWrapper />
-            </ProtectedRoute>
+            </VerifiedRoute>
           } />
           <Route path="/near-you" element={<Navigate to="/app" replace />} />
           <Route path="/profile" element={
