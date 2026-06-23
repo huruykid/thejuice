@@ -112,6 +112,7 @@ export const useStoriesByProfile = (profileId: string) => {
           )
         `)
         .eq('profile_id', profileId)
+        .eq('status', 'approved')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
