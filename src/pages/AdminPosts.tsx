@@ -15,7 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CheckCircle, XCircle, Clock, UserX, User } from "lucide-react";
+import { CheckCircle, XCircle, Clock, UserX, User, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 const REJECTION_REASONS = [
@@ -48,6 +48,7 @@ const AdminPosts = () => {
     "pending"
   );
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [bulkReasonId, setBulkReasonId] = useState<string>(REJECTION_REASONS[0].id);
 
   // Clear selection whenever the filter changes — selection only applies to pending.
   useEffect(() => {
@@ -124,6 +125,39 @@ const AdminPosts = () => {
       queryClient.invalidateQueries({ queryKey: ["admin-posts"] });
     },
     onError: (e: any) => toast.error(e?.message || "Rejection failed"),
+  });
+
+  const bulkReject = useMutation({
+    mutationFn: async ({ ids, reasonLabel }: { ids: string[]; reasonLabel: string }) => {
+      const { error } = await supabase
+        .from("stories")
+        .update({
+          status: "rejected",
+          rejection_reason: reasonLabel,
+          rejected_at: new Date().toISOString(),
+        })
+        .in("id", ids);
+      if (error) throw error;
+      return ids.length;
+    },
+    onSuccess: (count) => {
+      toast.success(`Rejected ${count} post${count === 1 ? "" : "s"}`);
+      setSelected(new Set());
+      queryClient.invalidateQueries({ queryKey: ["admin-posts"] });
+    },
+    onError: (e: any) => toast.error(e?.message || "Bulk rejection failed"),
+  });
+
+  const deletePost = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("stories").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Post deleted");
+      queryClient.invalidateQueries({ queryKey: ["admin-posts"] });
+    },
+    onError: (e: any) => toast.error(e?.message || "Delete failed"),
   });
 
   if (authLoading || isLoading)
@@ -215,6 +249,32 @@ const AdminPosts = () => {
               <CheckCircle className="w-4 h-4 mr-1" />
               Approve selected
             </Button>
+            <Select value={bulkReasonId} onValueChange={setBulkReasonId}>
+              <SelectTrigger className="w-56 h-9">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {REJECTION_REASONS.map((r) => (
+                  <SelectItem key={r.id} value={r.id}>
+                    {r.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Button
+              size="sm"
+              variant="destructive"
+              disabled={selected.size === 0 || bulkReject.isPending}
+              onClick={() =>
+                bulkReject.mutate({
+                  ids: Array.from(selected),
+                  reasonLabel: REJECTION_REASONS.find((r) => r.id === bulkReasonId)!.label,
+                })
+              }
+            >
+              <XCircle className="w-4 h-4 mr-1" />
+              Reject selected
+            </Button>
             <Button
               size="sm"
               variant="ghost"
@@ -237,6 +297,15 @@ const AdminPosts = () => {
               onToggle={() => toggleOne(p.id)}
               onApprove={() => approve.mutate(p.id)}
               onReject={(reasonLabel) => reject.mutate({ id: p.id, reasonLabel })}
+              onDelete={() => {
+                if (
+                  window.confirm(
+                    "Permanently delete this post? This cannot be undone."
+                  )
+                ) {
+                  deletePost.mutate(p.id);
+                }
+              }}
             />
           ))}
           {(posts ?? []).length === 0 && (
@@ -260,6 +329,7 @@ const PostRow = ({
   onToggle,
   onApprove,
   onReject,
+  onDelete,
 }: {
   post: PendingPost;
   badge: (s: string) => JSX.Element;
@@ -268,6 +338,7 @@ const PostRow = ({
   onToggle: () => void;
   onApprove: () => void;
   onReject: (reasonLabel: string) => void;
+  onDelete: () => void;
 }) => {
   const [reasonId, setReasonId] = useState(REJECTION_REASONS[0].id);
   return (
@@ -331,6 +402,29 @@ const PostRow = ({
             >
               <XCircle className="w-4 h-4 mr-1" />
               Reject
+            </Button>
+            <div className="flex-1" />
+            <Button
+              size="sm"
+              variant="ghost"
+              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+              onClick={onDelete}
+            >
+              <Trash2 className="w-4 h-4 mr-1" />
+              Delete
+            </Button>
+          </div>
+        )}
+        {post.status !== "pending" && (
+          <div className="flex justify-end pt-2 border-t border-border">
+            <Button
+              size="sm"
+              variant="ghost"
+              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+              onClick={onDelete}
+            >
+              <Trash2 className="w-4 h-4 mr-1" />
+              Delete permanently
             </Button>
           </div>
         )}
