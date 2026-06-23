@@ -37,7 +37,6 @@ import { useAuth } from "./hooks/useAuth";
 import { useScreenshotProtection } from "./hooks/useScreenshotProtection";
 import { useIosCaptureProtection } from "./hooks/useIosCaptureProtection";
 import { useTheme } from "./hooks/useTheme";
-import NearYou from "./pages/NearYou";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
@@ -73,16 +72,6 @@ const ExploreWrapper = () => {
   );
 };
 
-const NearYouWrapper = () => {
-  const [showCreateStory, setShowCreateStory] = useState(false);
-  return (
-    <AppShell onCreateStory={() => setShowCreateStory(true)}>
-      <NearYou onCreateStory={() => setShowCreateStory(true)} />
-      {showCreateStory && <CreateStory onClose={() => setShowCreateStory(false)} />}
-    </AppShell>
-  );
-};
-
 const queryClient = new QueryClient();
 
 const App = () => {
@@ -110,11 +99,7 @@ const App = () => {
               <ExploreWrapper />
             </ProtectedRoute>
           } />
-          <Route path="/near-you" element={
-            <ProtectedRoute>
-              <NearYouWrapper />
-            </ProtectedRoute>
-          } />
+          <Route path="/near-you" element={<Navigate to="/app" replace />} />
           <Route path="/profile" element={
             <ProtectedRoute>
               <AppShell>

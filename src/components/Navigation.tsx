@@ -1,4 +1,4 @@
-import { Home, Search, PlusSquare, User, MapPin } from "lucide-react";
+import { Home, Search, PlusSquare, User } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 
 interface NavigationProps {
@@ -17,13 +17,12 @@ const Navigation = ({ onCreateStory }: NavigationProps) => {
     { kind: "nav", icon: Home, label: "Home", path: "/app" },
     { kind: "nav", icon: Search, label: "Explore", path: "/explore" },
     { kind: "create", label: "Create" },
-    { kind: "nav", icon: MapPin, label: "Near You", path: "/near-you" },
     { kind: "nav", icon: User, label: "Profile", path: "/profile" },
   ];
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur border-t border-border lg:hidden">
-      <div className="grid grid-cols-5 h-12 max-w-md mx-auto">
+      <div className="grid grid-cols-4 h-12 max-w-md mx-auto">
         {tabs.map((tab, i) => {
           if (tab.kind === "create") {
             return (
