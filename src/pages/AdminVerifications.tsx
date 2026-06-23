@@ -13,6 +13,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { CheckCircle, XCircle, Clock, Search, Filter, Mail, Shield, Trash2 } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
 
 interface VerificationWithProfile {
@@ -44,6 +45,8 @@ const AdminVerifications = () => {
   const [selectedVerification, setSelectedVerification] = useState<VerificationWithProfile | null>(null);
   const [notes, setNotes] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [bulkProgress, setBulkProgress] = useState<{ done: number; total: number } | null>(null);
 
   const queryClient = useQueryClient();
 
@@ -56,6 +59,11 @@ const AdminVerifications = () => {
       }
     }
   }, [user, authLoading, roleLoading, isAdmin, navigate]);
+
+  // Clear selection when filter changes — selection only applies to pending.
+  useEffect(() => {
+    setSelected(new Set());
+  }, [filter]);
 
   // Fetch verifications with profiles
   const { data: verifications, isLoading } = useQuery({
@@ -249,6 +257,65 @@ const AdminVerifications = () => {
     verification.profile?.city?.toLowerCase().includes(search.toLowerCase())
   ) || [];
 
+  const selectablePending = filteredVerifications.filter(
+    (v) => v.verification_status === 'pending'
+  );
+  const allSelected =
+    selectablePending.length > 0 && selectablePending.every((v) => selected.has(v.id));
+  const toggleAll = () => {
+    if (allSelected) setSelected(new Set());
+    else setSelected(new Set(selectablePending.map((v) => v.id)));
+  };
+  const toggleOne = (id: string) => {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const handleBulkApprove = async () => {
+    const targets = selectablePending.filter((v) => selected.has(v.id));
+    if (targets.length === 0) return;
+    const ok = window.confirm(
+      `Approve ${targets.length} user${targets.length === 1 ? '' : 's'} and email them?`
+    );
+    if (!ok) return;
+    setBulkProgress({ done: 0, total: targets.length });
+    let success = 0;
+    let failed = 0;
+    for (const v of targets) {
+      try {
+        const { data: emailResponse, error: emailError } = await supabase.functions.invoke(
+          'get-user-email',
+          { body: { userId: v.user_id } }
+        );
+        if (emailError || !emailResponse?.email) {
+          throw new Error('Could not fetch email');
+        }
+        await approveUser.mutateAsync({
+          userId: v.user_id,
+          email: emailResponse.email,
+          username: v.profile?.anonymous_username,
+          verificationId: v.id,
+          selfieUrl: v.selfie_url || undefined,
+        });
+        success++;
+      } catch (err) {
+        console.error('Bulk approve failed for', v.id, err);
+        failed++;
+      } finally {
+        setBulkProgress((p) => (p ? { ...p, done: p.done + 1 } : p));
+      }
+    }
+    setBulkProgress(null);
+    setSelected(new Set());
+    queryClient.invalidateQueries({ queryKey: ['admin-verifications'] });
+    if (failed === 0) toast.success(`Approved ${success} user${success === 1 ? '' : 's'}`);
+    else toast.error(`Approved ${success}, failed ${failed}`);
+  };
+
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'pending':
@@ -339,16 +406,57 @@ const AdminVerifications = () => {
         </Card>
 
         {/* Verifications Grid */}
+        {filter === 'pending' && selectablePending.length > 0 && (
+          <div className="sticky top-0 z-10 -mx-4 px-4 py-2 bg-background/95 backdrop-blur border-b border-border flex items-center gap-3 flex-wrap rounded-md">
+            <label className="flex items-center gap-2 text-sm cursor-pointer">
+              <Checkbox checked={allSelected} onCheckedChange={toggleAll} />
+              <span>Select all ({selectablePending.length})</span>
+            </label>
+            <div className="flex-1" />
+            <span className="text-xs text-muted-foreground">
+              {bulkProgress
+                ? `Approving ${bulkProgress.done}/${bulkProgress.total}…`
+                : `${selected.size} selected`}
+            </span>
+            <Button
+              size="sm"
+              disabled={selected.size === 0 || !!bulkProgress}
+              onClick={handleBulkApprove}
+            >
+              <CheckCircle className="w-4 h-4 mr-1" />
+              Approve selected
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              disabled={selected.size === 0 || !!bulkProgress}
+              onClick={() => setSelected(new Set())}
+            >
+              Clear
+            </Button>
+          </div>
+        )}
+
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
           {filteredVerifications.map((verification) => (
             <Card key={verification.id} className="cursor-pointer hover:shadow-lg transition-shadow">
               <CardHeader className="pb-3">
                 <div className="flex justify-between items-start">
-                  <div>
-                    <CardTitle className="text-lg">{verification.profile?.anonymous_username || 'Unknown'}</CardTitle>
-                    <CardDescription>
-                      {verification.profile?.city} • Age {verification.profile?.date_of_birth ? calculateAge(verification.profile.date_of_birth) : 'Unknown'}
-                    </CardDescription>
+                  <div className="flex items-start gap-3">
+                    {verification.verification_status === 'pending' && (
+                      <Checkbox
+                        className="mt-1"
+                        checked={selected.has(verification.id)}
+                        onCheckedChange={() => toggleOne(verification.id)}
+                        aria-label="Select for bulk approval"
+                      />
+                    )}
+                    <div>
+                      <CardTitle className="text-lg">{verification.profile?.anonymous_username || 'Unknown'}</CardTitle>
+                      <CardDescription>
+                        {verification.profile?.city} • Age {verification.profile?.date_of_birth ? calculateAge(verification.profile.date_of_birth) : 'Unknown'}
+                      </CardDescription>
+                    </div>
                   </div>
                   {getStatusBadge(verification.verification_status)}
                 </div>
