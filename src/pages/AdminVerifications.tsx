@@ -15,6 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { CheckCircle, XCircle, Clock, Search, Filter, Mail, Shield, Trash2 } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
+import { AdminNav } from '@/components/AdminNav';
 
 interface VerificationWithProfile {
   id: string;
