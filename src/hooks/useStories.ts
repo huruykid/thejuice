@@ -131,6 +131,7 @@ export const useCreateStory = () => {
       imageUrl,
       subjectName,
       subjectPhone,
+      ratings,
     }: {
       content: string;
       tags: string[];
@@ -138,6 +139,12 @@ export const useCreateStory = () => {
       imageUrl?: string;
       subjectName?: string;
       subjectPhone?: string;
+      ratings?: {
+        communication: number;
+        loyalty: number;
+        vibe: number;
+        respect: number;
+      };
     }) => {
       // Validate and sanitize input
       const contentValidation = validateStoryContent(content);
@@ -181,6 +188,10 @@ export const useCreateStory = () => {
           subject_name: sanitizedSubjectName,
           subject_phone: sanitizedSubjectPhone,
           user_id: user.id,
+          communication_rating: ratings?.communication ?? 0,
+          loyalty_rating: ratings?.loyalty ?? 0,
+          overall_vibe_rating: ratings?.vibe ?? 0,
+          emotional_safety_rating: ratings?.respect ?? 0,
         })
         .select()
         .single();
