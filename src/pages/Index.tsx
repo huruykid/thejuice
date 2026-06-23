@@ -22,6 +22,9 @@ const Index = () => {
   // True once the user opts into the verification flow from UnverifiedHome.
   // Without this, unverified users are NOT force-marched through onboarding.
   const [verifyMode, setVerifyMode] = useState(false);
+  // True when the user clicks "Resubmit" from the rejected screen,
+  // so we bypass the rejected short-circuit and re-enter the verify flow.
+  const [resubmitting, setResubmitting] = useState(false);
 
   const { user, loading } = useAuth();
   const { isLoading: profileLoading, hasProfile, refetch: refetchProfile } = useProfile(user);
@@ -64,6 +67,11 @@ const Index = () => {
     setCurrentStep(hasProfile ? "selfie" : "profile");
   };
 
+  const handleResubmitVerification = () => {
+    setResubmitting(true);
+    startVerification();
+  };
+
   // Loading
   if (loading) return <LoadingSkeleton message="Checking your authentication..." />;
   if (user && profileLoading) return <LoadingSkeleton type="profile" message="Loading your profile..." />;
@@ -86,11 +94,16 @@ const Index = () => {
   }
 
   // Submitted verification: pending / rejected
-  if (hasVerification && isPending) {
+  if (hasVerification && isPending && !resubmitting) {
     return <VerificationPending onRefresh={refreshVerificationStatus} />;
   }
-  if (hasVerification && isRejected) {
-    return <VerificationRejected notes={verification?.notes} />;
+  if (hasVerification && isRejected && !resubmitting) {
+    return (
+      <VerificationRejected
+        notes={verification?.notes}
+        onResubmit={handleResubmitVerification}
+      />
+    );
   }
 
   // User opted into the verification flow

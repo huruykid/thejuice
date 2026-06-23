@@ -29,7 +29,7 @@ export const useAuth = () => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const signUp = async (email: string, password: string, _inviteCode?: string) => {
+  const signUp = async (email: string, password: string) => {
     // Use a more robust redirect URL that works in all environments
     const redirectUrl = window.location.href.includes('lovableproject.com') 
       ? 'https://da2e9ee2-4548-482f-80e7-6cfedc4bfcb9.lovableproject.com/'
