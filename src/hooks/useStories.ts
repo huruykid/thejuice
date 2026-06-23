@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { sanitizeText, validateStoryContent, validateRating, validateTag } from '@/lib/security';
+import { useBlockedUserIds } from '@/hooks/useBlockedUserIds';
 
 export interface Story {
   id: string;
@@ -27,10 +28,11 @@ export interface Story {
 }
 
 export const useStories = () => {
+  const { data: blockedIds = [] } = useBlockedUserIds();
   return useQuery({
-    queryKey: ['stories'],
+    queryKey: ['stories', { blocked: blockedIds }],
     queryFn: async (): Promise<Story[]> => {
-      const { data, error } = await (supabase as any)
+      let query = (supabase as any)
         .from('stories')
         .select(`
           *,
@@ -44,6 +46,10 @@ export const useStories = () => {
         `)
         .eq('status', 'approved')
         .order('created_at', { ascending: false });
+      if (blockedIds.length > 0) {
+        query = query.not('user_id', 'in', `(${blockedIds.join(',')})`);
+      }
+      const { data, error } = await query;
 
       if (error) throw error;
       return data || [];
@@ -63,8 +69,9 @@ export const useInfiniteStories = (
   pageSize: number = STORIES_PAGE_SIZE,
   mode: FeedMode = "community"
 ) => {
+  const { data: blockedIds = [] } = useBlockedUserIds();
   return useInfiniteQuery({
-    queryKey: ['stories', 'infinite', pageSize, mode],
+    queryKey: ['stories', 'infinite', pageSize, mode, { blocked: blockedIds }],
     initialPageParam: 0,
     queryFn: async ({ pageParam = 0 }): Promise<Story[]> => {
       const from = (pageParam as number) * pageSize;
@@ -85,6 +92,9 @@ export const useInfiniteStories = (
         .eq('is_seed', mode === 'seed')
         .order('created_at', { ascending: false })
         .range(from, to);
+      if (blockedIds.length > 0) {
+        query = query.not('user_id', 'in', `(${blockedIds.join(',')})`);
+      }
       const { data, error } = await query;
 
       if (error) throw error;

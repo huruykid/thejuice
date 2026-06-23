@@ -1,4 +1,4 @@
-import { Home, Search, Bell, User, Plus, Shield, LogOut, ClipboardList, UserCheck } from "lucide-react";
+import { Home, Search, Bell, User, Plus, Shield, LogOut, ClipboardList, UserCheck, Flag } from "lucide-react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -85,6 +85,17 @@ const DesktopSidebar = ({ onCreateStory }: DesktopSidebarProps) => {
             >
               <UserCheck className="h-5 w-5" />
               <span className="text-sm">Verifications</span>
+            </NavLink>
+            <NavLink
+              to="/admin/reports"
+              className={`flex items-center gap-3 px-4 py-2.5 rounded-xl transition-colors ${
+                pathname === "/admin/reports"
+                  ? "bg-juice-orange/10 text-juice-orange font-semibold"
+                  : "text-foreground/80 hover:bg-muted/60"
+              }`}
+            >
+              <Flag className="h-5 w-5" />
+              <span className="text-sm">Reports</span>
             </NavLink>
           </div>
         )}

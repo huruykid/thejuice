@@ -46,6 +46,7 @@ export const useBlockUser = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['user-blocks'] });
+      queryClient.invalidateQueries({ queryKey: ['blocked-user-ids'] });
       queryClient.invalidateQueries({ queryKey: ['stories'] });
       toast({
         title: "User blocked",
@@ -82,6 +83,7 @@ export const useUnblockUser = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['user-blocks'] });
+      queryClient.invalidateQueries({ queryKey: ['blocked-user-ids'] });
       queryClient.invalidateQueries({ queryKey: ['stories'] });
       toast({
         title: "User unblocked",

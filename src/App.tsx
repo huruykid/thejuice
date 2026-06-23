@@ -18,6 +18,7 @@ import Profile from "./pages/Profile";
 import Activity from "./pages/Activity";
 import AdminVerifications from "./pages/AdminVerifications";
 import AdminPosts from "./pages/AdminPosts";
+import AdminReports from "./pages/AdminReports";
 import SharePublic from "./pages/SharePublic";
 import PrivacySettings from "./pages/PrivacySettings";
 import AuthorStories from "./pages/AuthorStories";
@@ -156,6 +157,11 @@ const App = () => {
           <Route path="/admin/posts" element={
             <ProtectedRoute>
               <AdminPosts />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/reports" element={
+            <ProtectedRoute>
+              <AdminReports />
             </ProtectedRoute>
           } />
           <Route path="/share" element={<SharePublic />} />

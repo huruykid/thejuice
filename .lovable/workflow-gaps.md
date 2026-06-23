@@ -9,11 +9,11 @@ Source of truth for fixing the gaps surfaced in the workflow audit. Update statu
 - [x] G13 — `/author/:id` filtered to `status = 'approved'`
 - [x] Cleanup — remove vestigial `_inviteCode` param in `useAuth.signUp` (invite codes deprecated)
 
-## Bucket B — Trust & safety (queued)
-- [ ] G2 — Real account deletion (edge function + auth.users delete)
-- [ ] G3 — Persist privacy settings to DB
-- [ ] G8 — Apply blocked-user filter to feed queries
-- [ ] G14 — Reports moderation queue (admin UI)
+## Bucket B — Trust & safety (in QA)
+- [x] G2 — Real account deletion via `delete-account` edge function (cascades all FKs)
+- [x] G3 — Privacy settings persisted to `user_preferences` JSONB; vapor toggles removed
+- [x] G8 — Feed queries (`useStories`, `useInfiniteStories`, `useStoriesByCity`) exclude blocked users
+- [x] G14 — `/admin/reports` page + sidebar link; admins can mark reviewing / action / dismiss
 
 ## Bucket C — Admin UX (queued)
 - [ ] G7 — Rejection email on verification reject
