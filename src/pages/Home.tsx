@@ -151,7 +151,7 @@ const Home = ({ onCreateStory }: HomeProps) => {
               </div>
             )}
           </>
-        ) : (
+        ) : feedMode === "seed" ? null : (
           <div className="px-6 py-20 text-center">
             <h3 className="text-lg font-semibold mb-1">
               {useCity ? "No juice here yet" : "No stories yet"}
