@@ -71,19 +71,31 @@ Deno.serve(async (req) => {
 
     console.log(`Starting selfie deletion for verification ${verificationId}`)
 
-    // Extract file path from URL. Files are stored at `{subjectUserId}/{fileName}`
-    // in the `verification-selfies` bucket. Use the segments AFTER the bucket name
-    // so the deletion targets the actual subject's folder (NOT the admin's id).
-    const url = new URL(selfieUrl)
-    const pathParts = url.pathname.split('/').filter(Boolean)
-    const bucketIdx = pathParts.indexOf('verification-selfies')
-    if (bucketIdx === -1 || bucketIdx >= pathParts.length - 2) {
+    // Extract file path. `selfieUrl` may be a full URL (public/signed) or
+    // already a storage path like `{subjectUserId}/{fileName}`.
+    let filePath: string
+    try {
+      const url = new URL(selfieUrl)
+      const pathParts = url.pathname.split('/').filter(Boolean)
+      const bucketIdx = pathParts.indexOf('verification-selfies')
+      if (bucketIdx === -1 || bucketIdx >= pathParts.length - 1) {
+        return new Response(
+          JSON.stringify({ error: 'Invalid selfie URL' }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        )
+      }
+      filePath = pathParts.slice(bucketIdx + 1).join('/')
+    } catch {
+      // Not a URL — treat as raw storage path, optionally strip bucket prefix
+      filePath = selfieUrl.replace(/^\/+/, '').replace(/^verification-selfies\//, '')
+    }
+
+    if (!filePath || !filePath.includes('/')) {
       return new Response(
-        JSON.stringify({ error: 'Invalid selfie URL' }),
+        JSON.stringify({ error: 'Invalid selfie path' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
-    const filePath = pathParts.slice(bucketIdx + 1).join('/')
 
     console.log(`Deleting file: ${filePath}`)
 
