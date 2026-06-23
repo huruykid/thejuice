@@ -1,4 +1,5 @@
-import { useAuth } from "@/hooks/useAuth";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { useRealIsAdmin } from "@/hooks/useRealIsAdmin";
 import { useViewAs, ViewAsMode } from "@/contexts/ViewAsContext";
 import { Button } from "@/components/ui/button";
@@ -19,22 +20,22 @@ const LABELS: Record<Exclude<ViewAsMode, null>, string> = {
 };
 
 export const ViewAsBar = () => {
-  // We intentionally read `session` from auth which may be overridden, but for
-  // the admin check we use the real role so the bar still shows in preview mode.
-  const { session } = useAuth();
-  // Use stored session.user if present, else nothing — but session can be null
-  // when previewing logged_out. We need the *real* user id; pull from supabase
-  // directly via the real-admin hook by reading from session OR from window.
-  const realUserId = session?.user?.id;
+  // Read the *real* session straight from Supabase so the bar still works when
+  // an admin is previewing "logged_out" (which nulls out useAuth().user).
+  const [realUserId, setRealUserId] = useState<string | undefined>(undefined);
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => setRealUserId(data.session?.user?.id));
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
+      setRealUserId(session?.user?.id);
+    });
+    return () => sub.subscription.unsubscribe();
+  }, []);
   const { isAdmin: realIsAdmin } = useRealIsAdmin(realUserId);
   const { viewAs, setViewAs } = useViewAs();
 
-  // Don't render until we know the user is a real admin.
-  if (!realIsAdmin && viewAs === null) return null;
+  // Don't render unless the real user is an admin.
+  if (!realIsAdmin) return null;
 
-  // If admin is currently previewing logged_out, session is null so realUserId
-  // would be undefined and realIsAdmin would be false. Fall back to trusting
-  // `viewAs !== null` (only an admin could have set it).
   const active = viewAs !== null;
 
   return (
