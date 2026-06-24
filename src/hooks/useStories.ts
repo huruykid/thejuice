@@ -169,6 +169,10 @@ export const useCreateStory = () => {
       const sanitizedSubjectName = subjectName ? sanitizeText(subjectName) : null;
       const sanitizedSubjectPhone = subjectPhone ? sanitizeText(subjectPhone) : null;
 
+      if (!imageUrl) {
+        throw new Error('At least one photo is required to publish a story.');
+      }
+
       // Validate and sanitize tags
       const sanitizedTags: string[] = [];
       for (const tag of tags) {
