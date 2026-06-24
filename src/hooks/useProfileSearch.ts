@@ -87,7 +87,7 @@ export const useProfileSearch = () => {
           } else if (phoneResults && phoneResults.length > 0) {
             phoneResults.forEach(profile => {
               results.push({
-                profile,
+                profile: profile as any,
                 matchType: 'phone'
               });
             });
@@ -109,7 +109,7 @@ export const useProfileSearch = () => {
         } else if (usernameResults && usernameResults.length > 0) {
           usernameResults.forEach(profile => {
             results.push({
-              profile,
+              profile: profile as any,
               matchType: 'username'
             });
           });
