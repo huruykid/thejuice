@@ -23,6 +23,8 @@ export const useTrendingStories = () => {
           )
         `)
         .gte('created_at', twoDaysAgo.toISOString())
+        .eq('status', 'approved')
+        .not('image_url', 'is', null)
         .order('reactions_count', { ascending: false })
         .order('comments_count', { ascending: false })
         .limit(20);

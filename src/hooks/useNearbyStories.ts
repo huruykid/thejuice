@@ -37,6 +37,8 @@ export const useNearbyStories = ({
           )
         `)
         .not('cities', 'is', null) // Only get stories with city data
+        .eq('status', 'approved')
+        .not('image_url', 'is', null)
         .order("created_at", { ascending: false });
 
       if (error) {

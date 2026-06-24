@@ -23,7 +23,9 @@ export const useSearchStories = (query: string, location?: string, tag?: string)
           story_tags (
             tag
           )
-        `);
+        `)
+        .eq('status', 'approved')
+        .not('image_url', 'is', null);
 
       if (debouncedQuery.trim()) {
         const searchTerm = debouncedQuery.trim().toLowerCase();

@@ -1,58 +1,37 @@
-## Goal
+## What's actually going on
 
-Notify the 3 existing posters (whose stories have no `image_url`) that we now require a photo, and ask them to repost. Use an AI "UX copy" agent (via Lovable AI Gateway) to draft the email body so the tone matches Juice.
+Photo upload and display already work end-to-end:
+- `PersonDetailsStep` requires ≥1 image (Next button disabled otherwise).
+- `CreateStory` uploads files to the `story-images` bucket and stores the URLs as a JSON array in `stories.image_url`.
+- `StoryCard` parses that JSON and renders an IG-style full-bleed carousel.
+- DB constraint `stories_require_image` (NOT VALID) blocks new non-seed rows with NULL image.
 
-## Affected users
+The "box of text" the user is seeing is the 3 legacy approved, non-seed stories that were posted before photos were required (and the seeded persona posts, which also have no image). Fix is two-fold: hide imageless community posts from the feed, and tighten a couple of gaps.
 
-The 3 approved, non-seed stories with `image_url = null`:
+## Changes
 
-- `cbf9224e-6ac7-489f-a825-7f8b5c3f9e48`
-- `3f5e5c01-591c-4431-9352-f4bfbc4d5061`
-- `255d7727-05fd-40b6-b609-9334d99aff77`
+### 1. Feed queries: hide imageless community stories
+Update `src/hooks/useStories.ts`, `src/hooks/useStoriesByCity.ts`, `src/hooks/useSearchStories.ts`, `src/hooks/useTrendingStories.ts`, `src/hooks/useNearbyStories.ts` to add `.not('image_url', 'is', null)` for community feed queries (mode !== 'seed' or unfiltered).
 
-## What to build
+Effect: the 3 legacy photoless posts drop off the public feed immediately, so users only see IG-style cards. They remain visible to their authors via `useMySubmissions` so the repost-email flow still works.
 
-### 1. New edge function: `send-repost-request-email`
+### 2. Tighten validation in `useCreateStory`
+Right now the hook accepts `imageUrl` as optional. Add an explicit guard at the top of the mutation that throws `"At least one photo is required"` if `imageUrl` is missing/empty, so the client surfaces a clean error if anyone bypasses the UI gate. Keeps DB constraint as the last line of defense.
 
-Admin-only (uses existing `authenticateRequest` + `requireAdmin` helpers, same pattern as `send-approval-email`).
+### 3. Validate the existing constraint
+The DB constraint is `NOT VALID` — it only enforces on new rows. Run `ALTER TABLE public.stories VALIDATE CONSTRAINT stories_require_image;` after first deleting/repairing the 3 legacy photoless rows. Two options for those 3 rows:
+- (a) leave them, skip VALIDATE (current state)
+- (b) soft-hide by flipping their `status` to `pending` so authors re-submit with a photo via the repost email
+- (c) hard delete
 
-Flow:
+Recommend (b): flip status to `pending` with a `rejection_reason = 'Photo now required — please re-upload'`, then VALIDATE the constraint. The repost email we set up already nudges those users.
 
-1. Accept `{ userIds: string[] }` (or no body = default to the 3 known users).
-2. For each user:
-  - Look up their auth email via service-role `auth.admin.getUserById` (same approach as `get-user-email`).
-  - Look up their `anonymous_username` from `profiles`.
-  - Call the **UX Copy Agent** (Lovable AI Gateway, `google/gemini-2.5-flash`) with a system prompt describing Juice's voice (anonymous, men-only, direct, warm, no fluff) and ask for:
-    - subject line
-    - 2–3 sentences explaining: photos are now required, their existing story is still live but they're encouraged to repost with a photo so it has more impact, link back to the app.
-  - Return structured JSON via AI SDK `Output.object` so we get `{ subject, bodyParagraphs[] }` reliably.
-  - Render into the existing Juice email HTML template (reuse the visual style from `send-approval-email`) with the AI-generated copy + a "Repost your story" CTA linking to `https://sipjuice.app/app`.
-  - Send via Resend (`RESEND_API_KEY` already configured).
-3. Return per-user `{ userId, status: 'sent' | 'failed', error? }`.
-
-### 2. Admin UI trigger
-
-Small button on `src/pages/AdminPosts.tsx` (admin-only): **"Email posters without photos"**.
-
-- Queries `stories` where `is_seed = false AND image_url IS NULL`.
-- Shows the count + list of usernames in a confirm dialog.
-- On confirm, invokes `send-repost-request-email` with those user IDs.
-- Toasts the per-user result.
-
-### 3. Safety
-
-- Idempotent-ish: log to `security_audit_logs` (`action = 'repost_request_email_sent'`, `resource_id = userId`) so we don't accidentally spam — admin sees a warning if a user was already emailed in the last 7 days but can override.
-- No retention of email address beyond the function call (matches the project's phone-retention rule).
-
-## Technical details
-
-- Uses `LOVABLE_API_KEY` (already set) → AI Gateway → `google/gemini-2.5-flash` (cheap, fast, good copy).
-- Uses `RESEND_API_KEY` (already set), `from: "Juice <noreply@sipjuice.app>"`.
-- New file: `supabase/functions/send-repost-request-email/index.ts`.
-- Edit: `src/pages/AdminPosts.tsx` to add the trigger button + dialog.
-- No DB schema changes.
+### 4. Quick sanity check on the storage bucket
+Confirm `story-images` is public and has an INSERT policy for `authenticated`. If not, photo uploads silently fail and we end up right back at photoless rows. Add a policy via migration if missing.
 
 ## Out of scope
+- No StoryCard UI changes — the IG layout is already correct.
+- No new image processing / cropping / filters.
 
-- Bulk/marketing sends to the wider user base.
-- Forcing deletion of the 3 existing photo-less stories (they stay live unless you want me to also hide/unapprove them — say the word and I'll add that).
+## Open question
+Which option for the 3 legacy photoless approved stories: (a) leave, (b) flip to pending so authors re-upload, or (c) delete?

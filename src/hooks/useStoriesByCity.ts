@@ -15,7 +15,7 @@ export const useStoriesByCity = (cityId: string | null | undefined) => {
       const from = (pageParam as number) * PAGE_SIZE;
       const to = from + PAGE_SIZE - 1;
 
-      let query = supabase
+      let query = (supabase as any)
         .from("stories")
         .select(
           `*,
@@ -25,6 +25,7 @@ export const useStoriesByCity = (cityId: string | null | undefined) => {
         )
         .eq("city_id", cityId!)
         .eq("status", "approved")
+        .not("image_url", "is", null)
         .order("created_at", { ascending: false })
         .range(from, to);
       if (blockedIds.length > 0) {

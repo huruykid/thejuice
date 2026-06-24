@@ -70,9 +70,19 @@ const CreateStory = ({
 
   const uploadImageToStorage = async (file: File): Promise<string | null> => {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast({
+          title: "Error",
+          description: "You must be signed in to upload photos.",
+          variant: "destructive"
+        });
+        return null;
+      }
       const fileExt = file.name.split('.').pop();
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-      const filePath = `${fileName}`;
+      // RLS on story-images requires the first folder segment to equal auth.uid()
+      const filePath = `${user.id}/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
         .from('story-images')
@@ -82,7 +92,7 @@ const CreateStory = ({
         console.error('Upload error:', uploadError);
         toast({
           title: "Error",
-          description: "Failed to upload image",
+          description: `Failed to upload image: ${uploadError.message}`,
           variant: "destructive"
         });
         return null;
@@ -118,7 +128,16 @@ const CreateStory = ({
         }
         setUploading(false);
       }
-      
+
+      if (imageUrls.length === 0) {
+        toast({
+          title: "Photo required",
+          description: "At least one photo is required to publish a story.",
+          variant: "destructive"
+        });
+        return;
+      }
+
       const storyPayload = {
         content: storyData.content,
         tags: storyData.selectedTags,
