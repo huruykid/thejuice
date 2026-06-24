@@ -75,21 +75,21 @@ const AdminOverview = () => {
       label: "Pending verifications",
       icon: ShieldCheck,
       count: counts?.verifications ?? 0,
-      color: "text-blue-600",
+      color: "text-primary",
     },
     {
       to: "/admin/posts",
       label: "Pending posts",
       icon: FileText,
       count: counts?.posts ?? 0,
-      color: "text-purple-600",
+      color: "text-foreground",
     },
     {
       to: "/admin/reports",
       label: "Pending reports",
       icon: Flag,
       count: counts?.reports ?? 0,
-      color: "text-amber-600",
+      color: "text-destructive",
     },
   ];
 
