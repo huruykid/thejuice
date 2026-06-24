@@ -12,7 +12,7 @@ import { usePullToRefresh } from "@/hooks/usePullToRefresh";
 import { useInfiniteStories } from "@/hooks/useStories";
 import { useNearbyStories } from "@/hooks/useNearbyStories";
 import { useGeolocation } from "@/hooks/useGeolocation";
-import { useHasApprovedPost } from "@/hooks/useHasApprovedPost";
+import { useFeedGate } from "@/hooks/useFeedGate";
 import UnlockBanner from "@/components/UnlockBanner";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -25,9 +25,7 @@ const Home = ({ onCreateStory }: HomeProps) => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
-  const { data: hasApprovedPost, isLoading: gateLoading } =
-    useHasApprovedPost(user?.id);
-  const feedMode: "community" | "seed" = hasApprovedPost ? "community" : "seed";
+  const { feedMode, isLoading: gateLoading } = useFeedGate(user?.id);
 
   // ─── Geolocation ────────────────────────────────────────────────────────────
   const { coordinates, permissionState, requestLocation } = useGeolocation();

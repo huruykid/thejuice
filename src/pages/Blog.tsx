@@ -29,10 +29,10 @@ const Blog = () => {
       <Helmet>
         <title>Juice Blog — Men's Dating Stories, Advice & Reviews</title>
         <meta name="description" content="Anonymous dating stories, honest reviews, and real advice from verified men. No fluff, no filters." />
-        <link rel="canonical" href="https://thejuice.lovable.app/blog" />
+        <link rel="canonical" href="https://sipjuice.app/blog" />
         <meta property="og:title" content="Juice Blog — Men's Dating Stories, Advice & Reviews" />
         <meta property="og:description" content="Anonymous dating stories, honest reviews, and real advice from verified men." />
-        <meta property="og:url" content="https://thejuice.lovable.app/blog" />
+        <meta property="og:url" content="https://sipjuice.app/blog" />
         <meta property="og:type" content="website" />
       </Helmet>
       <div className="max-w-4xl mx-auto">

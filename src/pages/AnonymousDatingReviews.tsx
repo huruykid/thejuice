@@ -46,10 +46,10 @@ const AnonymousDatingReviews = () => {
       <Helmet>
         <title>Anonymous Dating Reviews from Verified Men | Juice</title>
         <meta name="description" content="Read anonymous date reviews from verified men. Rate first dates, apps, and relationships — your identity stays hidden." />
-        <link rel="canonical" href="https://thejuice.lovable.app/anonymous-dating-reviews" />
+        <link rel="canonical" href="https://sipjuice.app/anonymous-dating-reviews" />
         <meta property="og:title" content="Anonymous Dating Reviews from Verified Men | Juice" />
         <meta property="og:description" content="Read anonymous date reviews from verified men — your identity stays hidden." />
-        <meta property="og:url" content="https://thejuice.lovable.app/anonymous-dating-reviews" />
+        <meta property="og:url" content="https://sipjuice.app/anonymous-dating-reviews" />
         <meta property="og:type" content="website" />
       </Helmet>
       {/* Header */}

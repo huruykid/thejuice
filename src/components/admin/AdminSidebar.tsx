@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from "react-router-dom";
-import { ShieldCheck, FileText, Flag, LayoutDashboard } from "lucide-react";
+import { ShieldCheck, FileText, Flag, LayoutDashboard, Scale } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -15,12 +15,13 @@ import {
 import { useAdminPendingCounts } from "@/hooks/useAdminPendingCounts";
 import { cn } from "@/lib/utils";
 
-type CountKey = "verifications" | "posts" | "reports";
+type CountKey = "verifications" | "posts" | "reports" | "disputes";
 const items: Array<{ to: string; label: string; icon: typeof LayoutDashboard; countKey?: CountKey }> = [
   { to: "/admin", label: "Overview", icon: LayoutDashboard },
   { to: "/admin/verifications", label: "Verifications", icon: ShieldCheck, countKey: "verifications" },
   { to: "/admin/posts", label: "Posts", icon: FileText, countKey: "posts" },
   { to: "/admin/reports", label: "Reports", icon: Flag, countKey: "reports" },
+  { to: "/admin/disputes", label: "Disputes", icon: Scale, countKey: "disputes" },
 ];
 
 export const AdminSidebar = () => {

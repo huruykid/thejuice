@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { sendPushNotification } from '@/lib/sendPushNotification';
 
 export const useToggleReaction = () => {
   const queryClient = useQueryClient();
@@ -8,6 +9,13 @@ export const useToggleReaction = () => {
     mutationFn: async ({ storyId, reactionType = 'like' }: { storyId: string; reactionType?: string }) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User must be authenticated');
+
+      // Fetch story owner for push notification
+      const { data: storyMeta } = await supabase
+        .from('stories')
+        .select('user_id')
+        .eq('id', storyId)
+        .maybeSingle();
 
       // Check if user has ANY reaction to this story (to enforce one vote per user)
       const { data: existingReactions, error: checkError } = await supabase
@@ -46,7 +54,7 @@ export const useToggleReaction = () => {
           if (updateError) throw updateError;
         }
 
-        return { action: 'removed', removedType: reactionType };
+        return { action: 'removed', removedType: reactionType, reactorUserId: user.id, storyOwnerId: storyMeta?.user_id ?? null };
       } else {
         // User wants to add a new reaction
         if (otherReaction) {
@@ -88,7 +96,21 @@ export const useToggleReaction = () => {
           }
         }
 
-        return { action: 'added', addedType: reactionType, replacedType: otherReaction?.reaction_type };
+        return { action: 'added', addedType: reactionType, replacedType: otherReaction?.reaction_type, reactorUserId: user.id, storyOwnerId: storyMeta?.user_id ?? null };
+      }
+    },
+    onSuccess: (data, { storyId }) => {
+      if (
+        data.action === 'added' &&
+        data.storyOwnerId &&
+        data.reactorUserId !== data.storyOwnerId
+      ) {
+        sendPushNotification(
+          data.storyOwnerId,
+          'New reaction 🚩',
+          'Someone reacted to your story',
+          { route: `/story/${storyId}` }
+        ).catch(console.error);
       }
     },
     onMutate: async ({ storyId, reactionType = 'like' }) => {

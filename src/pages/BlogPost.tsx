@@ -54,7 +54,7 @@ const BlogPost = () => {
 
   const estimatedReadTime = post.read_time_minutes || Math.ceil(post.content.split(' ').length / 200);
 
-  const canonical = `https://thejuice.lovable.app/blog/${post.slug}`;
+  const canonical = `https://sipjuice.app/blog/${post.slug}`;
   const articleSchema = {
     "@context": "https://schema.org",
     "@type": "Article",
@@ -66,7 +66,7 @@ const BlogPost = () => {
     "publisher": {
       "@type": "Organization",
       "name": "The Juice App",
-      "logo": { "@type": "ImageObject", "url": "https://thejuice.lovable.app/juice-logo.png" }
+      "logo": { "@type": "ImageObject", "url": "https://sipjuice.app/juice-logo.png" }
     }
   };
 

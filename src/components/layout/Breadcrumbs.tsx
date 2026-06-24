@@ -13,7 +13,7 @@ interface BreadcrumbsProps {
 
 export const Breadcrumbs = ({ items }: BreadcrumbsProps) => {
   const origin =
-    typeof window !== 'undefined' ? window.location.origin : 'https://thejuice.lovable.app';
+    typeof window !== 'undefined' ? window.location.origin : 'https://sipjuice.app';
 
   const jsonLd = {
     '@context': 'https://schema.org',

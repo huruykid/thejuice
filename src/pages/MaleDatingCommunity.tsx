@@ -55,10 +55,10 @@ const MaleDatingCommunity = () => {
       <Helmet>
         <title>Juice — Verified Male Dating Community</title>
         <meta name="description" content="A verified, anonymous space where men share real dating stories and advice — judgment-free, identity-protected." />
-        <link rel="canonical" href="https://thejuice.lovable.app/male-dating-community" />
+        <link rel="canonical" href="https://sipjuice.app/male-dating-community" />
         <meta property="og:title" content="Juice — Verified Male Dating Community" />
         <meta property="og:description" content="A verified, anonymous space where men share real dating stories and advice." />
-        <meta property="og:url" content="https://thejuice.lovable.app/male-dating-community" />
+        <meta property="og:url" content="https://sipjuice.app/male-dating-community" />
         <meta property="og:type" content="website" />
       </Helmet>
       {/* Header */}

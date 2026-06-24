@@ -181,6 +181,16 @@ const SharePublic = () => {
         <p className="text-xs text-muted-foreground text-center mt-4">
           <Link to="/" className="hover:text-foreground">Back to home</Link>
         </p>
+
+        <p className="text-center text-xs text-muted-foreground mt-8">
+          Mentioned in this story?{' '}
+          <a
+            href={`/dispute${codename ? `?name=${encodeURIComponent(codename)}` : ''}`}
+            className="underline hover:text-foreground"
+          >
+            Request removal
+          </a>
+        </p>
       </div>
     </div>
   );

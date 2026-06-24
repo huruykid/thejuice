@@ -16,6 +16,7 @@ const TITLES: Record<string, string> = {
   "/admin/verifications": "Verifications",
   "/admin/posts": "Posts",
   "/admin/reports": "Reports",
+  "/admin/disputes": "Disputes",
 };
 
 export const AdminLayout = ({ children }: { children: ReactNode }) => {

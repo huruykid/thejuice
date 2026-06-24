@@ -64,10 +64,10 @@ const CompetitorAnalysis = () => {
       <Helmet>
         <title>Juice vs. Tea App — The Male Dating Review Alternative</title>
         <meta name="description" content="Juice is the first verified, anonymous dating review platform built for men — where Tea App left a gap." />
-        <link rel="canonical" href="https://thejuice.lovable.app/competitor-analysis" />
+        <link rel="canonical" href="https://sipjuice.app/competitor-analysis" />
         <meta property="og:title" content="Juice vs. Tea App — The Male Dating Review Alternative" />
         <meta property="og:description" content="Juice is the first verified, anonymous dating review platform built for men." />
-        <meta property="og:url" content="https://thejuice.lovable.app/competitor-analysis" />
+        <meta property="og:url" content="https://sipjuice.app/competitor-analysis" />
         <meta property="og:type" content="website" />
       </Helmet>
       {/* Header */}

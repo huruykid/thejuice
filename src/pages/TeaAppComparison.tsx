@@ -86,10 +86,10 @@ const TeaAppComparison = () => {
       <Helmet>
         <title>Juice vs. Tea App — Anonymous Dating Reviews for Men</title>
         <meta name="description" content="See how Juice compares to Tea App — verified members, structured ratings, and full anonymity built specifically for men." />
-        <link rel="canonical" href="https://thejuice.lovable.app/tea-app-comparison" />
+        <link rel="canonical" href="https://sipjuice.app/tea-app-comparison" />
         <meta property="og:title" content="Juice vs. Tea App — Anonymous Dating Reviews for Men" />
         <meta property="og:description" content="See how Juice compares to Tea App — built specifically for men." />
-        <meta property="og:url" content="https://thejuice.lovable.app/tea-app-comparison" />
+        <meta property="og:url" content="https://sipjuice.app/tea-app-comparison" />
         <meta property="og:type" content="website" />
       </Helmet>
 

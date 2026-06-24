@@ -18,9 +18,11 @@ import Activity from "./pages/Activity";
 import AdminVerifications from "./pages/AdminVerifications";
 import AdminPosts from "./pages/AdminPosts";
 import AdminReports from "./pages/AdminReports";
+import AdminDisputes from "./pages/AdminDisputes";
 import AdminOverview from "./pages/AdminOverview";
 import AdminLayout from "./components/admin/AdminLayout";
 import SharePublic from "./pages/SharePublic";
+import DisputeRequest from "./pages/DisputeRequest";
 import PrivacySettings from "./pages/PrivacySettings";
 import AuthorStories from "./pages/AuthorStories";
 import StoryDetail from "./pages/StoryDetail";
@@ -194,7 +196,13 @@ const App = () => {
               <AdminLayout><AdminReports /></AdminLayout>
             </AdminRoute>
           } />
+          <Route path="/admin/disputes" element={
+            <AdminRoute>
+              <AdminLayout><AdminDisputes /></AdminLayout>
+            </AdminRoute>
+          } />
           <Route path="/share" element={<SharePublic />} />
+          <Route path="/dispute" element={<PublicLayout><DisputeRequest /></PublicLayout>} />
           <Route path="/privacy-settings" element={
             <ProtectedRoute>
               <AppShell showRightRail={false}>
@@ -219,7 +227,7 @@ const App = () => {
           <Route path="/anonymous-dating-reviews" element={<PublicLayout><AnonymousDatingReviews /></PublicLayout>} />
           <Route path="/mens-dating-advice" element={<PublicLayout><MensDatingAdvice /></PublicLayout>} />
           <Route path="/male-dating-community" element={<PublicLayout><MaleDatingCommunity /></PublicLayout>} />
-          <Route path="/competitor-analysis" element={<PublicLayout><CompetitorAnalysis /></PublicLayout>} />
+          <Route path="/competitor-analysis" element={<AdminRoute><CompetitorAnalysis /></AdminRoute>} />
           <Route path="/viral-marketing-hub" element={
             <AdminRoute>
               <ViralMarketingHub />

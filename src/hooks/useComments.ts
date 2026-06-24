@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { sendPushNotification } from '@/lib/sendPushNotification';
 
 export interface Comment {
   id: string;
@@ -57,10 +58,10 @@ export const useCreateComment = () => {
 
       if (error) throw error;
 
-      // Increment comments count
+      // Increment comments count and fetch story owner for push notification
       const { data: currentStory } = await supabase
         .from('stories')
-        .select('comments_count')
+        .select('comments_count, user_id')
         .eq('id', storyId)
         .single();
 
@@ -73,9 +74,20 @@ export const useCreateComment = () => {
         if (updateError) throw updateError;
       }
 
-      return data;
+      return { ...data, commenterUserId: user.id, storyOwnerId: currentStory?.user_id ?? null };
     },
-    onSuccess: (_, variables) => {
+    onSuccess: (data, variables) => {
+      if (
+        data.storyOwnerId &&
+        data.commenterUserId !== data.storyOwnerId
+      ) {
+        sendPushNotification(
+          data.storyOwnerId,
+          'New comment 💬',
+          'Someone commented on your story',
+          { route: `/story/${variables.storyId}` }
+        ).catch(console.error);
+      }
       queryClient.invalidateQueries({ queryKey: ['comments', variables.storyId] });
       queryClient.invalidateQueries({ queryKey: ['stories'] });
       queryClient.invalidateQueries({ queryKey: ['search-stories'] });

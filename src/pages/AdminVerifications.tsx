@@ -14,6 +14,16 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { CheckCircle, XCircle, Clock, Search, Filter, Mail, Shield, Trash2, AlertTriangle } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { toast } from 'sonner';
 
 /** Returns a human-readable wait time and urgency level for triage. */
@@ -56,6 +66,7 @@ const AdminVerifications = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [bulkProgress, setBulkProgress] = useState<{ done: number; total: number } | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState<VerificationWithProfile | null>(null);
 
   const queryClient = useQueryClient();
 
@@ -239,17 +250,19 @@ const AdminVerifications = () => {
     }
   };
 
-  const handleDeleteUser = async () => {
+  const handleDeleteUser = () => {
     if (!selectedVerification) return;
-    const username = selectedVerification.profile?.anonymous_username || 'this user';
-    const ok = window.confirm(
-      `Permanently delete ${username}? This removes their account and all their data. This cannot be undone.`
-    );
-    if (!ok) return;
+    setDeleteConfirm(selectedVerification);
+  };
+
+  const confirmDeleteUser = async () => {
+    if (!deleteConfirm) return;
+    const username = deleteConfirm.profile?.anonymous_username || 'this user';
+    setDeleteConfirm(null);
     setIsProcessing(true);
     try {
       const { error } = await supabase.functions.invoke('admin-delete-user', {
-        body: { userId: selectedVerification.user_id, reason: notes || undefined },
+        body: { userId: deleteConfirm.user_id, reason: notes || undefined },
       });
       if (error) throw error;
       toast.success(`Deleted ${username}`);
@@ -553,6 +566,32 @@ const AdminVerifications = () => {
             </CardContent>
           </Card>
         )}
+
+        {/* Delete confirmation dialog */}
+        <AlertDialog
+          open={!!deleteConfirm}
+          onOpenChange={(open) => { if (!open) setDeleteConfirm(null); }}
+        >
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Permanently delete user?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This will delete{" "}
+                <strong>{deleteConfirm?.profile?.anonymous_username ?? "this user"}</strong> and all
+                their data. This action cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                onClick={confirmDeleteUser}
+              >
+                Delete permanently
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
 
         {/* Review Modal */}
         {selectedVerification && (

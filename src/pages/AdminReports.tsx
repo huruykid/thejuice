@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
-import { ArrowLeft, Flag, Loader2, ExternalLink } from "lucide-react";
+import { Flag, Loader2, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import type { Report } from "@/hooks/useReports";
 
@@ -132,17 +132,12 @@ const AdminReports = () => {
       <div className="max-w-5xl mx-auto space-y-6">
 
         <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-            <div className="flex items-center gap-2">
-              <Flag className="h-6 w-6 text-juice-orange" />
-              <h1 className="text-2xl font-bold">Reports</h1>
-              {filter === "pending" && pendingCount > 0 && (
-                <Badge variant="secondary">{pendingCount}</Badge>
-              )}
-            </div>
+          <div className="flex items-center gap-2">
+            <Flag className="h-6 w-6 text-juice-orange" />
+            <h1 className="text-2xl font-bold">Reports</h1>
+            {filter === "pending" && pendingCount > 0 && (
+              <Badge variant="secondary">{pendingCount}</Badge>
+            )}
           </div>
           <Select value={filter} onValueChange={(v) => setFilter(v as StatusFilter)}>
             <SelectTrigger className="w-40">

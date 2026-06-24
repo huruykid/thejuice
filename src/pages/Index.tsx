@@ -16,6 +16,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
 import { useVerification } from "@/hooks/useVerification";
 import { useOnboardingState } from "@/hooks/useOnboardingState";
+import { usePushNotifications } from "@/hooks/usePushNotifications";
 
 const Index = () => {
   const [showCreateStory, setShowCreateStory] = useState(false);
@@ -29,6 +30,7 @@ const Index = () => {
   const [resubmitting, setResubmitting] = useState(false);
 
   const { user, loading } = useAuth();
+  usePushNotifications(user?.id);
   const { isLoading: profileLoading, hasProfile, refetch: refetchProfile } = useProfile(user);
   const {
     verification,

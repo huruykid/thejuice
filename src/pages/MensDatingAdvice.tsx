@@ -48,10 +48,10 @@ const MensDatingAdvice = () => {
       <Helmet>
         <title>Men's Dating Advice from Verified Men | Juice</title>
         <meta name="description" content="Real dating advice from verified men on Juice — first dates, red flags, dating apps, and building relationships that last." />
-        <link rel="canonical" href="https://thejuice.lovable.app/mens-dating-advice" />
+        <link rel="canonical" href="https://sipjuice.app/mens-dating-advice" />
         <meta property="og:title" content="Men's Dating Advice from Verified Men | Juice" />
         <meta property="og:description" content="Real dating advice from verified men — first dates, red flags, dating apps, and relationships that last." />
-        <meta property="og:url" content="https://thejuice.lovable.app/mens-dating-advice" />
+        <meta property="og:url" content="https://sipjuice.app/mens-dating-advice" />
         <meta property="og:type" content="website" />
       </Helmet>
       {/* Header */}
