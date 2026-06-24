@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { LogOut, MapPin, Settings, Share2 } from "lucide-react";
+import { LogOut, MapPin, Settings, Share2, Grid3X3, Bookmark } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Navigation from "@/components/Navigation";
 import CreateStory from "@/components/CreateStory";
+import StoryCard from "@/components/StoryCard";
 import LoadingSkeleton from "@/components/ui/loading-skeleton";
 import ThemeToggle from "@/components/ThemeToggle";
 import CitySheet from "@/components/CitySheet";
@@ -14,16 +15,25 @@ import { useProfile } from "@/hooks/useProfile";
 import { useVerification } from "@/hooks/useVerification";
 import { useUserStats } from "@/hooks/useUserStats";
 import { useToast } from "@/hooks/use-toast";
+import { useStoriesByProfile } from "@/hooks/useStories";
+import { useBookmarkedStories } from "@/hooks/useBookmarks";
+
+type ProfileTab = "stories" | "saved";
 
 const Profile = () => {
   const [showCreateStory, setShowCreateStory] = useState(false);
   const [cityOpen, setCityOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<ProfileTab>("stories");
   const { signOut, user } = useAuth();
   const { profile } = useProfile(user);
   const { isVerified } = useVerification(user?.id);
   const { userStats, isLoading: statsLoading } = useUserStats();
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  const profileId = (profile as any)?.id as string | undefined;
+  const { data: myStories = [] } = useStoriesByProfile(profileId ?? "");
+  const { data: savedStories = [], isLoading: savedLoading } = useBookmarkedStories(user?.id);
 
   const cityId = (profile as any)?.city_id as string | null | undefined;
   const { data: city } = useQuery({
@@ -131,8 +141,82 @@ const Profile = () => {
           </Button>
         </div>
 
+        {/* IG-style tab bar */}
+        <div className="border-t border-border -mx-4 mb-0">
+          <div className="grid grid-cols-2">
+            <button
+              onClick={() => setActiveTab("stories")}
+              className={`flex items-center justify-center gap-1.5 py-3 text-sm font-medium transition-colors border-b-2 ${
+                activeTab === "stories"
+                  ? "border-foreground text-foreground"
+                  : "border-transparent text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <Grid3X3 className="h-4 w-4" />
+              Stories
+            </button>
+            <button
+              onClick={() => setActiveTab("saved")}
+              className={`flex items-center justify-center gap-1.5 py-3 text-sm font-medium transition-colors border-b-2 ${
+                activeTab === "saved"
+                  ? "border-foreground text-foreground"
+                  : "border-transparent text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <Bookmark className="h-4 w-4" />
+              Saved
+            </button>
+          </div>
+        </div>
+
+        {/* Tab content */}
+        {activeTab === "stories" && (
+          <div className="-mx-4">
+            {myStories.length === 0 ? (
+              <div className="px-4 py-10 text-center text-sm text-muted-foreground">
+                No stories yet.{" "}
+                <button onClick={() => setShowCreateStory(true)} className="text-primary underline underline-offset-2">
+                  Share your first one.
+                </button>
+              </div>
+            ) : (
+              myStories.map((story) => (
+                <StoryCard
+                  key={story.id}
+                  story={story}
+                  authorName={username}
+                  subjectName={story.subject_name ?? undefined}
+                  user_id={user?.id}
+                />
+              ))
+            )}
+          </div>
+        )}
+
+        {activeTab === "saved" && (
+          <div className="-mx-4">
+            {savedLoading ? (
+              <div className="px-4 py-10 text-center text-sm text-muted-foreground">Loading…</div>
+            ) : savedStories.length === 0 ? (
+              <div className="px-4 py-10 text-center text-sm text-muted-foreground">
+                Tap the bookmark icon on any story to save it here.
+              </div>
+            ) : (
+              savedStories.map((story) => (
+                <StoryCard
+                  key={story.id}
+                  story={story}
+                  authorName={(story as any).profiles?.anonymous_username ?? "anonymous"}
+                  subjectName={story.subject_name ?? undefined}
+                  user_id={user?.id}
+                />
+              ))
+            )}
+          </div>
+        )}
+
         {/* Appearance */}
-        <div className="mb-5">
+        <div className="mb-5 mt-6">
           <p className="text-xs uppercase tracking-wide text-muted-foreground mb-2">Appearance</p>
           <ThemeToggle />
         </div>

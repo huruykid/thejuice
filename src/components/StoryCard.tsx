@@ -17,6 +17,7 @@ import { useReactionCounts } from "@/hooks/useReactionCounts";
 import { useAuth } from "@/hooks/useAuth";
 import { useVerification } from "@/hooks/useVerification";
 import { useUserReactions, useSetUserReactions } from "@/hooks/useUserReactions";
+import { useIsBookmarked, useToggleBookmark } from "@/hooks/useBookmarks";
 import { useState, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
@@ -69,6 +70,8 @@ const StoryCard = ({
   const deleteStory = useDeleteStory();
   const toggleReaction = useToggleReaction();
   const { data: reactionCounts } = useReactionCounts(story.id);
+  const { data: isBookmarked = false } = useIsBookmarked(story.id, user?.id);
+  const toggleBookmark = useToggleBookmark();
 
   const handleReaction = async (reactionType: string) => {
     if (!user) {
@@ -330,11 +333,22 @@ const StoryCard = ({
             </button>
           </div>
           <button
-            aria-label="Save (coming soon)"
-            onClick={() => toast({ title: "Coming soon", description: "Saved stories will be in your profile." })}
-            className="p-2 -mr-1 rounded-full hover:bg-muted active:scale-95 transition-all opacity-40"
+            aria-label={isBookmarked ? "Remove bookmark" : "Bookmark"}
+            onClick={() => {
+              if (!user) {
+                toast({ title: "Login required", description: "Sign in to bookmark stories.", variant: "destructive" });
+                return;
+              }
+              toggleBookmark.mutate({ storyId: story.id, userId: user.id, isCurrentlyBookmarked: isBookmarked });
+            }}
+            className="p-2 -mr-1 rounded-full hover:bg-muted active:scale-95 transition-all"
           >
-            <Bookmark className="h-6 w-6 text-foreground" strokeWidth={1.8} />
+            <Bookmark
+              className="h-6 w-6"
+              style={{ color: isBookmarked ? 'var(--color-primary, hsl(var(--primary)))' : undefined }}
+              strokeWidth={1.8}
+              fill={isBookmarked ? "currentColor" : "none"}
+            />
           </button>
         </div>
 
