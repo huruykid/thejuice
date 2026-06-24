@@ -83,8 +83,8 @@ const AdminReports = () => {
   }
 
   return (
-    <div className="bg-background pb-20">
-      <div className="container mx-auto px-4 py-6 max-w-3xl">
+    <div className="bg-gradient-soft p-4 pb-20">
+      <div className="max-w-5xl mx-auto space-y-6">
         
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
