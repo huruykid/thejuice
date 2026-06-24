@@ -1,4 +1,4 @@
-import { Heart, MessageCircle, Flag, Trash2, MapPin, MoreVertical, Send, Bookmark } from "lucide-react";
+import { Heart, MessageCircle, Flag, Trash2, MapPin, MoreVertical, Bookmark } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import {
@@ -14,15 +14,18 @@ import { FlagRatingDisplay } from "./FlagRating";
 import { useDeleteStory } from "@/hooks/useStories";
 import { useToggleReaction } from "@/hooks/useReactions";
 import { useReactionCounts } from "@/hooks/useReactionCounts";
-import { supabase } from "@/integrations/supabase/client";
-import { useState, useEffect, useRef } from "react";
+import { useAuth } from "@/hooks/useAuth";
+import { useVerification } from "@/hooks/useVerification";
+import { useUserReactions, useSetUserReactions } from "@/hooks/useUserReactions";
+import { useState, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { formatDistance } from "@/lib/distance";
+import type { Story } from "@/hooks/useStories";
 
 const tagEmojis: { [key: string]: string } = {
   'red flag': '🚩',
-  'ghosted': '🫠', 
+  'ghosted': '🫠',
   'loyal': '💯',
   'golddigger': '💰',
   'clingy': '🤗',
@@ -30,167 +33,95 @@ const tagEmojis: { [key: string]: string } = {
   'sweet': '🍭',
   'funny': '😂',
   'boring': '😴',
-  'crazy': '🤪'
+  'crazy': '🤪',
 };
 
 interface StoryCardProps {
-  story: {
-    id: string;
-    content: string;
-    location?: string;
-    communication_rating: number;
-    loyalty_rating: number;
-    emotional_safety_rating: number;
-    overall_vibe_rating: number;
-    reactions_count: number;
-    comments_count: number;
-    view_count: number;
-    created_at: string;
-    user_id?: string;
-    image_url?: string;
-    subject_name?: string;
-    profile_id?: string;
-    story_tags: Array<{
-      tag: string;
-    }>;
+  story: Story & {
     distance?: number;
-    cities?: {
-      city_name: string;
-      state_province: string;
-    };
+    cities?: { city_name: string; state_province: string };
   };
   authorName: string;
-  subjectName?: string; // The person the story is about
+  subjectName?: string;
+  /** Pass the logged-in user's id so delete/block controls work without an extra auth call. */
   user_id?: string;
   onDelete?: () => void;
 }
 
-const StoryCard = ({ 
-  story, 
-  authorName, 
+const StoryCard = ({
+  story,
+  authorName,
   subjectName,
-  user_id, 
-  onDelete 
+  user_id,
+  onDelete,
 }: StoryCardProps) => {
   const [showComments, setShowComments] = useState(false);
-  const [isRedFlagged, setIsRedFlagged] = useState(false);
-  const [isGreenFlagged, setIsGreenFlagged] = useState(false);
   const [showHeartBurst, setShowHeartBurst] = useState(false);
   const lastTapRef = useRef<number>(0);
+
+  const { user } = useAuth();
+  const { isVerified } = useVerification(user?.id);
+  const { isRedFlagged, isGreenFlagged } = useUserReactions(story.id, user?.id);
+  const setUserReactions = useSetUserReactions(story.id, user?.id);
+
   const { toast } = useToast();
   const navigate = useNavigate();
   const deleteStory = useDeleteStory();
   const toggleReaction = useToggleReaction();
   const { data: reactionCounts } = useReactionCounts(story.id);
 
-  // Check if current user has reacted to this story
-  useEffect(() => {
-    const checkUserReactions = async () => {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
-
-        // Check for all reaction types
-        const { data: reactions } = await supabase
-          .from('reactions')
-          .select('reaction_type')
-          .eq('story_id', story.id)
-          .eq('user_id', user.id);
-
-        if (reactions) {
-          const reactionTypes = reactions.map(r => r.reaction_type);
-          setIsRedFlagged(reactionTypes.includes('red_flag'));
-          setIsGreenFlagged(reactionTypes.includes('green_flag'));
-        }
-      } catch (error) {
-        console.error('Error checking user reactions:', error);
-      }
-    };
-
-    checkUserReactions();
-  }, [story.id]);
-
   const handleReaction = async (reactionType: string) => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        toast({
-          title: "Login required",
-          description: "Please log in to react to stories.",
-          variant: "destructive"
-        });
-        return;
-      }
-
-      // Check if user is verified before attempting to react
-      const { data: verification } = await supabase
-        .from('user_verifications')
-        .select('verification_status')
-        .eq('user_id', user.id)
-        .single();
-
-      if (!verification || verification.verification_status !== 'approved') {
-        toast({
-          title: "Verification required",
-          description: "You need to be verified to vote on stories. Please complete your verification process.",
-          variant: "destructive"
-        });
-        return;
-      }
-
-      // Optimistic local toggle so the button responds instantly.
-      const prevRed = isRedFlagged;
-      const prevGreen = isGreenFlagged;
-      if (reactionType === 'green_flag') {
-        setIsGreenFlagged(!prevGreen);
-        if (!prevGreen && prevRed) setIsRedFlagged(false);
-      } else if (reactionType === 'red_flag') {
-        setIsRedFlagged(!prevRed);
-        if (!prevRed && prevGreen) setIsGreenFlagged(false);
-      }
-
-      const result = await toggleReaction.mutateAsync({ 
-        storyId: story.id, 
-        reactionType 
+    if (!user) {
+      toast({
+        title: "Login required",
+        description: "Please log in to react to stories.",
+        variant: "destructive",
       });
-      
+      return;
+    }
+
+    if (!isVerified) {
+      toast({
+        title: "Verification required",
+        description: "You need to be verified to vote on stories. Please complete your verification process.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Optimistic update — responds instantly before the mutation settles.
+    if (reactionType === 'green_flag') {
+      setUserReactions({ isGreenFlagged: !isGreenFlagged, ...(isRedFlagged && !isGreenFlagged ? { isRedFlagged: false } : {}) });
+    } else if (reactionType === 'red_flag') {
+      setUserReactions({ isRedFlagged: !isRedFlagged, ...(isGreenFlagged && !isRedFlagged ? { isGreenFlagged: false } : {}) });
+    }
+
+    try {
+      const result = await toggleReaction.mutateAsync({ storyId: story.id, reactionType });
+
+      // Reconcile with actual server result.
       if (result?.action === 'added') {
-        // User added a new reaction
-        if (reactionType === 'red_flag') {
-          setIsRedFlagged(true);
-          // If they replaced a green flag, remove it
-          if (result.replacedType === 'green_flag') {
-            setIsGreenFlagged(false);
-          }
-        } else if (reactionType === 'green_flag') {
-          setIsGreenFlagged(true);
-          // If they replaced a red flag, remove it
-          if (result.replacedType === 'red_flag') {
-            setIsRedFlagged(false);
-          }
-        }
+        setUserReactions({
+          isRedFlagged: reactionType === 'red_flag',
+          isGreenFlagged: reactionType === 'green_flag',
+        });
       } else if (result?.action === 'removed') {
-        // User removed their reaction
-        if (reactionType === 'red_flag') {
-          setIsRedFlagged(false);
-        } else if (reactionType === 'green_flag') {
-          setIsGreenFlagged(false);
-        }
+        setUserReactions({
+          ...(reactionType === 'red_flag' ? { isRedFlagged: false } : {}),
+          ...(reactionType === 'green_flag' ? { isGreenFlagged: false } : {}),
+        });
       }
-    } catch (error) {
-      console.error('Reaction error:', error);
-      // Roll back optimistic toggle.
-      setIsRedFlagged((v) => v);
-      setIsGreenFlagged((v) => v);
+    } catch {
+      // Roll back optimistic update on failure.
+      setUserReactions({ isRedFlagged, isGreenFlagged });
       toast({
         title: "Error",
         description: "Failed to toggle reaction. Please try again.",
-        variant: "destructive"
+        variant: "destructive",
       });
     }
   };
 
-  // Detect double-tap on the card body (ignoring buttons / interactive children).
   const handleCardClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const target = e.target as HTMLElement;
     if (target.closest('button, a, [role="button"], input, textarea')) return;
@@ -206,51 +137,34 @@ const StoryCard = ({
   const triggerDoubleTap = () => {
     setShowHeartBurst(true);
     window.setTimeout(() => setShowHeartBurst(false), 700);
-    if (!isGreenFlagged) {
-      handleReaction('green_flag');
-    }
+    if (!isGreenFlagged) handleReaction('green_flag');
   };
 
-  const handleComment = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        toast({
-          title: "Login required",
-          description: "Please log in to comment on stories.",
-          variant: "destructive"
-        });
-        return;
-      }
-      setShowComments(true);
-    } catch (error) {
-      console.error('Error checking user auth:', error);
+  const handleComment = () => {
+    if (!user) {
+      toast({
+        title: "Login required",
+        description: "Please log in to comment on stories.",
+        variant: "destructive",
+      });
+      return;
     }
+    setShowComments(true);
   };
 
   const handleDelete = async () => {
-    if (window.confirm('Are you sure you want to delete this story?')) {
-      try {
-        await deleteStory.mutateAsync(story.id);
-        toast({
-          title: "Story deleted",
-          description: "Your story has been deleted successfully.",
-        });
-        onDelete?.();
-      } catch (error) {
-        toast({
-          title: "Error",
-          description: "Failed to delete story. Please try again.",
-          variant: "destructive"
-        });
-      }
+    if (!window.confirm('Are you sure you want to delete this story?')) return;
+    try {
+      await deleteStory.mutateAsync(story.id);
+      toast({ title: "Story deleted", description: "Your story has been deleted successfully." });
+      onDelete?.();
+    } catch {
+      toast({ title: "Error", description: "Failed to delete story. Please try again.", variant: "destructive" });
     }
   };
 
   const handleAuthorClick = () => {
-    if (story.profile_id) {
-      navigate(`/author/${story.profile_id}`);
-    }
+    if (story.profile_id) navigate(`/author/${story.profile_id}`);
   };
 
   const canDelete = user_id === story.user_id;
@@ -259,23 +173,12 @@ const StoryCard = ({
     const date = new Date(dateString);
     const now = new Date();
     const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
-    
     if (diffInHours < 1) return 'Just now';
     if (diffInHours < 24) return `${diffInHours}h ago`;
     if (diffInHours < 168) return `${Math.floor(diffInHours / 24)}d ago`;
     return date.toLocaleDateString();
   };
 
-  const formatViewCount = (count: number) => {
-    if (count >= 1000000) {
-      return `${(count / 1000000).toFixed(1)}M`;
-    } else if (count >= 1000) {
-      return `${(count / 1000).toFixed(1)}K`;
-    }
-    return count.toLocaleString();
-  };
-
-  // Parse image URLs from JSON string
   const getImageUrls = (): string[] => {
     if (!story.image_url) return [];
     try {
@@ -303,7 +206,8 @@ const StoryCard = ({
             />
           </div>
         )}
-        {/* IG Header — avatar + name on left, more on right */}
+
+        {/* Header */}
         <div className="flex items-center justify-between px-4 py-2.5">
           <div className="flex items-center gap-3 min-w-0">
             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary-dark flex items-center justify-center text-primary-foreground text-xs font-semibold flex-shrink-0">
@@ -321,48 +225,40 @@ const StoryCard = ({
               </button>
             </div>
           </div>
+
           <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-8 w-8 p-0 text-foreground hover:bg-muted"
-                  >
-                    <MoreVertical className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  {canDelete && (
-                    <DropdownMenuItem
-                      onClick={handleDelete}
-                      className="text-destructive hover:text-destructive"
-                    >
-                      <Trash2 className="h-4 w-4 mr-2" />
-                      Delete Story
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-foreground hover:bg-muted">
+                <MoreVertical className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {canDelete && (
+                <DropdownMenuItem onClick={handleDelete} className="text-destructive hover:text-destructive">
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Delete Story
+                </DropdownMenuItem>
+              )}
+              {!canDelete && story.user_id && (
+                <>
+                  <BlockUserDialog userId={story.user_id} username={authorName}>
+                    <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                      Block @{authorName}
                     </DropdownMenuItem>
-                  )}
-                  
-                  {!canDelete && story.user_id && (
-                    <>
-                      <BlockUserDialog userId={story.user_id} username={authorName}>
-                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                          Block @{authorName}
-                        </DropdownMenuItem>
-                      </BlockUserDialog>
-                      
-                      <ReportContentDialog targetType="story" targetId={story.id}>
-                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                          <Flag className="h-4 w-4 mr-2" />
-                          Report Story
-                        </DropdownMenuItem>
-                      </ReportContentDialog>
-                    </>
-                  )}
-                </DropdownMenuContent>
-              </DropdownMenu>
+                  </BlockUserDialog>
+                  <ReportContentDialog targetType="story" targetId={story.id}>
+                    <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                      <Flag className="h-4 w-4 mr-2" />
+                      Report Story
+                    </DropdownMenuItem>
+                  </ReportContentDialog>
+                </>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
-        {/* Media — IG full-bleed */}
+        {/* Media */}
         {imageUrls.length > 0 && (
           <div className="relative bg-muted">
             <Carousel className="w-full">
@@ -391,17 +287,14 @@ const StoryCard = ({
             {imageUrls.length > 1 && (
               <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex gap-1">
                 {imageUrls.map((_, index) => (
-                  <div
-                    key={index}
-                    className="w-1.5 h-1.5 rounded-full bg-background/80 ring-1 ring-foreground/20"
-                  />
+                  <div key={index} className="w-1.5 h-1.5 rounded-full bg-background/80 ring-1 ring-foreground/20" />
                 ))}
               </div>
             )}
           </div>
         )}
 
-        {/* IG action row — icon buttons left + right */}
+        {/* Action row */}
         <div className="flex items-center justify-between px-3 pt-2 pb-1">
           <div className="flex items-center gap-1">
             <button
@@ -410,9 +303,8 @@ const StoryCard = ({
               className="p-2 -ml-1 rounded-full hover:bg-muted active:scale-95 transition-all"
             >
               <Flag
-                className={`h-6 w-6 ${
-                  isRedFlagged ? "text-primary" : "text-foreground"
-                }`}
+                className="h-6 w-6"
+                style={{ color: '#E24B4A', opacity: isRedFlagged ? 1 : 0.45 }}
                 strokeWidth={isRedFlagged ? 2.4 : 1.8}
                 fill={isRedFlagged ? "currentColor" : "none"}
               />
@@ -423,9 +315,8 @@ const StoryCard = ({
               className="p-2 rounded-full hover:bg-muted active:scale-95 transition-all"
             >
               <Flag
-                className={`h-6 w-6 ${
-                  isGreenFlagged ? "text-juice-green" : "text-foreground"
-                }`}
+                className="h-6 w-6"
+                style={{ color: '#639922', opacity: isGreenFlagged ? 1 : 0.45 }}
                 strokeWidth={isGreenFlagged ? 2.4 : 1.8}
                 fill={isGreenFlagged ? "currentColor" : "none"}
               />
@@ -437,23 +328,17 @@ const StoryCard = ({
             >
               <MessageCircle className="h-6 w-6 text-foreground" strokeWidth={1.8} />
             </button>
-            <button
-              aria-label="Share"
-              className="p-2 rounded-full hover:bg-muted active:scale-95 transition-all"
-              onClick={(e) => { e.stopPropagation(); }}
-            >
-              <Send className="h-6 w-6 text-foreground" strokeWidth={1.8} />
-            </button>
           </div>
           <button
-            aria-label="Save"
-            className="p-2 -mr-1 rounded-full hover:bg-muted active:scale-95 transition-all"
+            aria-label="Save (coming soon)"
+            onClick={() => toast({ title: "Coming soon", description: "Saved stories will be in your profile." })}
+            className="p-2 -mr-1 rounded-full hover:bg-muted active:scale-95 transition-all opacity-40"
           >
             <Bookmark className="h-6 w-6 text-foreground" strokeWidth={1.8} />
           </button>
         </div>
 
-        {/* Counts line */}
+        {/* Counts */}
         <div className="px-4 text-sm font-semibold text-foreground">
           {(reactionCounts?.red_flag || 0) + (reactionCounts?.green_flag || 0)} flags
           {(reactionCounts?.green_flag || 0) > 0 && (
@@ -463,7 +348,7 @@ const StoryCard = ({
           )}
         </div>
 
-        {/* Caption — bold subject + story */}
+        {/* Caption */}
         <div className="px-4 pt-1 pb-1 text-sm leading-snug text-foreground">
           <span className="font-semibold mr-1.5">
             {story.subject_name || subjectName || 'anonymous'}
@@ -471,7 +356,7 @@ const StoryCard = ({
           <span className="whitespace-pre-wrap">{story.content}</span>
         </div>
 
-        {/* Author's flag ratings */}
+        {/* Flag ratings */}
         <FlagRatingDisplay
           ratings={{
             communication: story.communication_rating || 0,
@@ -481,7 +366,7 @@ const StoryCard = ({
           }}
         />
 
-        {/* Tags as IG hashtag-blue */}
+        {/* Tags */}
         {story.story_tags && story.story_tags.length > 0 && (
           <div className="px-4 pt-0.5 text-sm leading-tight">
             {story.story_tags.map((t, i) => (
@@ -502,8 +387,8 @@ const StoryCard = ({
           </button>
         )}
 
-        {/* Location + time muted footer */}
-        {(story.location || story.cities) && (
+        {/* Location / timestamp footer */}
+        {(story.location || story.cities) ? (
           <div className="px-4 pt-1 pb-3 flex items-center gap-1 text-xs text-muted-foreground">
             <MapPin className="h-3 w-3" />
             <span>
@@ -515,8 +400,7 @@ const StoryCard = ({
               )}
             </span>
           </div>
-        )}
-        {!(story.location || story.cities) && (
+        ) : (
           <div className="px-4 pt-0.5 pb-3 text-[11px] uppercase tracking-wide text-muted-foreground">
             {formatDate(story.created_at)}
           </div>

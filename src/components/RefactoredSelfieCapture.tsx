@@ -64,7 +64,7 @@ const RefactoredSelfieCapture: React.FC<RefactoredSelfieCaptureProps> = ({ onCom
 
   const handleStartOver = () => {
     clearState();
-    navigate('/profile');
+    navigate('/');
   };
 
   const handleCancel = () => {

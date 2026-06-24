@@ -11,6 +11,7 @@ import CitySheet from "@/components/CitySheet";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
+import { useVerification } from "@/hooks/useVerification";
 import { useUserStats } from "@/hooks/useUserStats";
 import { useToast } from "@/hooks/use-toast";
 
@@ -19,6 +20,7 @@ const Profile = () => {
   const [cityOpen, setCityOpen] = useState(false);
   const { signOut, user } = useAuth();
   const { profile } = useProfile(user);
+  const { isVerified } = useVerification(user?.id);
   const { userStats, isLoading: statsLoading } = useUserStats();
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -175,7 +177,7 @@ const Profile = () => {
 
       <Navigation onCreateStory={() => setShowCreateStory(true)} />
       <CitySheet open={cityOpen} onClose={() => setCityOpen(false)} currentCityId={cityId} />
-      {showCreateStory && <CreateStory onClose={() => setShowCreateStory(false)} />}
+      {showCreateStory && <CreateStory onClose={() => setShowCreateStory(false)} isUnverified={!isVerified} />}
     </div>
   );
 };

@@ -4,23 +4,15 @@ import { Button } from "@/components/ui/button";
 import Navigation from "@/components/Navigation";
 import StoryCard from "@/components/StoryCard";
 import { useStoriesByProfile } from "@/hooks/useStories";
-import { supabase } from "@/integrations/supabase/client";
-import { useState, useEffect } from "react";
+import { useAuth } from "@/hooks/useAuth";
 
 const AuthorStories = () => {
   const { profileId } = useParams<{ profileId: string }>();
   const navigate = useNavigate();
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-  
-  const { data: stories, isLoading: storiesLoading } = useStoriesByProfile(profileId || '');
+  const { user } = useAuth();
+  const currentUserId = user?.id ?? null;
 
-  useEffect(() => {
-    const getCurrentUser = async () => {
-      const { data: { user } } = await (supabase as any).auth.getUser();
-      setCurrentUserId(user?.id || null);
-    };
-    getCurrentUser();
-  }, []);
+  const { data: stories, isLoading: storiesLoading } = useStoriesByProfile(profileId || '');
 
   if (!profileId) {
     return <div>Profile not found</div>;

@@ -18,6 +18,7 @@ export interface Story {
   user_id?: string;
   image_url?: string;
   subject_name?: string;
+  location?: string | null;
   profiles?: {
     id: string;
     anonymous_username: string;

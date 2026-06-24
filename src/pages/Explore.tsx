@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { useSearchParams } from "react-router-dom";
 import { Search, Hash, MessageCircle, Flag } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import Navigation from "@/components/Navigation";
@@ -32,6 +33,7 @@ const Explore = ({ onCreateStory }: ExploreProps) => {
   const [selectedStory, setSelectedStory] = useState<any>(null);
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
@@ -61,6 +63,18 @@ const Explore = ({ onCreateStory }: ExploreProps) => {
       clearResults();
     }
   }, [debouncedSearchQuery]);
+
+  // Deep-link: /explore?story=<id> — open the story modal once stories are loaded.
+  useEffect(() => {
+    const storyId = searchParams.get("story");
+    if (!storyId || !allStories) return;
+    const target = allStories.find((s) => s.id === storyId);
+    if (target) {
+      setSelectedStory(target);
+      // Remove the param from the URL so Back/Forward behave naturally.
+      setSearchParams({}, { replace: true });
+    }
+  }, [allStories, searchParams]);
 
   const getDisplayStories = (): Story[] => {
     if (debouncedSearchQuery && searchResults) {

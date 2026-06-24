@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import Home from "./Home";
 import UnverifiedHome from "./UnverifiedHome";
 import CreateStory from "@/components/CreateStory";
@@ -19,6 +20,7 @@ import { useOnboardingState } from "@/hooks/useOnboardingState";
 const Index = () => {
   const [showCreateStory, setShowCreateStory] = useState(false);
   const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
+  const queryClient = useQueryClient();
   // True once the user opts into the verification flow from UnverifiedHome.
   // Without this, unverified users are NOT force-marched through onboarding.
   const [verifyMode, setVerifyMode] = useState(false);
@@ -37,6 +39,17 @@ const Index = () => {
     isRejected,
   } = useVerification(user?.id);
   const { currentStep, setCurrentStep, markStepCompleted } = useOnboardingState(user?.id);
+
+  // Fire the success animation the first time a user transitions to verified status.
+  const prevVerifiedRef = useRef<boolean | undefined>(undefined);
+  useEffect(() => {
+    if (prevVerifiedRef.current === false && isVerified === true) {
+      setShowSuccessAnimation(true);
+    }
+    if (!verificationLoading) {
+      prevVerifiedRef.current = isVerified;
+    }
+  }, [isVerified, verificationLoading]);
 
   const handleProfileCreated = async () => {
     markStepCompleted("profile");
@@ -58,8 +71,8 @@ const Index = () => {
     setCurrentStep("complete");
   };
 
-  const refreshVerificationStatus = () => {
-    window.location.reload();
+  const refreshVerificationStatus = async () => {
+    await queryClient.invalidateQueries({ queryKey: ['user-verification', user?.id] });
   };
 
   const startVerification = () => {

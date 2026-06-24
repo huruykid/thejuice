@@ -12,7 +12,6 @@ import Landing from "./pages/Landing";
 import HowItWorks from "./pages/HowItWorks";
 import TeaAppComparison from "./pages/TeaAppComparison";
 import NotFound from "./pages/NotFound";
-import CodenameProfile from "./pages/CodenameProfile";
 import Explore from "./pages/Explore";
 import Profile from "./pages/Profile";
 import Activity from "./pages/Activity";
@@ -143,13 +142,6 @@ const App = () => {
             <ProtectedRoute>
               <AppShell>
                 <Activity />
-              </AppShell>
-            </ProtectedRoute>
-          } />
-          <Route path="/codename/:codenameId" element={
-            <ProtectedRoute>
-              <AppShell>
-                <CodenameProfile />
               </AppShell>
             </ProtectedRoute>
           } />

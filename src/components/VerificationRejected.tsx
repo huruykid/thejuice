@@ -21,7 +21,7 @@ const VerificationRejected = ({ notes, onResubmit }: VerificationRejectedProps) 
   };
 
   const handleContactSupport = () => {
-    window.open('mailto:support@yourapp.com?subject=Verification Appeal', '_blank');
+    window.open('mailto:support@sipjuice.app?subject=Verification Appeal', '_blank');
   };
 
   return (

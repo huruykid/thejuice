@@ -3,31 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { parsePhoneNumber } from 'react-phone-number-input';
 import { useToast } from '@/hooks/use-toast';
 import { fuzzySearchCities, getUniqueCities, normalizeCityName } from '@/lib/citySearch';
-
-interface Story {
-  id: string;
-  content: string;
-  subject_name: string | null;
-  subject_phone: string | null;
-  location: string | null;
-  communication_rating: number | null;
-  loyalty_rating: number | null;
-  emotional_safety_rating: number | null;
-  overall_vibe_rating: number | null;
-  created_at: string;
-  updated_at: string;
-  reactions_count: number;
-  comments_count: number;
-  view_count: number;
-  user_id: string;
-  profile_id: string | null;
-  image_url: string | null;
-  profiles?: {
-    id: string;
-    anonymous_username: string;
-  } | null;
-  story_tags: { tag: string }[];
-}
+import type { Story } from '@/hooks/useStories';
 
 interface Profile {
   id: string;
