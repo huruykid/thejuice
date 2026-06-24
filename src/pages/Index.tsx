@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import Home from "./Home";
 import UnverifiedHome from "./UnverifiedHome";
@@ -40,16 +40,16 @@ const Index = () => {
   } = useVerification(user?.id);
   const { currentStep, setCurrentStep, markStepCompleted } = useOnboardingState(user?.id);
 
-  // Fire the success animation the first time a user transitions to verified status.
-  const prevVerifiedRef = useRef<boolean | undefined>(undefined);
+  // Show the success animation exactly once — the first time this user is verified,
+  // regardless of whether they were in the app when it happened or came back later.
   useEffect(() => {
-    if (prevVerifiedRef.current === false && isVerified === true) {
+    if (verificationLoading || !user || !isVerified) return;
+    const key = `juice_welcome_seen_${user.id}`;
+    if (!localStorage.getItem(key)) {
+      localStorage.setItem(key, "1");
       setShowSuccessAnimation(true);
     }
-    if (!verificationLoading) {
-      prevVerifiedRef.current = isVerified;
-    }
-  }, [isVerified, verificationLoading]);
+  }, [isVerified, verificationLoading, user]);
 
   const handleProfileCreated = async () => {
     markStepCompleted("profile");
