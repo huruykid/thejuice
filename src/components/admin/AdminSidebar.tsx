@@ -15,11 +15,12 @@ import {
 import { useAdminPendingCounts } from "@/hooks/useAdminPendingCounts";
 import { cn } from "@/lib/utils";
 
-const items = [
-  { to: "/admin", label: "Overview", icon: LayoutDashboard, countKey: undefined as const },
-  { to: "/admin/verifications", label: "Verifications", icon: ShieldCheck, countKey: "verifications" as const },
-  { to: "/admin/posts", label: "Posts", icon: FileText, countKey: "posts" as const },
-  { to: "/admin/reports", label: "Reports", icon: Flag, countKey: "reports" as const },
+type CountKey = "verifications" | "posts" | "reports";
+const items: Array<{ to: string; label: string; icon: typeof LayoutDashboard; countKey?: CountKey }> = [
+  { to: "/admin", label: "Overview", icon: LayoutDashboard },
+  { to: "/admin/verifications", label: "Verifications", icon: ShieldCheck, countKey: "verifications" },
+  { to: "/admin/posts", label: "Posts", icon: FileText, countKey: "posts" },
+  { to: "/admin/reports", label: "Reports", icon: Flag, countKey: "reports" },
 ];
 
 export const AdminSidebar = () => {
