@@ -86,6 +86,15 @@ const Landing = () => {
         <meta property="og:description" content="Verified men share anonymous dating stories. Read the feed. Post yours. No names, no consequences." />
         <meta property="og:url" content="https://sipjuice.app/" />
         <meta property="og:type" content="website" />
+        <script type="application/ld+json">{JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": [
+            { "@type": "Question", "name": "Is it free?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Juice is free to join. Creating an account, reading stories, and posting your own — all free." } },
+            { "@type": "Question", "name": "Are stories actually anonymous?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Your name is never attached to your stories. You post under a randomly assigned codename. The only thing that's verified is that you're a real man — not who you are." } },
+            { "@type": "Question", "name": "Who reviews my selfie?", "acceptedAnswer": { "@type": "Answer", "text": "A real human admin reviews your selfie to confirm you're a real person. Your photo is never stored publicly or shared. It's used only for the one-time verification check." } }
+          ]
+        })}</script>
       </Helmet>
 
       {/* Sticky header */}

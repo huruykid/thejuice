@@ -1,6 +1,7 @@
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import { Helmet } from "react-helmet-async";
 import { supabase } from "@/integrations/supabase/client";
 import StoryCard from "@/components/StoryCard";
 import Navigation from "@/components/Navigation";
@@ -40,8 +41,44 @@ const StoryDetail = () => {
 
   const story = stateStory ?? fetchedStory;
 
+  const canonicalUrl = `https://sipjuice.app/story/${storyId ?? ""}`;
+  const rawText = (story as any)?.story_text ?? (story as any)?.content ?? "";
+  const description = story
+    ? `${String(rawText).replace(/\s+/g, " ").trim().slice(0, 155)}`
+    : "Read an anonymous, verified dating story from a real man on Juice.";
+  const authorName = story?.profiles?.anonymous_username ?? "Anonymous";
+  const title = story
+    ? `${authorName}'s anonymous dating story — Juice`
+    : "Story — Juice";
+
   return (
     <div className="min-h-screen bg-background pb-20 lg:pb-8">
+      <Helmet>
+        <title>{title.slice(0, 60)}</title>
+        <meta name="description" content={description.slice(0, 160)} />
+        <link rel="canonical" href={canonicalUrl} />
+        <meta property="og:type" content="article" />
+        <meta property="og:title" content={title.slice(0, 60)} />
+        <meta property="og:description" content={description.slice(0, 160)} />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:image" content="https://sipjuice.app/juice-logo.png" />
+        {story && (
+          <script type="application/ld+json">{JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Article",
+            "headline": title.slice(0, 110),
+            "description": description.slice(0, 160),
+            "author": { "@type": "Person", "name": authorName },
+            "datePublished": (story as any).created_at,
+            "url": canonicalUrl,
+            "publisher": {
+              "@type": "Organization",
+              "name": "Juice",
+              "logo": { "@type": "ImageObject", "url": "https://sipjuice.app/juice-logo.png" }
+            }
+          })}</script>
+        )}
+      </Helmet>
       {/* Back header */}
       <header className="sticky top-0 z-40 bg-background/95 backdrop-blur border-b border-border">
         <div className="flex items-center gap-2 px-2 h-12 max-w-xl mx-auto">
