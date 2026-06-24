@@ -123,6 +123,7 @@ const CreateStory = ({
         content: storyData.content,
         tags: storyData.selectedTags,
         city_id: storyData.metadata.city_id ?? null,
+        location: storyData.metadata.location?.trim() || null,
         imageUrl: imageUrls.length > 0 ? JSON.stringify(imageUrls) : undefined,
         subjectName: storyData.personName,
         subjectPhone: storyData.personPhone,
