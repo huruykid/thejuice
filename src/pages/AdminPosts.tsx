@@ -56,7 +56,7 @@ const AdminPosts = () => {
   }, [filter]);
 
   useEffect(() => {
-    if (!authLoading && !roleLoading && user && !isAdmin) navigate("/not-found");
+    if (!authLoading && !roleLoading && user && !isAdmin) navigate("/app");
   }, [authLoading, roleLoading, isAdmin, user, navigate]);
 
   const { data: posts, isLoading } = useQuery({

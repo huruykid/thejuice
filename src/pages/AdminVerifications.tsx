@@ -54,7 +54,7 @@ const AdminVerifications = () => {
   useEffect(() => {
     if (!authLoading && !roleLoading && user) {
       if (!isAdmin) {
-        navigate('/not-found');
+        navigate('/app');
         return;
       }
     }

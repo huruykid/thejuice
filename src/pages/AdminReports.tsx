@@ -78,7 +78,7 @@ const AdminReports = () => {
   }
 
   if (!isAdmin) {
-    navigate("/not-found", { replace: true });
+    navigate("/app", { replace: true });
     return null;
   }
 
