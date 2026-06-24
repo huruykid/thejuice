@@ -74,7 +74,7 @@ export const useInfiniteStories = (
 ) => {
   const { data: blockedIds = [] } = useBlockedUserIds();
   return useInfiniteQuery({
-    queryKey: ['stories', 'infinite', pageSize, mode, { blocked: blockedIds }],
+    queryKey: ['stories', 'infinite', pageSize, { blocked: blockedIds }],
     enabled,
     initialPageParam: 0,
     queryFn: async ({ pageParam = 0 }): Promise<Story[]> => {
@@ -93,7 +93,6 @@ export const useInfiniteStories = (
           )
         `)
         .eq('status', 'approved')
-        .eq('is_seed', mode === 'seed')
         .not('image_url', 'is', null)
         .order('created_at', { ascending: false })
         .range(from, to);
