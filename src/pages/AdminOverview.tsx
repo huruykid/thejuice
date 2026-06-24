@@ -6,7 +6,37 @@ import { useAuth } from "@/hooks/useAuth";
 import { useUserRole } from "@/hooks/useUserRole";
 import { useAdminPendingCounts } from "@/hooks/useAdminPendingCounts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ShieldCheck, FileText, Flag, ArrowRight, Users, CheckCircle2 } from "lucide-react";
+import { ShieldCheck, FileText, Flag, ArrowRight, Users, CheckCircle2, BarChart2 } from "lucide-react";
+
+const REFERRAL_LABELS: Record<string, string> = {
+  instagram_tiktok: "Instagram / TikTok",
+  reddit:           "Reddit",
+  google:           "Google",
+  friend:           "A friend",
+  twitter_x:        "Twitter / X",
+  other:            "Other",
+};
+
+const useReferralBreakdown = (enabled: boolean) =>
+  useQuery({
+    queryKey: ["admin-referral-breakdown"],
+    enabled,
+    staleTime: 5 * 60_000,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("referral_source")
+        .not("referral_source", "is", null);
+      if (error) throw error;
+      const counts: Record<string, number> = {};
+      for (const row of data ?? []) {
+        const key = row.referral_source ?? "other";
+        counts[key] = (counts[key] ?? 0) + 1;
+      }
+      const total = Object.values(counts).reduce((s, n) => s + n, 0);
+      return { counts, total };
+    },
+  });
 
 const sevenDaysAgo = () => new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
 
@@ -59,6 +89,7 @@ const AdminOverview = () => {
 
   const { data: counts } = useAdminPendingCounts(!!user && isAdmin);
   const { data: weekly } = useWeeklyActivity(!!user && isAdmin);
+  const { data: referral } = useReferralBreakdown(!!user && isAdmin);
 
   if (authLoading || roleLoading) {
     return (
@@ -146,6 +177,44 @@ const AdminOverview = () => {
                 </li>
               ))}
             </ul>
+          </CardContent>
+        </Card>
+
+        {/* Where are signups coming from? */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base flex items-center gap-2">
+              <BarChart2 className="h-4 w-4" />
+              Where users are finding us
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {!referral || referral.total === 0 ? (
+              <p className="text-sm text-muted-foreground">No responses yet — data appears once users answer the onboarding question.</p>
+            ) : (
+              <ul className="space-y-2">
+                {Object.entries(referral.counts)
+                  .sort(([, a], [, b]) => b - a)
+                  .map(([key, count]) => {
+                    const pct = Math.round((count / referral.total) * 100);
+                    return (
+                      <li key={key} className="space-y-1">
+                        <div className="flex justify-between text-sm">
+                          <span>{REFERRAL_LABELS[key] ?? key}</span>
+                          <span className="text-muted-foreground">{count} ({pct}%)</span>
+                        </div>
+                        <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-primary rounded-full transition-all"
+                            style={{ width: `${pct}%` }}
+                          />
+                        </div>
+                      </li>
+                    );
+                  })}
+                <li className="text-xs text-muted-foreground pt-1">{referral.total} total responses</li>
+              </ul>
+            )}
           </CardContent>
         </Card>
 

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ShieldCheck, Sparkles, Lock, Clock, CheckCircle2, XCircle } from "lucide-react";
 import { Card } from "@/components/ui/card";
@@ -6,6 +7,64 @@ import { Badge } from "@/components/ui/badge";
 import Navigation from "@/components/Navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { useMySubmissions } from "@/hooks/useStories";
+import { supabase } from "@/integrations/supabase/client";
+
+const REFERRAL_OPTIONS = [
+  { id: "instagram_tiktok", label: "Instagram / TikTok" },
+  { id: "reddit",           label: "Reddit" },
+  { id: "google",           label: "Google" },
+  { id: "friend",           label: "A friend" },
+  { id: "twitter_x",        label: "Twitter / X" },
+  { id: "other",            label: "Other" },
+] as const;
+
+/** One-time "how did you hear about us?" chip selector — hidden once answered or skipped. */
+const ReferralPrompt = ({ userId }: { userId: string }) => {
+  const storageKey = `juice_referral_asked_${userId}`;
+  const [dismissed, setDismissed] = useState(() => !!localStorage.getItem(storageKey));
+  const [saving, setSaving] = useState(false);
+
+  const dismiss = () => {
+    localStorage.setItem(storageKey, "1");
+    setDismissed(true);
+  };
+
+  const handleSelect = async (id: string) => {
+    setSaving(true);
+    try {
+      await supabase.from("profiles").update({ referral_source: id }).eq("user_id", userId);
+    } finally {
+      setSaving(false);
+      dismiss();
+    }
+  };
+
+  if (dismissed) return null;
+
+  return (
+    <Card className="p-4 bg-card border-border">
+      <p className="text-sm font-semibold text-foreground mb-3">How did you hear about Juice?</p>
+      <div className="flex flex-wrap gap-2 mb-3">
+        {REFERRAL_OPTIONS.map(({ id, label }) => (
+          <button
+            key={id}
+            disabled={saving}
+            onClick={() => handleSelect(id)}
+            className="px-3 py-1.5 rounded-full border border-border text-sm text-foreground hover:bg-primary/10 hover:border-primary transition-colors disabled:opacity-50"
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+      <button
+        onClick={dismiss}
+        className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+      >
+        Skip
+      </button>
+    </Card>
+  );
+};
 
 interface UnverifiedHomeProps {
   onCreateStory: () => void;
@@ -44,6 +103,9 @@ const UnverifiedHome = ({ onCreateStory, onStartVerification }: UnverifiedHomePr
       </header>
 
       <div className="max-w-xl mx-auto px-4 py-4 space-y-4">
+        {/* "How did you hear about us?" — shown once, stored in profiles */}
+        {user && <ReferralPrompt userId={user.id} />}
+
         {/* Hero CTA */}
         <Card className="p-5 bg-card border-border">
           <div className="flex items-start gap-3 mb-3">

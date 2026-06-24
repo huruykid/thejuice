@@ -12,9 +12,18 @@ import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { CheckCircle, XCircle, Clock, Search, Filter, Mail, Shield, Trash2 } from 'lucide-react';
+import { CheckCircle, XCircle, Clock, Search, Filter, Mail, Shield, Trash2, AlertTriangle } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
+
+/** Returns a human-readable wait time and urgency level for triage. */
+const getWaitInfo = (createdAt: string): { label: string; urgent: boolean; critical: boolean } => {
+  const hours = (Date.now() - new Date(createdAt).getTime()) / 36e5;
+  if (hours < 1) return { label: `${Math.round(hours * 60)}m`, urgent: false, critical: false };
+  if (hours < 24) return { label: `${Math.round(hours)}h`, urgent: false, critical: false };
+  if (hours < 48) return { label: `${Math.round(hours / 24)}d`, urgent: true, critical: false };
+  return { label: `${Math.round(hours / 24)}d`, urgent: true, critical: true };
+};
 
 interface VerificationWithProfile {
   id: string;
@@ -132,7 +141,7 @@ const AdminVerifications = () => {
     },
   });
 
-  // Update verification status
+  // Update verification status (used for rejections only — approvals go through approveUser)
   const updateVerificationMutation = useMutation({
     mutationFn: async ({ id, status, notes }: { id: string; status: 'approved' | 'rejected'; notes?: string }) => {
       const { error } = await supabase
@@ -145,12 +154,13 @@ const AdminVerifications = () => {
         .eq('id', id);
 
       if (error) throw error;
+      return status;
     },
-    onSuccess: () => {
+    onSuccess: (status) => {
       queryClient.invalidateQueries({ queryKey: ['admin-verifications'] });
       setSelectedVerification(null);
       setNotes('');
-      toast.success('Verification rejected');
+      toast.success(status === 'approved' ? 'Verification approved' : 'Verification rejected');
     },
     onError: (error) => {
       console.error('Error updating verification:', error);
@@ -252,10 +262,16 @@ const AdminVerifications = () => {
     }
   };
 
-  const filteredVerifications = verifications?.filter(verification =>
+  const filteredVerifications = (verifications?.filter(verification =>
     verification.profile?.anonymous_username?.toLowerCase().includes(search.toLowerCase()) ||
     verification.profile?.city?.toLowerCase().includes(search.toLowerCase())
-  ) || [];
+  ) || []).sort((a, b) => {
+    // Pending: oldest first so longest-waiting get reviewed first
+    if (a.verification_status === 'pending' && b.verification_status === 'pending') {
+      return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+    }
+    return 0;
+  });
 
   const selectablePending = filteredVerifications.filter(
     (v) => v.verification_status === 'pending'
@@ -457,7 +473,20 @@ const AdminVerifications = () => {
                       </CardDescription>
                     </div>
                   </div>
-                  {getStatusBadge(verification.verification_status)}
+                  <div className="flex flex-col items-end gap-1">
+                    {getStatusBadge(verification.verification_status)}
+                    {verification.verification_status === 'pending' && (() => {
+                      const { label, urgent, critical } = getWaitInfo(verification.created_at);
+                      return (
+                        <span className={`inline-flex items-center gap-1 text-xs font-medium px-1.5 py-0.5 rounded ${
+                          critical ? 'text-red-700 bg-red-50' : urgent ? 'text-amber-700 bg-amber-50' : 'text-muted-foreground'
+                        }`}>
+                          {critical && <AlertTriangle className="w-3 h-3" />}
+                          {label}
+                        </span>
+                      );
+                    })()}
+                  </div>
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
