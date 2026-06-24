@@ -17,10 +17,10 @@ import type { Report } from "@/hooks/useReports";
 type StatusFilter = Report["status"] | "all";
 
 const STATUS_STYLES: Record<Report["status"], string> = {
-  pending: "bg-amber-100 text-amber-800",
-  reviewing: "bg-blue-100 text-blue-800",
-  action_taken: "bg-emerald-100 text-emerald-800",
-  dismissed: "bg-gray-100 text-gray-700",
+  pending: "bg-muted text-foreground",
+  reviewing: "bg-primary/10 text-primary",
+  action_taken: "bg-success/15 text-success",
+  dismissed: "bg-muted text-muted-foreground",
 };
 
 const AdminReports = () => {
