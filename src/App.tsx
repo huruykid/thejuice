@@ -221,14 +221,14 @@ const App = () => {
           <Route path="/male-dating-community" element={<PublicLayout><MaleDatingCommunity /></PublicLayout>} />
           <Route path="/competitor-analysis" element={<PublicLayout><CompetitorAnalysis /></PublicLayout>} />
           <Route path="/viral-marketing-hub" element={
-            <ProtectedRoute>
+            <AdminRoute>
               <ViralMarketingHub />
-            </ProtectedRoute>
+            </AdminRoute>
           } />
           <Route path="/automated-campaign-dashboard" element={
-            <ProtectedRoute>
+            <AdminRoute>
               <AutomatedCampaignDashboard />
-            </ProtectedRoute>
+            </AdminRoute>
           } />
           {/* Blog Routes */}
           <Route path="/blog" element={<PublicLayout><Blog /></PublicLayout>} />
