@@ -17,7 +17,6 @@ import {
 } from "@/components/ui/select";
 import { CheckCircle, XCircle, Clock, UserX, User, Trash2, Mail } from "lucide-react";
 import { toast } from "sonner";
-import { AdminNav } from "@/components/AdminNav";
 
 const REJECTION_REASONS = [
   { id: "identifying", label: "Names a real person identifiably" },
@@ -231,20 +230,20 @@ const AdminPosts = () => {
   const badge = (s: string) => {
     if (s === "pending")
       return (
-        <Badge variant="outline" className="text-amber-600 border-amber-600">
+        <Badge variant="outline" className="text-muted-foreground">
           <Clock className="w-3 h-3 mr-1" />
           Pending
         </Badge>
       );
     if (s === "approved")
       return (
-        <Badge variant="outline" className="text-green-600 border-green-600">
+        <Badge variant="outline" className="text-success border-success">
           <CheckCircle className="w-3 h-3 mr-1" />
           Approved
         </Badge>
       );
     return (
-      <Badge variant="outline" className="text-red-600 border-red-600">
+      <Badge variant="outline" className="text-destructive border-destructive">
         <XCircle className="w-3 h-3 mr-1" />
         Rejected
       </Badge>
@@ -252,9 +251,9 @@ const AdminPosts = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-soft p-4">
-      <div className="max-w-4xl mx-auto space-y-6">
-        <AdminNav />
+    <div className="bg-gradient-soft p-4">
+      <div className="max-w-5xl mx-auto space-y-6">
+        
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold">Post Moderation</h1>

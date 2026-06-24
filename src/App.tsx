@@ -20,6 +20,7 @@ import AdminVerifications from "./pages/AdminVerifications";
 import AdminPosts from "./pages/AdminPosts";
 import AdminReports from "./pages/AdminReports";
 import AdminOverview from "./pages/AdminOverview";
+import AdminLayout from "./components/admin/AdminLayout";
 import SharePublic from "./pages/SharePublic";
 import PrivacySettings from "./pages/PrivacySettings";
 import AuthorStories from "./pages/AuthorStories";
@@ -154,22 +155,22 @@ const App = () => {
           } />
           <Route path="/admin" element={
             <ProtectedRoute>
-              <AdminOverview />
+              <AdminLayout><AdminOverview /></AdminLayout>
             </ProtectedRoute>
           } />
           <Route path="/admin/verifications" element={
             <ProtectedRoute>
-              <AdminVerifications />
+              <AdminLayout><AdminVerifications /></AdminLayout>
             </ProtectedRoute>
           } />
           <Route path="/admin/posts" element={
             <ProtectedRoute>
-              <AdminPosts />
+              <AdminLayout><AdminPosts /></AdminLayout>
             </ProtectedRoute>
           } />
           <Route path="/admin/reports" element={
             <ProtectedRoute>
-              <AdminReports />
+              <AdminLayout><AdminReports /></AdminLayout>
             </ProtectedRoute>
           } />
           <Route path="/share" element={<SharePublic />} />

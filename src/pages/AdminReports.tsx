@@ -13,15 +13,14 @@ import {
 import { ArrowLeft, Flag, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import type { Report } from "@/hooks/useReports";
-import { AdminNav } from "@/components/AdminNav";
 
 type StatusFilter = Report["status"] | "all";
 
 const STATUS_STYLES: Record<Report["status"], string> = {
-  pending: "bg-amber-100 text-amber-800",
-  reviewing: "bg-blue-100 text-blue-800",
-  action_taken: "bg-emerald-100 text-emerald-800",
-  dismissed: "bg-gray-100 text-gray-700",
+  pending: "bg-muted text-foreground",
+  reviewing: "bg-primary/10 text-primary",
+  action_taken: "bg-success/15 text-success",
+  dismissed: "bg-muted text-muted-foreground",
 };
 
 const AdminReports = () => {
@@ -84,9 +83,9 @@ const AdminReports = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-20">
-      <div className="container mx-auto px-4 py-6 max-w-3xl">
-        <AdminNav />
+    <div className="bg-gradient-soft p-4 pb-20">
+      <div className="max-w-5xl mx-auto space-y-6">
+        
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
             <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>

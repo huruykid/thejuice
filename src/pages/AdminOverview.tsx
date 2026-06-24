@@ -5,7 +5,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserRole } from "@/hooks/useUserRole";
 import { useAdminPendingCounts } from "@/hooks/useAdminPendingCounts";
-import { AdminNav } from "@/components/AdminNav";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ShieldCheck, FileText, Flag, ArrowRight, Users, CheckCircle2 } from "lucide-react";
 
@@ -76,21 +75,21 @@ const AdminOverview = () => {
       label: "Pending verifications",
       icon: ShieldCheck,
       count: counts?.verifications ?? 0,
-      color: "text-blue-600",
+      color: "text-primary",
     },
     {
       to: "/admin/posts",
       label: "Pending posts",
       icon: FileText,
       count: counts?.posts ?? 0,
-      color: "text-purple-600",
+      color: "text-foreground",
     },
     {
       to: "/admin/reports",
       label: "Pending reports",
       icon: Flag,
       count: counts?.reports ?? 0,
-      color: "text-amber-600",
+      color: "text-destructive",
     },
   ];
 
@@ -102,9 +101,9 @@ const AdminOverview = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-soft p-4">
+    <div className="bg-gradient-soft p-4">
       <div className="max-w-5xl mx-auto space-y-6">
-        <AdminNav />
+        
         <div>
           <h1 className="text-2xl font-bold">Admin overview</h1>
           <p className="text-sm text-muted-foreground">Quick read on what needs attention.</p>
