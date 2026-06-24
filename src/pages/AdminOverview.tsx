@@ -94,7 +94,7 @@ const useActivityMetrics = (enabled: boolean, days: RangeDays) =>
           .from("dispute_requests")
           .select("id", { count: "exact", head: true })
           .in("status", ["approved", "rejected"])
-          .gte("updated_at", since),
+          .gte("reviewed_at", since),
       ]);
       return {
         signups:      signups.count   ?? 0,

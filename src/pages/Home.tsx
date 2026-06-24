@@ -14,6 +14,7 @@ import { useNearbyStories } from "@/hooks/useNearbyStories";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import { useFeedGate } from "@/hooks/useFeedGate";
 import UnlockBanner from "@/components/UnlockBanner";
+import ReferralPrompt from "@/components/ReferralPrompt";
 import { useAuth } from "@/hooks/useAuth";
 
 interface HomeProps {
@@ -121,6 +122,9 @@ const Home = ({ onCreateStory }: HomeProps) => {
 
       {/* Feed */}
       <div className="max-w-xl mx-auto sm:px-0 py-0 sm:py-2">
+        {/* Catches users who verified before answering the referral question */}
+        {user && <ReferralPrompt userId={user.id} />}
+
         {feedMode === "seed" && (
           <UnlockBanner onCreateStory={onCreateStory} />
         )}
@@ -155,7 +159,7 @@ const Home = ({ onCreateStory }: HomeProps) => {
               </div>
             )}
           </>
-        ) : feedMode === "seed" ? null : (
+        ) : (
           <div className="px-6 py-20 text-center">
             <h3 className="text-lg font-semibold mb-1">No stories yet</h3>
             <p className="text-sm text-muted-foreground mb-6">
