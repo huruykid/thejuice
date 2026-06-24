@@ -117,8 +117,10 @@ export const useToggleReaction = () => {
         queryClient.setQueryData(context.key, context.previous);
       }
     },
-    onSettled: (_data, _err, { storyId }) => {
+    onSettled: (_data, _err, { storyId, reactionType = 'like' }) => {
       queryClient.invalidateQueries({ queryKey: ['reaction-counts', storyId] });
+      // Invalidate the per-user reaction state so the flag button reflects reality.
+      queryClient.invalidateQueries({ queryKey: ['user-reactions', storyId] });
       queryClient.invalidateQueries({ queryKey: ['stories'] });
       queryClient.invalidateQueries({ queryKey: ['search-stories'] });
       queryClient.invalidateQueries({ queryKey: ['trending-stories'] });

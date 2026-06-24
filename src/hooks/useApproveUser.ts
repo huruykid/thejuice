@@ -77,9 +77,10 @@ export const useApproveUser = () => {
       return { success: true };
     },
     onSuccess: () => {
-      // Invalidate verification queries to refresh the UI
       queryClient.invalidateQueries({ queryKey: ['user-verifications'] });
       queryClient.invalidateQueries({ queryKey: ['admin-verifications'] });
+      // Refresh the sidebar pending-count badge immediately.
+      queryClient.invalidateQueries({ queryKey: ['admin-pending-counts'] });
     },
     onError: (error: Error) => {
       toast({

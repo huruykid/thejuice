@@ -1,6 +1,31 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/useAuth';
+
+/**
+ * Returns whether the current user has already reported a given (type, id) pair.
+ * Used to disable the report button and prevent duplicates.
+ */
+export const useHasReported = (targetType: string, targetId: string) => {
+  const { user } = useAuth();
+  return useQuery({
+    queryKey: ['has-reported', targetType, targetId, user?.id],
+    enabled: !!user && !!targetId,
+    staleTime: 5 * 60_000,
+    queryFn: async (): Promise<boolean> => {
+      const { data, error } = await supabase
+        .from('reports')
+        .select('id')
+        .eq('reporter_id', user!.id)
+        .eq('target_type', targetType)
+        .eq('target_id', targetId)
+        .maybeSingle();
+      if (error) throw error;
+      return !!data;
+    },
+  });
+};
 
 export interface Report {
   id: string;
@@ -51,6 +76,20 @@ export const useCreateReport = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User must be authenticated');
 
+      // Prevent duplicate reports server-side via unique constraint, but also
+      // guard client-side to give a nicer UX before the round-trip.
+      const { data: existing } = await supabase
+        .from('reports')
+        .select('id')
+        .eq('reporter_id', user.id)
+        .eq('target_type', targetType)
+        .eq('target_id', targetId)
+        .maybeSingle();
+
+      if (existing) {
+        throw new Error('already_reported');
+      }
+
       const { error } = await supabase
         .from('reports')
         .insert({
@@ -62,15 +101,25 @@ export const useCreateReport = () => {
         });
 
       if (error) throw error;
+      return { targetType, targetId, userId: user.id };
     },
-    onSuccess: () => {
+    onSuccess: (_data, vars) => {
       queryClient.invalidateQueries({ queryKey: ['reports'] });
+      queryClient.invalidateQueries({ queryKey: ['has-reported', vars.targetType, vars.targetId] });
       toast({
         title: "Report submitted",
         description: "Thank you for helping keep our community safe. We'll review this within 24 hours.",
       });
     },
-    onError: (error) => {
+    onError: (error: any) => {
+      if (error?.message === 'already_reported') {
+        toast({
+          title: "Already reported",
+          description: "You've already reported this content.",
+          variant: "destructive"
+        });
+        return;
+      }
       console.error('Report creation error:', error);
       toast({
         title: "Error",

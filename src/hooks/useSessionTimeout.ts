@@ -54,36 +54,46 @@ export const useSessionTimeout = (timeoutMinutes: number = 30) => {
     }
   };
 
+  // Clear timers unconditionally — called on manual sign-out and on unmount.
+  const clearTimers = () => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    if (warningRef.current) clearTimeout(warningRef.current);
+  };
+
   useEffect(() => {
     if (!user) return;
 
     const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
-    
+
     const resetActivity = () => {
       const now = Date.now();
-      // Only reset if it's been more than 1 minute since last activity (prevent excessive resets)
+      // Throttle: only reset if more than 1 minute since last activity.
       if (now - lastActivityRef.current > 60000) {
         resetTimeout();
       }
     };
 
-    // Add event listeners
-    events.forEach(event => {
-      document.addEventListener(event, resetActivity, true);
-    });
+    events.forEach(event => document.addEventListener(event, resetActivity, true));
 
     // Initial timeout setup
     resetTimeout();
 
-    // Cleanup
     return () => {
-      events.forEach(event => {
-        document.removeEventListener(event, resetActivity, true);
-      });
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
-      if (warningRef.current) clearTimeout(warningRef.current);
+      events.forEach(event => document.removeEventListener(event, resetActivity, true));
+      clearTimers();
     };
   }, [user, timeoutMinutes]);
+
+  // Subscribe to Supabase auth events so timers are cleared immediately on
+  // manual sign-out — the component may not unmount right away in an SPA.
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'SIGNED_OUT') {
+        clearTimers();
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, []);
 
   return {
     extendSession,

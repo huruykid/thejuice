@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -8,7 +9,6 @@ import { useComments, useCreateComment, useDeleteComment } from "@/hooks/useComm
 import { formatDistanceToNow } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { useEffect } from "react";
 
 interface CommentsModalProps {
   isOpen: boolean;
@@ -20,7 +20,8 @@ interface CommentsModalProps {
 const CommentsModal = ({ isOpen, onClose, storyId, storyPreview }: CommentsModalProps) => {
   const [newComment, setNewComment] = useState("");
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-  
+  const navigate = useNavigate();
+
   const { data: comments = [], isLoading } = useComments(storyId);
   const createComment = useCreateComment();
   const deleteComment = useDeleteComment();
@@ -37,40 +38,29 @@ const CommentsModal = ({ isOpen, onClose, storyId, storyPreview }: CommentsModal
   const handleSubmitComment = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newComment.trim()) return;
-
     try {
-      await createComment.mutateAsync({
-        storyId,
-        content: newComment.trim(),
-      });
+      await createComment.mutateAsync({ storyId, content: newComment.trim() });
       setNewComment("");
-      toast({
-        title: "Comment added",
-        description: "Your comment has been posted successfully.",
-      });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to post comment. Please try again.",
-        variant: "destructive",
-      });
+      toast({ title: "Comment added", description: "Your comment has been posted." });
+    } catch {
+      toast({ title: "Error", description: "Failed to post comment.", variant: "destructive" });
     }
   };
 
   const handleDeleteComment = async (commentId: string) => {
     try {
       await deleteComment.mutateAsync({ commentId, storyId });
-      toast({
-        title: "Comment deleted",
-        description: "Your comment has been removed.",
-      });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to delete comment. Please try again.",
-        variant: "destructive",
-      });
+      toast({ title: "Comment deleted", description: "Your comment has been removed." });
+    } catch {
+      toast({ title: "Error", description: "Failed to delete comment.", variant: "destructive" });
     }
+  };
+
+  const handleUsernameClick = (profileId: string) => {
+    onClose();
+    // Defer navigation one tick so the Dialog close animation can begin before
+    // the route transition — avoids racing the modal unmount.
+    setTimeout(() => navigate(`/author/${profileId}`), 0);
   };
 
   return (
@@ -85,20 +75,31 @@ const CommentsModal = ({ isOpen, onClose, storyId, storyPreview }: CommentsModal
 
         <ScrollArea className="flex-1 pr-4">
           {isLoading ? (
-            <div className="text-center py-8">Loading comments...</div>
+            <div className="text-center py-8 text-sm text-muted-foreground">Loading…</div>
           ) : comments.length === 0 ? (
             <div className="text-center py-8">
-              <div className="text-4xl mb-2">💬</div>
-              <p className="text-muted-foreground">No comments yet. Be the first to comment!</p>
+              <p className="text-muted-foreground text-sm">No comments yet. Be the first!</p>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-3">
               {comments.map((comment) => (
-                <div key={comment.id} className="bg-muted/30 rounded-lg p-3">
-                  <div className="flex justify-between items-start mb-2">
-                    <span className="text-sm text-muted-foreground">
-                      {formatDistanceToNow(new Date(comment.created_at), { addSuffix: true })}
-                    </span>
+                <div key={comment.id} className="py-2 border-b border-border last:border-0">
+                  <div className="flex items-center justify-between mb-1">
+                    <div className="flex items-center gap-2">
+                      {comment.profiles ? (
+                        <button
+                          onClick={() => handleUsernameClick(comment.profiles!.id)}
+                          className="text-sm font-semibold text-foreground hover:text-primary transition-colors"
+                        >
+                          @{comment.profiles.anonymous_username}
+                        </button>
+                      ) : (
+                        <span className="text-sm font-semibold text-muted-foreground">@anonymous</span>
+                      )}
+                      <span className="text-xs text-muted-foreground">
+                        {formatDistanceToNow(new Date(comment.created_at), { addSuffix: true })}
+                      </span>
+                    </div>
                     {currentUserId && comment.user_id === currentUserId && (
                       <Button
                         variant="ghost"
@@ -111,7 +112,7 @@ const CommentsModal = ({ isOpen, onClose, storyId, storyPreview }: CommentsModal
                       </Button>
                     )}
                   </div>
-                  <p className="text-sm">{comment.content}</p>
+                  <p className="text-sm text-foreground">{comment.content}</p>
                 </div>
               ))}
             </div>

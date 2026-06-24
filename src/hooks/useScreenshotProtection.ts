@@ -72,27 +72,30 @@ export const useScreenshotProtection = () => {
       e.preventDefault();
     };
 
-    // Add event listeners
+    // handleVisibilityChange and handleAppStateChange both target 'visibilitychange'.
+    // We register only ONE handler (handleVisibilityChange already covers both cases)
+    // and ensure it is removed in cleanup. Previously handleAppStateChange was added
+    // but never removed, leaking after unmount.
     document.addEventListener('keydown', handleKeyDown);
     document.addEventListener('visibilitychange', handleVisibilityChange);
-    document.addEventListener('visibilitychange', handleAppStateChange);
     document.addEventListener('contextmenu', handleContextMenu);
     document.addEventListener('dragstart', handleDragStart);
 
     // Mobile-specific touch events
-    document.addEventListener('touchstart', (e) => {
+    const handleMultiTouch = (e: TouchEvent) => {
       if (e.touches.length > 1) {
-        // Multi-touch might indicate screenshot gesture attempt
         e.preventDefault();
       }
-    });
+    };
+    document.addEventListener('touchstart', handleMultiTouch, { passive: false });
 
-    // Cleanup
+    // Cleanup — remove every listener that was added above.
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       document.removeEventListener('contextmenu', handleContextMenu);
       document.removeEventListener('dragstart', handleDragStart);
+      document.removeEventListener('touchstart', handleMultiTouch);
       clearTimeout(blurTimeout);
       document.body.classList.remove('screenshot-blur');
     };

@@ -23,6 +23,7 @@ import AdminLayout from "./components/admin/AdminLayout";
 import SharePublic from "./pages/SharePublic";
 import PrivacySettings from "./pages/PrivacySettings";
 import AuthorStories from "./pages/AuthorStories";
+import StoryDetail from "./pages/StoryDetail";
 import CreateStory from "./components/CreateStory";
 import DatingStoriesForMen from "./pages/DatingStoriesForMen";
 import AnonymousDatingReviews from "./pages/AnonymousDatingReviews";
@@ -207,6 +208,11 @@ const App = () => {
                 <AuthorStories />
               </AppShell>
             </ProtectedRoute>
+          } />
+          <Route path="/story/:storyId" element={
+            <VerifiedRoute>
+              <StoryDetail />
+            </VerifiedRoute>
           } />
           {/* SEO Landing Pages */}
           <Route path="/dating-stories-for-men" element={<PublicLayout><DatingStoriesForMen /></PublicLayout>} />

@@ -3,6 +3,19 @@ import { supabase } from '@/integrations/supabase/client';
 import { useSecurityEventLogger } from './useSecurityAudit';
 import { useToast } from '@/hooks/use-toast';
 
+/** One-way SHA-256 hash of a string — used to anonymise PII before logging. */
+async function hashValue(value: string): Promise<string> {
+  try {
+    const encoded = new TextEncoder().encode(value.toLowerCase().trim());
+    const hashBuffer = await crypto.subtle.digest('SHA-256', encoded);
+    return Array.from(new Uint8Array(hashBuffer))
+      .map((b) => b.toString(16).padStart(2, '0'))
+      .join('');
+  } catch {
+    return '[hash-unavailable]';
+  }
+}
+
 interface SecurityPattern {
   userId: string;
   action: string;
@@ -15,13 +28,14 @@ export const useSecurityMonitoring = (userId?: string) => {
   const { logSuspiciousActivity } = useSecurityEventLogger();
   const { toast } = useToast();
 
-  // Track failed login attempts
-  const trackFailedLogin = (email: string, ipAddress?: string) => {
+  // Track failed login attempts — email is hashed before logging to protect PII.
+  const trackFailedLogin = async (email: string, ipAddress?: string) => {
+    const emailHash = await hashValue(email);
     logSuspiciousActivity('failed_login_attempt', {
-      email,
+      email_hash: emailHash,
       ip_address: ipAddress,
       timestamp: new Date().toISOString(),
-      user_agent: navigator.userAgent
+      // Omit user_agent — not needed and reduces fingerprinting surface.
     });
   };
 
@@ -79,10 +93,13 @@ export const useSecurityMonitoring = (userId?: string) => {
       if (timeDiff < 2 * 60 * 1000) { // 2 minutes
         data.attempts += 1;
         if (data.attempts >= 5) {
-          logSuspiciousActivity('rapid_login_attempts', {
-            email,
-            attempt_count: data.attempts,
-            time_window_minutes: 2
+          // Hash email to avoid storing PII in the security log.
+          hashValue(email).then((emailHash) => {
+            logSuspiciousActivity('rapid_login_attempts', {
+              email_hash: emailHash,
+              attempt_count: data.attempts,
+              time_window_minutes: 2
+            });
           });
         }
       } else {
@@ -187,8 +204,8 @@ export const useSecurityMonitoring = (userId?: string) => {
     }
     
     if (violations.length > 0) {
+      // Omit content_preview — it may contain PII (real names, phone numbers, etc.)
       logSuspiciousActivity('content_moderation_violation', {
-        content_preview: content.substring(0, 100),
         violations,
         content_length: content.length
       });

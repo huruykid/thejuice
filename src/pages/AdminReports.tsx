@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -98,6 +98,7 @@ const AdminReports = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-reports"] });
+      queryClient.invalidateQueries({ queryKey: ["admin-pending-counts"] });
       toast.success("Report updated");
     },
     onError: () => toast.error("Failed to update report"),
@@ -108,6 +109,14 @@ const AdminReports = () => {
     [reports],
   );
 
+  // Hooks must be called before any early return (Rules of Hooks).
+  // Redirect non-admins once loading completes.
+  useEffect(() => {
+    if (!authLoading && !roleLoading && !isAdmin) {
+      navigate("/app", { replace: true });
+    }
+  }, [authLoading, roleLoading, isAdmin, navigate]);
+
   if (authLoading || roleLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -116,10 +125,7 @@ const AdminReports = () => {
     );
   }
 
-  if (!isAdmin) {
-    navigate("/app", { replace: true });
-    return null;
-  }
+  if (!isAdmin) return null;
 
   return (
     <div className="bg-gradient-soft p-4 pb-20">

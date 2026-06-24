@@ -69,11 +69,13 @@ export type FeedMode = "community" | "seed";
 
 export const useInfiniteStories = (
   pageSize: number = STORIES_PAGE_SIZE,
-  mode: FeedMode = "community"
+  mode: FeedMode = "community",
+  enabled: boolean = true
 ) => {
   const { data: blockedIds = [] } = useBlockedUserIds();
   return useInfiniteQuery({
     queryKey: ['stories', 'infinite', pageSize, mode, { blocked: blockedIds }],
+    enabled,
     initialPageParam: 0,
     queryFn: async ({ pageParam = 0 }): Promise<Story[]> => {
       const from = (pageParam as number) * pageSize;

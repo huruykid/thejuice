@@ -7,15 +7,19 @@ export interface Comment {
   story_id: string;
   user_id?: string;
   created_at: string;
+  profiles?: {
+    id: string;
+    anonymous_username: string;
+  } | null;
 }
 
 export const useComments = (storyId: string) => {
   return useQuery({
     queryKey: ['comments', storyId],
     queryFn: async (): Promise<Comment[]> => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('comments')
-        .select('*')
+        .select('*, profiles:user_id(id, anonymous_username)')
         .eq('story_id', storyId)
         .order('created_at', { ascending: false });
 

@@ -75,9 +75,11 @@ export const useProfileSearch = () => {
         const normalizedPhone = normalizePhoneNumber(trimmedQuery);
         
         if (normalizedPhone) {
+          // Select only the columns the UI needs — avoids sending PII like
+          // date_of_birth and relationship_status to the client unnecessarily.
           const { data: phoneResults, error: phoneError } = await supabase
             .from('profiles')
-            .select('*')
+            .select('id, user_id, anonymous_username, city')
             .eq('phone_number', normalizedPhone);
 
           if (phoneError) {
@@ -99,7 +101,7 @@ export const useProfileSearch = () => {
 
         const { data: usernameResults, error: usernameError } = await supabase
           .from('profiles')
-          .select('*')
+          .select('id, user_id, anonymous_username, city')
           .ilike('anonymous_username', `%${usernameQuery}%`);
 
         if (usernameError) {

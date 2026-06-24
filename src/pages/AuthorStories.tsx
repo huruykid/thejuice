@@ -12,11 +12,7 @@ const AuthorStories = () => {
   const { user } = useAuth();
   const currentUserId = user?.id ?? null;
 
-  const { data: stories, isLoading: storiesLoading } = useStoriesByProfile(profileId || '');
-
-  if (!profileId) {
-    return <div>Profile not found</div>;
-  }
+  const { data: stories, isLoading: storiesLoading, isError } = useStoriesByProfile(profileId || '');
 
   const authorName = stories?.[0]?.profiles?.anonymous_username || 'Unknown Author';
 
@@ -50,6 +46,18 @@ const AuthorStories = () => {
           <div className="text-center py-12">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-juice-orange mx-auto"></div>
             <p className="text-muted-foreground mt-4">Loading stories...</p>
+          </div>
+        ) : isError || !profileId ? (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground">
+              Couldn't load stories. The profile may not exist.
+            </p>
+            <button
+              onClick={() => navigate(-1)}
+              className="mt-4 text-sm text-primary underline"
+            >
+              Go back
+            </button>
           </div>
         ) : stories && stories.length > 0 ? (
           <div className="space-y-4">

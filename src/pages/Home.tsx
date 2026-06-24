@@ -57,7 +57,8 @@ const Home = ({ onCreateStory }: HomeProps) => {
     fetchNextPage,
     hasNextPage,
     refetch: refetchInfinite,
-  } = useInfiniteStories(undefined, feedMode);
+  // Disable when using the location feed to prevent a redundant background fetch.
+  } = useInfiniteStories(undefined, feedMode, !useLocationFeed);
 
   const infiniteStories = useMemo(
     () => infiniteData?.pages?.flatMap((p) => p) ?? [],

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { User, Session } from '@supabase/supabase-js';
 import { useSecurityMonitoring } from './useSecurityMonitoring';
@@ -9,6 +10,7 @@ export const useAuth = () => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
   const { trackFailedLogin, trackLoginPattern } = useSecurityMonitoring(user?.id);
   const { viewAs } = useViewAs();
   const { isAdmin: realIsAdmin } = useRealIsAdmin(user?.id);
@@ -90,11 +92,12 @@ export const useAuth = () => {
     
     // Track failed login attempts and detect suspicious activity
     if (error) {
-      trackFailedLogin(email);
+      trackFailedLogin(email); // trackFailedLogin hashes the email internally
+      // Omit raw email from RPC — pass only the error message
       await supabase.rpc('detect_suspicious_activity', {
         p_user_id: null,
         p_activity_type: 'failed_login',
-        p_details: { email, error: error.message }
+        p_details: { error: error.message }
       });
     }
     
@@ -103,6 +106,9 @@ export const useAuth = () => {
 
   const signOut = async () => {
     const { error } = await supabase.auth.signOut();
+    // Clear the React Query cache so a subsequent login as a different user
+    // never sees the previous user's data while queries re-fetch.
+    queryClient.clear();
     return { error };
   };
 

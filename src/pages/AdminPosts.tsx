@@ -87,6 +87,7 @@ const AdminPosts = () => {
     onSuccess: () => {
       toast.success("Post approved");
       queryClient.invalidateQueries({ queryKey: ["admin-posts"] });
+      queryClient.invalidateQueries({ queryKey: ["admin-pending-counts"] });
     },
     onError: (e: any) => toast.error(e?.message || "Approval failed"),
   });
@@ -104,6 +105,7 @@ const AdminPosts = () => {
       toast.success(`Approved ${count} post${count === 1 ? "" : "s"}`);
       setSelected(new Set());
       queryClient.invalidateQueries({ queryKey: ["admin-posts"] });
+      queryClient.invalidateQueries({ queryKey: ["admin-pending-counts"] });
     },
     onError: (e: any) => toast.error(e?.message || "Bulk approval failed"),
   });
@@ -123,6 +125,7 @@ const AdminPosts = () => {
     onSuccess: () => {
       toast.success("Post rejected");
       queryClient.invalidateQueries({ queryKey: ["admin-posts"] });
+      queryClient.invalidateQueries({ queryKey: ["admin-pending-counts"] });
     },
     onError: (e: any) => toast.error(e?.message || "Rejection failed"),
   });
@@ -144,6 +147,7 @@ const AdminPosts = () => {
       toast.success(`Rejected ${count} post${count === 1 ? "" : "s"}`);
       setSelected(new Set());
       queryClient.invalidateQueries({ queryKey: ["admin-posts"] });
+      queryClient.invalidateQueries({ queryKey: ["admin-pending-counts"] });
     },
     onError: (e: any) => toast.error(e?.message || "Bulk rejection failed"),
   });
@@ -156,6 +160,7 @@ const AdminPosts = () => {
     onSuccess: () => {
       toast.success("Post deleted");
       queryClient.invalidateQueries({ queryKey: ["admin-posts"] });
+      queryClient.invalidateQueries({ queryKey: ["admin-pending-counts"] });
     },
     onError: (e: any) => toast.error(e?.message || "Delete failed"),
   });

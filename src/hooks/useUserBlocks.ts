@@ -48,6 +48,10 @@ export const useBlockUser = () => {
       queryClient.invalidateQueries({ queryKey: ['user-blocks'] });
       queryClient.invalidateQueries({ queryKey: ['blocked-user-ids'] });
       queryClient.invalidateQueries({ queryKey: ['stories'] });
+      // Also clear search and trending so blocked user's content disappears immediately.
+      queryClient.invalidateQueries({ queryKey: ['search-stories'] });
+      queryClient.invalidateQueries({ queryKey: ['trending-stories'] });
+      queryClient.invalidateQueries({ queryKey: ['nearby-stories'] });
       toast({
         title: "User blocked",
         description: "You will no longer see content from this user.",
@@ -85,6 +89,9 @@ export const useUnblockUser = () => {
       queryClient.invalidateQueries({ queryKey: ['user-blocks'] });
       queryClient.invalidateQueries({ queryKey: ['blocked-user-ids'] });
       queryClient.invalidateQueries({ queryKey: ['stories'] });
+      queryClient.invalidateQueries({ queryKey: ['search-stories'] });
+      queryClient.invalidateQueries({ queryKey: ['trending-stories'] });
+      queryClient.invalidateQueries({ queryKey: ['nearby-stories'] });
       toast({
         title: "User unblocked",
         description: "You can now see content from this user again.",

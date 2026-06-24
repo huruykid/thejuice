@@ -38,7 +38,7 @@ const Index = () => {
     isPending,
     isRejected,
   } = useVerification(user?.id);
-  const { currentStep, setCurrentStep, markStepCompleted } = useOnboardingState(user?.id);
+  const { currentStep, setCurrentStep, markStepCompleted, isStepCompleted } = useOnboardingState(user?.id);
 
   // Show the success animation exactly once — the first time this user is verified,
   // regardless of whether they were in the app when it happened or came back later.
@@ -124,12 +124,16 @@ const Index = () => {
     if (!hasProfile) {
       return <ProfileCreation onComplete={handleProfileCreated} />;
     }
-    if (currentStep === "guidelines") {
+    // Guard: only advance to guidelines if the selfie step is actually completed.
+    // Without this check, a user who manually edits localStorage to set
+    // currentStep="guidelines" would bypass the selfie (the verification artifact).
+    if (currentStep === "guidelines" && isStepCompleted("selfie")) {
       return <EnhancedWelcomeScreen onComplete={handleGuidelinesComplete} />;
     }
-    if (currentStep === "complete") {
+    if (currentStep === "complete" && isStepCompleted("selfie")) {
       return <VerificationPending onRefresh={refreshVerificationStatus} />;
     }
+    // Default: render selfie capture (handles both initial and tampered state)
     return <RefactoredSelfieCapture onComplete={handleSelfieComplete} userId={user.id} />;
   }
 

@@ -17,27 +17,29 @@ export const useUserStats = () => {
     queryFn: async () => {
       if (!user) throw new Error('User not authenticated');
 
-      // Get user's stories count
+      // Count only approved stories — matches what visitors can actually see.
       const { count: storiesCount, error: storiesError } = await (supabase as any)
         .from('stories')
         .select('*', { count: 'exact', head: true })
-        .eq('user_id', user.id);
+        .eq('user_id', user.id)
+        .eq('status', 'approved');
 
       if (storiesError) throw storiesError;
 
-      // Get total likes on user's stories
-      const { data: likesData, error: likesError } = await (supabase as any)
+      // Use count: exact + head: true so we never pull rows to the client.
+      const { count: likesCount, error: likesError } = await (supabase as any)
         .from('reactions')
-        .select('*, stories!inner(user_id)')
+        .select('*, stories!inner(user_id)', { count: 'exact', head: true })
         .eq('stories.user_id', user.id);
 
       if (likesError) throw likesError;
 
-      // Get comments received on user's stories
+      // Get comments received on user's approved stories only.
       const { count: commentsCount, error: commentsError } = await (supabase as any)
         .from('comments')
-        .select('*, stories!inner(user_id)', { count: 'exact', head: true })
-        .eq('stories.user_id', user.id);
+        .select('*, stories!inner(user_id, status)', { count: 'exact', head: true })
+        .eq('stories.user_id', user.id)
+        .eq('stories.status', 'approved');
 
       if (commentsError) throw commentsError;
 
@@ -49,7 +51,7 @@ export const useUserStats = () => {
 
       const stats: UserStats = {
         storiesPosted: storiesCount || 0,
-        totalLikes: likesData?.length || 0,
+        totalLikes: likesCount || 0,
         commentsReceived: commentsCount || 0,
         memberSince
       };

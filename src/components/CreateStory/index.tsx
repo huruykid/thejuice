@@ -122,9 +122,18 @@ const CreateStory = ({
         setUploading(true);
         for (const image of uploadedImages) {
           const url = await uploadImageToStorage(image);
-          if (url) {
-            imageUrls.push(url);
+          if (url === null) {
+            // One image failed — abort the whole submission so the user knows
+            // exactly what happened rather than silently dropping the photo.
+            setUploading(false);
+            toast({
+              title: "Upload failed",
+              description: "One or more photos could not be uploaded. Please try again.",
+              variant: "destructive",
+            });
+            return;
           }
+          imageUrls.push(url);
         }
         setUploading(false);
       }
@@ -150,6 +159,19 @@ const CreateStory = ({
       };
       
       await createStory.mutateAsync(storyPayload);
+
+      // Reset form state so re-opening the modal starts fresh.
+      setStoryData({
+        content: '',
+        selectedTags: [],
+        metadata: { location: '', city_id: null },
+        personName: '',
+        personPhone: '',
+        ratings: { communication: 0, loyalty: 0, vibe: 0, respect: 0 },
+      });
+      setUploadedImages([]);
+      setImagePreviews([]);
+      setStep(0);
 
       setShowSuccess(true);
       if (isUnverified) {

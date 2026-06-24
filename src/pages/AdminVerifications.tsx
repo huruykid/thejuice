@@ -91,51 +91,51 @@ const AdminVerifications = () => {
       const { data: verificationsData, error: verificationError } = await verificationQuery;
       if (verificationError) throw verificationError;
 
-      // Then get profiles for each verification
-      const verificationsWithProfiles: VerificationWithProfile[] = [];
-      
-      for (const verification of verificationsData || []) {
-        const { data: profileData } = await supabase
-          .from('profiles')
-          .select('anonymous_username, date_of_birth, city, relationship_status')
-          .eq('user_id', verification.user_id)
-          .single();
+      const verifications = verificationsData || [];
 
-        // Generate signed URL for the selfie if it exists
-        let signedUrl = undefined;
-        if (verification.selfie_url) {
-          try {
-            // Check if selfie_url is already just a file path or needs extraction
-            let filePath = verification.selfie_url;
-            
-            // If it's a full URL (legacy data), extract the path
-            if (verification.selfie_url.startsWith('http')) {
-              const url = new URL(verification.selfie_url);
-              const pathParts = url.pathname.split('/');
-              // Extract everything after /storage/v1/object/public/verification-selfies/
-              const bucketIndex = pathParts.indexOf('verification-selfies');
-              if (bucketIndex !== -1) {
-                filePath = pathParts.slice(bucketIndex + 1).join('/');
-              }
-            }
-            
-            const { data: signedUrlData } = await supabase.storage
-              .from('verification-selfies')
-              .createSignedUrl(filePath, 3600); // 1 hour expiry
-            
-            signedUrl = signedUrlData?.signedUrl;
-          } catch (error) {
-            console.warn('Failed to generate signed URL for selfie:', error);
-          }
+      // Batch-fetch all profiles in a single query instead of N individual fetches.
+      const userIds = verifications.map((v) => v.user_id);
+      const { data: profilesData } = userIds.length > 0
+        ? await supabase
+            .from('profiles')
+            .select('user_id, anonymous_username, date_of_birth, city, relationship_status')
+            .in('user_id', userIds)
+        : { data: [] };
+      const profileMap = Object.fromEntries((profilesData ?? []).map((p: any) => [p.user_id, p]));
+
+      // Generate all signed URLs in parallel with Promise.all instead of serially.
+      const getFilePath = (url: string) => {
+        if (!url.startsWith('http')) return url;
+        try {
+          const u = new URL(url);
+          const parts = u.pathname.split('/');
+          const bucketIndex = parts.indexOf('verification-selfies');
+          return bucketIndex !== -1 ? parts.slice(bucketIndex + 1).join('/') : url;
+        } catch {
+          return url;
         }
+      };
 
-        verificationsWithProfiles.push({
-          ...verification,
-          verification_status: verification.verification_status as 'pending' | 'approved' | 'rejected',
-          profile: profileData,
-          signedUrl
-        });
-      }
+      const signedUrls = await Promise.all(
+        verifications.map(async (v) => {
+          if (!v.selfie_url) return undefined;
+          try {
+            const { data } = await supabase.storage
+              .from('verification-selfies')
+              .createSignedUrl(getFilePath(v.selfie_url), 3600);
+            return data?.signedUrl;
+          } catch {
+            return undefined;
+          }
+        })
+      );
+
+      const verificationsWithProfiles: VerificationWithProfile[] = verifications.map((v, i) => ({
+        ...v,
+        verification_status: v.verification_status as 'pending' | 'approved' | 'rejected',
+        profile: profileMap[v.user_id] ?? null,
+        signedUrl: signedUrls[i],
+      }));
 
       return verificationsWithProfiles;
     },
@@ -158,6 +158,7 @@ const AdminVerifications = () => {
     },
     onSuccess: (status) => {
       queryClient.invalidateQueries({ queryKey: ['admin-verifications'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-pending-counts'] });
       setSelectedVerification(null);
       setNotes('');
       toast.success(status === 'approved' ? 'Verification approved' : 'Verification rejected');
@@ -253,6 +254,7 @@ const AdminVerifications = () => {
       if (error) throw error;
       toast.success(`Deleted ${username}`);
       queryClient.invalidateQueries({ queryKey: ['admin-verifications'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-pending-counts'] });
       setSelectedVerification(null);
       setNotes('');
     } catch (e: any) {
@@ -328,6 +330,7 @@ const AdminVerifications = () => {
     setBulkProgress(null);
     setSelected(new Set());
     queryClient.invalidateQueries({ queryKey: ['admin-verifications'] });
+    queryClient.invalidateQueries({ queryKey: ['admin-pending-counts'] });
     if (failed === 0) toast.success(`Approved ${success} user${success === 1 ? '' : 's'}`);
     else toast.error(`Approved ${success}, failed ${failed}`);
   };

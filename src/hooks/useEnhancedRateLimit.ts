@@ -28,7 +28,9 @@ export const useEnhancedRateLimit = () => {
 
       if (error) {
         console.error('Rate limit check failed:', error);
-        return true; // Allow if check fails
+        // Fail-closed: deny the action if we cannot verify the rate limit.
+        // This prevents abuse during Supabase outages or misconfigurations.
+        return false;
       }
 
       if (!data) {
@@ -45,7 +47,8 @@ export const useEnhancedRateLimit = () => {
       return true;
     } catch (error) {
       console.error('Rate limit error:', error);
-      return true; // Allow if error occurs
+      // Fail-closed: deny the action on unexpected errors.
+      return false;
     }
   }, [toast]);
 
