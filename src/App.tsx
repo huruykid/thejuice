@@ -52,7 +52,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     return (
       <div className="min-h-screen bg-gradient-soft flex items-center justify-center">
         <div className="text-center space-y-4">
-          <img src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" alt="Juice" className="h-16 w-16 mx-auto animate-pulse" />
+          <img src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" alt="Juice dating app logo" className="h-16 w-16 mx-auto animate-pulse" />
           <p className="text-muted-foreground">Loading...</p>
         </div>
       </div>
@@ -79,7 +79,7 @@ const VerifiedRoute = ({ children }: { children: React.ReactNode }) => {
     return (
       <div className="min-h-screen bg-gradient-soft flex items-center justify-center">
         <div className="text-center space-y-4">
-          <img src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" alt="Juice" className="h-16 w-16 mx-auto animate-pulse" />
+          <img src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" alt="Juice dating app logo" className="h-16 w-16 mx-auto animate-pulse" />
           <p className="text-muted-foreground">Loading...</p>
         </div>
       </div>
@@ -105,7 +105,7 @@ const AdminRoute = ({ children }: { children: React.ReactNode }) => {
     return (
       <div className="min-h-screen bg-gradient-soft flex items-center justify-center">
         <div className="text-center space-y-4">
-          <img src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" alt="Juice" className="h-16 w-16 mx-auto animate-pulse" />
+          <img src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" alt="Juice dating app logo" className="h-16 w-16 mx-auto animate-pulse" />
           <p className="text-muted-foreground">Loading...</p>
         </div>
       </div>
