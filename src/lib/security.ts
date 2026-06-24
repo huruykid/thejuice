@@ -152,17 +152,26 @@ export const validatePhoneNumber = (phone: string): { isValid: boolean; error?: 
   if (!phone || phone.trim() === '') {
     return { isValid: true }; // Phone is optional
   }
-  
+
   const trimmed = phone.trim();
-  
-  // Basic phone number validation (US format)
-  // Allows: +1234567890, (123) 456-7890, 123-456-7890, 123.456.7890, 1234567890
-  const phoneRegex = /^\+?1?[-.\s()]?(\d{3})[-.\s()]?(\d{3})[-.\s()]?(\d{4})$/;
-  
-  if (!phoneRegex.test(trimmed)) {
+
+  // Strip common formatting characters, then validate digits only remain
+  // Handles: 1234567890, (123) 456-7890, 123-456-7890, 123.456.7890, +1 123 456 7890
+  const normalized = trimmed.replace(/[\s()\-+.]/g, '');
+
+  if (!/^\d+$/.test(normalized)) {
     return { isValid: false, error: 'Invalid phone number format. Use formats like: (123) 456-7890, 123-456-7890, or 1234567890' };
   }
-  
+
+  // US numbers: 10 digits, or 11 digits starting with country code 1
+  const isValidLength =
+    normalized.length === 10 ||
+    (normalized.length === 11 && normalized[0] === '1');
+
+  if (!isValidLength) {
+    return { isValid: false, error: 'Invalid phone number format. Use formats like: (123) 456-7890, 123-456-7890, or 1234567890' };
+  }
+
   return { isValid: true };
 };
 
@@ -182,8 +191,8 @@ export const sanitizeHtml = (html: string): string => {
     .replace(/on\w+\s*=/gi, 'data-removed=')
     // Remove style attributes that could contain expressions
     .replace(/style\s*=\s*['"'][^'"]*expression[^'"]*['"]/gi, '')
-    // Remove iframe, embed, object tags
-    .replace(/<(iframe|embed|object|applet|meta|link|base)[^>]*>/gi, '')
+    // Remove iframe, embed, object tags (both opening and closing)
+    .replace(/<\/?(iframe|embed|object|applet|meta|link|base)[^>]*>/gi, '')
     // Limit length
     .substring(0, 10000);
 };
