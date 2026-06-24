@@ -35,8 +35,10 @@ import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import Support from "./pages/Support";
+import ResetPassword from "./pages/ResetPassword";
 import { useAuth } from "./hooks/useAuth";
 import { useVerification } from "./hooks/useVerification";
+import { useRealIsAdmin } from "./hooks/useRealIsAdmin";
 import { useScreenshotProtection } from "./hooks/useScreenshotProtection";
 import { useIosCaptureProtection } from "./hooks/useIosCaptureProtection";
 import { useTheme } from "./hooks/useTheme";
@@ -85,6 +87,32 @@ const VerifiedRoute = ({ children }: { children: React.ReactNode }) => {
 
   if (!user) return <Navigate to="/" replace />;
   if (!isVerified) return <Navigate to="/app" replace />;
+
+  return <>{children}</>;
+};
+
+/**
+ * Guards admin routes — redirects to / if the user is not an admin.
+ * Shows the same loading spinner as ProtectedRoute while the role check resolves,
+ * so there's no flash of admin UI for non-admins.
+ */
+const AdminRoute = ({ children }: { children: React.ReactNode }) => {
+  const { user, loading } = useAuth();
+  const { isAdmin, isLoading: adminLoading } = useRealIsAdmin(user?.id);
+
+  if (loading || (user && adminLoading)) {
+    return (
+      <div className="min-h-screen bg-gradient-soft flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <img src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" alt="Juice" className="h-16 w-16 mx-auto animate-pulse" />
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) return <Navigate to="/" replace />;
+  if (!isAdmin) return <Navigate to="/app" replace />;
 
   return <>{children}</>;
 };
@@ -146,24 +174,24 @@ const App = () => {
             </ProtectedRoute>
           } />
           <Route path="/admin" element={
-            <ProtectedRoute>
+            <AdminRoute>
               <AdminLayout><AdminOverview /></AdminLayout>
-            </ProtectedRoute>
+            </AdminRoute>
           } />
           <Route path="/admin/verifications" element={
-            <ProtectedRoute>
+            <AdminRoute>
               <AdminLayout><AdminVerifications /></AdminLayout>
-            </ProtectedRoute>
+            </AdminRoute>
           } />
           <Route path="/admin/posts" element={
-            <ProtectedRoute>
+            <AdminRoute>
               <AdminLayout><AdminPosts /></AdminLayout>
-            </ProtectedRoute>
+            </AdminRoute>
           } />
           <Route path="/admin/reports" element={
-            <ProtectedRoute>
+            <AdminRoute>
               <AdminLayout><AdminReports /></AdminLayout>
-            </ProtectedRoute>
+            </AdminRoute>
           } />
           <Route path="/share" element={<SharePublic />} />
           <Route path="/privacy-settings" element={
@@ -202,6 +230,8 @@ const App = () => {
           {/* Legal */}
           <Route path="/privacy-policy" element={<PublicLayout><PrivacyPolicy /></PublicLayout>} />
           <Route path="/support" element={<PublicLayout><Support /></PublicLayout>} />
+          {/* Auth flows */}
+          <Route path="/reset-password" element={<ResetPassword />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

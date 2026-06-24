@@ -26,6 +26,9 @@ const AuthScreen = ({ onAuthSuccess }: AuthScreenProps) => {
   const [loading, setLoading] = useState(false);
   const [showSelfieCapture, setShowSelfieCapture] = useState(false);
   const [pendingUserId, setPendingUserId] = useState<string | null>(null);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [resetEmail, setResetEmail] = useState("");
+  const [resetSent, setResetSent] = useState(false);
   
   const { signIn, signUp, user } = useAuth();
   
@@ -95,9 +98,72 @@ const AuthScreen = ({ onAuthSuccess }: AuthScreenProps) => {
     }
   };
 
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      if (error) {
+        toast({ title: "Error", description: error.message, variant: "destructive" });
+      } else {
+        setResetSent(true);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Show selfie capture if user just signed up
   if (showSelfieCapture && pendingUserId) {
     return <SelfieCapture userId={pendingUserId} onComplete={handleSelfieComplete} />;
+  }
+
+  if (showForgotPassword) {
+    return (
+      <div className="relative min-h-screen bg-gradient-soft flex items-center justify-center px-4 py-8 sm:py-12">
+        <div className="w-full max-w-md flex flex-col items-center gap-6">
+          <button onClick={() => navigate("/")} className="flex flex-col items-center gap-3 hover:opacity-80 transition-opacity">
+            <img src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" alt="Juice" className="h-14 w-14" />
+            <h1 className="text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent">The Juice App</h1>
+          </button>
+          <Card className="w-full bg-white/90 backdrop-blur-sm rounded-3xl shadow-soft border-0">
+            <div className="p-6 sm:p-8 space-y-6">
+              <div className="text-center space-y-2">
+                <h2 className="text-2xl font-bold text-foreground">Reset password</h2>
+                <p className="text-muted-foreground text-sm">
+                  {resetSent
+                    ? "Check your email — we've sent a reset link."
+                    : "Enter your email and we'll send you a link to reset your password."}
+                </p>
+              </div>
+              {!resetSent && (
+                <form onSubmit={handleForgotPassword} className="space-y-4">
+                  <Input
+                    type="email"
+                    value={resetEmail}
+                    onChange={(e) => setResetEmail(e.target.value)}
+                    placeholder="Email"
+                    className="rounded-2xl border-juice-orange/30 focus:border-juice-orange"
+                    required
+                  />
+                  <Button type="submit" variant="juice" size="lg" className="w-full h-14 text-base" disabled={loading}>
+                    {loading ? "Sending…" : "Send reset link"}
+                  </Button>
+                </form>
+              )}
+              <button
+                onClick={() => { setShowForgotPassword(false); setResetSent(false); setResetEmail(""); }}
+                className="w-full text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
+                ← Back to sign in
+              </button>
+            </div>
+          </Card>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -230,6 +296,15 @@ const AuthScreen = ({ onAuthSuccess }: AuthScreenProps) => {
               >
                 {loading ? "Please wait..." : (isSignUp ? "Create Account" : "Sign In")}
               </Button>
+              {!isSignUp && (
+                <button
+                  type="button"
+                  onClick={() => { setShowForgotPassword(true); setResetEmail(email); }}
+                  className="w-full text-sm text-muted-foreground hover:text-foreground transition-colors text-center"
+                >
+                  Forgot password?
+                </button>
+              )}
             </form>
 
           </div>

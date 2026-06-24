@@ -3,6 +3,7 @@ import { ShieldCheck, Sparkles, Lock, Clock, CheckCircle2, XCircle } from "lucid
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import Navigation from "@/components/Navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { useMySubmissions } from "@/hooks/useStories";
 
@@ -26,7 +27,7 @@ const UnverifiedHome = ({ onCreateStory, onStartVerification }: UnverifiedHomePr
   const { data: submissions = [] } = useMySubmissions(user?.id);
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="min-h-screen bg-background pb-20">
       {/* Header */}
       <header className="sticky top-0 z-40 bg-background/95 backdrop-blur border-b border-border">
         <div className="flex items-center justify-between px-4 h-12 max-w-xl mx-auto">
@@ -145,15 +146,9 @@ const UnverifiedHome = ({ onCreateStory, onStartVerification }: UnverifiedHomePr
           )}
         </div>
 
-        <div className="pt-2">
-          <button
-            onClick={() => navigate('/profile')}
-            className="text-xs text-muted-foreground hover:text-foreground"
-          >
-            View your profile
-          </button>
-        </div>
       </div>
+
+      <Navigation onCreateStory={onCreateStory} />
     </div>
   );
 };
