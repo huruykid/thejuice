@@ -5,6 +5,7 @@ import {
   handleCorsPreFlight,
   createSecureResponse,
   createSecureErrorResponse,
+  authenticateRequest,
 } from "../_shared/security.ts";
 
 interface SendPushRequest {
@@ -55,6 +56,11 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
+    // Require an authenticated caller. Prevents unauthenticated abuse
+    // (spam/phishing notifications, user-existence probing).
+    const auth = await authenticateRequest(req);
+    if (auth instanceof Response) return auth;
+
     const { userId, title, body, data }: SendPushRequest = await req.json();
 
     if (!userId || !title || !body) {
