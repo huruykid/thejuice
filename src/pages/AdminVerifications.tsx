@@ -361,12 +361,10 @@ const AdminVerifications = () => {
 
   return (
     <div className="bg-gradient-soft p-4">
-      <div className="max-w-7xl mx-auto space-y-6">
-        
-        {/* Header */}
-        <div className="text-center space-y-2">
-          <h1 className="text-3xl font-bold">Admin Verifications</h1>
-          <p className="text-muted-foreground">Review and approve user verifications</p>
+      <div className="max-w-5xl mx-auto space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold">Verifications</h1>
+          <p className="text-sm text-muted-foreground">Review and approve user verifications.</p>
         </div>
 
         {/* Filters */}
