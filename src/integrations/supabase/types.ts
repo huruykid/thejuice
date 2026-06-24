@@ -65,6 +65,35 @@ export type Database = {
         }
         Relationships: []
       }
+      bookmarks: {
+        Row: {
+          created_at: string
+          id: string
+          story_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          story_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          story_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bookmarks_story_id_fkey"
+            columns: ["story_id"]
+            isOneToOne: false
+            referencedRelation: "stories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       cities: {
         Row: {
           city_name: string
@@ -248,6 +277,7 @@ export type Database = {
           date_of_birth: string | null
           id: string
           phone_number: string | null
+          referral_source: string | null
           relationship_status: string | null
           updated_at: string
           user_id: string
@@ -260,6 +290,7 @@ export type Database = {
           date_of_birth?: string | null
           id?: string
           phone_number?: string | null
+          referral_source?: string | null
           relationship_status?: string | null
           updated_at?: string
           user_id: string
@@ -272,6 +303,7 @@ export type Database = {
           date_of_birth?: string | null
           id?: string
           phone_number?: string | null
+          referral_source?: string | null
           relationship_status?: string | null
           updated_at?: string
           user_id?: string
