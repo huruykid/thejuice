@@ -19,7 +19,7 @@ export const useComments = (storyId: string) => {
     queryFn: async (): Promise<Comment[]> => {
       const { data, error } = await (supabase as any)
         .from('comments')
-        .select('*, profiles:user_id(id, anonymous_username)')
+        .select('*, profiles:profile_id(id, anonymous_username)')
         .eq('story_id', storyId)
         .order('created_at', { ascending: false });
 
@@ -37,12 +37,20 @@ export const useCreateComment = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User must be authenticated');
 
+      // Fetch the profile id for this user so the FK join works
+      const { data: profileRow } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
       const { data, error } = await supabase
         .from('comments')
         .insert({
           story_id: storyId,
           content,
           user_id: user.id,
+          profile_id: profileRow?.id ?? null,
         })
         .select()
         .single();
