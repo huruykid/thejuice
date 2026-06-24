@@ -1,78 +1,76 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { calculateDistance, type Coordinates } from "@/lib/distance";
+import { useBlockedUserIds } from "./useBlockedUserIds";
 import type { Story } from "./useStories";
 
-export interface NearbyStoriesOptions {
-  userLocation: Coordinates;
-  radiusMiles?: number;
-  enabled?: boolean;
-}
+export type StoryWithDistance = Story & {
+  distance: number | null;
+  cities?: { city_name: string; state_province: string; latitude?: number | null; longitude?: number | null } | null;
+};
 
-export const useNearbyStories = ({ 
-  userLocation, 
-  radiusMiles = 25, 
-  enabled = true 
-}: NearbyStoriesOptions) => {
+/**
+ * Fetches ALL approved community stories and sorts them closest-first.
+ * Stories without city coordinates sort to the end.
+ *
+ * Intentionally non-paginated — fine for a small catalogue. When posts reach
+ * the thousands, replace with a Supabase RPC using PostGIS ordering.
+ */
+export const useNearbyStories = (
+  userLocation: Coordinates | null,
+  enabled = true
+) => {
+  const { data: blockedIds = [] } = useBlockedUserIds();
+
   return useQuery({
-    queryKey: ["nearby-stories", userLocation.latitude, userLocation.longitude, radiusMiles],
-    queryFn: async () => {
-      const { data: stories, error } = await supabase
+    queryKey: [
+      "nearby-stories",
+      userLocation?.latitude,
+      userLocation?.longitude,
+      { blocked: blockedIds },
+    ],
+    enabled: enabled && !!userLocation,
+    staleTime: 5 * 60_000,
+    queryFn: async (): Promise<StoryWithDistance[]> => {
+      let query = (supabase as any)
         .from("stories")
         .select(`
           *,
-          profiles (
-            id,
-            anonymous_username
-          ),
-          cities (
-            id,
-            city_name,
-            state_province,
-            latitude,
-            longitude
-          ),
-          story_tags (
-            tag
-          )
+          profiles:user_id (id, anonymous_username),
+          story_tags (tag),
+          cities:city_id (city_name, state_province, latitude, longitude)
         `)
-        .not('cities', 'is', null) // Only get stories with city data
-        .eq('status', 'approved')
-        .not('image_url', 'is', null)
+        .eq("status", "approved")
+        .eq("is_seed", false)
+        .not("image_url", "is", null)
         .order("created_at", { ascending: false });
 
-      if (error) {
-        throw error;
+      if (blockedIds.length > 0) {
+        query = query.not("user_id", "in", `(${blockedIds.join(",")})`);
       }
 
-      // Filter and sort by distance on the client side
-      const storiesWithDistance = (stories || [])
-        .map((story) => {
-          if (!story.cities?.latitude || !story.cities?.longitude) {
-            return null;
-          }
+      const { data, error } = await query;
+      if (error) throw error;
 
-          const distance = calculateDistance(
-            userLocation,
-            {
-              latitude: Number(story.cities.latitude),
-              longitude: Number(story.cities.longitude),
-            }
-          );
-
-          return {
-            ...story,
-            distance,
-          };
+      return (data ?? [])
+        .map((story: any): StoryWithDistance => {
+          const lat = story.cities?.latitude;
+          const lng = story.cities?.longitude;
+          const distance =
+            lat != null && lng != null && userLocation
+              ? calculateDistance(userLocation, {
+                  latitude: Number(lat),
+                  longitude: Number(lng),
+                })
+              : null;
+          return { ...story, distance };
         })
-        .filter((story): story is NonNullable<typeof story> => 
-          story !== null && story.distance <= radiusMiles
-        )
-        .sort((a, b) => a.distance - b.distance);
-
-      return storiesWithDistance;
+        .sort((a: StoryWithDistance, b: StoryWithDistance) => {
+          if (a.distance === null && b.distance === null) return 0;
+          if (a.distance === null) return 1;
+          if (b.distance === null) return -1;
+          return a.distance - b.distance;
+        });
     },
-    enabled: enabled && !!userLocation.latitude && !!userLocation.longitude,
-    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 };
