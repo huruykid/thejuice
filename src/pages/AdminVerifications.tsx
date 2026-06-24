@@ -15,7 +15,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { CheckCircle, XCircle, Clock, Search, Filter, Mail, Shield, Trash2 } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
-import { AdminNav } from '@/components/AdminNav';
 
 interface VerificationWithProfile {
   id: string;
@@ -346,7 +345,7 @@ const AdminVerifications = () => {
   // Show loading while checking auth or fetching data
   if (authLoading || isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-soft flex items-center justify-center">
+      <div className="bg-gradient-soft flex items-center justify-center">
         <div className="text-center space-y-4">
           <img src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" alt="Juice" className="h-16 w-16 mx-auto animate-pulse" />
           <p className="text-muted-foreground">Loading verifications...</p>
@@ -361,9 +360,9 @@ const AdminVerifications = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-soft p-4">
+    <div className="bg-gradient-soft p-4">
       <div className="max-w-7xl mx-auto space-y-6">
-        <AdminNav />
+        
         {/* Header */}
         <div className="text-center space-y-2">
           <h1 className="text-3xl font-bold">Admin Verifications</h1>
