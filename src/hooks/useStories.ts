@@ -139,6 +139,7 @@ export const useCreateStory = () => {
       content,
       tags,
       city_id,
+      location,
       imageUrl,
       subjectName,
       subjectPhone,
@@ -147,6 +148,7 @@ export const useCreateStory = () => {
       content: string;
       tags: string[];
       city_id?: string | null;
+      location?: string | null;
       imageUrl?: string;
       subjectName?: string;
       subjectPhone?: string;
@@ -195,6 +197,7 @@ export const useCreateStory = () => {
           profile_id: profile?.id ?? null,
           content: sanitizedContent,
           city_id: city_id || null,
+          location: location ? sanitizeText(location) : null,
           image_url: imageUrl || null,
           subject_name: sanitizedSubjectName,
           subject_phone: sanitizedSubjectPhone,
