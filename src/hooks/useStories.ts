@@ -45,6 +45,7 @@ export const useStories = () => {
           )
         `)
         .eq('status', 'approved')
+        .not('image_url', 'is', null)
         .order('created_at', { ascending: false });
       if (blockedIds.length > 0) {
         query = query.not('user_id', 'in', `(${blockedIds.join(',')})`);
@@ -90,6 +91,7 @@ export const useInfiniteStories = (
         `)
         .eq('status', 'approved')
         .eq('is_seed', mode === 'seed')
+        .not('image_url', 'is', null)
         .order('created_at', { ascending: false })
         .range(from, to);
       if (blockedIds.length > 0) {
