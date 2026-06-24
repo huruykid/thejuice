@@ -174,15 +174,16 @@ const Landing = () => {
                   <div className="w-1.5 h-1.5 rounded-full bg-juice-orange/20" />
                 </div>
               </div>
-              {/* Mock story cards */}
+              {/* Mock story cards — matches real StoryCard layout: header → subject photo → text → flags → reactions */}
               {[
-                { name: "Emma R.", author: "throwback_j", time: "2h", flags: "🚩🚩 ghosted after 3 months", green: 12, red: 34 },
-                { name: "Sophia K.", author: "quietly_done", time: "5h", flags: "💯 loyal · honest to a fault", green: 41, red: 3 },
-                { name: "Mia T.", author: "weekend_plans", time: "8h", flags: "☠️ toxic · clingy after week 1", green: 8, red: 29 },
+                { name: "Emma R.", photo: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=400&fit=crop&crop=face", author: "throwback_j", time: "2h", flags: "🚩🚩 ghosted after 3 months", green: 12, red: 34 },
+                { name: "Sophia K.", photo: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400&fit=crop&crop=face", author: "quietly_done", time: "5h", flags: "💯 loyal · honest to a fault", green: 41, red: 3 },
+                { name: "Mia T.", photo: "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=400&fit=crop&crop=face", author: "weekend_plans", time: "8h", flags: "☠️ toxic · clingy after week 1", green: 8, red: 29 },
               ].map((card, i) => (
-                <div key={i} className="px-3 py-3 border-b border-border last:border-b-0 bg-background">
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="w-6 h-6 rounded-full bg-gradient-to-br from-juice-orange to-juice-pink flex items-center justify-center text-white text-xs font-semibold">
+                <div key={i} className="border-b border-border last:border-b-0 bg-background">
+                  {/* Header */}
+                  <div className="flex items-center gap-2 px-3 pt-3 pb-2">
+                    <div className="w-6 h-6 rounded-full bg-gradient-to-br from-juice-orange to-juice-pink flex items-center justify-center text-white text-[10px] font-bold shrink-0">
                       {card.name[0]}
                     </div>
                     <div className="flex-1 min-w-0">
@@ -190,15 +191,26 @@ const Landing = () => {
                       <p className="text-[10px] text-muted-foreground">@{card.author} · {card.time} ago</p>
                     </div>
                   </div>
-                  <div className="space-y-1 mb-2">
-                    <div className="h-2 bg-muted rounded w-full" />
-                    <div className="h-2 bg-muted rounded w-5/6" />
-                    <div className="h-2 bg-muted rounded w-3/4" />
+                  {/* Subject photo — matches aspect-square carousel in real StoryCard */}
+                  <div className="aspect-square w-full overflow-hidden bg-muted">
+                    <img
+                      src={card.photo}
+                      alt=""
+                      className="w-full h-full object-cover"
+                    />
                   </div>
-                  <p className="text-[10px] text-muted-foreground mb-1.5">{card.flags}</p>
-                  <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
-                    <span>🟢 {card.green}</span>
-                    <span>🚩 {card.red}</span>
+                  {/* Story text + flags + reactions */}
+                  <div className="px-3 py-2.5">
+                    <div className="space-y-1 mb-2">
+                      <div className="h-2 bg-muted rounded w-full" />
+                      <div className="h-2 bg-muted rounded w-5/6" />
+                      <div className="h-2 bg-muted rounded w-3/4" />
+                    </div>
+                    <p className="text-[10px] text-muted-foreground mb-1.5">{card.flags}</p>
+                    <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
+                      <span>🟢 {card.green}</span>
+                      <span>🚩 {card.red}</span>
+                    </div>
                   </div>
                 </div>
               ))}
