@@ -938,6 +938,7 @@ export type Database = {
       }
       normalize_city_name: { Args: { city_input: string }; Returns: string }
       normalize_phone_number: { Args: { phone_input: string }; Returns: string }
+      processed_selfie_object_names: { Args: never; Returns: string[] }
       use_invite_code: {
         Args: { invite_code: string; new_user_id: string }
         Returns: boolean
