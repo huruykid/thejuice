@@ -19,14 +19,16 @@ export interface DisputeRequest {
   story_subject_name?: string | null;
 }
 
-export const useDisputes = () => {
+export type DisputeSort = 'newest' | 'oldest';
+
+export const useDisputes = (sort: DisputeSort = 'newest') => {
   return useQuery({
-    queryKey: ['disputes'],
+    queryKey: ['disputes', sort],
     queryFn: async (): Promise<DisputeRequest[]> => {
       const { data, error } = await supabase
         .from('dispute_requests')
         .select('*')
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: sort === 'oldest' });
 
       if (error) throw error;
       const base = (data ?? []) as DisputeRequest[];

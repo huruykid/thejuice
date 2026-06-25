@@ -15,7 +15,7 @@ export const useStoriesByCity = (cityId: string | null | undefined) => {
       const from = (pageParam as number) * PAGE_SIZE;
       const to = from + PAGE_SIZE - 1;
 
-      let query = supabase
+      let query: any = supabase
         .from("stories")
         .select(
           `*,

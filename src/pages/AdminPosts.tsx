@@ -47,6 +47,7 @@ const AdminPosts = () => {
   const [filter, setFilter] = useState<"pending" | "approved" | "rejected" | "all">(
     "pending"
   );
+  const [sort, setSort] = useState<"newest" | "oldest">("newest");
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [bulkReasonId, setBulkReasonId] = useState<string>(REJECTION_REASONS[0].id);
 
@@ -60,7 +61,7 @@ const AdminPosts = () => {
   }, [authLoading, roleLoading, isAdmin, user, navigate]);
 
   const { data: posts, isLoading } = useQuery({
-    queryKey: ["admin-posts", filter],
+    queryKey: ["admin-posts", filter, sort],
     queryFn: async () => {
       let q = supabase
         .from("stories")
@@ -68,7 +69,7 @@ const AdminPosts = () => {
           "id, content, subject_name, created_at, status, user_id, submitted_anonymously, rejection_reason, rejected_at, is_seed"
         )
         .eq("is_seed", false)
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: sort === "oldest" });
       if (filter !== "all") q = q.eq("status", filter);
       const { data, error } = await q;
       if (error) throw error;
@@ -266,17 +267,28 @@ const AdminPosts = () => {
               Approve or reject pending stories — both from accounts and anonymous submissions.
             </p>
           </div>
-          <Select value={filter} onValueChange={(v: any) => setFilter(v)}>
-            <SelectTrigger className="w-36">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="pending">Pending</SelectItem>
-              <SelectItem value="approved">Approved</SelectItem>
-              <SelectItem value="rejected">Rejected</SelectItem>
-              <SelectItem value="all">All</SelectItem>
-            </SelectContent>
-          </Select>
+          <div className="flex items-center gap-2">
+            <Select value={sort} onValueChange={(v: any) => setSort(v)}>
+              <SelectTrigger className="w-36">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="newest">Newest first</SelectItem>
+                <SelectItem value="oldest">Oldest first</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={filter} onValueChange={(v: any) => setFilter(v)}>
+              <SelectTrigger className="w-36">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="pending">Pending</SelectItem>
+                <SelectItem value="approved">Approved</SelectItem>
+                <SelectItem value="rejected">Rejected</SelectItem>
+                <SelectItem value="all">All</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
         <div className="flex justify-end">

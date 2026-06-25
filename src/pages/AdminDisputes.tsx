@@ -2,12 +2,19 @@ import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserRole } from "@/hooks/useUserRole";
-import { useDisputes, useResolveDispute, type DisputeRequest } from "@/hooks/useDisputes";
+import { useDisputes, useResolveDispute, type DisputeRequest, type DisputeSort } from "@/hooks/useDisputes";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Dialog,
   DialogContent,
@@ -38,7 +45,8 @@ const AdminDisputes = () => {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
   const { isAdmin, isLoading: roleLoading } = useUserRole(user?.id);
-  const { data: disputes = [], isLoading } = useDisputes();
+  const [sort, setSort] = useState<DisputeSort>("newest");
+  const { data: disputes = [], isLoading } = useDisputes(sort);
   const resolveDispute = useResolveDispute();
 
   const [rejectDialog, setRejectDialog] = useState<{
@@ -113,16 +121,27 @@ const AdminDisputes = () => {
   return (
     <div className="bg-gradient-soft p-4 pb-20">
       <div className="max-w-5xl mx-auto space-y-6">
-        <div className="flex items-center gap-2 mb-6">
-          <Flag className="h-6 w-6 text-juice-orange" />
-          <h1 className="text-2xl font-bold">
-            Disputes
-            {pendingCount > 0 && (
-              <span className="ml-2 text-base font-normal text-muted-foreground">
-                ({pendingCount} pending)
-              </span>
-            )}
-          </h1>
+        <div className="flex items-center justify-between gap-2 mb-6 flex-wrap">
+          <div className="flex items-center gap-2">
+            <Flag className="h-6 w-6 text-juice-orange" />
+            <h1 className="text-2xl font-bold">
+              Disputes
+              {pendingCount > 0 && (
+                <span className="ml-2 text-base font-normal text-muted-foreground">
+                  ({pendingCount} pending)
+                </span>
+              )}
+            </h1>
+          </div>
+          <Select value={sort} onValueChange={(v) => setSort(v as DisputeSort)}>
+            <SelectTrigger className="w-40">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="newest">Newest first</SelectItem>
+              <SelectItem value="oldest">Oldest first</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         {isLoading ? (
