@@ -1,34 +1,32 @@
-# Repo Sanity Check Plan
+## Goal
 
-Run a non-destructive health check on the project to confirm it installs, typechecks, builds, and boots without runtime errors.
+Let admins flip the four moderation queues (Verifications, Posts, Reports, Disputes) between **Newest first** and **Oldest first**. Today they're all hardcoded to newest-first, which makes it hard to clear the oldest backlog ("first-in, first-out" moderation).
 
-## Steps
+## What changes
 
-1. **Install dependencies**
-   - `bun install` at the project root.
-   - Report any peer-dep warnings or install failures.
+Each admin page gets a small sort control in its header (next to existing filters):
 
-2. **TypeScript check**
-   - Run `tsgo` against `tsconfig.app.json` (and `tsconfig.node.json` for Vite config).
-   - Capture and summarize any type errors by file.
+```
+[ Sort: Newest ▾ ]   options: Newest first / Oldest first
+```
 
-3. **Lint (quick pass)**
-   - `bunx eslint .` using the existing `eslint.config.js`.
-   - Only report errors, not style warnings.
+Selection is local to the page (state, not persisted) and re-runs the query.
 
-4. **Unit tests**
-   - `bunx vitest run` to execute the existing Vitest suites under `src/lib/__tests__/`.
-   - Report pass/fail counts and any failing test names.
+Pages affected:
+- `src/pages/AdminVerifications.tsx`
+- `src/pages/AdminPosts.tsx`
+- `src/pages/AdminReports.tsx`
+- `src/pages/AdminDisputes.tsx` (via `useDisputes` hook)
 
-5. **Production build**
-   - `bunx vite build`.
-   - Confirm it completes and note bundle size warnings.
+## Technical notes
 
-6. **Runtime smoke test**
-   - The Vite dev server is already running on localhost (typically :8080).
-   - Drive Playwright headless to load `/` and `/app`, capture screenshots, and dump console errors + failed network requests.
-   - Report any runtime errors surfaced in the browser console.
+- All four already `order('created_at', { ascending: false })`. Replace the hardcoded `false` with a `sortAsc` boolean piped through from a `useState<'newest' | 'oldest'>` on each page.
+- For pages that query inline (Verifications, Posts, Reports), include the sort state in the React Query `queryKey` so changing it refetches.
+- For Disputes, `useDisputes` accepts no args today — extend it to take `{ sort: 'newest' | 'oldest' }` and thread it through the query + key.
+- UI: reuse the shadcn `Select` component already used elsewhere in admin filters for visual consistency.
+- No DB / migration changes. No new dependencies.
 
-## Deliverable
+## Out of scope
 
-A single summary listing, for each step: status (pass / warn / fail), counts, and the first few error lines if anything fails. No code changes will be made — if issues are found, I'll list them and wait for you to decide what to fix.
+- Sorting by other fields (status, reporter, severity). Easy to add later if needed.
+- Persisting the choice across sessions.

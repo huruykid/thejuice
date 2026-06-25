@@ -60,6 +60,7 @@ const AdminVerifications = () => {
   const { isAdmin, isLoading: roleLoading } = useUserRole(user?.id);
   const navigate = useNavigate();
   const [filter, setFilter] = useState<'all' | 'pending' | 'approved' | 'rejected'>('pending');
+  const [sort, setSort] = useState<'newest' | 'oldest'>('newest');
   const [search, setSearch] = useState('');
   const [selectedVerification, setSelectedVerification] = useState<VerificationWithProfile | null>(null);
   const [notes, setNotes] = useState('');
@@ -87,13 +88,13 @@ const AdminVerifications = () => {
 
   // Fetch verifications with profiles
   const { data: verifications, isLoading } = useQuery({
-    queryKey: ['admin-verifications', filter],
+    queryKey: ['admin-verifications', filter, sort],
     queryFn: async () => {
       // First get verifications
       let verificationQuery = supabase
         .from('user_verifications')
         .select('*')
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: sort === 'oldest' });
 
       if (filter !== 'all') {
         verificationQuery = verificationQuery.eq('verification_status', filter);
@@ -280,13 +281,7 @@ const AdminVerifications = () => {
   const filteredVerifications = (verifications?.filter(verification =>
     verification.profile?.anonymous_username?.toLowerCase().includes(search.toLowerCase()) ||
     verification.profile?.city?.toLowerCase().includes(search.toLowerCase())
-  ) || []).sort((a, b) => {
-    // Pending: oldest first so longest-waiting get reviewed first
-    if (a.verification_status === 'pending' && b.verification_status === 'pending') {
-      return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
-    }
-    return 0;
-  });
+  ) || []);
 
   const selectablePending = filteredVerifications.filter(
     (v) => v.verification_status === 'pending'
@@ -429,6 +424,19 @@ const AdminVerifications = () => {
                     <SelectItem value="pending">Pending</SelectItem>
                     <SelectItem value="approved">Approved</SelectItem>
                     <SelectItem value="rejected">Rejected</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label htmlFor="sort">Sort</Label>
+                <Select value={sort} onValueChange={(value: 'newest' | 'oldest') => setSort(value)}>
+                  <SelectTrigger className="w-40">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="newest">Newest first</SelectItem>
+                    <SelectItem value="oldest">Oldest first</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

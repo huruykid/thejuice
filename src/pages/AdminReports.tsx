@@ -46,12 +46,13 @@ const AdminReports = () => {
   const { isAdmin, isLoading: roleLoading } = useUserRole(user?.id);
   const queryClient = useQueryClient();
   const [filter, setFilter] = useState<StatusFilter>("pending");
+  const [sort, setSort] = useState<"newest" | "oldest">("newest");
 
   const { data: reports = [], isLoading } = useQuery({
-    queryKey: ["admin-reports", filter],
+    queryKey: ["admin-reports", filter, sort],
     enabled: !!user && isAdmin,
     queryFn: async (): Promise<ReportWithContent[]> => {
-      let query = supabase.from("reports").select("*").order("created_at", { ascending: false });
+      let query = supabase.from("reports").select("*").order("created_at", { ascending: sort === "oldest" });
       if (filter !== "all") query = query.eq("status", filter);
       const { data, error } = await query;
       if (error) throw error;
@@ -139,18 +140,29 @@ const AdminReports = () => {
               <Badge variant="secondary">{pendingCount}</Badge>
             )}
           </div>
-          <Select value={filter} onValueChange={(v) => setFilter(v as StatusFilter)}>
-            <SelectTrigger className="w-40">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="pending">Pending</SelectItem>
-              <SelectItem value="reviewing">Reviewing</SelectItem>
-              <SelectItem value="action_taken">Action taken</SelectItem>
-              <SelectItem value="dismissed">Dismissed</SelectItem>
-              <SelectItem value="all">All</SelectItem>
-            </SelectContent>
-          </Select>
+          <div className="flex items-center gap-2">
+            <Select value={sort} onValueChange={(v) => setSort(v as "newest" | "oldest")}>
+              <SelectTrigger className="w-36">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="newest">Newest first</SelectItem>
+                <SelectItem value="oldest">Oldest first</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={filter} onValueChange={(v) => setFilter(v as StatusFilter)}>
+              <SelectTrigger className="w-40">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="pending">Pending</SelectItem>
+                <SelectItem value="reviewing">Reviewing</SelectItem>
+                <SelectItem value="action_taken">Action taken</SelectItem>
+                <SelectItem value="dismissed">Dismissed</SelectItem>
+                <SelectItem value="all">All</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
         {isLoading ? (
