@@ -68,6 +68,9 @@ const AdminVerifications = () => {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [bulkProgress, setBulkProgress] = useState<{ done: number; total: number } | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<VerificationWithProfile | null>(null);
+  const [bulkRejectOpen, setBulkRejectOpen] = useState(false);
+  const [bulkRejectReason, setBulkRejectReason] = useState('');
+  const [bulkAction, setBulkAction] = useState<'approve' | 'reject' | null>(null);
 
   const queryClient = useQueryClient();
 
@@ -309,6 +312,7 @@ const AdminVerifications = () => {
     );
     if (!ok) return;
     setBulkProgress({ done: 0, total: targets.length });
+    setBulkAction('approve');
     let success = 0;
     let failed = 0;
     for (const v of targets) {
@@ -336,11 +340,69 @@ const AdminVerifications = () => {
       }
     }
     setBulkProgress(null);
+    setBulkAction(null);
     setSelected(new Set());
     queryClient.invalidateQueries({ queryKey: ['admin-verifications'] });
     queryClient.invalidateQueries({ queryKey: ['admin-pending-counts'] });
     if (failed === 0) toast.success(`Approved ${success} user${success === 1 ? '' : 's'}`);
     else toast.error(`Approved ${success}, failed ${failed}`);
+  };
+
+  const handleBulkReject = async () => {
+    const targets = selectablePending.filter((v) => selected.has(v.id));
+    if (targets.length === 0) return;
+    const reason = bulkRejectReason.trim();
+    setBulkRejectOpen(false);
+    setBulkProgress({ done: 0, total: targets.length });
+    setBulkAction('reject');
+    let success = 0;
+    let failed = 0;
+    for (const v of targets) {
+      try {
+        const { error: updErr } = await supabase
+          .from('user_verifications')
+          .update({
+            verification_status: 'rejected',
+            notes: reason || null,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', v.id);
+        if (updErr) throw updErr;
+
+        // Fire-and-forget rejection email (don't block on email failure).
+        try {
+          const { data: emailResponse, error: emailError } = await supabase.functions.invoke(
+            'get-user-email',
+            { body: { userId: v.user_id } }
+          );
+          if (!emailError && emailResponse?.email) {
+            await supabase.functions.invoke('send-rejection-email', {
+              body: {
+                email: emailResponse.email,
+                username: v.profile?.anonymous_username,
+                reason: reason || undefined,
+              },
+            });
+          }
+        } catch (e) {
+          console.warn('Rejection email failed for', v.id, e);
+        }
+        success++;
+      } catch (err) {
+        console.error('Bulk reject failed for', v.id, err);
+        failed++;
+      } finally {
+        setBulkProgress((p) => (p ? { ...p, done: p.done + 1 } : p));
+      }
+    }
+    setBulkProgress(null);
+    setBulkAction(null);
+    setSelected(new Set());
+    setBulkRejectReason('');
+    queryClient.invalidateQueries({ queryKey: ['admin-verifications'] });
+    queryClient.invalidateQueries({ queryKey: ['admin-pending-counts'] });
+    if (failed === 0) toast.success(`Rejected ${success} user${success === 1 ? '' : 's'}`);
+    else toast.error(`Rejected ${success}, failed ${failed}`);
   };
 
   const getStatusBadge = (status: string) => {
@@ -454,7 +516,7 @@ const AdminVerifications = () => {
             <div className="flex-1" />
             <span className="text-xs text-muted-foreground">
               {bulkProgress
-                ? `Approving ${bulkProgress.done}/${bulkProgress.total}…`
+                ? `${bulkAction === 'reject' ? 'Rejecting' : 'Approving'} ${bulkProgress.done}/${bulkProgress.total}…`
                 : `${selected.size} selected`}
             </span>
             <Button
@@ -464,6 +526,15 @@ const AdminVerifications = () => {
             >
               <CheckCircle className="w-4 h-4 mr-1" />
               Approve selected
+            </Button>
+            <Button
+              size="sm"
+              variant="destructive"
+              disabled={selected.size === 0 || !!bulkProgress}
+              onClick={() => setBulkRejectOpen(true)}
+            >
+              <XCircle className="w-4 h-4 mr-1" />
+              Reject selected
             </Button>
             <Button
               size="sm"
@@ -596,6 +667,43 @@ const AdminVerifications = () => {
                 onClick={confirmDeleteUser}
               >
                 Delete permanently
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+        {/* Bulk reject confirmation dialog */}
+        <AlertDialog
+          open={bulkRejectOpen}
+          onOpenChange={(open) => { if (!open) setBulkRejectOpen(false); }}
+        >
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>
+                Reject {selected.size} user{selected.size === 1 ? '' : 's'}?
+              </AlertDialogTitle>
+              <AlertDialogDescription>
+                Each selected user's verification will be marked as rejected and they'll
+                receive a rejection email. Add an optional reason to include in the email.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <div className="space-y-2">
+              <Label htmlFor="bulk-reject-reason">Reason (optional)</Label>
+              <Textarea
+                id="bulk-reject-reason"
+                placeholder="e.g. Selfie didn't match our verification requirements..."
+                value={bulkRejectReason}
+                onChange={(e) => setBulkRejectReason(e.target.value)}
+                rows={3}
+              />
+            </div>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                onClick={handleBulkReject}
+              >
+                Reject &amp; email
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
