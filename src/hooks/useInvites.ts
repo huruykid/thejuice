@@ -29,7 +29,7 @@ export const useInvites = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
 
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('user_invite_stats')
         .select('invites_remaining, invites_sent, invites_used')
         .eq('user_id', user.id)
@@ -47,7 +47,7 @@ export const useInvites = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
 
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('invite_codes')
         .select('id, code, created_at, expires_at, used_by, used_at')
         .eq('created_by', user.id)
@@ -63,7 +63,7 @@ export const useInvites = () => {
     mutationFn: async () => {
       // Server-side function performs rate limit, quota check, code generation,
       // insert, and stats decrement atomically.
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .rpc('generate_user_invite_code');
 
       if (error) throw error;
@@ -89,7 +89,7 @@ export const useInvites = () => {
   // Validate invite code (for signup)
   const validateInviteCode = async (code: string): Promise<boolean> => {
     try {
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .rpc('validate_invite_code', { code_param: code });
       return !error && data === true;
     } catch {

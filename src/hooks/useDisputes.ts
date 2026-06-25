@@ -23,7 +23,7 @@ export const useDisputes = () => {
   return useQuery({
     queryKey: ['disputes'],
     queryFn: async (): Promise<DisputeRequest[]> => {
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('dispute_requests')
         .select('*')
         .order('created_at', { ascending: false });
@@ -35,7 +35,7 @@ export const useDisputes = () => {
       const storyIds = [...new Set(base.filter(d => d.story_id).map(d => d.story_id as string))];
       if (storyIds.length === 0) return base;
 
-      const { data: stories } = await (supabase as any)
+      const { data: stories } = await supabase
         .from('stories')
         .select('id, content, subject_name')
         .in('id', storyIds);
@@ -71,7 +71,7 @@ export const useSubmitDispute = () => {
       reason: string;
       additional_info?: string;
     }) => {
-      const { error } = await (supabase as any).from('dispute_requests').insert({
+      const { error } = await supabase.from('dispute_requests').insert({
         story_id: story_id ?? null,
         subject_name,
         contact_email,
@@ -102,7 +102,7 @@ export const useResolveDispute = () => {
       status: 'approved' | 'rejected';
       admin_notes?: string;
     }) => {
-      const { error } = await (supabase as any)
+      const { error } = await supabase
         .from('dispute_requests')
         .update({
           status,
@@ -115,7 +115,7 @@ export const useResolveDispute = () => {
 
       // If approved and the story still exists, delete it
       if (status === 'approved' && story_id) {
-        const { error: deleteError } = await (supabase as any)
+        const { error: deleteError } = await supabase
           .from('stories')
           .delete()
           .eq('id', story_id);

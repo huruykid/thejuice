@@ -18,7 +18,7 @@ export const useProfile = (user?: any) => {
     queryFn: async () => {
       if (!user) return null;
 
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('user_id', user.id)
@@ -34,7 +34,7 @@ export const useProfile = (user?: any) => {
   const checkUsernameAvailability = async (username: string): Promise<boolean> => {
     try {
       // First try the RPC function
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .rpc('is_username_available', { username });
       
       if (error) {

@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { sendPushNotification } from '@/lib/sendPushNotification';
+import { sendStoryEventNotification } from '@/lib/sendPushNotification';
 
 export interface Comment {
   id: string;
@@ -18,7 +18,7 @@ export const useComments = (storyId: string) => {
   return useQuery({
     queryKey: ['comments', storyId],
     queryFn: async (): Promise<Comment[]> => {
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('comments')
         .select('*, profiles:profile_id(id, anonymous_username)')
         .eq('story_id', storyId)
@@ -81,12 +81,7 @@ export const useCreateComment = () => {
         data.storyOwnerId &&
         data.commenterUserId !== data.storyOwnerId
       ) {
-        sendPushNotification(
-          data.storyOwnerId,
-          'New comment 💬',
-          'Someone commented on your story',
-          { route: `/story/${variables.storyId}` }
-        ).catch(console.error);
+        sendStoryEventNotification('comment', variables.storyId).catch(console.error);
       }
       queryClient.invalidateQueries({ queryKey: ['comments', variables.storyId] });
       queryClient.invalidateQueries({ queryKey: ['stories'] });

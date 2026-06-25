@@ -136,9 +136,11 @@ export const validateTag = (tag: string): { isValid: boolean; error?: string } =
     return { isValid: false, error: 'Tag must be 50 characters or less' };
   }
   
-  // Allow emojis, unicode characters, and common punctuation for tags
-  // \p{L} = letters, \p{N} = numbers, \p{P} = punctuation, \p{S} = symbols (including emojis), \p{Z} = separators
-  if (!/^[\p{L}\p{N}\p{P}\p{S}\p{Z}\p{So}_-]+$/u.test(trimmed)) {
+  // Allow emojis, unicode characters, and common punctuation for tags.
+  // \p{L}=letters, \p{N}=numbers, \p{P}=punctuation, \p{S}=symbols (incl. emoji),
+  // \p{M}=marks (incl. U+FE0F variation selectors), \p{Z}=separators, U+200D=ZWJ
+  // (joins multi-codepoint emoji like ❤️ and flag/family sequences).
+  if (!/^[\p{L}\p{N}\p{P}\p{S}\p{M}\p{Z}\u{200D}_-]+$/u.test(trimmed)) {
     return { isValid: false, error: 'Tag contains invalid characters' };
   }
   

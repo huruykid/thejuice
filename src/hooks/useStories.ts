@@ -33,7 +33,7 @@ export const useStories = () => {
   return useQuery({
     queryKey: ['stories', { blocked: blockedIds }],
     queryFn: async (): Promise<Story[]> => {
-      let query = (supabase as any)
+      let query = supabase
         .from('stories')
         .select(`
           *,
@@ -80,7 +80,7 @@ export const useInfiniteStories = (
     queryFn: async ({ pageParam = 0 }): Promise<Story[]> => {
       const from = (pageParam as number) * pageSize;
       const to = from + pageSize - 1;
-      let query = (supabase as any)
+      let query = supabase
         .from('stories')
         .select(`
           *,
@@ -113,7 +113,7 @@ export const useStoriesByProfile = (profileId: string) => {
   return useQuery({
     queryKey: ['stories', 'profile', profileId],
     queryFn: async (): Promise<Story[]> => {
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('stories')
         .select(`
           *,
@@ -188,18 +188,32 @@ export const useCreateStory = () => {
       }
 
       // Get current user
-      const { data: { user } } = await (supabase as any).auth.getUser();
+      const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User must be authenticated');
 
+      // Server-side rate limit on posting. The bucket key + limits are enforced
+      // server-side in check_rate_limit (keyed on auth.uid() here); the args are the
+      // ignored-but-required RPC signature. Stops spam flooding the moderation queue.
+      const { data: withinLimit } = await supabase.rpc('check_rate_limit', {
+        p_identifier: user.id,
+        p_action_type: 'story_create',
+        p_max_attempts: 10,
+        p_window_minutes: 60,
+        p_block_minutes: 60,
+      });
+      if (withinLimit === false) {
+        throw new Error("You're posting too fast — please wait a bit before sharing another story.");
+      }
+
       // Get user's profile (may not exist for unverified users — they post as Anonymous)
-      const { data: profile } = await (supabase as any)
+      const { data: profile } = await supabase
         .from('profiles')
         .select('id')
         .eq('user_id', user.id)
         .maybeSingle();
 
       // Create the story
-      const { data: story, error: storyError } = await (supabase as any)
+      const { data: story, error: storyError } = await supabase
         .from('stories')
         .insert({
           profile_id: profile?.id ?? null,
@@ -227,7 +241,7 @@ export const useCreateStory = () => {
           tag,
         }));
 
-        const { error: tagsError } = await (supabase as any)
+        const { error: tagsError } = await supabase
           .from('story_tags')
           .insert(tagData);
 
@@ -253,7 +267,7 @@ export const useMySubmissions = (userId?: string) => {
     queryKey: ['stories', 'mine', userId],
     enabled: !!userId,
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('stories')
         .select('id, content, status, created_at, image_url')
         .eq('user_id', userId)
@@ -275,7 +289,7 @@ export const useDeleteStory = () => {
 
   return useMutation({
     mutationFn: async (storyId: string) => {
-      const { error } = await (supabase as any)
+      const { error } = await supabase
         .from('stories')
         .delete()
         .eq('id', storyId);

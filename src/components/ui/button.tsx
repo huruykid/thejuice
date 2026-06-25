@@ -9,7 +9,7 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-gradient-primary text-white hover:shadow-glow hover:scale-[1.02] transition-all duration-200 font-semibold active:scale-[0.95]",
+        default: "bg-gradient-primary text-primary-foreground hover:shadow-glow hover:scale-[1.02] transition-all duration-200 font-semibold active:scale-[0.95]",
         destructive: "bg-gradient-to-r from-destructive to-destructive-light text-destructive-foreground hover:shadow-lg hover:scale-[1.02] transition-all duration-200 active:scale-[0.95]",
         outline: "border border-border bg-background hover:bg-card-hover hover:border-primary/50 transition-all duration-200 active:scale-[0.95]",
         secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80 hover:scale-[1.02] transition-all duration-200 active:scale-[0.95]",
@@ -17,14 +17,14 @@ const buttonVariants = cva(
         link: "text-primary underline-offset-4 hover:underline transition-all duration-200 active:scale-[0.95]",
         
         // Modern Instagram/Tinder-inspired variants
-        gradient: "bg-gradient-primary text-white hover:shadow-glow hover:scale-[1.02] transition-all duration-200 font-semibold rounded-2xl active:scale-[0.95]",
+        gradient: "bg-gradient-primary text-primary-foreground hover:shadow-glow hover:scale-[1.02] transition-all duration-200 font-semibold rounded-2xl active:scale-[0.95]",
         "gradient-secondary": "bg-gradient-secondary text-white hover:shadow-lg hover:scale-[1.02] transition-all duration-200 font-medium rounded-2xl active:scale-[0.95]",
         success: "bg-gradient-success text-success-foreground hover:shadow-lg hover:scale-[1.02] transition-all duration-200 font-medium active:scale-[0.95]",
         
         // Juice App specific variants
-        juice: "bg-gradient-primary text-white hover:shadow-glow hover:scale-[1.02] transition-all duration-200 rounded-2xl font-semibold active:scale-[0.95]",
+        juice: "bg-gradient-primary text-primary-foreground hover:shadow-glow hover:scale-[1.02] transition-all duration-200 rounded-2xl font-semibold active:scale-[0.95]",
         "juice-soft": "bg-juice-lavender text-juice-purple hover:bg-juice-pink/20 hover:text-juice-purple transition-all duration-200 rounded-xl active:scale-[0.95]",
-        "juice-outline": "border-2 border-primary text-primary bg-background hover:bg-primary hover:text-white transition-all duration-200 rounded-xl font-medium active:scale-[0.95]",
+        "juice-outline": "border-2 border-primary text-primary bg-background hover:bg-primary hover:text-primary-foreground transition-all duration-200 rounded-xl font-medium active:scale-[0.95]",
         
         // Interactive voting buttons
         "flag-green": "bg-success/10 border border-success/20 text-success hover:bg-success hover:text-white transition-all duration-200 rounded-full active:scale-[0.95]",

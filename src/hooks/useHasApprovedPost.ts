@@ -10,7 +10,7 @@ export const useHasApprovedPost = (userId?: string) => {
     queryKey: ["has-approved-post", userId],
     enabled: !!userId,
     queryFn: async (): Promise<boolean> => {
-      const { count, error } = await (supabase as any)
+      const { count, error } = await supabase
         .from("stories")
         .select("id", { count: "exact", head: true })
         .eq("user_id", userId)

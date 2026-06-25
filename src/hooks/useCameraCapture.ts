@@ -21,7 +21,6 @@ export const useCameraCapture = () => {
         throw new Error('Camera not supported in this browser');
       }
       
-      console.log('Requesting camera access for photo capture...');
       
       // Get camera stream for single photo capture
       const mediaStream = await navigator.mediaDevices.getUserMedia({
@@ -33,7 +32,6 @@ export const useCameraCapture = () => {
         audio: false
       });
       
-      console.log('Camera access granted, capturing photo...');
       
       // Create video element for capture
       const video = document.createElement('video');
@@ -65,7 +63,6 @@ export const useCameraCapture = () => {
               
               // Convert to base64
               const photoData = canvas.toDataURL('image/jpeg', 0.85);
-              console.log('Photo captured successfully');
               
               setIsLoading(false);
               resolve(photoData);

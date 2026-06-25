@@ -205,6 +205,56 @@ export type Database = {
           },
         ]
       }
+      dispute_requests: {
+        Row: {
+          additional_info: string | null
+          admin_notes: string | null
+          contact_email: string
+          created_at: string | null
+          id: string
+          reason: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          story_id: string | null
+          subject_name: string
+        }
+        Insert: {
+          additional_info?: string | null
+          admin_notes?: string | null
+          contact_email: string
+          created_at?: string | null
+          id?: string
+          reason: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          story_id?: string | null
+          subject_name: string
+        }
+        Update: {
+          additional_info?: string | null
+          admin_notes?: string | null
+          contact_email?: string
+          created_at?: string | null
+          id?: string
+          reason?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          story_id?: string | null
+          subject_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dispute_requests_story_id_fkey"
+            columns: ["story_id"]
+            isOneToOne: false
+            referencedRelation: "stories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       file_access_logs: {
         Row: {
           action: string
@@ -317,6 +367,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      push_tokens: {
+        Row: {
+          created_at: string | null
+          id: string
+          platform: string
+          token: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          platform: string
+          token: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          platform?: string
+          token?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
       rate_limits: {
         Row: {

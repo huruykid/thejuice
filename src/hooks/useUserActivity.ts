@@ -21,7 +21,7 @@ export const useUserActivity = () => {
       if (!user) throw new Error('User not authenticated');
 
       // Get comments on the current user's stories
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('comments')
         .select(`
           id,

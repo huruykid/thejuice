@@ -143,7 +143,10 @@ const Landing = () => {
               </Button>
             </div>
 
-            {/* Social proof */}
+            {/* Social proof — NOTE: these counts are hardcoded. To make them honest,
+                expose a SECURITY DEFINER RPC (e.g. get_public_stats() returning counts
+                of verified users + approved stories, GRANT EXECUTE to anon) and read it
+                here. Left hardcoded pending a marketing decision on showing real numbers. */}
             <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-muted-foreground">
               <span className="flex items-center gap-1.5">
                 <CheckCircle className="h-4 w-4 text-juice-orange" />
@@ -420,6 +423,7 @@ const Landing = () => {
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li><a href="/how-it-works" className="hover:text-juice-orange transition-colors">How it works</a></li>
                 <li><a href="/privacy-policy" className="hover:text-juice-orange transition-colors">Privacy policy</a></li>
+                <li><a href="/dispute" className="hover:text-juice-orange transition-colors">Request story removal</a></li>
               </ul>
             </div>
 

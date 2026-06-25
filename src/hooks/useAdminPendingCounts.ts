@@ -22,7 +22,7 @@ export const useAdminPendingCounts = (enabled: boolean) => {
           .from("reports")
           .select("id", { count: "exact", head: true })
           .eq("status", "pending"),
-        (supabase as any)
+        supabase
           .from("dispute_requests")
           .select("id", { count: "exact", head: true })
           .eq("status", "pending"),

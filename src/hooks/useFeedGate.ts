@@ -18,7 +18,7 @@ export const useFeedGate = (userId?: string) => {
   const communityCount = useQuery({
     queryKey: ["community-post-count"],
     queryFn: async (): Promise<number> => {
-      const { count, error } = await (supabase as any)
+      const { count, error } = await supabase
         .from("stories")
         .select("id", { count: "exact", head: true })
         .eq("status", "approved")
@@ -33,7 +33,7 @@ export const useFeedGate = (userId?: string) => {
     queryKey: ["has-approved-post", userId],
     enabled: !!userId && (communityCount.data ?? 0) < COMMUNITY_UNLOCK_THRESHOLD,
     queryFn: async (): Promise<boolean> => {
-      const { count, error } = await (supabase as any)
+      const { count, error } = await supabase
         .from("stories")
         .select("id", { count: "exact", head: true })
         .eq("user_id", userId)

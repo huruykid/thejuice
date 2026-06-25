@@ -32,7 +32,7 @@ export const useNearbyStories = (
     enabled: enabled && !!userLocation,
     staleTime: 5 * 60_000,
     queryFn: async (): Promise<StoryWithDistance[]> => {
-      let query = (supabase as any)
+      let query = supabase
         .from("stories")
         .select(`
           *,

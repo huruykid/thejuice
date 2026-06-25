@@ -147,7 +147,10 @@ export const useSecurityMonitoring = (userId?: string) => {
     return () => clearInterval(interval);
   }, [userId, logSuspiciousActivity]);
 
-  // Enhanced content moderation for stories
+  // ADVISORY ONLY — client-side keyword heuristic, NOT a security boundary. It is
+  // trivially bypassable and currently has no consumers. Real moderation is the
+  // admin-approval gate on non-seed posts (server-enforced). Do not rely on this for
+  // enforcement; for server-side text moderation add an edge function / DB trigger.
   const moderateContent = (content: string): { isViolation: boolean; reasons: string[] } => {
     const violations: string[] = [];
     

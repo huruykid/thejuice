@@ -26,7 +26,7 @@ const UsernameCreation = ({ onComplete }: UsernameCreationProps) => {
 
     setIsChecking(true);
     try {
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .rpc('is_username_available', { username: value });
       
       if (error) throw error;
@@ -86,11 +86,11 @@ const UsernameCreation = ({ onComplete }: UsernameCreationProps) => {
 
     setIsCreating(true);
     try {
-      const { data: { user } } = await (supabase as any).auth.getUser();
+      const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
 
       // First check if profile already exists
-      const { data: existingProfile } = await (supabase as any)
+      const { data: existingProfile } = await supabase
         .from('profiles')
         .select('id')
         .eq('user_id', user.id)
@@ -100,14 +100,14 @@ const UsernameCreation = ({ onComplete }: UsernameCreationProps) => {
       
       if (existingProfile) {
         // Update existing profile
-        const result = await (supabase as any)
+        const result = await supabase
           .from('profiles')
           .update({ anonymous_username: username })
           .eq('user_id', user.id);
         error = result.error;
       } else {
         // Create new profile
-        const result = await (supabase as any)
+        const result = await supabase
           .from('profiles')
           .insert({
             user_id: user.id,

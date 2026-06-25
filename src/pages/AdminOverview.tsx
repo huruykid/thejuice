@@ -90,7 +90,7 @@ const useActivityMetrics = (enabled: boolean, days: RangeDays) =>
           .select("id", { count: "exact", head: true })
           .in("status", ["action_taken", "dismissed"])
           .gte("reviewed_at", since),
-        (supabase as any)
+        supabase
           .from("dispute_requests")
           .select("id", { count: "exact", head: true })
           .in("status", ["approved", "rejected"])

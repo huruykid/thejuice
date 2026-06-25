@@ -49,9 +49,11 @@
     --success-light: 142 72% 44%;
     --success-foreground: 0 0% 100%;
 
-    --destructive: 38 93% 60%;
-    --destructive-light: 38 93% 70%;
-    --destructive-foreground: 0 0% 4%;
+    /* Real red — destructive actions/errors and the red-flag vote. Previously this
+       collapsed to the amber primary, so warnings rendered amber. */
+    --destructive: 0 72% 51%;
+    --destructive-light: 0 72% 61%;
+    --destructive-foreground: 0 0% 100%;
 
     /* Interactive Elements — hairline borders, IG-grade */
     --border: 0 0% 86%;
@@ -141,9 +143,9 @@
     --success: 142 72% 44%;
     --success-light: 142 72% 54%;
     --success-foreground: 0 0% 0%;
-    --destructive: 38 95% 58%;
-    --destructive-light: 38 95% 68%;
-    --destructive-foreground: 0 0% 0%;
+    --destructive: 0 72% 56%;
+    --destructive-light: 0 72% 66%;
+    --destructive-foreground: 0 0% 100%;
 
     --border: 0 0% 15%;
     --border-light: 0 0% 20%;

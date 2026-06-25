@@ -23,7 +23,7 @@ const StoryDetail = () => {
     queryKey: ["story", storyId],
     enabled: !stateStory && !!storyId,
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from("stories")
         .select(`
           *,
@@ -35,7 +35,9 @@ const StoryDetail = () => {
         .eq("status", "approved")
         .maybeSingle();
       if (error) throw error;
-      return data as Story | null;
+      // The select joins cities/profiles/tags, so the row shape is wider than Story;
+      // narrow via unknown (the typed client now infers the full row).
+      return data as unknown as Story | null;
     },
   });
 

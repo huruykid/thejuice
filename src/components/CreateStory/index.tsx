@@ -98,11 +98,10 @@ const CreateStory = ({
         return null;
       }
 
-      const { data } = supabase.storage
-        .from('story-images')
-        .getPublicUrl(filePath);
-
-      return data.publicUrl;
+      // Store the object PATH (not a public URL). The bucket is private; images
+      // are resolved to short-lived signed URLs at render time via
+      // useStoryImageUrls. Returning the path keeps story PII photos off public URLs.
+      return filePath;
     } catch (error) {
       console.error('Error uploading image:', error);
       toast({

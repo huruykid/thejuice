@@ -1,4 +1,4 @@
-import { Heart, MessageCircle, Flag, Trash2, MapPin, MoreVertical, Bookmark } from "lucide-react";
+import { Heart, MessageCircle, Flag, CheckCircle2, Trash2, MapPin, MoreVertical, Bookmark } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import {
@@ -18,7 +18,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { useVerification } from "@/hooks/useVerification";
 import { useUserReactions, useSetUserReactions } from "@/hooks/useUserReactions";
 import { useIsBookmarked, useToggleBookmark } from "@/hooks/useBookmarks";
-import { useState, useRef } from "react";
+import { useStoryImageUrls } from "@/hooks/useStoryImageUrls";
+import { useState, useRef, memo } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { formatDistance } from "@/lib/distance";
@@ -182,17 +183,8 @@ const StoryCard = ({
     return date.toLocaleDateString();
   };
 
-  const getImageUrls = (): string[] => {
-    if (!story.image_url) return [];
-    try {
-      const parsed = JSON.parse(story.image_url);
-      return Array.isArray(parsed) ? parsed : [];
-    } catch {
-      return [];
-    }
-  };
-
-  const imageUrls = getImageUrls();
+  // Story images live in a private bucket; resolve them to short-lived signed URLs.
+  const { data: imageUrls = [] } = useStoryImageUrls(story.image_url);
 
   return (
     <>
@@ -300,14 +292,18 @@ const StoryCard = ({
         {/* Action row */}
         <div className="flex items-center justify-between px-3 pt-2 pb-1">
           <div className="flex items-center gap-1">
+            {/* Red flag = Flag icon. Green flag = check icon. Distinct SHAPES so the
+                two votes are distinguishable without relying on color (red/green
+                colorblindness affects ~8% of men). */}
             <button
               onClick={() => handleReaction('red_flag')}
               aria-label="Red flag"
-              className="p-2 -ml-1 rounded-full hover:bg-muted active:scale-95 transition-all"
+              aria-pressed={isRedFlagged}
+              className="min-h-11 min-w-11 flex items-center justify-center -ml-1 rounded-full hover:bg-muted active:scale-95 transition-all"
             >
               <Flag
                 className="h-6 w-6"
-                style={{ color: '#E24B4A', opacity: isRedFlagged ? 1 : 0.45 }}
+                style={{ color: 'hsl(var(--destructive))', opacity: isRedFlagged ? 1 : 0.7 }}
                 strokeWidth={isRedFlagged ? 2.4 : 1.8}
                 fill={isRedFlagged ? "currentColor" : "none"}
               />
@@ -315,11 +311,12 @@ const StoryCard = ({
             <button
               onClick={() => handleReaction('green_flag')}
               aria-label="Green flag"
-              className="p-2 rounded-full hover:bg-muted active:scale-95 transition-all"
+              aria-pressed={isGreenFlagged}
+              className="min-h-11 min-w-11 flex items-center justify-center rounded-full hover:bg-muted active:scale-95 transition-all"
             >
-              <Flag
+              <CheckCircle2
                 className="h-6 w-6"
-                style={{ color: '#639922', opacity: isGreenFlagged ? 1 : 0.45 }}
+                style={{ color: 'hsl(var(--success))', opacity: isGreenFlagged ? 1 : 0.7 }}
                 strokeWidth={isGreenFlagged ? 2.4 : 1.8}
                 fill={isGreenFlagged ? "currentColor" : "none"}
               />
@@ -327,7 +324,7 @@ const StoryCard = ({
             <button
               onClick={handleComment}
               aria-label="Comment"
-              className="p-2 rounded-full hover:bg-muted active:scale-95 transition-all"
+              className="min-h-11 min-w-11 flex items-center justify-center rounded-full hover:bg-muted active:scale-95 transition-all"
             >
               <MessageCircle className="h-6 w-6 text-foreground" strokeWidth={1.8} />
             </button>
@@ -341,7 +338,7 @@ const StoryCard = ({
               }
               toggleBookmark.mutate({ storyId: story.id, userId: user.id, isCurrentlyBookmarked: isBookmarked });
             }}
-            className="p-2 -mr-1 rounded-full hover:bg-muted active:scale-95 transition-all"
+            className="min-h-11 min-w-11 flex items-center justify-center -mr-1 rounded-full hover:bg-muted active:scale-95 transition-all"
           >
             <Bookmark
               className="h-6 w-6"
@@ -433,4 +430,6 @@ const StoryCard = ({
   );
 };
 
-export default StoryCard;
+// Memoized so a change to one card (or the parent feed re-rendering as new pages
+// load) doesn't re-render every other mounted card. Props are stable per story.
+export default memo(StoryCard);

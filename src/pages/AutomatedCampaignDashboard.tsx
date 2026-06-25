@@ -31,12 +31,10 @@ const AutomatedCampaignDashboard = () => {
 
   // Auto-start monitoring on component mount
   useEffect(() => {
-    console.log('AutomatedCampaignDashboard mounted, starting monitoring...');
     startAutomaticMonitoring();
   }, []);
 
   const generateAutomatedCampaign = async (type: string = 'domination') => {
-    console.log(`Starting campaign generation for type: ${type}`);
     setIsGenerating(true);
     try {
       const { data, error } = await supabase.functions.invoke('automated-campaign-generator', {
@@ -69,7 +67,6 @@ const AutomatedCampaignDashboard = () => {
   };
 
   const startAutomaticMonitoring = async () => {
-    console.log('Starting automatic monitoring...');
     setIsMonitoring(true);
     try {
       const { data, error } = await supabase.functions.invoke('competitive-monitoring', {
@@ -144,7 +141,6 @@ const AutomatedCampaignDashboard = () => {
     }
   ];
 
-  console.log('AutomatedCampaignDashboard rendering...', { isAutomationActive, isGenerating, isMonitoring });
 
   return (
     <div className="min-h-screen bg-gradient-soft p-4">

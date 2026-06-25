@@ -8,12 +8,25 @@ import {
   authenticateRequest,
 } from "../_shared/security.ts";
 
+// The client may ONLY ask us to send a templated notification tied to a
+// specific event on a specific story. It cannot choose the recipient, the
+// title/body, or the deep-link route — those are all derived server-side from
+// the verified event. This closes the IDOR where any authenticated caller
+// could push arbitrary content to any user.
+type PushEventType = "reaction" | "comment";
+
 interface SendPushRequest {
-  userId: string;
-  title: string;
-  body: string;
-  data?: Record<string, string>;
+  type: PushEventType;
+  storyId: string;
 }
+
+const NOTIFICATION_TEMPLATES: Record<
+  PushEventType,
+  { title: string; body: string }
+> = {
+  reaction: { title: "New reaction 🚩", body: "Someone reacted to your story" },
+  comment: { title: "New comment 💬", body: "Someone commented on your story" },
+};
 
 const getFcmAccessToken = async (): Promise<string> => {
   const serviceAccountJson = Deno.env.get("FIREBASE_SERVICE_ACCOUNT_JSON");
@@ -61,10 +74,10 @@ const handler = async (req: Request): Promise<Response> => {
     const auth = await authenticateRequest(req);
     if (auth instanceof Response) return auth;
 
-    const { userId, title, body, data }: SendPushRequest = await req.json();
+    const { type, storyId }: SendPushRequest = await req.json();
 
-    if (!userId || !title || !body) {
-      return createSecureErrorResponse("Missing required fields: userId, title, body", 400);
+    if (!type || !storyId || !(type in NOTIFICATION_TEMPLATES)) {
+      return createSecureErrorResponse("Missing or invalid fields: type, storyId", 400);
     }
 
     const projectId = Deno.env.get("FIREBASE_PROJECT_ID");
@@ -78,7 +91,54 @@ const handler = async (req: Request): Promise<Response> => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
     );
 
-    // Fetch all push tokens for this user
+    // Derive the recipient server-side: notifications go to the STORY OWNER,
+    // never to a caller-supplied user id.
+    const { data: story, error: storyError } = await supabase
+      .from("stories")
+      .select("user_id")
+      .eq("id", storyId)
+      .maybeSingle();
+
+    if (storyError) {
+      console.error("Error fetching story:", storyError);
+      return createSecureErrorResponse("Failed to resolve story", 500);
+    }
+
+    const recipientId: string | null = story?.user_id ?? null;
+    if (!recipientId) {
+      return createSecureResponse({ sent: 0, message: "Story has no owner to notify" });
+    }
+
+    // Never notify yourself about your own action.
+    if (recipientId === auth.userId) {
+      return createSecureResponse({ sent: 0, message: "No self-notification" });
+    }
+
+    // Defense in depth: confirm the caller actually performed the action they
+    // claim, so this endpoint can't be used to spam a story owner.
+    const actionTable = type === "reaction" ? "reactions" : "comments";
+    const { data: actionRow, error: actionError } = await supabase
+      .from(actionTable)
+      .select("id")
+      .eq("story_id", storyId)
+      .eq("user_id", auth.userId)
+      .limit(1)
+      .maybeSingle();
+
+    if (actionError) {
+      console.error("Error verifying caller action:", actionError);
+      return createSecureErrorResponse("Failed to verify action", 500);
+    }
+    if (!actionRow) {
+      return createSecureErrorResponse("Forbidden", 403);
+    }
+
+    // Server-templated content + route. Caller cannot inject any of this.
+    const { title, body } = NOTIFICATION_TEMPLATES[type];
+    const data: Record<string, string> = { route: `/story/${storyId}` };
+    const userId = recipientId;
+
+    // Fetch all push tokens for the recipient
     const { data: tokens, error: tokensError } = await supabase
       .from("push_tokens")
       .select("id, token")

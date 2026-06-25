@@ -55,7 +55,6 @@ export const useAuth = () => {
         await supabase.functions.invoke('send-welcome-email', {
           body: { email: data.user.email }
         });
-        console.log('Welcome email sent successfully');
       } catch (emailError) {
         console.error('Failed to send welcome email:', emailError);
         // Do not fail signup if email fails
@@ -66,10 +65,12 @@ export const useAuth = () => {
   };
 
   const signIn = async (email: string, password: string) => {
-    // Check rate limit for login attempts
-    const identifier = `login_${email}_${window.location.hostname}`;
+    // Rate limit login attempts. NOTE: the bucket key and the limits are derived
+    // SERVER-SIDE (keyed on client IP for login); the args below are ignored by the
+    // hardened check_rate_limit and kept only for the RPC signature. Do not rely on
+    // them — varying them no longer affects enforcement.
     const { data: rateLimitOk } = await supabase.rpc('check_rate_limit', {
-      p_identifier: identifier,
+      p_identifier: email,
       p_action_type: 'login_attempt',
       p_max_attempts: 5,
       p_window_minutes: 15,

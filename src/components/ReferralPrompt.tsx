@@ -47,10 +47,10 @@ const ReferralPrompt = ({ userId }: { userId: string }) => {
         .eq("user_id", userId);
       // Update the cache so the prompt disappears on every device using this
       // query client instance (i.e. the current session).
-      queryClient.setQueryData(["referral-answered", userId], true);
+      queryClient.setQueryData<boolean>(["referral-answered", userId], true);
       setConfirmed(true);
       // Hide after a brief thank-you moment.
-      setTimeout(() => queryClient.setQueryData(["referral-answered", userId], true), 1000);
+      setTimeout(() => queryClient.setQueryData<boolean>(["referral-answered", userId], true), 1000);
     } finally {
       setSaving(false);
     }
@@ -60,7 +60,7 @@ const ReferralPrompt = ({ userId }: { userId: string }) => {
     // Mark locally so the prompt disappears this session, but don't write null
     // to the DB — leaving referral_source null means the prompt will reappear
     // on a new device/session, which is acceptable for a skip.
-    queryClient.setQueryData(["referral-answered", userId], true);
+    queryClient.setQueryData<boolean>(["referral-answered", userId], true);
   };
 
   if (isLoading || alreadyAnswered) return null;

@@ -47,7 +47,7 @@ const SharePublic = () => {
     }
     setSubmitting(true);
     try {
-      const { error } = await (supabase as any).from("stories").insert({
+      const { error } = await supabase.from("stories").insert({
         content: sanitizeText(content),
         subject_name: codename ? sanitizeText(codename) : null,
         user_id: null,

@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { sendPushNotification } from '@/lib/sendPushNotification';
+import { sendStoryEventNotification } from '@/lib/sendPushNotification';
 
 export const useToggleReaction = () => {
   const queryClient = useQueryClient();
@@ -105,12 +105,7 @@ export const useToggleReaction = () => {
         data.storyOwnerId &&
         data.reactorUserId !== data.storyOwnerId
       ) {
-        sendPushNotification(
-          data.storyOwnerId,
-          'New reaction 🚩',
-          'Someone reacted to your story',
-          { route: `/story/${storyId}` }
-        ).catch(console.error);
+        sendStoryEventNotification('reaction', storyId).catch(console.error);
       }
     },
     onMutate: async ({ storyId, reactionType = 'like' }) => {
