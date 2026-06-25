@@ -1,32 +1,20 @@
-## Goal
+Add a bulk reject action to the Verifications admin page, mirroring the existing bulk approve flow and sending a rejection email to each user.
 
-Let admins flip the four moderation queues (Verifications, Posts, Reports, Disputes) between **Newest first** and **Oldest first**. Today they're all hardcoded to newest-first, which makes it hard to clear the oldest backlog ("first-in, first-out" moderation).
+### What changes
+- In the existing pending-selection toolbar on `AdminVerifications.tsx` (next to "Bulk approve"), add a destructive "Reject selected" button.
+- Clicking it opens a confirmation dialog (shadcn `AlertDialog`) with:
+  - Count of users about to be rejected
+  - Optional shared "Reason" textarea (sent in the email and stored in `user_verifications.notes`)
+  - Confirm / Cancel
+- On confirm, iterate selected pending verifications and for each one:
+  1. Update `user_verifications` row → status `rejected` + notes (reuses existing `updateVerificationMutation` logic).
+  2. Fetch the user's email via the existing `get-user-email` edge function.
+  3. Invoke the existing `send-rejection-email` edge function with `{ email, username, reason }`.
+- Show progress in the toolbar ("Rejecting 3/10…") using the same `bulkProgress` pattern already used for bulk approve.
+- On completion: clear selection, invalidate `admin-verifications` and `admin-pending-counts`, toast success/failure counts (e.g. "Rejected 8, failed 2").
 
-## What changes
-
-Each admin page gets a small sort control in its header (next to existing filters):
-
-```
-[ Sort: Newest ▾ ]   options: Newest first / Oldest first
-```
-
-Selection is local to the page (state, not persisted) and re-runs the query.
-
-Pages affected:
-- `src/pages/AdminVerifications.tsx`
-- `src/pages/AdminPosts.tsx`
-- `src/pages/AdminReports.tsx`
-- `src/pages/AdminDisputes.tsx` (via `useDisputes` hook)
-
-## Technical notes
-
-- All four already `order('created_at', { ascending: false })`. Replace the hardcoded `false` with a `sortAsc` boolean piped through from a `useState<'newest' | 'oldest'>` on each page.
-- For pages that query inline (Verifications, Posts, Reports), include the sort state in the React Query `queryKey` so changing it refetches.
-- For Disputes, `useDisputes` accepts no args today — extend it to take `{ sort: 'newest' | 'oldest' }` and thread it through the query + key.
-- UI: reuse the shadcn `Select` component already used elsewhere in admin filters for visual consistency.
-- No DB / migration changes. No new dependencies.
-
-## Out of scope
-
-- Sorting by other fields (status, reporter, severity). Easy to add later if needed.
-- Persisting the choice across sessions.
+### Notes
+- No DB schema or edge function changes — `send-rejection-email` and `get-user-email` already exist and are used by the single-reject path.
+- "Select all" checkbox already exists for pending; same selection set is reused.
+- Reason is optional, matching the single-reject behavior.
+- Sends are sequential (same as bulk approve) to avoid hammering the email queue.
