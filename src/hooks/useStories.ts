@@ -33,7 +33,7 @@ export const useStories = () => {
   return useQuery({
     queryKey: ['stories', { blocked: blockedIds }],
     queryFn: async (): Promise<Story[]> => {
-      let query = supabase
+      let query: any = supabase
         .from('stories')
         .select(`
           *,
@@ -80,7 +80,7 @@ export const useInfiniteStories = (
     queryFn: async ({ pageParam = 0 }): Promise<Story[]> => {
       const from = (pageParam as number) * pageSize;
       const to = from + pageSize - 1;
-      let query = supabase
+      let query: any = supabase
         .from('stories')
         .select(`
           *,
