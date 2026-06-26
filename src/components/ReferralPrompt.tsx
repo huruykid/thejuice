@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
@@ -15,28 +15,44 @@ const REFERRAL_OPTIONS = [
 /**
  * One-time "how did you hear about us?" chip selector.
  *
- * Visibility is driven by the DB (`profiles.referral_source IS NULL`), not
- * localStorage — so answering on one device hides it everywhere, and quickly-
- * verified users see it in the full feed instead of losing it on transition.
+ * Shows EXACTLY once. The first time it would display, we persist
+ * `profiles.referral_prompt_dismissed = true` — so it never reappears, even if the user
+ * ignores it or taps Skip (previously it re-nagged every session/device). `referral_source`
+ * is only written when the user actually picks an option, keeping attribution data clean.
+ * (Casts to `any` on the two calls touching the new column until types are regenerated.)
  */
 const ReferralPrompt = ({ userId }: { userId: string }) => {
   const queryClient = useQueryClient();
   const [saving, setSaving] = useState(false);
   const [confirmed, setConfirmed] = useState(false);
+  const markedRef = useRef(false);
 
-  // Check whether this user has already answered.
+  // Hidden once the user has answered OR the prompt has already been shown/dismissed.
   const { data: alreadyAnswered, isLoading } = useQuery({
     queryKey: ["referral-answered", userId],
-    staleTime: Infinity, // once answered it never changes back
+    staleTime: Infinity,
     queryFn: async () => {
-      const { data } = await supabase
+      const { data } = await (supabase as any)
         .from("profiles")
-        .select("referral_source")
+        .select("referral_source, referral_prompt_dismissed")
         .eq("user_id", userId)
         .maybeSingle();
-      return !!data?.referral_source;
+      return !!data?.referral_source || !!data?.referral_prompt_dismissed;
     },
   });
+
+  // Persist "dismissed" the first time the prompt is eligible to show. This runs after the
+  // visibility query resolves to "not answered", so the prompt still shows this session and
+  // the user can answer — but it will never appear again, even if ignored.
+  useEffect(() => {
+    if (isLoading || alreadyAnswered || markedRef.current) return;
+    markedRef.current = true;
+    void (supabase as any)
+      .from("profiles")
+      .update({ referral_prompt_dismissed: true })
+      .eq("user_id", userId)
+      .then(() => {});
+  }, [isLoading, alreadyAnswered, userId]);
 
   const handleSelect = async (id: string) => {
     setSaving(true);
@@ -45,21 +61,16 @@ const ReferralPrompt = ({ userId }: { userId: string }) => {
         .from("profiles")
         .update({ referral_source: id })
         .eq("user_id", userId);
-      // Update the cache so the prompt disappears on every device using this
-      // query client instance (i.e. the current session).
-      queryClient.setQueryData<boolean>(["referral-answered", userId], true);
       setConfirmed(true);
       // Hide after a brief thank-you moment.
-      setTimeout(() => queryClient.setQueryData<boolean>(["referral-answered", userId], true), 1000);
+      setTimeout(() => queryClient.setQueryData<boolean>(["referral-answered", userId], true), 1200);
     } finally {
       setSaving(false);
     }
   };
 
   const handleSkip = () => {
-    // Mark locally so the prompt disappears this session, but don't write null
-    // to the DB — leaving referral_source null means the prompt will reappear
-    // on a new device/session, which is acceptable for a skip.
+    // Dismissal is already persisted (on first display); just hide it for this session.
     queryClient.setQueryData<boolean>(["referral-answered", userId], true);
   };
 
