@@ -9,18 +9,30 @@ import { Resend } from "npm:resend@2.0.0";
 // NOTE: secret is hardcoded to match the cron header, mirroring selfie-sweep. Move to a
 // Supabase secret (Deno.env.get('NUDGE_SECRET')) and rotate if this repo goes public.
 const NUDGE_SECRET = "ndg_8kQ2mWp5Rt7Yx3Bz9Nv4Lc6Hd1Fg0Js";
+const UNSUB_SECRET = "uns_5tH8aZ2qWp7Rx4Bz9Nv3Lc6Hd1Fg0Js"; // must match email-unsubscribe
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 const FROM = "Juice <hey@sipjuice.app>";
 const APP_URL = "https://sipjuice.app";
+const SUPA_URL = Deno.env.get("SUPABASE_URL") ?? "";
+const COMPANY_ADDRESS = Deno.env.get("COMPANY_ADDRESS") ?? "Juice &middot; 4460 W Shaw Ave, Fresno, CA 93722";
 
 const esc = (s: string) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
    .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 
+async function sign(value: string): Promise<string> {
+  const key = await crypto.subtle.importKey(
+    "raw", new TextEncoder().encode(UNSUB_SECRET),
+    { name: "HMAC", hash: "SHA-256" }, false, ["sign"],
+  );
+  const sig = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(value));
+  return [...new Uint8Array(sig)].map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
 // Brand tokens (mirrors src/index.css): amber primary #F8B23A + near-black text,
 // Barlow type with system fallback, 8px radius.
 const FONT = `"Barlow",-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif`;
-const nudgeHtml = (name: string) => {
+const nudgeHtml = (name: string, unsubUrl: string) => {
   const safe = esc(name);
   const link = `${APP_URL}/app?q=${encodeURIComponent(name)}`;
   return `
@@ -46,6 +58,12 @@ const nudgeHtml = (name: string) => {
       Only if it's real and it's yours. That's the whole deal here.
     </p>
     <p style="font-size:13px;color:#9A9A9A;margin:28px 0 0">&mdash; Juice</p>
+    <hr style="border:none;border-top:1px solid #DBDBDB;margin:24px 0 12px">
+    <p style="font-size:12px;line-height:1.5;color:#9A9A9A;margin:0">
+      You're receiving this because you created a Juice account.
+      <a href="${unsubUrl}" style="color:#737373">Unsubscribe</a>.<br>
+      ${COMPANY_ADDRESS}
+    </p>
   </div>`;
 };
 
@@ -78,11 +96,18 @@ Deno.serve(async (req) => {
       const email = u?.user?.email;
       if (!email) continue;
 
+      const token = await sign(c.user_id);
+      const unsubUrl = `${SUPA_URL}/functions/v1/email-unsubscribe?u=${encodeURIComponent(c.user_id)}&t=${token}`;
+
       await resend.emails.send({
         from: FROM,
         to: [email],
         subject: `still no tea on ${c.subject_name}`,
-        html: nudgeHtml(c.subject_name),
+        html: nudgeHtml(c.subject_name, unsubUrl),
+        headers: {
+          "List-Unsubscribe": `<${unsubUrl}>`,
+          "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+        },
       });
 
       // Record the send so we never nudge this user about this name again.
