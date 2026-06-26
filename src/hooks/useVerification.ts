@@ -4,6 +4,7 @@ import { rateLimiter } from '@/lib/security';
 import { useSecurityEventLogger } from './useSecurityAudit';
 import { useViewAs } from '@/contexts/ViewAsContext';
 import { useRealIsAdmin } from './useRealIsAdmin';
+import { track } from '@/lib/analytics';
 
 export interface UserVerification {
   id: string;
@@ -116,6 +117,8 @@ export const useVerification = (userId?: string) => {
       return verificationId;
     },
     onSuccess: () => {
+      // Activation signal: user submitted their verification selfie.
+      void track("verification_submitted");
       queryClient.invalidateQueries({ queryKey: ['user-verification'] });
     },
   });

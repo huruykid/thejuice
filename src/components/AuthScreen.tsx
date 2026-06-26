@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useNavigate, Link } from "react-router-dom";
 import { Eye, EyeOff, ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { track } from "@/lib/analytics";
 import SelfieCapture from './SelfieCapture';
 
 interface AuthScreenProps {
@@ -69,6 +70,8 @@ const AuthScreen = ({ onAuthSuccess }: AuthScreenProps) => {
             });
           }
         } else {
+          // Activation signal: new account created.
+          void track("signup");
           // For now, proceed to onboarding since we disabled email verification
           onAuthSuccess();
         }

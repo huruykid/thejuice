@@ -27,51 +27,32 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log(`Sending welcome email to authenticated user`);
 
+    const safeName = (username ?? "")
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+
     const emailResponse = await resend.emails.send({
-      from: "SipJuice <noreply@sipjuice.app>",
+      from: "Juice <hey@sipjuice.app>",
       to: [email],
-      subject: "Welcome to SipJuice! 🍹",
+      subject: "you're in. look someone up.",
       html: `
-        <div style="max-width: 600px; margin: 0 auto; font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-          <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px 20px; text-align: center; border-radius: 10px 10px 0 0;">
-            <h1 style="color: white; margin: 0; font-size: 28px;">Welcome to SipJuice! 🍹</h1>
+        <div style="display:none;max-height:0;overflow:hidden;opacity:0">Verified, anonymous, in. Here's the first thing most people do &mdash; search a name.</div>
+        <div style="max-width:520px;margin:0 auto;font-family:-apple-system,Helvetica,Arial,sans-serif;color:#111;padding:32px 24px">
+          <p style="font-size:16px;line-height:1.6;margin:0 0 18px">
+            ${safeName ? `${safeName}, you` : "You"} made it past the gate &mdash; verified, anonymous, in.
+          </p>
+          <p style="font-size:16px;line-height:1.6;margin:0 0 24px">
+            Here's the thing most people do first: search a name. Someone you matched with, someone a
+            friend warned you about, someone you're just curious about. Takes two seconds and no one
+            ever knows you looked.
+          </p>
+          <div style="margin:0 0 24px">
+            <a href="https://sipjuice.app/app" style="background:#111;color:#fff;text-decoration:none;padding:13px 24px;border-radius:999px;font-weight:600;display:inline-block">Look someone up &rarr;</a>
           </div>
-          
-          <div style="padding: 40px 20px; background: white; border-radius: 0 0 10px 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-            <h2 style="color: #333; margin-top: 0;">Hey${username ? ` ${username}` : ''}! 👋</h2>
-            
-            <p style="font-size: 16px; margin-bottom: 20px;">
-              Welcome to the most authentic dating community! We're thrilled you've joined us to share and discover real dating stories.
-            </p>
-            
-            <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
-              <h3 style="color: #667eea; margin-top: 0;">What's next?</h3>
-              <ul style="margin: 0; padding-left: 20px;">
-                <li>Share your first dating story</li>
-                <li>Explore stories from our community</li>
-                <li>Rate experiences and help others</li>
-                <li>Connect through shared experiences</li>
-              </ul>
-            </div>
-            
-            <p style="font-size: 16px;">
-              Ready to dive in? Start by sharing your first story or explore what others have experienced.
-            </p>
-            
-            <div style="text-align: center; margin: 30px 0;">
-              <a href="https://sipjuice.app" 
-                 style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 30px; text-decoration: none; border-radius: 25px; font-weight: bold; display: inline-block;">
-                Start Your Journey
-              </a>
-            </div>
-            
-            <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
-            
-            <p style="font-size: 14px; color: #666; text-align: center; margin-bottom: 0;">
-              Thanks for joining SipJuice - where every story matters! 💕<br>
-              <em>The SipJuice Team</em>
-            </p>
-          </div>
+          <p style="font-size:14px;line-height:1.6;color:#666;margin:0">
+            If she's already in here, you'll see it. If she's not&hellip; you might be the one who knows something.
+          </p>
+          <p style="font-size:13px;color:#999;margin:28px 0 0">&mdash; Juice</p>
         </div>
       `,
     });

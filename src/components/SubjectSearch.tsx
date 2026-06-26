@@ -1,7 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Search, Lock, Flag, CheckCircle2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { track } from "@/lib/analytics";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
@@ -23,9 +25,18 @@ interface SubjectPreview {
  * Reading real content stays gated by RLS; this only ever shows counts + verdicts + a
  * snippet for fictional seed entries (see search_subject_preview).
  */
-const SubjectSearch = ({ onStartVerification }: { onStartVerification: () => void }) => {
-  const [query, setQuery] = useState("");
-  const [debounced, setDebounced] = useState("");
+interface SubjectSearchProps {
+  /** Called when an unverified user taps a locked/verify CTA. Omitted for pending users. */
+  onStartVerification?: () => void;
+  /** Pending users have already submitted — show "unlocks when approved" instead of verify CTAs. */
+  pending?: boolean;
+}
+
+const SubjectSearch = ({ onStartVerification, pending = false }: SubjectSearchProps) => {
+  // Email nudges deep-link here as /app?q=<name> so the prompt continues the moment.
+  const [searchParams] = useSearchParams();
+  const [query, setQuery] = useState(() => searchParams.get("q") ?? "");
+  const [debounced, setDebounced] = useState(() => (searchParams.get("q") ?? "").trim());
 
   useEffect(() => {
     const t = setTimeout(() => setDebounced(query.trim()), 250);
@@ -52,6 +63,16 @@ const SubjectSearch = ({ onStartVerification }: { onStartVerification: () => voi
   const searching = debounced.length > 0;
   const noResults = searching && !isFetching && results.length === 0;
 
+  // Log a search_miss once per name. Powers the "still no tea on {name}" email nudge —
+  // the highest-intent posting prompt in the app. De-duped so keystrokes don't spam.
+  const missLoggedRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (noResults && debounced.length >= 2 && missLoggedRef.current !== debounced) {
+      missLoggedRef.current = debounced;
+      void track("search_miss", { name: debounced });
+    }
+  }, [noResults, debounced]);
+
   return (
     <div className="space-y-3">
       {/* Search hero */}
@@ -70,8 +91,16 @@ const SubjectSearch = ({ onStartVerification }: { onStartVerification: () => voi
       {noResults && (
         <Card className="p-5 text-center bg-card border-border">
           <p className="text-sm font-semibold text-foreground">No tea on "{debounced}" yet.</p>
-          <p className="text-sm text-muted-foreground mt-1 mb-3">Be the first to share your experience.</p>
-          <Button size="sm" onClick={onStartVerification}>Verify to be the first</Button>
+          {pending ? (
+            <p className="text-sm text-muted-foreground mt-1">
+              You'll be able to be the first once your account is approved.
+            </p>
+          ) : (
+            <>
+              <p className="text-sm text-muted-foreground mt-1 mb-3">Be the first to share your experience.</p>
+              <Button size="sm" onClick={onStartVerification}>Verify to be the first</Button>
+            </>
+          )}
         </Card>
       )}
 
@@ -101,12 +130,18 @@ const SubjectSearch = ({ onStartVerification }: { onStartVerification: () => voi
                   <div className="h-2.5 bg-muted rounded w-full" />
                   <div className="h-2.5 bg-muted rounded w-5/6" />
                 </div>
-                <button
-                  onClick={onStartVerification}
-                  className="absolute inset-0 flex items-center justify-center gap-1.5 text-xs font-semibold text-primary"
-                >
-                  <Lock className="h-3.5 w-3.5" /> Verify to read
-                </button>
+                {pending ? (
+                  <span className="absolute inset-0 flex items-center justify-center gap-1.5 text-xs font-semibold text-muted-foreground">
+                    <Lock className="h-3.5 w-3.5" /> Unlocks when you're approved
+                  </span>
+                ) : (
+                  <button
+                    onClick={onStartVerification}
+                    className="absolute inset-0 flex items-center justify-center gap-1.5 text-xs font-semibold text-primary"
+                  >
+                    <Lock className="h-3.5 w-3.5" /> Verify to read
+                  </button>
+                )}
               </div>
             )}
           </Card>

@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useState } from "react";
 import OnboardingTips from '@/components/OnboardingTips';
+import SubjectSearch from '@/components/SubjectSearch';
 
 interface VerificationPendingProps {
   onRefresh: () => void;
@@ -37,7 +38,7 @@ const VerificationPending = ({ onRefresh }: VerificationPendingProps) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-soft flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-soft flex flex-col items-center p-4 py-8 gap-5">
       <Card className="w-full max-w-md mx-auto">
         <CardHeader className="text-center space-y-4">
           <img src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" alt="Juice" className="h-16 w-16 mx-auto" />
@@ -99,6 +100,14 @@ const VerificationPending = ({ onRefresh }: VerificationPendingProps) => {
           <OnboardingTips step="pending" />
         </CardContent>
       </Card>
+
+      {/* While you wait — let pending users explore who already has tea */}
+      <div className="w-full max-w-md">
+        <p className="text-sm font-semibold text-foreground text-center mb-2">
+          While you wait — look someone up
+        </p>
+        <SubjectSearch pending />
+      </div>
     </div>
   );
 };

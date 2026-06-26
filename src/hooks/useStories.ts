@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tansta
 import { supabase } from '@/integrations/supabase/client';
 import { sanitizeText, validateStoryContent, validateRating, validateTag } from '@/lib/security';
 import { useBlockedUserIds } from '@/hooks/useBlockedUserIds';
+import { track } from '@/lib/analytics';
 
 export interface Story {
   id: string;
@@ -250,7 +251,9 @@ export const useCreateStory = () => {
 
       return story;
     },
-    onSuccess: () => {
+    onSuccess: (story) => {
+      // Activation signal: a real (non-seed) post was submitted.
+      void track("post_created", { story_id: story?.id, has_subject: !!story?.subject_name });
       queryClient.invalidateQueries({ queryKey: ['stories'] });
       queryClient.invalidateQueries({ queryKey: ['stories', 'mine'] });
       queryClient.invalidateQueries({ queryKey: ['has-approved-post'] });

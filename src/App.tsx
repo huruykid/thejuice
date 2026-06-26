@@ -3,7 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { lazy, Suspense, useState } from "react";
+import { lazy, Suspense, useState, useEffect } from "react";
 import { SecurityProvider } from "@/components/SecurityProvider";
 import AppShell from "@/components/layout/AppShell";
 import PublicLayout from "@/components/layout/PublicLayout";
@@ -46,6 +46,7 @@ const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 import { useAuth } from "./hooks/useAuth";
 import { useVerification } from "./hooks/useVerification";
 import { useRealIsAdmin } from "./hooks/useRealIsAdmin";
+import { trackAppOpenOnce } from "./lib/analytics";
 import { useScreenshotProtection } from "./hooks/useScreenshotProtection";
 import { useIosCaptureProtection } from "./hooks/useIosCaptureProtection";
 import { useTheme } from "./hooks/useTheme";
@@ -147,6 +148,18 @@ const ExploreWrapper = () => {
   );
 };
 
+/**
+ * Retention signal: logs one `app_open` event per browser session, once a user is present.
+ * Mounted once near the router root. Renders nothing.
+ */
+const AppOpenTracker = () => {
+  const { user } = useAuth();
+  useEffect(() => {
+    if (user) trackAppOpenOnce();
+  }, [user]);
+  return null;
+};
+
 const queryClient = new QueryClient();
 
 const App = () => {
@@ -164,6 +177,7 @@ const App = () => {
         <Toaster />
         <Sonner />
         <BrowserRouter>
+        <AppOpenTracker />
         <ViewAsBar />
         <Suspense fallback={<RouteFallback />}>
         <Routes>
