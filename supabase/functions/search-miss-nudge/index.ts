@@ -17,12 +17,20 @@ const esc = (s: string) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
    .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 
+// Brand tokens (mirrors src/index.css): amber primary #F8B23A + near-black text,
+// Barlow type with system fallback, 8px radius.
+const FONT = `"Barlow",-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif`;
 const nudgeHtml = (name: string) => {
   const safe = esc(name);
   const link = `${APP_URL}/app?q=${encodeURIComponent(name)}`;
   return `
+  <style>@import url('https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700&display=swap');</style>
   <div style="display:none;max-height:0;overflow:hidden;opacity:0">You searched ${safe} and came up empty — you could be the first.</div>
-  <div style="max-width:520px;margin:0 auto;font-family:-apple-system,Helvetica,Arial,sans-serif;color:#111;padding:32px 24px">
+  <div style="max-width:520px;margin:0 auto;font-family:${FONT};color:#0A0A0A;padding:32px 24px">
+    <div style="text-align:center;margin:0 0 28px">
+      <img src="${APP_URL}/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" alt="The Juice App" width="56" height="56" style="display:inline-block;border:0;margin:0 0 8px">
+      <div style="font-size:22px;font-weight:700;letter-spacing:-0.01em;color:#0A0A0A">The <span style="color:#F8B23A">Juice</span> App</div>
+    </div>
     <p style="font-size:16px;line-height:1.6;margin:0 0 18px">
       You looked up <strong>${safe}</strong> a couple days ago and came up empty.
     </p>
@@ -32,12 +40,12 @@ const nudgeHtml = (name: string) => {
       never attached.
     </p>
     <div style="margin:0 0 24px">
-      <a href="${link}" style="background:#111;color:#fff;text-decoration:none;padding:13px 24px;border-radius:999px;font-weight:600;display:inline-block">Share what you know &rarr;</a>
+      <a href="${link}" style="background:#F8B23A;color:#0A0A0A;text-decoration:none;padding:13px 26px;border-radius:8px;font-weight:600;display:inline-block">Share what you know &rarr;</a>
     </div>
-    <p style="font-size:14px;line-height:1.6;color:#666;margin:0">
+    <p style="font-size:14px;line-height:1.6;color:#737373;margin:0">
       Only if it's real and it's yours. That's the whole deal here.
     </p>
-    <p style="font-size:13px;color:#999;margin:28px 0 0">&mdash; Juice</p>
+    <p style="font-size:13px;color:#9A9A9A;margin:28px 0 0">&mdash; Juice</p>
   </div>`;
 };
 
