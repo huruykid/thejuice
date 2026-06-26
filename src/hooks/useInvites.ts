@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
+// The invite system was removed (unused + insecure — it bypassed the rate-limited
+// generator and was not wired into the live onboarding). This stub remains only so any
+// stray import keeps compiling; it performs no database calls. If a referral/invite loop
+// is wanted later, build it fresh and securely (server-issued codes only).
 
 export interface InviteCode {
   id: string;
@@ -18,92 +18,12 @@ export interface InviteStats {
   invites_used: number;
 }
 
-export const useInvites = () => {
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
-
-  // Get user's invite stats
-  const { data: inviteStats, isLoading: statsLoading } = useQuery({
-    queryKey: ['invite-stats'],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('User not authenticated');
-
-      const { data, error } = await supabase
-        .from('user_invite_stats')
-        .select('invites_remaining, invites_sent, invites_used')
-        .eq('user_id', user.id)
-        .single();
-
-      if (error) throw error;
-      return data as InviteStats;
-    },
-  });
-
-  // Get user's invite codes
-  const { data: inviteCodes, isLoading: codesLoading } = useQuery({
-    queryKey: ['invite-codes'],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('User not authenticated');
-
-      const { data, error } = await supabase
-        .from('invite_codes')
-        .select('id, code, created_at, expires_at, used_by, used_at')
-        .eq('created_by', user.id)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      return data as InviteCode[];
-    },
-  });
-
-  // Generate new invite code
-  const generateInviteMutation = useMutation({
-    mutationFn: async () => {
-      // Server-side function performs rate limit, quota check, code generation,
-      // insert, and stats decrement atomically.
-      const { data, error } = await supabase
-        .rpc('generate_user_invite_code');
-
-      if (error) throw error;
-      return data as string;
-    },
-    onSuccess: (code) => {
-      toast({
-        title: "Invite code generated!",
-        description: `Your invite code: ${code}`,
-      });
-      queryClient.invalidateQueries({ queryKey: ['invite-stats'] });
-      queryClient.invalidateQueries({ queryKey: ['invite-codes'] });
-    },
-    onError: (error: any) => {
-      toast({
-        title: "Failed to generate invite",
-        description: error.message,
-        variant: "destructive"
-      });
-    }
-  });
-
-  // Validate invite code (for signup)
-  const validateInviteCode = async (code: string): Promise<boolean> => {
-    try {
-      const { data, error } = await supabase
-        .rpc('validate_invite_code', { code_param: code });
-      return !error && data === true;
-    } catch {
-      return false;
-    }
-  };
-
-  return {
-    inviteStats,
-    inviteCodes,
-    statsLoading,
-    codesLoading,
-    generateInvite: generateInviteMutation.mutate,
-    generatingInvite: generateInviteMutation.isPending,
-    validateInviteCode
-  };
-};
+export const useInvites = () => ({
+  inviteCodes: [] as InviteCode[],
+  stats: { invites_remaining: 0, invites_sent: 0, invites_used: 0 } as InviteStats,
+  isLoading: false,
+  generateInviteCode: async () => {
+    throw new Error('Invites are disabled.');
+  },
+  isGenerating: false,
+});

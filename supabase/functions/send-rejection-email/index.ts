@@ -20,9 +20,18 @@ const handler = async (req: Request): Promise<Response> => {
     if (adminCheck) return adminCheck;
 
     const { email, username, reason }: RejectionEmailRequest = await req.json();
-    const greeting = username ? `Hey ${username},` : "Hey,";
+
+    // Escape any user/admin-supplied text before interpolating into the email HTML.
+    const escapeHtml = (s: string) =>
+      s.replace(/&/g, "&amp;")
+       .replace(/</g, "&lt;")
+       .replace(/>/g, "&gt;")
+       .replace(/"/g, "&quot;")
+       .replace(/'/g, "&#39;");
+
+    const greeting = username ? `Hey ${escapeHtml(username)},` : "Hey,";
     const reasonBlock = reason
-      ? `<p style="margin:0 0 16px 0;"><strong>Reviewer note:</strong> ${reason}</p>`
+      ? `<p style="margin:0 0 16px 0;"><strong>Reviewer note:</strong> ${escapeHtml(reason)}</p>`
       : "";
 
     const emailResponse = await resend.emails.send({
