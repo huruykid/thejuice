@@ -16,7 +16,7 @@ const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 const FROM = "Juice <hey@sipjuice.app>";
 const APP_URL = "https://sipjuice.app";
 const SUPA_URL = Deno.env.get("SUPABASE_URL") ?? "";
-const COMPANY_ADDRESS = Deno.env.get("COMPANY_ADDRESS") ?? "[set COMPANY_ADDRESS secret — required before mass send]";
+const COMPANY_ADDRESS = Deno.env.get("COMPANY_ADDRESS") ?? "Juice &middot; 4460 W Shaw Ave, Fresno, CA 93722";
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
