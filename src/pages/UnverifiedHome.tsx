@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { ShieldCheck, Sparkles, Lock, Clock, CheckCircle2, XCircle } from "lucide-react";
+import { ShieldCheck, Sparkles, Clock, CheckCircle2, XCircle } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -7,6 +7,7 @@ import Navigation from "@/components/Navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { useMySubmissions } from "@/hooks/useStories";
 import ReferralPrompt from "@/components/ReferralPrompt";
+import SubjectSearch from "@/components/SubjectSearch";
 
 interface UnverifiedHomeProps {
   onCreateStory: () => void;
@@ -45,6 +46,9 @@ const UnverifiedHome = ({ onCreateStory, onStartVerification }: UnverifiedHomePr
       </header>
 
       <div className="max-w-xl mx-auto px-4 py-4 space-y-4">
+        {/* Search-led magic moment — look someone up before anything else */}
+        <SubjectSearch onStartVerification={onStartVerification} />
+
         {/* Hero CTA */}
         <Card className="p-5 bg-card border-border">
           <div className="flex items-start gap-3 mb-3">
@@ -83,37 +87,6 @@ const UnverifiedHome = ({ onCreateStory, onStartVerification }: UnverifiedHomePr
 
         {/* "How did you hear about us?" — below CTAs so it doesn't block onboarding */}
         {user && <ReferralPrompt userId={user.id} />}
-
-        {/* Blurred teaser feed (synthetic) */}
-        <div className="relative rounded-xl overflow-hidden border border-border">
-          <div className="pointer-events-none select-none" aria-hidden>
-            {[0, 1, 2].map((i) => (
-              <div key={i} className="p-4 border-b border-border last:border-b-0 bg-card">
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="h-8 w-8 rounded-full bg-muted" />
-                  <div className="h-3 w-24 bg-muted rounded" />
-                </div>
-                <div className="space-y-2 blur-md saturate-50">
-                  <div className="h-3 w-full bg-muted rounded" />
-                  <div className="h-3 w-5/6 bg-muted rounded" />
-                  <div className="h-3 w-4/6 bg-muted rounded" />
-                  <div className="h-3 w-3/6 bg-muted rounded" />
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-background/50 backdrop-blur-sm">
-            <div className="h-10 w-10 rounded-full bg-primary/15 flex items-center justify-center mb-3">
-              <Lock className="h-5 w-5 text-primary" />
-            </div>
-            <p className="text-sm font-semibold text-foreground text-center px-6">
-              Verify to read real stories from verified men.
-            </p>
-            <Button onClick={onStartVerification} size="sm" className="mt-3">
-              Verify your account
-            </Button>
-          </div>
-        </div>
 
         {/* Your submissions */}
         <div>
