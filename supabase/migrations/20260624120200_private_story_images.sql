@@ -12,14 +12,15 @@ UPDATE storage.buckets SET public = false WHERE id = 'story-images';
 
 DROP POLICY IF EXISTS "Anyone can view story images" ON storage.objects;
 
-CREATE POLICY "Verified users and admins can view story images"
+CREATE POLICY "Story images: seeds for any signed-in user, all for verified"
 ON storage.objects
 FOR SELECT
 TO authenticated
 USING (
   bucket_id = 'story-images'
   AND (
-    is_user_verified(auth.uid())
+    starts_with(name, 'seed/')                         -- synthetic seed avatars: any signed-in user
+    OR is_user_verified(auth.uid())                    -- real subject photos: verified members only
     OR current_user_has_role('admin'::app_role)
   )
 );

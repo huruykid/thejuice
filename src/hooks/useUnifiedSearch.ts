@@ -196,20 +196,17 @@ export const useUnifiedSearch = () => {
         }
       }
 
-      // Search stories by subject phone
+      // Search stories by subject phone — matched SERVER-SIDE against a one-way hash.
+      // The raw number is hashed in the database and never stored or returned, so we
+      // never query the raw column from the client. (RPC cast until types are regenerated.)
       if (normalizedPhone) {
-        const { data: subjectPhoneResults, error: subjectPhoneError } = await supabase
-          .from('stories')
-          .select(`
-            *,
-            profiles!stories_profile_id_fkey(id, anonymous_username),
-            story_tags(tag)
-          `)
-          .eq('subject_phone', normalizedPhone)
-          .limit(5);
+        const { data: subjectPhoneResults, error: subjectPhoneError } = await (supabase.rpc as any)(
+          'search_stories_by_phone',
+          { p: normalizedPhone }
+        );
 
-        if (!subjectPhoneError && subjectPhoneResults) {
-          subjectPhoneResults.forEach(story => {
+        if (!subjectPhoneError && Array.isArray(subjectPhoneResults)) {
+          subjectPhoneResults.forEach((story: any) => {
             results.push({
               type: 'story',
               story: {

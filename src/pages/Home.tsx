@@ -13,7 +13,6 @@ import { useInfiniteStories } from "@/hooks/useStories";
 import { useNearbyStories } from "@/hooks/useNearbyStories";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import { useFeedGate } from "@/hooks/useFeedGate";
-import UnlockBanner from "@/components/UnlockBanner";
 import ReferralPrompt from "@/components/ReferralPrompt";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -124,10 +123,6 @@ const Home = ({ onCreateStory }: HomeProps) => {
       <div className="max-w-xl mx-auto sm:px-0 py-0 sm:py-2">
         {/* Catches users who verified before answering the referral question */}
         {user && <ReferralPrompt userId={user.id} />}
-
-        {feedMode === "seed" && (
-          <UnlockBanner onCreateStory={onCreateStory} />
-        )}
 
         {storiesLoading && stories.length === 0 ? (
           <div>

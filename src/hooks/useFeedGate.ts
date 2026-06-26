@@ -48,11 +48,15 @@ export const useFeedGate = (userId?: string) => {
 
   const isLoading = communityCount.isLoading || userPost.isLoading;
 
+  // Gate removed (growth): verified users always get the full community feed —
+  // they no longer have to post their own story first. RLS still enforces that only
+  // verified users can read community posts. The counts above are kept for the
+  // UnlockBanner / progress UI only.
   const communityUnlocked =
     (communityCount.data ?? 0) >= COMMUNITY_UNLOCK_THRESHOLD;
-  const userUnlocked = communityUnlocked || (userPost.data ?? false);
+  const userUnlocked = true;
 
-  const feedMode: "community" | "seed" = userUnlocked ? "community" : "seed";
+  const feedMode: "community" | "seed" = "community";
 
   return { feedMode, isLoading };
 };
