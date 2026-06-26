@@ -40,6 +40,7 @@ const AutomatedCampaignDashboard = lazy(() => import("./pages/AutomatedCampaignD
 const Blog = lazy(() => import("./pages/Blog"));
 const BlogPost = lazy(() => import("./pages/BlogPost"));
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
+const Terms = lazy(() => import("./pages/Terms"));
 const Support = lazy(() => import("./pages/Support"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 import { useAuth } from "./hooks/useAuth";
@@ -257,6 +258,7 @@ const App = () => {
           <Route path="/blog/:slug" element={<PublicLayout><BlogPost /></PublicLayout>} />
           {/* Legal */}
           <Route path="/privacy-policy" element={<PublicLayout><PrivacyPolicy /></PublicLayout>} />
+          <Route path="/terms" element={<PublicLayout><Terms /></PublicLayout>} />
           <Route path="/support" element={<PublicLayout><Support /></PublicLayout>} />
           {/* Auth flows */}
           <Route path="/reset-password" element={<ResetPassword />} />

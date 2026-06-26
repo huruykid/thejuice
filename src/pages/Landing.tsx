@@ -423,6 +423,7 @@ const Landing = () => {
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li><a href="/how-it-works" className="hover:text-juice-orange transition-colors">How it works</a></li>
                 <li><a href="/privacy-policy" className="hover:text-juice-orange transition-colors">Privacy policy</a></li>
+                <li><a href="/terms" className="hover:text-juice-orange transition-colors">Terms &amp; guidelines</a></li>
                 <li><a href="/dispute" className="hover:text-juice-orange transition-colors">Request story removal</a></li>
               </ul>
             </div>

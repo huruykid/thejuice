@@ -7,7 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 
 import { useUserSession } from "@/hooks/useUserSession";
 import { useToast } from "@/hooks/use-toast";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Eye, EyeOff, ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import SelfieCapture from './SelfieCapture';
@@ -29,7 +29,8 @@ const AuthScreen = ({ onAuthSuccess }: AuthScreenProps) => {
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [resetEmail, setResetEmail] = useState("");
   const [resetSent, setResetSent] = useState(false);
-  
+  const [agreed, setAgreed] = useState(false);
+
   const { signIn, signUp, user } = useAuth();
   
   const { toast } = useToast();
@@ -37,6 +38,16 @@ const AuthScreen = ({ onAuthSuccess }: AuthScreenProps) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (isSignUp && !agreed) {
+      toast({
+        title: "One more thing",
+        description: "You must confirm you're 18+ and agree to the Terms & Community Guidelines.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -287,12 +298,29 @@ const AuthScreen = ({ onAuthSuccess }: AuthScreenProps) => {
                 </Button>
               </div>
 
+              {isSignUp && (
+                <label className="flex items-start gap-2 text-xs text-muted-foreground leading-relaxed cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={agreed}
+                    onChange={(e) => setAgreed(e.target.checked)}
+                    className="mt-0.5 h-4 w-4 shrink-0 accent-juice-orange"
+                  />
+                  <span>
+                    I confirm I'm 18 or older and agree to the{" "}
+                    <Link to="/terms" target="_blank" className="text-juice-orange underline">
+                      Terms &amp; Community Guidelines
+                    </Link>.
+                  </span>
+                </label>
+              )}
+
               <Button
                 type="submit"
                 variant="juice"
                 size="lg"
                 className="w-full h-14 text-base"
-                disabled={loading}
+                disabled={loading || (isSignUp && !agreed)}
               >
                 {loading ? "Please wait..." : (isSignUp ? "Create Account" : "Sign In")}
               </Button>
