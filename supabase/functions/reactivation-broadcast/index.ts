@@ -1,17 +1,11 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { Resend } from "npm:resend@2.0.0";
 
-// One-time reactivation broadcast to existing users: "come look someone up."
-// Marketing email, so it is CAN-SPAM compliant — visible unsubscribe link, List-Unsubscribe
-// header, and a postal address (from the COMPANY_ADDRESS secret). Excludes anyone who has
-// opted out and anyone already emailed (tracked via analytics_events 'reactivation_emailed'),
-// so batches are idempotent and resumable.
-//
-// Auth: secret-gated (verify_jwt off). Trigger one-off via pg_net from SQL.
-// Body: { test_email?: string }  -> sends a single sample to that address only.
-//       { page?: number, per_page?: number } -> sends one batch of real users.
-const BROADCAST_SECRET = "brd_9pL3xV6mWq2Rt8Bz5Nv7Lc4Hd0Fg1Js";
-const UNSUB_SECRET = "uns_5tH8aZ2qWp7Rx4Bz9Nv3Lc6Hd1Fg0Js"; // must match email-unsubscribe
+// One-time reactivation broadcast: "come look someone up." CAN-SPAM compliant
+// (unsubscribe link + List-Unsubscribe header + postal address). Excludes opt-outs and
+// already-emailed users (analytics_events 'reactivation_emailed'); batches are idempotent.
+// Gate ('broadcast_secret') + unsubscribe-HMAC ('unsub_secret') fetched from Vault at
+// runtime — never hardcoded. A send is only counted/recorded when Resend confirms success.
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 const FROM = "Juice <hey@sipjuice.app>";
 const APP_URL = "https://sipjuice.app";
@@ -20,17 +14,15 @@ const COMPANY_ADDRESS = Deno.env.get("COMPANY_ADDRESS") ?? "Juice &middot; 4460 
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-async function sign(value: string): Promise<string> {
+async function sign(value: string, secret: string): Promise<string> {
   const key = await crypto.subtle.importKey(
-    "raw", new TextEncoder().encode(UNSUB_SECRET),
+    "raw", new TextEncoder().encode(secret),
     { name: "HMAC", hash: "SHA-256" }, false, ["sign"],
   );
   const sig = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(value));
   return [...new Uint8Array(sig)].map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
-// Brand tokens (mirrors src/index.css): amber primary #F8B23A with near-black text,
-// Barlow type with system fallback, 8px radius, hairline #DBDBDB border.
 const FONT = `"Barlow",-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif`;
 const emailHtml = (unsubUrl: string) => `
   <style>@import url('https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700&display=swap');</style>
@@ -62,10 +54,10 @@ const emailHtml = (unsubUrl: string) => `
     </p>
   </div>`;
 
-async function sendTo(email: string, uid: string) {
-  const token = await sign(uid);
+async function sendTo(email: string, uid: string, unsubSecret: string): Promise<unknown | null> {
+  const token = await sign(uid, unsubSecret);
   const unsubUrl = `${SUPA_URL}/functions/v1/email-unsubscribe?u=${encodeURIComponent(uid)}&t=${token}`;
-  await resend.emails.send({
+  const { error } = await resend.emails.send({
     from: FROM,
     to: [email],
     subject: "who are you curious about?",
@@ -75,33 +67,35 @@ async function sendTo(email: string, uid: string) {
       "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
     },
   });
+  return error ?? null;
 }
 
 Deno.serve(async (req) => {
-  if (req.headers.get("x-broadcast-secret") !== BROADCAST_SECRET) {
+  const supabase = createClient(SUPA_URL, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "");
+
+  const { data: bSecret } = await supabase.rpc("internal_secret", { p_name: "broadcast_secret" });
+  if (!bSecret || req.headers.get("x-broadcast-secret") !== bSecret) {
     return new Response(JSON.stringify({ error: "forbidden" }), {
       status: 403, headers: { "Content-Type": "application/json" },
     });
   }
+  const { data: unsubSecret } = await supabase.rpc("internal_secret", { p_name: "unsub_secret" });
+  if (!unsubSecret) {
+    return new Response(JSON.stringify({ error: "unsub secret unavailable" }), {
+      status: 503, headers: { "Content-Type": "application/json" },
+    });
+  }
 
   const body = await req.json().catch(() => ({}));
-  const supabase = createClient(SUPA_URL, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "");
 
   // Test mode: one sample to a single address, no DB writes.
   if (body.test_email) {
-    try {
-      await sendTo(body.test_email, "test-preview-user");
-      return new Response(JSON.stringify({ test: true, sent_to: body.test_email }), {
-        headers: { "Content-Type": "application/json" },
-      });
-    } catch (e) {
-      return new Response(JSON.stringify({ test: true, error: String(e) }), {
-        status: 500, headers: { "Content-Type": "application/json" },
-      });
-    }
+    const err = await sendTo(body.test_email, "test-preview-user", unsubSecret as string);
+    return new Response(JSON.stringify({ test: true, sent_to: body.test_email, error: err }), {
+      status: err ? 500 : 200, headers: { "Content-Type": "application/json" },
+    });
   }
 
-  // Real batch.
   const page = Number(body.page ?? 1);
   const perPage = Number(body.per_page ?? 100);
 
@@ -128,10 +122,11 @@ Deno.serve(async (req) => {
   for (const u of users) {
     if (skip.has(u.id)) continue;
     try {
-      await sendTo(u.email!, u.id);
+      const err = await sendTo(u.email!, u.id, unsubSecret as string);
+      if (err) { errors.push(`${u.id}: ${JSON.stringify(err)}`); continue; }
       await supabase.from("analytics_events").insert({ user_id: u.id, event: "reactivation_emailed", props: {} });
       sent++;
-      await sleep(120); // ~8/sec — stay under Resend rate limits
+      await sleep(120);
     } catch (e) {
       errors.push(`${u.id}: ${String(e)}`);
     }

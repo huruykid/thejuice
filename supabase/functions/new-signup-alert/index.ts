@@ -3,11 +3,7 @@ import { Resend } from "npm:resend@2.0.0";
 
 // Founder alert: emails ADMIN_ALERT_EMAIL whenever a new user signs up.
 // Triggered server-side by the on_auth_user_created_notify trigger on auth.users (via
-// pg_net), so it fires for every signup regardless of how the account was created.
-// Internal email (to the founder only) — no unsubscribe/CAN-SPAM footer needed.
-//
-// NOTE: secret hardcoded to match the trigger header, mirroring the other internal secrets.
-const SIGNUP_SECRET = "sgn_4mB7xK9qWp2Rt6Bz3Nv8Lc5Hd1Fg0Js";
+// pg_net). Gate secret ('signup_secret') is fetched from Vault at runtime — never hardcoded.
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 const FROM = "Juice <hey@sipjuice.app>";
 const ADMIN_EMAIL = Deno.env.get("ADMIN_ALERT_EMAIL") ?? "huruydesigns@gmail.com";
@@ -17,19 +13,20 @@ const esc = (s: string) =>
    .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 
 Deno.serve(async (req) => {
-  if (req.headers.get("x-signup-secret") !== SIGNUP_SECRET) {
+  const supabase = createClient(
+    Deno.env.get("SUPABASE_URL") ?? "",
+    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+  );
+
+  const { data: secret } = await supabase.rpc("internal_secret", { p_name: "signup_secret" });
+  if (!secret || req.headers.get("x-signup-secret") !== secret) {
     return new Response(JSON.stringify({ error: "forbidden" }), {
       status: 403, headers: { "Content-Type": "application/json" },
     });
   }
 
   const { email, created_at } = await req.json().catch(() => ({}));
-  const supabase = createClient(
-    Deno.env.get("SUPABASE_URL") ?? "",
-    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
-  );
 
-  // Running total — a nice growth pulse in every alert.
   let total: number | null = null;
   try {
     const { count } = await supabase.from("profiles").select("*", { count: "exact", head: true });

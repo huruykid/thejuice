@@ -7,15 +7,20 @@ LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = public
 AS $$
+DECLARE v_secret text;
 BEGIN
-  PERFORM net.http_post(
-    url := 'https://mccehajzdnpkpusffhco.supabase.co/functions/v1/new-signup-alert',
-    headers := jsonb_build_object(
-      'Content-Type', 'application/json',
-      'x-signup-secret', 'sgn_4mB7xK9qWp2Rt6Bz3Nv8Lc5Hd1Fg0Js'
-    ),
-    body := jsonb_build_object('user_id', NEW.id, 'email', NEW.email, 'created_at', NEW.created_at)
-  );
+  BEGIN
+    SELECT decrypted_secret INTO v_secret FROM vault.decrypted_secrets WHERE name = 'signup_secret';
+    IF v_secret IS NOT NULL THEN
+      PERFORM net.http_post(
+        url := 'https://mccehajzdnpkpusffhco.supabase.co/functions/v1/new-signup-alert',
+        headers := jsonb_build_object('Content-Type', 'application/json', 'x-signup-secret', v_secret),
+        body := jsonb_build_object('user_id', NEW.id, 'email', NEW.email, 'created_at', NEW.created_at)
+      );
+    END IF;
+  EXCEPTION WHEN OTHERS THEN
+    NULL; -- alerting must never block a signup
+  END;
   RETURN NEW;
 END;
 $$;

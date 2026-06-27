@@ -2,18 +2,18 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 // One-off seeding helper: pulls synthetic cartoon avatars (DiceBear — clearly
 // illustrations, not real or photorealistic people) and stores them in the
-// story-images bucket for use on fictional seed stories. Gated by a shared secret.
-// NOTE: secret is hardcoded to match the deployed version; relocate/rotate if this
-// repo is public (see supabase/functions/selfie-sweep/index.ts).
-const SECRET = 'swp_3xR9Kqz7Lm2Tn8Vb4Wd6Yc1Pf5Hg0Js';
+// story-images bucket for use on fictional seed stories. Gated by a shared secret
+// ('sweep_secret') fetched from Supabase Vault at runtime — never hardcoded.
 const BUCKET = 'story-images';
 const STYLES = ['lorelei', 'adventurer', 'notionists', 'micah', 'avataaars', 'personas'];
 
 Deno.serve(async (req) => {
-  if (req.headers.get('x-sweep-secret') !== SECRET) {
+  const supabase = createClient(Deno.env.get('SUPABASE_URL') ?? '', Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '');
+
+  const { data: secret } = await supabase.rpc('internal_secret', { p_name: 'sweep_secret' });
+  if (!secret || req.headers.get('x-sweep-secret') !== secret) {
     return new Response(JSON.stringify({ error: 'forbidden' }), { status: 403, headers: { 'Content-Type': 'application/json' } });
   }
-  const supabase = createClient(Deno.env.get('SUPABASE_URL') ?? '', Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '');
 
   const results: any[] = [];
   for (let i = 1; i <= 12; i++) {

@@ -9,7 +9,7 @@ select cron.schedule(
     url := 'https://mccehajzdnpkpusffhco.supabase.co/functions/v1/search-miss-nudge',
     headers := jsonb_build_object(
       'Content-Type', 'application/json',
-      'x-nudge-secret', 'ndg_8kQ2mWp5Rt7Yx3Bz9Nv4Lc6Hd1Fg0Js'
+      'x-nudge-secret', (select decrypted_secret from vault.decrypted_secrets where name='nudge_secret')
     ),
     body := '{}'::jsonb
   );

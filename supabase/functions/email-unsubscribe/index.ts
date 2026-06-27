@@ -2,17 +2,13 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 // Public one-click unsubscribe endpoint for marketing/reactivation email (CAN-SPAM).
 // Link format: /functions/v1/email-unsubscribe?u=<user_id>&t=<hmac>
-// The HMAC (signed with UNSUB_SECRET) proves the link was issued by us, so nobody can
-// unsubscribe someone else by guessing a user id. verify_jwt is off (recipients aren't
-// logged in when they click).
-//
-// NOTE: secret hardcoded to match the broadcast function, mirroring the other internal
-// secrets in this project. Move both to a shared Supabase secret and rotate before going public.
-const UNSUB_SECRET = "uns_5tH8aZ2qWp7Rx4Bz9Nv3Lc6Hd1Fg0Js";
+// The HMAC (signed with the 'unsub_secret' kept in Vault) proves the link was issued by us.
+// verify_jwt is off (recipients aren't logged in when they click). The secret is fetched
+// from Vault at runtime via internal_secret() — never hardcoded.
 
-async function sign(value: string): Promise<string> {
+async function sign(value: string, secret: string): Promise<string> {
   const key = await crypto.subtle.importKey(
-    "raw", new TextEncoder().encode(UNSUB_SECRET),
+    "raw", new TextEncoder().encode(secret),
     { name: "HMAC", hash: "SHA-256" }, false, ["sign"],
   );
   const sig = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(value));
@@ -36,13 +32,16 @@ Deno.serve(async (req) => {
 
   if (!uid || !token) return html(page("Invalid unsubscribe link."), 400);
 
-  const expected = await sign(uid);
-  if (token !== expected) return html(page("Invalid or expired unsubscribe link."), 400);
-
   const supabase = createClient(
     Deno.env.get("SUPABASE_URL") ?? "",
     Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
   );
+
+  const { data: secret } = await supabase.rpc("internal_secret", { p_name: "unsub_secret" });
+  if (!secret) return html(page("Service unavailable."), 503);
+
+  const expected = await sign(uid, secret as string);
+  if (token !== expected) return html(page("Invalid or expired unsubscribe link."), 400);
 
   let email: string | null = null;
   try {

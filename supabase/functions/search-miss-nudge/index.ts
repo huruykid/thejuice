@@ -1,15 +1,10 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { Resend } from "npm:resend@2.0.0";
 
-// "Still no tea on {name}" nudge — the highest-intent posting prompt in the app.
-// Finds users who searched a name, came up empty, never posted, and haven't been
-// nudged about that name, then emails them once. Triggered daily by the
-// `daily-search-miss-nudge` pg_cron job (verify_jwt off; gated by a shared secret).
-//
-// NOTE: secret is hardcoded to match the cron header, mirroring selfie-sweep. Move to a
-// Supabase secret (Deno.env.get('NUDGE_SECRET')) and rotate if this repo goes public.
-const NUDGE_SECRET = "ndg_8kQ2mWp5Rt7Yx3Bz9Nv4Lc6Hd1Fg0Js";
-const UNSUB_SECRET = "uns_5tH8aZ2qWp7Rx4Bz9Nv3Lc6Hd1Fg0Js"; // must match email-unsubscribe
+// "Still no tea on {name}" nudge — highest-intent posting prompt in the app.
+// CAN-SPAM compliant (unsubscribe link + List-Unsubscribe header + postal address).
+// Candidates already exclude opt-outs. Gate ('nudge_secret') and unsubscribe-HMAC
+// ('unsub_secret') are fetched from Vault at runtime — never hardcoded.
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 const FROM = "Juice <hey@sipjuice.app>";
 const APP_URL = "https://sipjuice.app";
@@ -20,17 +15,15 @@ const esc = (s: string) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
    .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 
-async function sign(value: string): Promise<string> {
+async function sign(value: string, secret: string): Promise<string> {
   const key = await crypto.subtle.importKey(
-    "raw", new TextEncoder().encode(UNSUB_SECRET),
+    "raw", new TextEncoder().encode(secret),
     { name: "HMAC", hash: "SHA-256" }, false, ["sign"],
   );
   const sig = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(value));
   return [...new Uint8Array(sig)].map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
-// Brand tokens (mirrors src/index.css): amber primary #F8B23A + near-black text,
-// Barlow type with system fallback, 8px radius.
 const FONT = `"Barlow",-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif`;
 const nudgeHtml = (name: string, unsubUrl: string) => {
   const safe = esc(name);
@@ -68,16 +61,20 @@ const nudgeHtml = (name: string, unsubUrl: string) => {
 };
 
 Deno.serve(async (req) => {
-  if (req.headers.get("x-nudge-secret") !== NUDGE_SECRET) {
+  const supabase = createClient(SUPA_URL, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "");
+
+  const { data: nudgeSecret } = await supabase.rpc("internal_secret", { p_name: "nudge_secret" });
+  if (!nudgeSecret || req.headers.get("x-nudge-secret") !== nudgeSecret) {
     return new Response(JSON.stringify({ error: "forbidden" }), {
       status: 403, headers: { "Content-Type": "application/json" },
     });
   }
-
-  const supabase = createClient(
-    Deno.env.get("SUPABASE_URL") ?? "",
-    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
-  );
+  const { data: unsubSecret } = await supabase.rpc("internal_secret", { p_name: "unsub_secret" });
+  if (!unsubSecret) {
+    return new Response(JSON.stringify({ error: "unsub secret unavailable" }), {
+      status: 503, headers: { "Content-Type": "application/json" },
+    });
+  }
 
   const { data: rows, error } = await supabase.rpc("get_search_miss_candidates", { max_rows: 200 });
   if (error) {
@@ -96,10 +93,10 @@ Deno.serve(async (req) => {
       const email = u?.user?.email;
       if (!email) continue;
 
-      const token = await sign(c.user_id);
+      const token = await sign(c.user_id, unsubSecret as string);
       const unsubUrl = `${SUPA_URL}/functions/v1/email-unsubscribe?u=${encodeURIComponent(c.user_id)}&t=${token}`;
 
-      await resend.emails.send({
+      const { error: sendErr } = await resend.emails.send({
         from: FROM,
         to: [email],
         subject: `still no tea on ${c.subject_name}`,
@@ -109,8 +106,8 @@ Deno.serve(async (req) => {
           "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
         },
       });
+      if (sendErr) { errors.push(`${c.user_id}: ${JSON.stringify(sendErr)}`); continue; }
 
-      // Record the send so we never nudge this user about this name again.
       await supabase.from("analytics_events").insert({
         user_id: c.user_id,
         event: "search_miss_emailed",

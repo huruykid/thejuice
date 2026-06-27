@@ -5,24 +5,22 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 // linger after they've served their one purpose. Triggered once on demand and
 // daily by the `daily-selfie-sweep` pg_cron job.
 //
-// Auth: gated by a shared secret header (verify_jwt is off so the DB cron can call
-// it). NOTE: the secret is currently hardcoded to match the deployed version; for
-// better hygiene move it to a Supabase secret (Deno.env.get('SELFIE_SWEEP_SECRET'))
-// and rotate this value, especially if this repo is public.
-const SWEEP_SECRET = 'swp_3xR9Kqz7Lm2Tn8Vb4Wd6Yc1Pf5Hg0Js';
+// Auth: gated by a shared secret header (verify_jwt is off so the DB cron can call it).
+// The secret ('sweep_secret') is fetched from Supabase Vault at runtime — never hardcoded.
 const BUCKET = 'verification-selfies';
 
 Deno.serve(async (req) => {
-  if (req.headers.get('x-sweep-secret') !== SWEEP_SECRET) {
-    return new Response(JSON.stringify({ error: 'forbidden' }), {
-      status: 403, headers: { 'Content-Type': 'application/json' },
-    });
-  }
-
   const supabase = createClient(
     Deno.env.get('SUPABASE_URL') ?? '',
     Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
   );
+
+  const { data: secret } = await supabase.rpc('internal_secret', { p_name: 'sweep_secret' });
+  if (!secret || req.headers.get('x-sweep-secret') !== secret) {
+    return new Response(JSON.stringify({ error: 'forbidden' }), {
+      status: 403, headers: { 'Content-Type': 'application/json' },
+    });
+  }
 
   // Exact object paths to delete (owner not pending).
   const { data: rows, error: rpcErr } = await supabase.rpc('processed_selfie_object_names');
