@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      analytics_events: {
+        Row: {
+          created_at: string
+          event: string
+          id: string
+          props: Json | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          event: string
+          id?: string
+          props?: Json | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          event?: string
+          id?: string
+          props?: Json | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      app_secrets: {
+        Row: {
+          name: string
+          value: string
+        }
+        Insert: {
+          name: string
+          value: string
+        }
+        Update: {
+          name?: string
+          value?: string
+        }
+        Relationships: []
+      }
       blog_posts: {
         Row: {
           author_id: string | null
@@ -255,6 +294,24 @@ export type Database = {
           },
         ]
       }
+      email_optouts: {
+        Row: {
+          created_at: string
+          email: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       file_access_logs: {
         Row: {
           action: string
@@ -288,36 +345,6 @@ export type Database = {
         }
         Relationships: []
       }
-      invite_codes: {
-        Row: {
-          code: string
-          created_at: string
-          created_by: string | null
-          expires_at: string
-          id: string
-          used_at: string | null
-          used_by: string | null
-        }
-        Insert: {
-          code: string
-          created_at?: string
-          created_by?: string | null
-          expires_at?: string
-          id?: string
-          used_at?: string | null
-          used_by?: string | null
-        }
-        Update: {
-          code?: string
-          created_at?: string
-          created_by?: string | null
-          expires_at?: string
-          id?: string
-          used_at?: string | null
-          used_by?: string | null
-        }
-        Relationships: []
-      }
       profiles: {
         Row: {
           anonymous_username: string
@@ -327,6 +354,7 @@ export type Database = {
           date_of_birth: string | null
           id: string
           phone_number: string | null
+          referral_prompt_dismissed: boolean
           referral_source: string | null
           relationship_status: string | null
           updated_at: string
@@ -340,6 +368,7 @@ export type Database = {
           date_of_birth?: string | null
           id?: string
           phone_number?: string | null
+          referral_prompt_dismissed?: boolean
           referral_source?: string | null
           relationship_status?: string | null
           updated_at?: string
@@ -353,6 +382,7 @@ export type Database = {
           date_of_birth?: string | null
           id?: string
           phone_number?: string | null
+          referral_prompt_dismissed?: boolean
           referral_source?: string | null
           relationship_status?: string | null
           updated_at?: string
@@ -590,6 +620,7 @@ export type Database = {
           status: string
           subject_name: string | null
           subject_phone: string | null
+          subject_phone_hash: string | null
           submitted_anonymously: boolean
           updated_at: string
           user_id: string | null
@@ -619,6 +650,7 @@ export type Database = {
           status?: string
           subject_name?: string | null
           subject_phone?: string | null
+          subject_phone_hash?: string | null
           submitted_anonymously?: boolean
           updated_at?: string
           user_id?: string | null
@@ -648,6 +680,7 @@ export type Database = {
           status?: string
           subject_name?: string | null
           subject_phone?: string | null
+          subject_phone_hash?: string | null
           submitted_anonymously?: boolean
           updated_at?: string
           user_id?: string | null
@@ -720,36 +753,6 @@ export type Database = {
           created_at?: string
           id?: string
           reason?: string | null
-        }
-        Relationships: []
-      }
-      user_invite_stats: {
-        Row: {
-          created_at: string
-          id: string
-          invites_remaining: number
-          invites_sent: number
-          invites_used: number
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          invites_remaining?: number
-          invites_sent?: number
-          invites_used?: number
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          invites_remaining?: number
-          invites_sent?: number
-          invites_used?: number
-          updated_at?: string
-          user_id?: string
         }
         Relationships: []
       }
@@ -872,10 +875,6 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      check_invite_generation_rate_limit: {
-        Args: { user_id_param: string }
-        Returns: boolean
-      }
       check_rate_limit: {
         Args: {
           p_action_type: string
@@ -895,9 +894,15 @@ export type Database = {
         Returns: undefined
       }
       generate_city_slug: { Args: { city_name_param: string }; Returns: string }
-      generate_invite_code: { Args: never; Returns: string }
       generate_slug: { Args: { title_text: string }; Returns: string }
-      generate_user_invite_code: { Args: never; Returns: string }
+      get_search_miss_candidates: {
+        Args: { max_rows?: number }
+        Returns: {
+          last_miss: string
+          subject_name: string
+          user_id: string
+        }[]
+      }
       get_story_owner: { Args: { _story_id: string }; Returns: string }
       has_role: {
         Args: {
@@ -906,6 +911,8 @@ export type Database = {
         }
         Returns: boolean
       }
+      hash_subject_phone: { Args: { p: string }; Returns: string }
+      internal_secret: { Args: { p_name: string }; Returns: string }
       is_blocked: {
         Args: { _actor: string; _target: string }
         Returns: boolean
@@ -939,9 +946,54 @@ export type Database = {
       normalize_city_name: { Args: { city_input: string }; Returns: string }
       normalize_phone_number: { Args: { phone_input: string }; Returns: string }
       processed_selfie_object_names: { Args: never; Returns: string[] }
-      use_invite_code: {
-        Args: { invite_code: string; new_user_id: string }
-        Returns: boolean
+      search_stories_by_phone: {
+        Args: { p: string }
+        Returns: {
+          approved_at: string | null
+          approved_by: string | null
+          city_id: string | null
+          comments_count: number
+          communication_rating: number | null
+          content: string
+          created_at: string
+          emotional_safety_rating: number | null
+          id: string
+          image_url: string | null
+          is_flagged: boolean
+          is_seed: boolean
+          location: string | null
+          loyalty_rating: number | null
+          normalized_location: string | null
+          overall_vibe_rating: number | null
+          profile_id: string | null
+          reactions_count: number
+          rejected_at: string | null
+          rejection_reason: string | null
+          status: string
+          subject_name: string | null
+          subject_phone: string | null
+          subject_phone_hash: string | null
+          submitted_anonymously: boolean
+          updated_at: string
+          user_id: string | null
+          view_count: number
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "stories"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      search_subject_preview: {
+        Args: { q: string }
+        Returns: {
+          avg_vibe: number
+          is_seed: boolean
+          preview: string
+          review_count: number
+          subject_name: string
+        }[]
       }
       user_has_approved_post: { Args: { _user_id: string }; Returns: boolean }
       validate_file_upload: {
@@ -953,7 +1005,6 @@ export type Database = {
         }
         Returns: boolean
       }
-      validate_invite_code: { Args: { code_param: string }; Returns: boolean }
       validate_phone_number: { Args: { phone_param: string }; Returns: boolean }
       validate_story_content: {
         Args: { content_param: string }
