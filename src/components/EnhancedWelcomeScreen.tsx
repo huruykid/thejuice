@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import BrandLockup from "@/components/BrandLockup";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
@@ -24,7 +25,7 @@ const EnhancedWelcomeScreen = ({ onComplete }: EnhancedWelcomeScreenProps) => {
     <div className="min-h-screen bg-gradient-soft flex items-center justify-center p-4">
       <Card className="w-full max-w-md mx-auto">
         <CardHeader className="text-center space-y-4">
-          <img src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" alt="Juice" className="h-16 w-16 mx-auto" />
+          <BrandLockup variant="mark" size="lg" className="mx-auto" />
           <div>
             <CardTitle className="text-2xl font-bold">Welcome to the Community</CardTitle>
             <CardDescription className="text-muted-foreground">

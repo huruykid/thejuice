@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import BrandLockup from '@/components/BrandLockup';
 import { Button } from '@/components/ui/button';
 import { Check, Sparkles, ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -46,17 +47,18 @@ const OnboardingSuccess = ({ onContinue }: OnboardingSuccessProps) => {
     <div className="min-h-screen bg-gradient-soft flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center space-y-6">
+          <BrandLockup variant="mark" size="lg" className="mx-auto" />
           <div className="relative">
             <div className={cn(
-              "h-20 w-20 mx-auto rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center transition-all duration-1000 transform",
+              "h-20 w-20 mx-auto rounded-full bg-success flex items-center justify-center transition-all duration-1000 transform",
               showAnimation ? "scale-100 rotate-0" : "scale-0 rotate-180"
             )}>
               <Check className="h-10 w-10 text-white" />
             </div>
-            
+
             {showAnimation && (
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="h-20 w-20 rounded-full bg-green-500/20 animate-ping" />
+                <div className="h-20 w-20 rounded-full bg-success/20 animate-ping" />
               </div>
             )}
           </div>
@@ -65,8 +67,8 @@ const OnboardingSuccess = ({ onContinue }: OnboardingSuccessProps) => {
             "transition-all duration-700 delay-500",
             step >= 1 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
           )}>
-            <CardTitle className="text-2xl font-bold text-green-700 dark:text-green-300">
-              🎉 Welcome to Juice!
+            <CardTitle className="text-2xl font-bold text-success">
+              You're in 🎉
             </CardTitle>
             <p className="text-muted-foreground mt-2">
               Your account has been approved! You're now part of our authentic community.
@@ -108,12 +110,12 @@ const OnboardingSuccess = ({ onContinue }: OnboardingSuccessProps) => {
             "transition-all duration-700 delay-[2000ms]",
             step >= 3 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
           )}>
-            <Button 
+            <Button
               onClick={onContinue}
-              className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-white"
+              className="w-full"
               size="lg"
             >
-              Start Exploring
+              Look someone up
               <ArrowRight className="h-4 w-4 ml-2" />
             </Button>
           </div>

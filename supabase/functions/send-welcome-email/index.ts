@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "npm:resend@2.0.0";
 import { handleCorsPreFlight, createSecureResponse, createSecureErrorResponse, authenticateRequest } from '../_shared/security.ts';
+import { BRAND, esc, emailShell, button, signoff } from '../_shared/email.ts';
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
@@ -9,7 +10,6 @@ interface WelcomeEmailRequest {
 }
 
 const handler = async (req: Request): Promise<Response> => {
-  // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
     return handleCorsPreFlight();
   }
@@ -25,41 +25,29 @@ const handler = async (req: Request): Promise<Response> => {
       return createSecureErrorResponse('No email associated with account', 400);
     }
 
-    console.log(`Sending welcome email to authenticated user`);
-
-    const safeName = (username ?? "")
-      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+    const safeName = esc(username ?? "");
 
     const emailResponse = await resend.emails.send({
       from: "Juice <hey@sipjuice.app>",
       to: [email],
-      subject: "you're in. look someone up.",
-      html: `
-        <style>@import url('https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700&display=swap');</style>
-        <div style="display:none;max-height:0;overflow:hidden;opacity:0">Verified, anonymous, in. Here's the first thing most people do &mdash; search a name.</div>
-        <div style="max-width:520px;margin:0 auto;font-family:'Barlow',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;color:#0A0A0A;padding:32px 24px">
-          <div style="text-align:center;margin:0 0 28px">
-            <img src="https://sipjuice.app/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" alt="The Juice App" width="56" height="56" style="display:inline-block;border:0;margin:0 0 8px">
-            <div style="font-size:22px;font-weight:700;letter-spacing:-0.01em;color:#0A0A0A">The <span style="color:#F8B23A">Juice</span> App</div>
-          </div>
+      subject: "welcome to Juice — one step to unlock it",
+      html: emailShell({
+        preheader: "Verify you're a real guy (about 30 seconds) to read every story — or look someone up first.",
+        body: `
           <p style="font-size:16px;line-height:1.6;margin:0 0 18px">
-            ${safeName ? `${safeName}, you` : "You"} made it past the gate &mdash; verified, anonymous, in.
+            Welcome to Juice${safeName ? `, ${safeName}` : ""} &mdash; you're signed up.
           </p>
           <p style="font-size:16px;line-height:1.6;margin:0 0 24px">
-            Here's the thing most people do first: search a name. Someone you matched with, someone a
-            friend warned you about, someone you're just curious about. Takes two seconds and no one
-            ever knows you looked.
+            One quick step unlocks every story: verify you're a real guy. It takes about 30 seconds,
+            and you stay anonymous the whole time. We review each verification by hand, so you'll get
+            an email the moment you're approved.
           </p>
-          <div style="margin:0 0 24px">
-            <a href="https://sipjuice.app/app" style="background:#F8B23A;color:#0A0A0A;text-decoration:none;padding:13px 26px;border-radius:8px;font-weight:600;display:inline-block">Look someone up &rarr;</a>
-          </div>
-          <p style="font-size:14px;line-height:1.6;color:#737373;margin:0">
-            If she's already in here, you'll see it. If she's not&hellip; you might be the one who knows something.
+          <div style="margin:0 0 24px">${button(`${BRAND.appUrl}/app`, "Get verified &rarr;")}</div>
+          <p style="font-size:14px;line-height:1.6;color:${BRAND.muted};margin:0">
+            Not ready? You can still look someone up right now and see who's already in here.
           </p>
-          <p style="font-size:13px;color:#9A9A9A;margin:28px 0 0">&mdash; Juice</p>
-        </div>
-      `,
+          ${signoff()}`,
+      }),
     });
 
     console.log("Welcome email sent successfully:", emailResponse);

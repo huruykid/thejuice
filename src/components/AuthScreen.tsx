@@ -11,6 +11,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { Eye, EyeOff, ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { track } from "@/lib/analytics";
+import BrandLockup from "@/components/BrandLockup";
 import SelfieCapture from './SelfieCapture';
 
 interface AuthScreenProps {
@@ -162,8 +163,7 @@ const AuthScreen = ({ onAuthSuccess }: AuthScreenProps) => {
       <div className="relative min-h-screen bg-gradient-soft flex items-center justify-center px-4 py-8 sm:py-12">
         <div className="w-full max-w-md flex flex-col items-center gap-6">
           <button onClick={() => navigate("/")} className="flex flex-col items-center gap-3 hover:opacity-80 transition-opacity">
-            <img src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" alt="Juice" className="h-14 w-14" />
-            <h1 className="text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent">The Juice App</h1>
+            <BrandLockup variant="stacked" size="lg" />
           </button>
           <Card className="w-full bg-white/90 backdrop-blur-sm rounded-3xl shadow-soft border-0">
             <div className="p-6 sm:p-8 space-y-6">
@@ -212,10 +212,7 @@ const AuthScreen = ({ onAuthSuccess }: AuthScreenProps) => {
           className="flex items-center gap-2 hover:opacity-80 transition-opacity"
           aria-label="Juice home"
         >
-          <img src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" alt="Juice" className="h-8 w-8" />
-          <span className="text-lg font-bold bg-gradient-primary bg-clip-text text-transparent">
-            The Juice App
-          </span>
+          <BrandLockup variant="inline" size="sm" />
         </button>
         <button
           onClick={() => navigate("/")}
@@ -242,10 +239,7 @@ const AuthScreen = ({ onAuthSuccess }: AuthScreenProps) => {
           onClick={() => navigate("/")}
           className="flex flex-col items-center gap-3 hover:opacity-80 transition-opacity cursor-pointer"
         >
-          <img src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" alt="Juice" className="h-14 w-14 sm:h-16 sm:w-16" />
-          <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-            The Juice App
-          </h1>
+          <BrandLockup variant="stacked" size="lg" />
           <p className="text-base sm:text-lg text-muted-foreground">
             We Got the Juice. Now You Do Too.
           </p>

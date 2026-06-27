@@ -1,5 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import BrandLockup from "@/components/BrandLockup";
 import { AlertCircle, Mail, RotateCcw } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -28,10 +29,10 @@ const VerificationRejected = ({ notes, onResubmit }: VerificationRejectedProps) 
     <div className="min-h-screen bg-gradient-soft flex items-center justify-center p-4">
       <Card className="w-full max-w-md mx-auto">
         <CardHeader className="text-center space-y-4">
-          <img src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" alt="Juice" className="h-16 w-16 mx-auto" />
+          <BrandLockup variant="mark" size="lg" className="mx-auto" />
           <div className="space-y-2">
-            <div className="mx-auto w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
-              <AlertCircle className="w-8 h-8 text-red-600" />
+            <div className="mx-auto w-16 h-16 bg-destructive/15 rounded-full flex items-center justify-center">
+              <AlertCircle className="w-8 h-8 text-destructive" />
             </div>
             <CardTitle className="text-2xl font-bold">Verification Not Approved</CardTitle>
             <CardDescription className="text-muted-foreground">

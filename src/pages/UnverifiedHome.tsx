@@ -49,6 +49,13 @@ const UnverifiedHome = ({ onCreateStory, onStartVerification }: UnverifiedHomePr
         {/* Search-led magic moment — look someone up before anything else */}
         <SubjectSearch onStartVerification={onStartVerification} />
 
+        {/* Orientation — make the unverified path explicit */}
+        <p className="text-sm text-muted-foreground px-1 pt-1 leading-relaxed">
+          You're signed up.{" "}
+          <span className="text-foreground font-medium">Verify with a quick selfie</span> to fully
+          join and read every story — or share a story right now, no verification needed.
+        </p>
+
         {/* Hero CTA */}
         <Card className="p-5 bg-card border-border">
           <div className="flex items-start gap-3 mb-3">
@@ -56,9 +63,9 @@ const UnverifiedHome = ({ onCreateStory, onStartVerification }: UnverifiedHomePr
               <Sparkles className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <h2 className="text-base font-semibold text-foreground">Share your first story</h2>
+              <h2 className="text-base font-semibold text-foreground">Share a story — no verification needed</h2>
               <p className="text-sm text-muted-foreground mt-0.5">
-                Post now — an admin reviews before it goes live.
+                You can post right now. An admin reviews every story before it's published on the site.
               </p>
             </div>
           </div>
@@ -74,14 +81,14 @@ const UnverifiedHome = ({ onCreateStory, onStartVerification }: UnverifiedHomePr
               <ShieldCheck className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <h2 className="text-base font-semibold text-foreground">Verify to unlock the feed</h2>
+              <h2 className="text-base font-semibold text-foreground">Become a verified member</h2>
               <p className="text-sm text-muted-foreground mt-0.5">
-                Read real stories from verified men. Takes about 30 seconds.
+                A 30-second selfie proves you're a real guy — and unlocks every real story. It's how you fully join.
               </p>
             </div>
           </div>
           <Button onClick={onStartVerification} variant="outline" className="w-full">
-            Start verification
+            Verify with a selfie
           </Button>
         </Card>
 

@@ -1,4 +1,5 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import BrandLockup from "@/components/BrandLockup";
 import { Button } from "@/components/ui/button";
 import { Clock, RefreshCw } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -41,30 +42,27 @@ const VerificationPending = ({ onRefresh }: VerificationPendingProps) => {
     <div className="min-h-screen bg-gradient-soft flex flex-col items-center p-4 py-8 gap-5">
       <Card className="w-full max-w-md mx-auto">
         <CardHeader className="text-center space-y-4">
-          <img src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" alt="Juice" className="h-16 w-16 mx-auto" />
+          <BrandLockup variant="mark" size="lg" className="mx-auto" />
           <div className="space-y-2">
-            <div className="mx-auto w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center">
-              <Clock className="w-8 h-8 text-amber-600" />
+            <div className="mx-auto w-16 h-16 bg-primary/15 rounded-full flex items-center justify-center">
+              <Clock className="w-8 h-8 text-primary" />
             </div>
-            <CardTitle className="text-2xl font-bold">Account Pending Approval</CardTitle>
+            <CardTitle className="text-2xl font-bold">Selfie received</CardTitle>
             <CardDescription className="text-muted-foreground">
-              You're all set! Your account is being reviewed by our team.
+              You're in the review queue — nothing more to do right now.
             </CardDescription>
           </div>
         </CardHeader>
         <CardContent className="space-y-6 text-center">
-          <div className="space-y-4">
+          <div className="space-y-3">
             <p className="text-muted-foreground">
-              Congratulations! You've completed all the setup steps. Our team is now reviewing your submission to ensure you're part of our authentic community.
+              We review every verification by hand &mdash; usually within{" "}
+              <strong className="text-foreground">24&ndash;48 hours</strong>. You'll get an email the
+              moment you're approved, and then every story unlocks.
             </p>
             <p className="text-sm text-muted-foreground">
-              <strong>What happens next:</strong>
+              No need to keep checking back &mdash; we'll come to you.
             </p>
-            <ul className="text-sm text-muted-foreground space-y-1 text-left">
-              <li>• Manual review (usually 24-48 hours)</li>
-              <li>• Email notification when approved</li>
-              <li>• Full access to share and discover stories</li>
-            </ul>
           </div>
 
           <div className="space-y-3">
