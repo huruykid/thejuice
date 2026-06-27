@@ -1,4 +1,5 @@
 import { useState } from "react";
+import BrandLockup from "@/components/BrandLockup";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -147,9 +148,9 @@ const UsernameCreation = ({ onComplete }: UsernameCreationProps) => {
   };
 
   const getStatusIcon = () => {
-    if (isChecking) return <div className="animate-spin w-4 h-4 border-2 border-juice-orange border-t-transparent rounded-full" />;
-    if (isAvailable === true) return <Check className="w-4 h-4 text-juice-green" />;
-    if (isAvailable === false) return <X className="w-4 h-4 text-red-500" />;
+    if (isChecking) return <div className="animate-spin w-4 h-4 border-2 border-primary border-t-transparent rounded-full" />;
+    if (isAvailable === true) return <Check className="w-4 h-4 text-success" />;
+    if (isAvailable === false) return <X className="w-4 h-4 text-destructive" />;
     return null;
   };
 
@@ -165,10 +166,7 @@ const UsernameCreation = ({ onComplete }: UsernameCreationProps) => {
       {/* Logo */}
       <div className="flex flex-col items-center justify-center pt-16 pb-8">
         <div className="flex flex-col items-center gap-3">
-          <img src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" alt="Juice" className="h-16 w-16" />
-          <h1 className="text-4xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-            The Juice App
-          </h1>
+          <BrandLockup variant="stacked" size="lg" />
         </div>
         <p className="text-lg text-muted-foreground mt-2">
           We Got the Juice. And so do you.
@@ -179,7 +177,7 @@ const UsernameCreation = ({ onComplete }: UsernameCreationProps) => {
         <Card className="w-full max-w-md bg-white/90 backdrop-blur-sm rounded-3xl shadow-soft border-0">
           <div className="p-8 space-y-6">
             <div className="text-center space-y-3">
-              <div className="w-16 h-16 bg-gradient-to-br from-juice-orange to-juice-pink rounded-full mx-auto flex items-center justify-center">
+              <div className="w-16 h-16 bg-gradient-to-br from-primary to-primary rounded-full mx-auto flex items-center justify-center">
                 <User2 className="h-8 w-8 text-white" />
               </div>
               <h2 className="text-2xl font-bold text-foreground">
@@ -198,7 +196,7 @@ const UsernameCreation = ({ onComplete }: UsernameCreationProps) => {
                     value={username}
                     onChange={(e) => handleUsernameChange(e.target.value)}
                     placeholder="YourUsername"
-                    className="rounded-2xl border-juice-orange/30 focus:border-juice-orange pr-12"
+                    className="rounded-2xl border-primary/30 focus:border-primary pr-12"
                     maxLength={20}
                   />
                   <div className="absolute right-3 top-1/2 -translate-y-1/2">
@@ -209,8 +207,8 @@ const UsernameCreation = ({ onComplete }: UsernameCreationProps) => {
                 {username.length > 0 && (
                   <div className="flex items-center gap-2 text-sm">
                     <span className={`${
-                      isAvailable === true ? 'text-juice-green' : 
-                      isAvailable === false ? 'text-red-500' : 
+                      isAvailable === true ? 'text-success' : 
+                      isAvailable === false ? 'text-destructive' : 
                       'text-muted-foreground'
                     }`}>
                       {getStatusText()}

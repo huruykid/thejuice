@@ -1,4 +1,5 @@
 import { Home, Search, Bell, User, Plus, Shield, LogOut, ClipboardList, UserCheck, Flag } from "lucide-react";
+import BrandLockup from "@/components/BrandLockup";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -28,16 +29,9 @@ const DesktopSidebar = ({ onCreateStory }: DesktopSidebarProps) => {
   };
 
   return (
-    <aside className="hidden lg:flex flex-col w-64 xl:w-72 shrink-0 border-r border-juice-orange/10 bg-background/60 backdrop-blur-xl sticky top-0 h-screen">
-      <div className="flex items-center gap-3 px-6 py-6 border-b border-juice-orange/10">
-        <img
-          src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png"
-          alt="Juice"
-          className="h-10 w-10 rounded-2xl shadow-lg"
-        />
-        <h1 className="text-lg font-display font-bold gradient-text">
-          The Juice App
-        </h1>
+    <aside className="hidden lg:flex flex-col w-64 xl:w-72 shrink-0 border-r border-primary/10 bg-background/60 backdrop-blur-xl sticky top-0 h-screen">
+      <div className="flex items-center gap-3 px-6 py-6 border-b border-primary/10">
+        <BrandLockup variant="inline" size="sm" />
       </div>
 
       <nav className="flex-1 px-3 py-4 space-y-1">
@@ -49,7 +43,7 @@ const DesktopSidebar = ({ onCreateStory }: DesktopSidebarProps) => {
               to={item.url}
               className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${
                 isActive
-                  ? "bg-juice-orange/10 text-juice-orange font-semibold"
+                  ? "bg-primary/10 text-primary font-semibold"
                   : "text-foreground/80 hover:bg-muted/60"
               }`}
             >
@@ -60,7 +54,7 @@ const DesktopSidebar = ({ onCreateStory }: DesktopSidebarProps) => {
         })}
 
         {isAdmin && (
-          <div className="pt-4 mt-2 border-t border-juice-orange/10">
+          <div className="pt-4 mt-2 border-t border-primary/10">
             <div className="px-4 pb-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
               Moderation
             </div>
@@ -68,7 +62,7 @@ const DesktopSidebar = ({ onCreateStory }: DesktopSidebarProps) => {
               to="/admin/posts"
               className={`flex items-center gap-3 px-4 py-2.5 rounded-xl transition-colors ${
                 pathname === "/admin/posts"
-                  ? "bg-juice-orange/10 text-juice-orange font-semibold"
+                  ? "bg-primary/10 text-primary font-semibold"
                   : "text-foreground/80 hover:bg-muted/60"
               }`}
             >
@@ -79,7 +73,7 @@ const DesktopSidebar = ({ onCreateStory }: DesktopSidebarProps) => {
               to="/admin/verifications"
               className={`flex items-center gap-3 px-4 py-2.5 rounded-xl transition-colors ${
                 pathname === "/admin/verifications"
-                  ? "bg-juice-orange/10 text-juice-orange font-semibold"
+                  ? "bg-primary/10 text-primary font-semibold"
                   : "text-foreground/80 hover:bg-muted/60"
               }`}
             >
@@ -90,7 +84,7 @@ const DesktopSidebar = ({ onCreateStory }: DesktopSidebarProps) => {
               to="/admin/reports"
               className={`flex items-center gap-3 px-4 py-2.5 rounded-xl transition-colors ${
                 pathname === "/admin/reports"
-                  ? "bg-juice-orange/10 text-juice-orange font-semibold"
+                  ? "bg-primary/10 text-primary font-semibold"
                   : "text-foreground/80 hover:bg-muted/60"
               }`}
             >
@@ -114,7 +108,7 @@ const DesktopSidebar = ({ onCreateStory }: DesktopSidebarProps) => {
         )}
       </nav>
 
-      <div className="px-3 py-4 border-t border-juice-orange/10 space-y-1">
+      <div className="px-3 py-4 border-t border-primary/10 space-y-1">
         <NavLink
           to="/privacy-settings"
           className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm text-muted-foreground hover:bg-muted/60 hover:text-foreground transition-colors"

@@ -90,7 +90,7 @@ export const FlagRatingInput = ({
             className={cn(
               "h-9 px-2.5 rounded-full border flex items-center gap-1 transition-all active:scale-95",
               color === "green"
-                ? "bg-juice-green/15 border-juice-green text-juice-green"
+                ? "bg-success/15 border-success text-success"
                 : "bg-background border-border text-muted-foreground hover:text-foreground"
             )}
           >
@@ -167,7 +167,7 @@ export const FlagRatingDisplay = ({ ratings }: FlagRatingDisplayProps) => {
             className={cn(
               "inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-medium",
               isGreen
-                ? "bg-juice-green/10 border-juice-green/30 text-juice-green"
+                ? "bg-success/10 border-success/30 text-success"
                 : "bg-primary/10 border-primary/30 text-primary"
             )}
           >

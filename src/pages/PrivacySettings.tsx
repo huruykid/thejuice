@@ -43,14 +43,14 @@ const PrivacySettings = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-juice-orange/5 to-juice-pink/5 pb-20">
+    <div className="min-h-screen bg-gradient-to-br from-primary/5 to-primary/5 pb-20">
       <div className="container mx-auto px-4 py-6 max-w-md">
         <div className="flex items-center mb-6">
           <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="mr-3">
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div className="flex items-center gap-2">
-            <Shield className="h-6 w-6 text-juice-orange" />
+            <Shield className="h-6 w-6 text-primary" />
             <h1 className="text-2xl font-bold text-foreground">Privacy & Safety</h1>
           </div>
         </div>
@@ -153,7 +153,7 @@ const PrivacySettings = () => {
                   <AlertDialogCancel>Cancel</AlertDialogCancel>
                   <AlertDialogAction
                     onClick={handleAccountDeletion}
-                    className="bg-red-600 hover:bg-red-700"
+                    className="bg-destructive hover:bg-destructive"
                   >
                     Delete Account
                   </AlertDialogAction>

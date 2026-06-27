@@ -182,7 +182,7 @@ const PersonDetailsStep = ({
               <div className={`border-2 border-dashed rounded-lg p-8 text-center transition-smooth ${
                 imagePreviews.length === 0
                   ? 'border-destructive/50 bg-destructive/5 hover:border-destructive'
-                  : 'border-juice-blue/30 hover:border-juice-blue/50'
+                  : 'border-primary/30 hover:border-primary/50'
               }`}>
                 <input
                   type="file"
@@ -224,7 +224,7 @@ const PersonDetailsStep = ({
                 </div>
                 
                 {imagePreviews.length < 5 && (
-                  <div className="border-2 border-dashed border-juice-blue/30 rounded-lg p-4 text-center hover:border-juice-blue/50 transition-smooth">
+                  <div className="border-2 border-dashed border-primary/30 rounded-lg p-4 text-center hover:border-primary/50 transition-smooth">
                     <input
                       type="file"
                       accept="image/*"

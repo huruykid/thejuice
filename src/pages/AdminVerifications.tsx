@@ -24,6 +24,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
+import { useConfirm } from "@/components/ConfirmDialog";
+import BrandLockup from "@/components/BrandLockup";
 import { toast } from 'sonner';
 
 /** Returns a human-readable wait time and urgency level for triage. */
@@ -71,6 +74,7 @@ const AdminVerifications = () => {
   const [bulkRejectOpen, setBulkRejectOpen] = useState(false);
   const [bulkRejectReason, setBulkRejectReason] = useState('');
   const [bulkAction, setBulkAction] = useState<'approve' | 'reject' | null>(null);
+  const { confirm, confirmDialog } = useConfirm();
 
   const queryClient = useQueryClient();
 
@@ -307,9 +311,11 @@ const AdminVerifications = () => {
   const handleBulkApprove = async () => {
     const targets = selectablePending.filter((v) => selected.has(v.id));
     if (targets.length === 0) return;
-    const ok = window.confirm(
-      `Approve ${targets.length} user${targets.length === 1 ? '' : 's'} and email them?`
-    );
+    const ok = await confirm({
+      title: `Approve ${targets.length} user${targets.length === 1 ? '' : 's'}?`,
+      description: 'Each selected user will be approved and emailed.',
+      confirmLabel: 'Approve',
+    });
     if (!ok) return;
     setBulkProgress({ done: 0, total: targets.length });
     setBulkAction('approve');
@@ -408,11 +414,11 @@ const AdminVerifications = () => {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'pending':
-        return <Badge variant="outline" className="text-amber-600 border-amber-600"><Clock className="w-3 h-3 mr-1" />Pending</Badge>;
+        return <Badge variant="outline" className="text-primary border-primary"><Clock className="w-3 h-3 mr-1" />Pending</Badge>;
       case 'approved':
-        return <Badge variant="outline" className="text-green-600 border-green-600"><CheckCircle className="w-3 h-3 mr-1" />Approved</Badge>;
+        return <Badge variant="outline" className="text-success border-success"><CheckCircle className="w-3 h-3 mr-1" />Approved</Badge>;
       case 'rejected':
-        return <Badge variant="outline" className="text-red-600 border-red-600"><XCircle className="w-3 h-3 mr-1" />Rejected</Badge>;
+        return <Badge variant="outline" className="text-destructive border-destructive"><XCircle className="w-3 h-3 mr-1" />Rejected</Badge>;
       default:
         return <Badge variant="outline">{status}</Badge>;
     }
@@ -436,7 +442,7 @@ const AdminVerifications = () => {
     return (
       <div className="bg-gradient-soft flex items-center justify-center">
         <div className="text-center space-y-4">
-          <img src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" alt="Juice" className="h-16 w-16 mx-auto animate-pulse" />
+          <BrandLockup variant="mark" size="lg" className="mx-auto animate-pulse" />
           <p className="text-muted-foreground">Loading verifications...</p>
         </div>
       </div>
@@ -451,10 +457,7 @@ const AdminVerifications = () => {
   return (
     <div className="bg-gradient-soft p-4">
       <div className="max-w-5xl mx-auto space-y-6">
-        <div>
-          <h1 className="text-2xl font-bold">Verifications</h1>
-          <p className="text-sm text-muted-foreground">Review and approve user verifications.</p>
-        </div>
+        <AdminPageHeader title="Verifications" subtitle="Review and approve user verifications." />
 
         {/* Filters */}
         <Card>
@@ -574,7 +577,7 @@ const AdminVerifications = () => {
                       const { label, urgent, critical } = getWaitInfo(verification.created_at);
                       return (
                         <span className={`inline-flex items-center gap-1 text-xs font-medium px-1.5 py-0.5 rounded ${
-                          critical ? 'text-red-700 bg-red-50' : urgent ? 'text-amber-700 bg-amber-50' : 'text-muted-foreground'
+                          critical ? 'text-destructive bg-destructive/10' : urgent ? 'text-primary bg-primary/10' : 'text-muted-foreground'
                         }`}>
                           {critical && <AlertTriangle className="w-3 h-3" />}
                           {label}
@@ -586,10 +589,10 @@ const AdminVerifications = () => {
               </CardHeader>
               <CardContent className="space-y-4">
                 {verification.selfie_deleted_at ? (
-                  <div className="aspect-square bg-muted rounded-lg flex items-center justify-center border-2 border-dashed border-green-300">
+                  <div className="aspect-square bg-muted rounded-lg flex items-center justify-center border-2 border-dashed border-success/30">
                     <div className="text-center space-y-2">
-                      <Shield className="w-8 h-8 mx-auto text-green-600" />
-                      <p className="text-sm text-green-600 font-medium">Image Deleted</p>
+                      <Shield className="w-8 h-8 mx-auto text-success" />
+                      <p className="text-sm text-success font-medium">Image Deleted</p>
                       <p className="text-xs text-muted-foreground">Privacy Protected</p>
                     </div>
                   </div>
@@ -611,7 +614,7 @@ const AdminVerifications = () => {
                   <p><strong>Status:</strong> {verification.profile?.relationship_status}</p>
                   <p><strong>Submitted:</strong> {new Date(verification.created_at).toLocaleDateString()}</p>
                   {verification.selfie_deleted_at && (
-                    <p className="text-green-600 text-xs flex items-center">
+                    <p className="text-success text-xs flex items-center">
                       <Shield className="w-3 h-3 mr-1" />
                       <strong>Selfie deleted:</strong> {new Date(verification.selfie_deleted_at).toLocaleDateString()}
                     </p>
@@ -721,11 +724,11 @@ const AdminVerifications = () => {
               </CardHeader>
               <CardContent className="space-y-6">
                 {selectedVerification.selfie_deleted_at ? (
-                  <div className="aspect-square max-w-md mx-auto bg-muted rounded-lg flex items-center justify-center border-2 border-dashed border-green-300">
+                  <div className="aspect-square max-w-md mx-auto bg-muted rounded-lg flex items-center justify-center border-2 border-dashed border-success/30">
                     <div className="text-center space-y-3">
-                      <Shield className="w-12 h-12 mx-auto text-green-600" />
+                      <Shield className="w-12 h-12 mx-auto text-success" />
                       <div>
-                        <p className="text-lg text-green-600 font-medium">Image Deleted</p>
+                        <p className="text-lg text-success font-medium">Image Deleted</p>
                         <p className="text-sm text-muted-foreground">Privacy Protected</p>
                         <p className="text-xs text-muted-foreground mt-1">
                           Deleted: {new Date(selectedVerification.selfie_deleted_at).toLocaleString()}
@@ -780,7 +783,7 @@ const AdminVerifications = () => {
                   <Button
                     onClick={handleApprove}
                     disabled={isProcessing || approveUser.isPending}
-                    className="flex-1 bg-green-600 hover:bg-green-700"
+                    className="flex-1 bg-success hover:bg-success"
                   >
                     <Mail className="w-4 h-4 mr-2" />
                     {isProcessing || approveUser.isPending ? 'Approving...' : 'Approve & Email'}
@@ -810,7 +813,7 @@ const AdminVerifications = () => {
                     onClick={handleDeleteUser}
                     disabled={isProcessing}
                     variant="outline"
-                    className="w-full text-red-600 border-red-300 hover:bg-red-50"
+                    className="w-full text-destructive border-destructive/30 hover:bg-destructive/10"
                   >
                     <Trash2 className="w-4 h-4 mr-2" />
                     Permanently delete user
@@ -820,6 +823,7 @@ const AdminVerifications = () => {
             </Card>
           </div>
         )}
+        {confirmDialog}
       </div>
     </div>
   );

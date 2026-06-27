@@ -13,6 +13,8 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Eye, Trash2, Pencil, Globe, FileEdit } from "lucide-react";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
+import { useConfirm } from "@/components/ConfirmDialog";
 import { toast } from "sonner";
 
 /**
@@ -30,6 +32,7 @@ const AdminBlog = () => {
   const updatePost = useUpdateBlogPost();
   const deletePost = useDeleteBlogPost();
   const [editing, setEditing] = useState<BlogPost | null>(null);
+  const { confirm, confirmDialog } = useConfirm();
 
   useEffect(() => {
     if (!authLoading && !roleLoading && user && !isAdmin) navigate("/app");
@@ -53,8 +56,16 @@ const AdminBlog = () => {
     );
   };
 
-  const remove = (p: BlogPost) => {
-    if (!window.confirm(`Permanently delete "${p.title}"? This cannot be undone.`)) return;
+  const remove = async (p: BlogPost) => {
+    if (
+      !(await confirm({
+        title: `Delete "${p.title}"?`,
+        description: "This permanently deletes the post and cannot be undone.",
+        destructive: true,
+        confirmLabel: "Delete",
+      }))
+    )
+      return;
     deletePost.mutate(p.id, {
       onSuccess: () => toast.success("Post deleted"),
       onError: (e: any) => toast.error(e?.message || "Delete failed"),
@@ -64,13 +75,10 @@ const AdminBlog = () => {
   return (
     <div className="bg-gradient-soft p-4">
       <div className="max-w-5xl mx-auto space-y-6">
-        <div className="flex items-center justify-between gap-2 flex-wrap">
-          <div>
-            <h1 className="text-2xl font-bold">Blog</h1>
-            <p className="text-sm text-muted-foreground">
-              Review AI-drafted posts before they go public. Edit, publish, or delete.
-            </p>
-          </div>
+        <AdminPageHeader
+          title="Blog"
+          subtitle="Review AI-drafted posts before they go public. Edit, publish, or delete."
+        >
           <Select value={filter} onValueChange={(v: any) => setFilter(v)}>
             <SelectTrigger className="w-36">
               <SelectValue />
@@ -81,7 +89,7 @@ const AdminBlog = () => {
               <SelectItem value="published">Published</SelectItem>
             </SelectContent>
           </Select>
-        </div>
+        </AdminPageHeader>
 
         <div className="space-y-4">
           {(posts ?? []).map((p) => (
@@ -120,7 +128,7 @@ const AdminBlog = () => {
                   <Button
                     size="sm"
                     variant="ghost"
-                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                    className="text-destructive hover:text-destructive hover:bg-destructive/10"
                     onClick={() => remove(p)}
                   >
                     <Trash2 className="w-4 h-4 mr-1" />
@@ -141,6 +149,7 @@ const AdminBlog = () => {
       </div>
 
       {editing && <EditDialog post={editing} onClose={() => setEditing(null)} updatePost={updatePost} />}
+      {confirmDialog}
     </div>
   );
 };

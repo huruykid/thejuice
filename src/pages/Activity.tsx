@@ -23,7 +23,7 @@ const Activity = () => {
     return username.split(' ').map(word => word[0]).join('').toUpperCase().substring(0, 2);
   };
   if (isLoading) {
-    return <div className="min-h-screen bg-gradient-to-br from-juice-orange/5 to-juice-pink/5 pb-20">
+    return <div className="min-h-screen bg-gradient-to-br from-primary/5 to-primary/5 pb-20">
         <div className="container mx-auto px-4 py-6 max-w-md lg:max-w-2xl">
           {/* Header */}
           <div className="flex items-center mb-6">
@@ -31,14 +31,14 @@ const Activity = () => {
               <ArrowLeft className="h-5 w-5" />
             </Button>
             <div className="flex items-center gap-2">
-              <Bell className="h-6 w-6 text-juice-orange" />
+              <Bell className="h-6 w-6 text-primary" />
               <h1 className="text-2xl font-bold text-foreground">Activity</h1>
             </div>
           </div>
 
           {/* Loading skeletons */}
           <div className="space-y-4">
-            {[1, 2, 3, 4, 5].map(i => <Card key={i} className="border-juice-orange/20">
+            {[1, 2, 3, 4, 5].map(i => <Card key={i} className="border-primary/20">
                 <CardContent className="p-4">
                   <div className="flex items-start gap-3">
                     <div className="h-10 w-10 bg-muted rounded-full animate-pulse" />
@@ -56,7 +56,7 @@ const Activity = () => {
         <Navigation />
       </div>;
   }
-  return <div className="min-h-screen bg-gradient-to-br from-juice-orange/5 to-juice-pink/5 pb-20">
+  return <div className="min-h-screen bg-gradient-to-br from-primary/5 to-primary/5 pb-20">
       <div className="container mx-auto px-4 py-6 max-w-md lg:max-w-2xl">
         {/* Header */}
         <div className="flex items-center mb-6">
@@ -64,7 +64,7 @@ const Activity = () => {
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div className="flex items-center gap-2">
-            <Bell className="h-6 w-6 text-juice-orange" />
+            <Bell className="h-6 w-6 text-primary" />
             <h1 className="text-2xl font-bold text-foreground">Activity</h1>
           </div>
         </div>
@@ -76,24 +76,24 @@ const Activity = () => {
 
         {/* Activity Feed */}
         <div className="space-y-3">
-          {activities.length === 0 ? <Card className="border-juice-orange/20">
+          {activities.length === 0 ? <Card className="border-primary/20">
               <CardContent className="p-8 text-center">
-                <div className="w-16 h-16 bg-gradient-to-br from-juice-orange/20 to-juice-pink/20 rounded-full mx-auto mb-4 flex items-center justify-center">
-                  <MessageCircle className="h-8 w-8 text-juice-orange" />
+                <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-primary/20 rounded-full mx-auto mb-4 flex items-center justify-center">
+                  <MessageCircle className="h-8 w-8 text-primary" />
                 </div>
                 <h3 className="text-lg font-semibold mb-2">No activity yet</h3>
                 <p className="text-muted-foreground text-sm">
                   When someone comments on your stories, you'll see the activity here.
                 </p>
               </CardContent>
-            </Card> : activities.map((activity, index) => <Card key={activity.id} className="border-juice-orange/20 hover:border-juice-orange/40 transition-colors cursor-pointer animate-fade-in" style={{
+            </Card> : activities.map((activity, index) => <Card key={activity.id} className="border-primary/20 hover:border-primary/40 transition-colors cursor-pointer animate-fade-in" style={{
           animationDelay: `${index * 50}ms`
         }} onClick={() => handleActivityTap(activity.story_id)}>
                 <CardContent className="p-4">
                   <div className="flex items-start gap-3">
                     {/* Avatar */}
                     <Avatar className="h-10 w-10 border-2 border-gradient-primary">
-                      <AvatarFallback className="bg-gradient-to-br from-juice-orange to-juice-pink text-white text-sm font-medium">
+                      <AvatarFallback className="bg-gradient-to-br from-primary to-primary text-white text-sm font-medium">
                         {getInitials(activity.commenter_username)}
                       </AvatarFallback>
                     </Avatar>

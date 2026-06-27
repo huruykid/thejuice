@@ -2,11 +2,11 @@ import { Sparkles } from "lucide-react";
 
 const SuccessAnimation = () => {
   return (
-    <div className="fixed inset-0 bg-gradient-to-br from-juice-blue/20 to-juice-orange/20 backdrop-blur-sm z-50 flex items-center justify-center">
+    <div className="fixed inset-0 bg-gradient-to-br from-primary/20 to-primary/20 backdrop-blur-sm z-50 flex items-center justify-center">
       <div className="text-center animate-scale-in">
         <div className="text-8xl mb-6 animate-bounce">🧃</div>
         <div className="text-6xl mb-4">
-          <Sparkles className="h-16 w-16 text-juice-orange animate-pulse mx-auto" />
+          <Sparkles className="h-16 w-16 text-primary animate-pulse mx-auto" />
         </div>
         <h2 className="text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-2">
           Story submitted!

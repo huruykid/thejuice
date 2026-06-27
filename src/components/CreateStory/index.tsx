@@ -214,7 +214,7 @@ const CreateStory = ({
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-4">
       <Card className="w-full max-w-md bg-white rounded-t-3xl sm:rounded-3xl max-h-[90vh] overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-juice-blue/10">
+        <div className="flex items-center justify-between p-6 border-b border-primary/10">
           <h2 className="text-xl font-bold text-foreground">Share Your Story</h2>
           <Button variant="ghost" size="icon" onClick={onClose}>
             <X className="h-5 w-5" />

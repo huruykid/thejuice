@@ -32,13 +32,14 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Flag, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { toast } from "sonner";
 
-const STATUS_STYLES: Record<DisputeRequest["status"], string> = {
-  pending: "bg-yellow-100 text-yellow-800",
-  approved: "bg-green-100 text-green-800",
-  rejected: "bg-muted text-muted-foreground",
+const STATUS_BADGE_CLASS: Record<DisputeRequest["status"], string> = {
+  pending: "text-muted-foreground",
+  approved: "text-success border-success",
+  rejected: "text-destructive border-destructive",
 };
 
 const AdminDisputes = () => {
@@ -121,18 +122,10 @@ const AdminDisputes = () => {
   return (
     <div className="bg-gradient-soft p-4 pb-20">
       <div className="max-w-5xl mx-auto space-y-6">
-        <div className="flex items-center justify-between gap-2 mb-6 flex-wrap">
-          <div className="flex items-center gap-2">
-            <Flag className="h-6 w-6 text-juice-orange" />
-            <h1 className="text-2xl font-bold">
-              Disputes
-              {pendingCount > 0 && (
-                <span className="ml-2 text-base font-normal text-muted-foreground">
-                  ({pendingCount} pending)
-                </span>
-              )}
-            </h1>
-          </div>
+        <AdminPageHeader
+          title="Disputes"
+          subtitle={pendingCount > 0 ? `${pendingCount} pending` : undefined}
+        >
           <Select value={sort} onValueChange={(v) => setSort(v as DisputeSort)}>
             <SelectTrigger className="w-40">
               <SelectValue />
@@ -142,7 +135,7 @@ const AdminDisputes = () => {
               <SelectItem value="oldest">Oldest first</SelectItem>
             </SelectContent>
           </Select>
-        </div>
+        </AdminPageHeader>
 
         {isLoading ? (
           <div className="text-center py-10 text-muted-foreground">Loading disputes…</div>
@@ -252,11 +245,9 @@ function DisputeRow({
         <div className="flex items-start justify-between gap-3 flex-wrap">
           <div className="flex items-center gap-2 flex-wrap">
             <span className="font-medium">{dispute.subject_name}</span>
-            <span
-              className={`text-xs px-2 py-0.5 rounded-full capitalize ${STATUS_STYLES[dispute.status]}`}
-            >
+            <Badge variant="outline" className={`capitalize ${STATUS_BADGE_CLASS[dispute.status]}`}>
               {dispute.status}
-            </span>
+            </Badge>
           </div>
           <span className="text-xs text-muted-foreground">
             {new Date(dispute.created_at).toLocaleString()}

@@ -182,7 +182,7 @@ const AuthScreen = ({ onAuthSuccess }: AuthScreenProps) => {
                     value={resetEmail}
                     onChange={(e) => setResetEmail(e.target.value)}
                     placeholder="Email"
-                    className="rounded-2xl border-juice-orange/30 focus:border-juice-orange"
+                    className="rounded-2xl border-primary/30 focus:border-primary"
                     required
                   />
                   <Button type="submit" variant="juice" size="lg" className="w-full h-14 text-base" disabled={loading}>
@@ -303,7 +303,7 @@ const AuthScreen = ({ onAuthSuccess }: AuthScreenProps) => {
                   Google is only for sign-in — we never post anything or show your name.
                 </span>
                 By continuing you confirm you're 18 or older and agree to the{" "}
-                <Link to="/terms" target="_blank" className="text-juice-orange underline">
+                <Link to="/terms" target="_blank" className="text-primary underline">
                   Terms &amp; Community Guidelines
                 </Link>.
               </p>
@@ -324,7 +324,7 @@ const AuthScreen = ({ onAuthSuccess }: AuthScreenProps) => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Email"
-                  className="rounded-2xl border-juice-orange/30 focus:border-juice-orange"
+                  className="rounded-2xl border-primary/30 focus:border-primary"
                   required
                 />
               </div>
@@ -335,7 +335,7 @@ const AuthScreen = ({ onAuthSuccess }: AuthScreenProps) => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Password"
-                  className="rounded-2xl border-juice-orange/30 focus:border-juice-orange pr-12"
+                  className="rounded-2xl border-primary/30 focus:border-primary pr-12"
                   required
                 />
                 <Button
@@ -359,11 +359,11 @@ const AuthScreen = ({ onAuthSuccess }: AuthScreenProps) => {
                     type="checkbox"
                     checked={agreed}
                     onChange={(e) => setAgreed(e.target.checked)}
-                    className="mt-0.5 h-4 w-4 shrink-0 accent-juice-orange"
+                    className="mt-0.5 h-4 w-4 shrink-0 accent-primary"
                   />
                   <span>
                     I confirm I'm 18 or older and agree to the{" "}
-                    <Link to="/terms" target="_blank" className="text-juice-orange underline">
+                    <Link to="/terms" target="_blank" className="text-primary underline">
                       Terms &amp; Community Guidelines
                     </Link>.
                   </span>

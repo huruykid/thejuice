@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
+import BrandLockup from '@/components/BrandLockup';
 import { Camera, RotateCcw, Check, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -197,7 +198,7 @@ const SelfieCapture: React.FC<SelfieCaptureProps> = ({ onComplete, userId }) => 
     <div className="min-h-screen bg-gradient-soft flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center space-y-4">
-          <img src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" alt="Juice" className="h-16 w-16 mx-auto" />
+          <BrandLockup variant="mark" size="lg" className="mx-auto" />
           <div>
             <CardTitle className="text-2xl font-bold">Verify Your Identity</CardTitle>
             <CardDescription className="text-muted-foreground">

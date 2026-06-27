@@ -8,32 +8,32 @@ const DatingStoriesForMen = () => {
   const navigate = useNavigate();
 
   const stats = [
-    { icon: <Users className="h-8 w-8 text-juice-orange" />, number: "Verified", label: "Members only" },
-    { icon: <MessageSquare className="h-8 w-8 text-juice-orange" />, number: "Anonymous", label: "Every story, every time" },
-    { icon: <Eye className="h-8 w-8 text-juice-orange" />, number: "100%", label: "Identity protected" },
-    { icon: <Shield className="h-8 w-8 text-juice-orange" />, number: "Manual", label: "Approval to join" }
+    { icon: <Users className="h-8 w-8 text-primary" />, number: "Verified", label: "Members only" },
+    { icon: <MessageSquare className="h-8 w-8 text-primary" />, number: "Anonymous", label: "Every story, every time" },
+    { icon: <Eye className="h-8 w-8 text-primary" />, number: "100%", label: "Identity protected" },
+    { icon: <Shield className="h-8 w-8 text-primary" />, number: "Manual", label: "Approval to join" }
   ];
 
   const storyTypes = [
     {
       title: "First Date Experiences",
       description: "Real stories about first dates - the good, bad, and everything in between",
-      icon: <Heart className="h-6 w-6 text-juice-orange" />
+      icon: <Heart className="h-6 w-6 text-primary" />
     },
     {
       title: "Relationship Reviews",
       description: "Honest ratings and reviews of dating experiences and relationships",
-      icon: <Star className="h-6 w-6 text-juice-orange" />
+      icon: <Star className="h-6 w-6 text-primary" />
     },
     {
       title: "Dating App Stories",
       description: "Real experiences from Tinder, Bumble, Hinge and other dating platforms",
-      icon: <MessageSquare className="h-6 w-6 text-juice-orange" />
+      icon: <MessageSquare className="h-6 w-6 text-primary" />
     },
     {
       title: "Red Flag Warnings",
       description: "Men sharing warning signs and red flags to help others avoid problems",
-      icon: <Shield className="h-6 w-6 text-juice-orange" />
+      icon: <Shield className="h-6 w-6 text-primary" />
     }
   ];
 
@@ -81,7 +81,7 @@ const DatingStoriesForMen = () => {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {stats.map((stat, index) => (
               <div key={index} className="text-center">
-                <div className="mx-auto mb-4 p-3 bg-juice-orange/10 rounded-full w-fit">
+                <div className="mx-auto mb-4 p-3 bg-primary/10 rounded-full w-fit">
                   {stat.icon}
                 </div>
                 <div className="text-3xl font-bold text-foreground mb-2">{stat.number}</div>
@@ -109,7 +109,7 @@ const DatingStoriesForMen = () => {
               <Card key={index} className="border-0 shadow-card bg-white/80 backdrop-blur-sm hover:shadow-lg transition-shadow">
                 <CardHeader>
                   <div className="flex items-center gap-3 mb-2">
-                    <div className="p-2 bg-juice-orange/10 rounded-lg">
+                    <div className="p-2 bg-primary/10 rounded-lg">
                       {type.icon}
                     </div>
                     <CardTitle className="text-xl">{type.title}</CardTitle>
@@ -134,17 +134,17 @@ const DatingStoriesForMen = () => {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="space-y-4">
-              <Shield className="h-12 w-12 text-juice-orange mx-auto" />
+              <Shield className="h-12 w-12 text-primary mx-auto" />
               <h3 className="text-xl font-semibold">100% Anonymous</h3>
               <p className="text-muted-foreground">Share your real experiences without revealing your identity. Complete privacy guaranteed.</p>
             </div>
             <div className="space-y-4">
-              <Users className="h-12 w-12 text-juice-orange mx-auto" />
+              <Users className="h-12 w-12 text-primary mx-auto" />
               <h3 className="text-xl font-semibold">Men-Only Community</h3>
               <p className="text-muted-foreground">A space designed specifically for men to share honest dating experiences without judgment.</p>
             </div>
             <div className="space-y-4">
-              <ThumbsUp className="h-12 w-12 text-juice-orange mx-auto" />
+              <ThumbsUp className="h-12 w-12 text-primary mx-auto" />
               <h3 className="text-xl font-semibold">Verified Users</h3>
               <p className="text-muted-foreground">All stories come from verified men, ensuring authentic and trustworthy experiences.</p>
             </div>
@@ -177,12 +177,6 @@ const DatingStoriesForMen = () => {
       </main>
 
       {/* SEO Footer */}
-      <footer className="py-12 px-4 bg-white/80 border-t border-juice-orange/10">
-        <div className="max-w-4xl mx-auto text-center text-sm text-muted-foreground">
-          <p>Dating Stories for Men | Anonymous Dating Experiences | Men's Dating Community | Juice</p>
-          <p className="mt-2">&copy; 2024 Juice. All rights reserved.</p>
-        </div>
-      </footer>
     </div>
   );
 };

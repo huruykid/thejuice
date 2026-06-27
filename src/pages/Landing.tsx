@@ -22,22 +22,22 @@ const Landing = () => {
 
   const features = [
     {
-      icon: <Shield className="h-6 w-6 text-juice-orange" />,
+      icon: <Shield className="h-6 w-6 text-primary" />,
       title: "You're anonymous. They're verified.",
       description: "Post without your name attached. Every person you read about was submitted by a verified, real member.",
     },
     {
-      icon: <Users className="h-6 w-6 text-juice-orange" />,
+      icon: <Users className="h-6 w-6 text-primary" />,
       title: "For men, by men.",
       description: "A space where men can be honest about dating experiences without social consequences or judgment.",
     },
     {
-      icon: <MessageSquare className="h-6 w-6 text-juice-orange" />,
+      icon: <MessageSquare className="h-6 w-6 text-primary" />,
       title: "Rate it. Learn from it.",
       description: "Rate loyalty, communication, vibe, and respect. Help other men see patterns before they live through them.",
     },
     {
-      icon: <Star className="h-6 w-6 text-juice-orange" />,
+      icon: <Star className="h-6 w-6 text-primary" />,
       title: "Zero consequences.",
       description: "Share the real story. No backlash. No screenshots. No drama. The community keeps it contained.",
     },
@@ -97,36 +97,18 @@ const Landing = () => {
         })}</script>
       </Helmet>
 
-      {/* Sticky header */}
-      <header className="sticky top-0 z-50 bg-background/95 backdrop-blur border-b border-juice-orange/10">
-        <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <img src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" alt="Juice" className="h-7 w-7" />
-            <span className="font-bold text-foreground text-base">Juice</span>
-          </div>
-          <div className="flex items-center gap-3">
-            <a href="/how-it-works" className="hidden sm:block text-sm text-muted-foreground hover:text-foreground transition-colors">
-              How it works
-            </a>
-            <Button size="sm" variant="juice" onClick={handleGetStarted} className="font-semibold">
-              Join free
-            </Button>
-          </div>
-        </div>
-      </header>
-
       <main>
         {/* Hero */}
         <section className="py-20 px-4">
           <div className="max-w-4xl mx-auto text-center">
-            <div className="inline-flex items-center gap-2 text-xs font-medium text-juice-orange bg-juice-orange/10 px-3 py-1.5 rounded-full mb-6">
+            <div className="inline-flex items-center gap-2 text-xs font-medium text-primary bg-primary/10 px-3 py-1.5 rounded-full mb-6">
               <Shield className="h-3.5 w-3.5" />
               Every member verified by a real human
             </div>
 
             <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6 leading-tight">
               Real stories. Real men.{" "}
-              <span className="text-juice-orange">Zero consequences.</span>
+              <span className="text-primary">Zero consequences.</span>
             </h1>
 
             <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
@@ -149,17 +131,17 @@ const Landing = () => {
                 here. Left hardcoded pending a marketing decision on showing real numbers. */}
             <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-muted-foreground">
               <span className="flex items-center gap-1.5">
-                <CheckCircle className="h-4 w-4 text-juice-orange" />
+                <CheckCircle className="h-4 w-4 text-primary" />
                 1,200+ verified men
               </span>
               <span className="hidden sm:block text-muted-foreground/40">·</span>
               <span className="flex items-center gap-1.5">
-                <CheckCircle className="h-4 w-4 text-juice-orange" />
+                <CheckCircle className="h-4 w-4 text-primary" />
                 3,400+ stories shared
               </span>
               <span className="hidden sm:block text-muted-foreground/40">·</span>
               <span className="flex items-center gap-1.5">
-                <CheckCircle className="h-4 w-4 text-juice-orange" />
+                <CheckCircle className="h-4 w-4 text-primary" />
                 Free to join
               </span>
             </div>
@@ -172,9 +154,9 @@ const Landing = () => {
               <div className="bg-background px-4 py-2 flex items-center justify-between border-b border-border">
                 <span className="text-xs font-semibold text-foreground">The Juice App</span>
                 <div className="flex gap-1">
-                  <div className="w-1.5 h-1.5 rounded-full bg-juice-orange" />
-                  <div className="w-1.5 h-1.5 rounded-full bg-juice-orange/50" />
-                  <div className="w-1.5 h-1.5 rounded-full bg-juice-orange/20" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary/50" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary/20" />
                 </div>
               </div>
               {/* Mock story cards — matches real StoryCard layout: header → subject photo → text → flags → reactions */}
@@ -186,7 +168,7 @@ const Landing = () => {
                 <div key={i} className="border-b border-border last:border-b-0 bg-background">
                   {/* Header */}
                   <div className="flex items-center gap-2 px-3 pt-3 pb-2">
-                    <div className="w-6 h-6 rounded-full bg-gradient-to-br from-juice-orange to-juice-pink flex items-center justify-center text-white text-[10px] font-bold shrink-0">
+                    <div className="w-6 h-6 rounded-full bg-gradient-to-br from-primary to-primary flex items-center justify-center text-white text-[10px] font-bold shrink-0">
                       {card.name[0]}
                     </div>
                     <div className="flex-1 min-w-0">
@@ -242,7 +224,7 @@ const Landing = () => {
                   className={`border-0 shadow-card bg-white/80 backdrop-blur-sm ${index === 0 ? "md:col-span-2 lg:col-span-1" : ""}`}
                 >
                   <CardContent className="p-6 flex gap-4 items-start">
-                    <div className="p-3 bg-juice-orange/10 rounded-xl w-fit shrink-0">
+                    <div className="p-3 bg-primary/10 rounded-xl w-fit shrink-0">
                       {feature.icon}
                     </div>
                     <div>
@@ -270,7 +252,7 @@ const Landing = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               <div className="text-center">
-                <div className="w-14 h-14 bg-juice-orange rounded-full flex items-center justify-center text-white font-bold text-xl mx-auto mb-4">
+                <div className="w-14 h-14 bg-primary rounded-full flex items-center justify-center text-white font-bold text-xl mx-auto mb-4">
                   1
                 </div>
                 <h3 className="text-lg font-semibold mb-2">Verify your identity</h3>
@@ -280,7 +262,7 @@ const Landing = () => {
               </div>
 
               <div className="text-center">
-                <div className="w-14 h-14 bg-juice-orange rounded-full flex items-center justify-center text-white font-bold text-xl mx-auto mb-4">
+                <div className="w-14 h-14 bg-primary rounded-full flex items-center justify-center text-white font-bold text-xl mx-auto mb-4">
                   2
                 </div>
                 <h3 className="text-lg font-semibold mb-2">Read the feed</h3>
@@ -290,7 +272,7 @@ const Landing = () => {
               </div>
 
               <div className="text-center">
-                <div className="w-14 h-14 bg-juice-orange rounded-full flex items-center justify-center text-white font-bold text-xl mx-auto mb-4">
+                <div className="w-14 h-14 bg-primary rounded-full flex items-center justify-center text-white font-bold text-xl mx-auto mb-4">
                   3
                 </div>
                 <h3 className="text-lg font-semibold mb-2">Post yours anonymously</h3>
@@ -318,13 +300,13 @@ const Landing = () => {
               {testimonials.map((testimonial, index) => (
                 <Card key={index} className="border-0 shadow-card bg-white/80 backdrop-blur-sm">
                   <CardContent className="p-6">
-                    <Quote className="h-7 w-7 text-juice-orange mb-4" />
+                    <Quote className="h-7 w-7 text-primary mb-4" />
                     <p className="text-foreground mb-4 italic text-sm leading-relaxed">"{testimonial.quote}"</p>
                     <div className="flex items-center justify-between">
                       <span className="font-semibold text-sm">{testimonial.author}</span>
                       <div className="flex">
                         {[...Array(testimonial.rating)].map((_, i) => (
-                          <Star key={i} className="h-3.5 w-3.5 fill-juice-orange text-juice-orange" />
+                          <Star key={i} className="h-3.5 w-3.5 fill-primary text-primary" />
                         ))}
                       </div>
                     </div>
@@ -348,11 +330,11 @@ const Landing = () => {
               {faqs.map((faq, index) => (
                 <div
                   key={index}
-                  className="bg-white/80 border border-juice-orange/10 rounded-xl overflow-hidden"
+                  className="bg-white/80 border border-primary/10 rounded-xl overflow-hidden"
                 >
                   <button
                     onClick={() => setOpenFaq(openFaq === index ? null : index)}
-                    className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-juice-orange/5 transition-colors"
+                    className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-primary/5 transition-colors"
                   >
                     <span className="font-semibold text-foreground text-sm">{faq.question}</span>
                     <ChevronDown
@@ -395,57 +377,6 @@ const Landing = () => {
       </main>
 
       {/* Footer */}
-      <footer className="py-12 px-4 bg-white/80 border-t border-juice-orange/10">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div className="space-y-4">
-              <div className="flex items-center gap-2">
-                <img src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" alt="Juice" className="h-6 w-6" />
-                <span className="font-bold text-foreground">Juice</span>
-              </div>
-              <p className="text-sm text-muted-foreground">
-                The dating community designed for men to share honest, anonymous experiences.
-              </p>
-            </div>
-
-            <div>
-              <h4 className="font-semibold text-foreground mb-4">Features</h4>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li>Anonymous stories</li>
-                <li>Verified accounts</li>
-                <li>Dating ratings</li>
-                <li>Men-only community</li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="font-semibold text-foreground mb-4">Company</h4>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><a href="/how-it-works" className="hover:text-juice-orange transition-colors">How it works</a></li>
-                <li><a href="/privacy-policy" className="hover:text-juice-orange transition-colors">Privacy policy</a></li>
-                <li><a href="/terms" className="hover:text-juice-orange transition-colors">Terms &amp; guidelines</a></li>
-                <li><a href="/dispute" className="hover:text-juice-orange transition-colors">Request story removal</a></li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="font-semibold text-foreground mb-4">Support</h4>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><a href="/support" className="hover:text-juice-orange transition-colors">Help & support</a></li>
-                <li>
-                  <a href="mailto:support@sipjuice.app" className="hover:text-juice-orange transition-colors">
-                    support@sipjuice.app
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="border-t border-juice-orange/10 mt-8 pt-8 text-center text-sm text-muted-foreground">
-            <p>&copy; {new Date().getFullYear()} Juice. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 };

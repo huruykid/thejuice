@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import BrandLockup from "@/components/BrandLockup";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -63,8 +64,7 @@ const ResetPassword = () => {
     <div className="min-h-screen bg-gradient-soft flex items-center justify-center px-4 py-8">
       <div className="w-full max-w-md flex flex-col items-center gap-6">
         <button onClick={() => navigate("/")} className="flex flex-col items-center gap-3 hover:opacity-80 transition-opacity">
-          <img src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" alt="Juice" className="h-14 w-14" />
-          <h1 className="text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent">The Juice App</h1>
+          <BrandLockup variant="stacked" size="lg" />
         </button>
 
         <Card className="w-full bg-white/90 backdrop-blur-sm rounded-3xl shadow-soft border-0">
@@ -88,7 +88,7 @@ const ResetPassword = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="New password"
-                    className="rounded-2xl border-juice-orange/30 focus:border-juice-orange pr-12"
+                    className="rounded-2xl border-primary/30 focus:border-primary pr-12"
                     required
                     minLength={8}
                   />
@@ -107,7 +107,7 @@ const ResetPassword = () => {
                   value={confirm}
                   onChange={(e) => setConfirm(e.target.value)}
                   placeholder="Confirm new password"
-                  className="rounded-2xl border-juice-orange/30 focus:border-juice-orange"
+                  className="rounded-2xl border-primary/30 focus:border-primary"
                   required
                   minLength={8}
                 />

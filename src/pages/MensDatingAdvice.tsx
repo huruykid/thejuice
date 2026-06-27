@@ -11,25 +11,25 @@ const MensDatingAdvice = () => {
     {
       title: "First Date Tips",
       description: "Real advice from men who've been on hundreds of first dates",
-      icon: <Heart className="h-6 w-6 text-juice-orange" />,
+      icon: <Heart className="h-6 w-6 text-primary" />,
       topics: ["What to wear", "Conversation starters", "Where to go", "How to be confident"]
     },
     {
       title: "Dating App Strategy",
       description: "Proven strategies for Tinder, Bumble, Hinge and other apps",
-      icon: <MessageSquare className="h-6 w-6 text-juice-orange" />,
+      icon: <MessageSquare className="h-6 w-6 text-primary" />,
       topics: ["Profile optimization", "Message templates", "Photo tips", "Getting matches"]
     },
     {
       title: "Red Flag Recognition",
       description: "Learn to spot warning signs early from men's experiences",
-      icon: <AlertTriangle className="h-6 w-6 text-juice-orange" />,
+      icon: <AlertTriangle className="h-6 w-6 text-primary" />,
       topics: ["Early warning signs", "Toxic behavior patterns", "When to walk away", "Trust your gut"]
     },
     {
       title: "Relationship Building",
       description: "How to build healthy, lasting relationships with women",
-      icon: <Users className="h-6 w-6 text-juice-orange" />,
+      icon: <Users className="h-6 w-6 text-primary" />,
       topics: ["Communication skills", "Setting boundaries", "Building trust", "Long-term success"]
     }
   ];
@@ -88,7 +88,7 @@ const MensDatingAdvice = () => {
       <section className="py-16 px-4 bg-white/50">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
-            <Lightbulb className="h-12 w-12 text-juice-orange mx-auto mb-4" />
+            <Lightbulb className="h-12 w-12 text-primary mx-auto mb-4" />
             <h2 className="text-3xl font-bold text-foreground mb-4">6 Things Verified Men Wish They'd Known Earlier</h2>
             <p className="text-xl text-muted-foreground">
               Essential advice — short, blunt, hard-won.
@@ -98,7 +98,7 @@ const MensDatingAdvice = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {quickTips.map((tip, index) => (
               <div key={index} className="flex items-start gap-3 p-4 bg-white/80 rounded-lg shadow-card">
-                <div className="w-6 h-6 bg-juice-orange rounded-full flex items-center justify-center text-white font-bold text-sm mt-0.5">
+                <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center text-white font-bold text-sm mt-0.5">
                   {index + 1}
                 </div>
                 <p className="text-foreground font-medium">{tip}</p>
@@ -125,7 +125,7 @@ const MensDatingAdvice = () => {
               <Card key={index} className="border-0 shadow-card bg-white/80 backdrop-blur-sm hover:shadow-lg transition-shadow">
                 <CardHeader>
                   <div className="flex items-center gap-3 mb-2">
-                    <div className="p-2 bg-juice-orange/10 rounded-lg">
+                    <div className="p-2 bg-primary/10 rounded-lg">
                       {category.icon}
                     </div>
                     <CardTitle className="text-xl">{category.title}</CardTitle>
@@ -140,7 +140,7 @@ const MensDatingAdvice = () => {
                     <ul className="text-sm text-muted-foreground space-y-1">
                       {category.topics.map((topic, idx) => (
                         <li key={idx} className="flex items-center gap-2">
-                          <div className="w-1.5 h-1.5 bg-juice-orange rounded-full"></div>
+                          <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
                           {topic}
                         </li>
                       ))}
@@ -167,21 +167,21 @@ const MensDatingAdvice = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="text-center space-y-4">
-              <Users className="h-12 w-12 text-juice-orange mx-auto" />
+              <Users className="h-12 w-12 text-primary mx-auto" />
               <h3 className="text-xl font-semibold">Real Experiences</h3>
               <p className="text-muted-foreground">
                 Advice comes from men who've actually been in relationships, not just theory
               </p>
             </div>
             <div className="text-center space-y-4">
-              <Shield className="h-12 w-12 text-juice-orange mx-auto" />
+              <Shield className="h-12 w-12 text-primary mx-auto" />
               <h3 className="text-xl font-semibold">Anonymous Honesty</h3>
               <p className="text-muted-foreground">
                 Men share brutally honest advice without worrying about judgment
               </p>
             </div>
             <div className="text-center space-y-4">
-              <BookOpen className="h-12 w-12 text-juice-orange mx-auto" />
+              <BookOpen className="h-12 w-12 text-primary mx-auto" />
               <h3 className="text-xl font-semibold">Proven Results</h3>
               <p className="text-muted-foreground">
                 Strategies that have actually worked for thousands of verified men
@@ -216,12 +216,6 @@ const MensDatingAdvice = () => {
       </main>
 
       {/* SEO Footer */}
-      <footer className="py-12 px-4 bg-white/80 border-t border-juice-orange/10">
-        <div className="max-w-4xl mx-auto text-center text-sm text-muted-foreground">
-          <p>Men's Dating Advice | Dating Tips for Men | Male Dating Guidance | Juice</p>
-          <p className="mt-2">&copy; 2024 Juice. All rights reserved.</p>
-        </div>
-      </footer>
     </div>
   );
 };

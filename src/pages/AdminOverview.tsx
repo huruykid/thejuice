@@ -7,6 +7,7 @@ import { useUserRole } from "@/hooks/useUserRole";
 import { useAdminPendingCounts } from "@/hooks/useAdminPendingCounts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import {
   ShieldCheck, FileText, Flag, ArrowRight, Users,
   CheckCircle2, BarChart2, Scale, Filter,
@@ -176,7 +177,7 @@ const AdminOverview = () => {
     { to: "/admin/verifications", label: "Pending verifications", icon: ShieldCheck, count: counts?.verifications ?? 0, color: "text-primary" },
     { to: "/admin/posts",         label: "Pending posts",         icon: FileText,    count: counts?.posts          ?? 0, color: "text-foreground" },
     { to: "/admin/reports",       label: "Pending reports",       icon: Flag,        count: counts?.reports        ?? 0, color: "text-destructive" },
-    { to: "/admin/disputes",      label: "Pending disputes",      icon: Scale,       count: counts?.disputes       ?? 0, color: "text-orange-500" },
+    { to: "/admin/disputes",      label: "Pending disputes",      icon: Scale,       count: counts?.disputes       ?? 0, color: "text-primary" },
   ];
 
   // ── Activity rows ──────────────────────────────────────────────────────────
@@ -193,10 +194,7 @@ const AdminOverview = () => {
       <div className="max-w-5xl mx-auto space-y-6">
 
         {/* Header */}
-        <div>
-          <h1 className="text-2xl font-bold">Admin overview</h1>
-          <p className="text-sm text-muted-foreground">Quick read on what needs attention.</p>
-        </div>
+        <AdminPageHeader title="Admin overview" subtitle="Quick read on what needs attention." />
 
         {/* Lifetime stat bar */}
         <div className="grid grid-cols-3 gap-3">

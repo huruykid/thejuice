@@ -3,6 +3,7 @@ import { Link, NavLink } from 'react-router-dom';
 import { Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetClose, SheetTitle } from '@/components/ui/sheet';
+import BrandLockup from '@/components/BrandLockup';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 
 const links = [
@@ -17,15 +18,8 @@ export const PublicHeader = () => {
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border bg-background/80 backdrop-blur-md">
       <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2" aria-label="Juice home">
-          <img
-            src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png"
-            alt=""
-            className="h-7 w-7"
-          />
-          <span className="text-lg font-bold bg-gradient-primary bg-clip-text text-transparent">
-            The Juice App
-          </span>
+        <Link to="/" aria-label="Juice home">
+          <BrandLockup variant="inline" size="sm" />
         </Link>
 
         {/* Desktop nav */}
@@ -47,7 +41,7 @@ export const PublicHeader = () => {
             </NavLink>
           ))}
           <Button asChild size="sm" className="ml-2">
-            <Link to="/app">Sign In</Link>
+            <Link to="/app">Join free</Link>
           </Button>
         </nav>
 
@@ -82,7 +76,7 @@ export const PublicHeader = () => {
               ))}
               <SheetClose asChild>
                 <Button asChild className="mt-4">
-                  <Link to="/app">Sign In</Link>
+                  <Link to="/app">Join free</Link>
                 </Button>
               </SheetClose>
             </nav>

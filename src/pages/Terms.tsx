@@ -75,7 +75,7 @@ const Terms = () => {
         <h2 className="text-xl font-semibold text-foreground mt-8 mb-2">5. If you're featured in a post</h2>
         <p className="text-muted-foreground mb-4">
           Anyone can request removal of a post about them — no account needed — through our{" "}
-          <a href="/dispute" className="text-juice-orange underline">removal request</a> form. We
+          <a href="/dispute" className="text-primary underline">removal request</a> form. We
           review every request and remove content that violates these rules or the law.
         </p>
 
@@ -105,12 +105,12 @@ const Terms = () => {
         <p className="text-muted-foreground mb-4">
           We may update these terms; we'll revise the date above and notify you of significant
           changes. Questions or reports:{" "}
-          <a href="mailto:support@sipjuice.app" className="text-juice-orange underline">support@sipjuice.app</a>.
+          <a href="mailto:support@sipjuice.app" className="text-primary underline">support@sipjuice.app</a>.
         </p>
 
         <p className="text-xs text-muted-foreground mt-8">
           See also our{" "}
-          <a href="/privacy-policy" className="text-juice-orange underline">Privacy Policy</a>.
+          <a href="/privacy-policy" className="text-primary underline">Privacy Policy</a>.
         </p>
       </div>
     </div>

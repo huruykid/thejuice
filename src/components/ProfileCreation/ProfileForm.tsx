@@ -28,14 +28,14 @@ export const ProfileForm = ({
   const renderStatusIcon = () => {
     const status = getStatusIcon();
     if (status === 'loading') return <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />;
-    if (status === 'available') return <CheckCircle className="h-4 w-4 text-green-600" />;
-    if (status === 'unavailable') return <X className="h-4 w-4 text-red-600" />;
+    if (status === 'available') return <CheckCircle className="h-4 w-4 text-success" />;
+    if (status === 'unavailable') return <X className="h-4 w-4 text-destructive" />;
     return null;
   };
 
   const getStatusColor = () => {
-    if (isAvailable === false) return 'text-red-600';
-    if (isAvailable === true) return 'text-green-600';
+    if (isAvailable === false) return 'text-destructive';
+    if (isAvailable === true) return 'text-success';
     return 'text-muted-foreground';
   };
 

@@ -43,7 +43,7 @@ export const ViewAsBar = () => {
       className={cn(
         "fixed bottom-4 right-4 z-[60] flex items-center gap-2 rounded-full border px-3 py-2 shadow-lg backdrop-blur",
         active
-          ? "border-amber-400 bg-amber-100/95 text-amber-900"
+          ? "border-primary bg-primary/10/95 text-amber-900"
           : "border-border bg-card/95 text-foreground"
       )}
     >

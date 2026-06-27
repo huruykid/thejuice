@@ -11,25 +11,25 @@ const CompetitorAnalysis = () => {
     {
       title: "Women Have Tea App, Men Have Nothing",
       description: "The viral Tea app hit #1 with 4M+ women users, but zero options exist for men",
-      icon: <Target className="h-8 w-8 text-juice-orange" />,
+      icon: <Target className="h-8 w-8 text-primary" />,
       opportunity: "100% of male market untapped"
     },
     {
       title: "No Anonymous Male Reviews",
       description: "Men can't safely share dating experiences without social consequences",
-      icon: <Users className="h-8 w-8 text-juice-orange" />,
+      icon: <Users className="h-8 w-8 text-primary" />,
       opportunity: "Complete market gap for male perspectives"
     },
     {
       title: "Dating Apps Ignore Men's Needs",
       description: "Tinder, Bumble focus on matching, not real experience sharing",
-      icon: <Search className="h-8 w-8 text-juice-orange" />,
+      icon: <Search className="h-8 w-8 text-primary" />,
       opportunity: "First-mover advantage in male dating community"
     },
     {
       title: "Reddit Too Public & Toxic",
       description: "Men resort to public forums with no privacy or verification",
-      icon: <Share2 className="h-8 w-8 text-juice-orange" />,
+      icon: <Share2 className="h-8 w-8 text-primary" />,
       opportunity: "Safe, verified alternative needed"
     }
   ];
@@ -76,7 +76,7 @@ const CompetitorAnalysis = () => {
       {/* Hero Section */}
       <section className="py-20 px-4">
         <div className="max-w-4xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 bg-juice-orange/10 text-juice-orange px-4 py-2 rounded-full text-sm font-medium mb-6">
+          <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-6">
             <TrendingUp className="w-4 h-4" />
             The category men have been left out of — until now
           </div>
@@ -113,7 +113,7 @@ const CompetitorAnalysis = () => {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {marketStats.map((item, index) => (
               <div key={index} className="text-center">
-                <div className="text-4xl font-bold text-juice-orange mb-2">{item.stat}</div>
+                <div className="text-4xl font-bold text-primary mb-2">{item.stat}</div>
                 <div className="text-lg font-semibold text-foreground mb-1">{item.label}</div>
                 <div className="text-sm text-muted-foreground">{item.subtext}</div>
               </div>
@@ -139,7 +139,7 @@ const CompetitorAnalysis = () => {
               <Card key={index} className="border-0 shadow-card bg-white/80 backdrop-blur-sm hover:shadow-lg transition-shadow">
                 <CardHeader>
                   <div className="flex items-center gap-3 mb-2">
-                    <div className="p-2 bg-juice-orange/10 rounded-lg">
+                    <div className="p-2 bg-primary/10 rounded-lg">
                       {gap.icon}
                     </div>
                     <CardTitle className="text-xl">{gap.title}</CardTitle>
@@ -149,8 +149,8 @@ const CompetitorAnalysis = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-                    <p className="text-green-800 font-semibold text-sm">
+                  <div className="bg-success/10 border border-green-200 rounded-lg p-3">
+                    <p className="text-success font-semibold text-sm">
                       💰 Opportunity: {gap.opportunity}
                     </p>
                   </div>
@@ -165,7 +165,7 @@ const CompetitorAnalysis = () => {
       <section className="py-20 px-4 bg-white/50">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
-            <Zap className="h-12 w-12 text-juice-orange mx-auto mb-4" />
+            <Zap className="h-12 w-12 text-primary mx-auto mb-4" />
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
               Why Juice Is Spreading
             </h2>
@@ -179,7 +179,7 @@ const CompetitorAnalysis = () => {
               <Card key={index} className="border-0 shadow-card bg-white/80">
                 <CardContent className="p-6">
                   <div className="flex items-start gap-4">
-                    <div className="w-8 h-8 bg-juice-orange rounded-full flex items-center justify-center text-white font-bold text-sm">
+                    <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white font-bold text-sm">
                       {index + 1}
                     </div>
                     <div className="flex-1">
@@ -209,7 +209,7 @@ const CompetitorAnalysis = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <Card className="text-center border-0 shadow-card bg-white/80">
               <CardHeader>
-                <BarChart3 className="h-12 w-12 text-juice-orange mx-auto mb-4" />
+                <BarChart3 className="h-12 w-12 text-primary mx-auto mb-4" />
                 <CardTitle>Market Timing</CardTitle>
               </CardHeader>
               <CardContent>
@@ -221,7 +221,7 @@ const CompetitorAnalysis = () => {
             
             <Card className="text-center border-0 shadow-card bg-white/80">
               <CardHeader>
-                <Users className="h-12 w-12 text-juice-orange mx-auto mb-4" />
+                <Users className="h-12 w-12 text-primary mx-auto mb-4" />
                 <CardTitle>Network Effects</CardTitle>
               </CardHeader>
               <CardContent>
@@ -233,7 +233,7 @@ const CompetitorAnalysis = () => {
             
             <Card className="text-center border-0 shadow-card bg-white/80">
               <CardHeader>
-                <Crown className="h-12 w-12 text-juice-orange mx-auto mb-4" />
+                <Crown className="h-12 w-12 text-primary mx-auto mb-4" />
                 <CardTitle>Brand Dominance</CardTitle>
               </CardHeader>
               <CardContent>
@@ -268,7 +268,7 @@ const CompetitorAnalysis = () => {
       </main>
 
       {/* SEO Footer */}
-      <footer className="py-12 px-4 bg-white/80 border-t border-juice-orange/10">
+      <footer className="py-12 px-4 bg-white/80 border-t border-primary/10">
         <div className="max-w-4xl mx-auto text-center text-sm text-muted-foreground">
           <p>Juice vs Tea App | Men's Dating Reviews | Anonymous Male Dating Community</p>
           <p className="mt-2">&copy; 2024 Juice. All rights reserved.</p>

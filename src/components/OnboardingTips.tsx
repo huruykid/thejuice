@@ -65,7 +65,7 @@ const OnboardingTips = ({ step }: OnboardingTipsProps) => {
           <ul className="space-y-1 text-center">
             {currentTips.tips.map((tip, index) => (
               <li key={index} className="flex items-start justify-center space-x-2 text-xs text-muted-foreground">
-                <CheckCircle className="w-3 h-3 text-green-500 mt-0.5 flex-shrink-0" />
+                <CheckCircle className="w-3 h-3 text-success mt-0.5 flex-shrink-0" />
                 <span className="text-left">{tip}</span>
               </li>
             ))}

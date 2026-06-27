@@ -12,7 +12,7 @@ const HowItWorks = () => {
       number: 1,
       title: "Create Your Anonymous Profile",
       description: "Sign up with just an email and create your anonymous username. No real names required.",
-      icon: <Users className="h-6 w-6 md:h-8 md:w-8 text-juice-orange" />,
+      icon: <Users className="h-6 w-6 md:h-8 md:w-8 text-primary" />,
       details: [
         "Choose a unique anonymous username",
         "Add basic info like age and city",
@@ -24,7 +24,7 @@ const HowItWorks = () => {
       number: 2,
       title: "Verify Your Account",
       description: "Quick selfie verification ensures our community stays authentic and trustworthy.",
-      icon: <Shield className="h-6 w-6 md:h-8 md:w-8 text-juice-orange" />,
+      icon: <Shield className="h-6 w-6 md:h-8 md:w-8 text-primary" />,
       details: [
         "Take a simple verification selfie",
         "Our team reviews within 24 hours",
@@ -36,7 +36,7 @@ const HowItWorks = () => {
       number: 3,
       title: "Share Your Dating Stories",
       description: "Rate and review your dating experiences with complete anonymity and honesty.",
-      icon: <MessageSquare className="h-6 w-6 md:h-8 md:w-8 text-juice-orange" />,
+      icon: <MessageSquare className="h-6 w-6 md:h-8 md:w-8 text-primary" />,
       details: [
         "Rate dates on 4 key metrics",
         "Share detailed experiences",
@@ -48,7 +48,7 @@ const HowItWorks = () => {
       number: 4,
       title: "Read Real Insights",
       description: "Read genuine insights from verified men about their real dating experiences.",
-      icon: <Eye className="h-6 w-6 md:h-8 md:w-8 text-juice-orange" />,
+      icon: <Eye className="h-6 w-6 md:h-8 md:w-8 text-primary" />,
       details: [
         "Browse verified stories by experience type",
         "Filter by ratings and experiences",
@@ -129,7 +129,7 @@ const HowItWorks = () => {
                   <Card className="border-0 shadow-card bg-white/80 backdrop-blur-sm">
                     <CardHeader className="text-center lg:text-left pb-3 md:pb-6">
                       <div className="flex items-center justify-center lg:justify-start gap-3 md:gap-4 mb-2 md:mb-4">
-                        <div className="w-10 h-10 md:w-12 md:h-12 bg-juice-orange rounded-full flex items-center justify-center text-white font-bold text-base md:text-lg">
+                        <div className="w-10 h-10 md:w-12 md:h-12 bg-primary rounded-full flex items-center justify-center text-white font-bold text-base md:text-lg">
                           {step.number}
                         </div>
                         {step.icon}
@@ -141,7 +141,7 @@ const HowItWorks = () => {
                       <ul className="space-y-2 md:space-y-3">
                         {step.details.map((detail, i) => (
                           <li key={i} className="flex items-center gap-3">
-                            <CheckCircle className="h-4 w-4 md:h-5 md:w-5 text-juice-orange flex-shrink-0" />
+                            <CheckCircle className="h-4 w-4 md:h-5 md:w-5 text-primary flex-shrink-0" />
                             <span className="text-muted-foreground">{detail}</span>
                           </li>
                         ))}
@@ -182,7 +182,7 @@ const HowItWorks = () => {
             {features.map((feature, index) => (
               <Card key={index} className="text-center border-0 shadow-card bg-white/80 backdrop-blur-sm">
                 <CardHeader>
-                  <div className="mx-auto mb-4 p-3 bg-juice-orange/10 rounded-full w-fit text-juice-orange">
+                  <div className="mx-auto mb-4 p-3 bg-primary/10 rounded-full w-fit text-primary">
                     {feature.icon}
                   </div>
                   <CardTitle className="text-lg">{feature.title}</CardTitle>

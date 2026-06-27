@@ -11,25 +11,25 @@ const MaleDatingCommunity = () => {
     {
       title: "Anonymous Sharing",
       description: "Share your dating experiences without revealing your identity",
-      icon: <Lock className="h-6 w-6 text-juice-orange" />,
+      icon: <Lock className="h-6 w-6 text-primary" />,
       benefits: ["Complete privacy", "No judgment", "Safe environment", "Real conversations"]
     },
     {
       title: "Verified Men Only",
       description: "Community exclusively for verified male members",
-      icon: <Shield className="h-6 w-6 text-juice-orange" />,
+      icon: <Shield className="h-6 w-6 text-primary" />,
       benefits: ["Authentic stories", "Real experiences", "Trusted community", "No fake profiles"]
     },
     {
       title: "Global Community",
       description: "Connect with men from around the world sharing similar experiences",
-      icon: <Globe className="h-6 w-6 text-juice-orange" />,
+      icon: <Globe className="h-6 w-6 text-primary" />,
       benefits: ["Diverse perspectives", "Cultural insights", "Worldwide support", "24/7 activity"]
     },
     {
       title: "Supportive Environment",
       description: "A judgment-free zone where men support each other",
-      icon: <Heart className="h-6 w-6 text-juice-orange" />,
+      icon: <Heart className="h-6 w-6 text-primary" />,
       benefits: ["No toxic masculinity", "Emotional support", "Constructive advice", "Real community"]
     }
   ];
@@ -102,7 +102,7 @@ const MaleDatingCommunity = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             {communityStats.map((stat, index) => (
               <div key={index} className="text-center">
-                <div className="text-4xl font-bold text-juice-orange mb-2">{stat.number}</div>
+                <div className="text-4xl font-bold text-primary mb-2">{stat.number}</div>
                 <div className="text-lg font-semibold text-foreground mb-1">{stat.label}</div>
                 <div className="text-sm text-muted-foreground">{stat.description}</div>
               </div>
@@ -128,7 +128,7 @@ const MaleDatingCommunity = () => {
               <Card key={index} className="border-0 shadow-card bg-white/80 backdrop-blur-sm hover:shadow-lg transition-shadow">
                 <CardHeader>
                   <div className="flex items-center gap-3 mb-2">
-                    <div className="p-2 bg-juice-orange/10 rounded-lg">
+                    <div className="p-2 bg-primary/10 rounded-lg">
                       {feature.icon}
                     </div>
                     <CardTitle className="text-xl">{feature.title}</CardTitle>
@@ -143,7 +143,7 @@ const MaleDatingCommunity = () => {
                     <ul className="text-sm text-muted-foreground space-y-1">
                       {feature.benefits.map((benefit, idx) => (
                         <li key={idx} className="flex items-center gap-2">
-                          <CheckCircle className="w-4 h-4 text-juice-orange flex-shrink-0" />
+                          <CheckCircle className="w-4 h-4 text-primary flex-shrink-0" />
                           {benefit}
                         </li>
                       ))}
@@ -171,7 +171,7 @@ const MaleDatingCommunity = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {whatMenShare.map((topic, index) => (
               <div key={index} className="flex items-start gap-3 p-4 bg-white/80 rounded-lg shadow-card">
-                <MessageSquare className="w-5 h-5 text-juice-orange flex-shrink-0 mt-0.5" />
+                <MessageSquare className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                 <p className="text-foreground font-medium">{topic}</p>
               </div>
             ))}
@@ -194,7 +194,7 @@ const MaleDatingCommunity = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <Card className="text-center border-0 shadow-card bg-white/80">
               <CardHeader>
-                <Shield className="h-12 w-12 text-juice-orange mx-auto mb-4" />
+                <Shield className="h-12 w-12 text-primary mx-auto mb-4" />
                 <CardTitle>Respect & Support</CardTitle>
               </CardHeader>
               <CardContent>
@@ -206,7 +206,7 @@ const MaleDatingCommunity = () => {
             
             <Card className="text-center border-0 shadow-card bg-white/80">
               <CardHeader>
-                <Users className="h-12 w-12 text-juice-orange mx-auto mb-4" />
+                <Users className="h-12 w-12 text-primary mx-auto mb-4" />
                 <CardTitle>Constructive Dialogue</CardTitle>
               </CardHeader>
               <CardContent>
@@ -218,7 +218,7 @@ const MaleDatingCommunity = () => {
             
             <Card className="text-center border-0 shadow-card bg-white/80">
               <CardHeader>
-                <Lock className="h-12 w-12 text-juice-orange mx-auto mb-4" />
+                <Lock className="h-12 w-12 text-primary mx-auto mb-4" />
                 <CardTitle>Privacy Protection</CardTitle>
               </CardHeader>
               <CardContent>
@@ -256,12 +256,6 @@ const MaleDatingCommunity = () => {
       </main>
 
       {/* SEO Footer */}
-      <footer className="py-12 px-4 bg-white/80 border-t border-juice-orange/10">
-        <div className="max-w-4xl mx-auto text-center text-sm text-muted-foreground">
-          <p>Male Dating Community | Men's Dating Support | Anonymous Male Community | Juice</p>
-          <p className="mt-2">&copy; 2024 Juice. All rights reserved.</p>
-        </div>
-      </footer>
     </div>
   );
 };

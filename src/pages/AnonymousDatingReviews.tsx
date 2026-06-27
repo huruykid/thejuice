@@ -11,25 +11,25 @@ const AnonymousDatingReviews = () => {
     {
       title: "Dating App Reviews",
       description: "Anonymous reviews of Tinder, Bumble, Hinge matches and conversations",
-      icon: <MessageSquare className="h-6 w-6 text-juice-orange" />,
+      icon: <MessageSquare className="h-6 w-6 text-primary" />,
       examples: ["Tinder date reviews", "Bumble experience ratings", "Hinge conversation reviews"]
     },
     {
       title: "First Date Reviews",
       description: "Honest ratings and reviews of first date experiences",
-      icon: <Star className="h-6 w-6 text-juice-orange" />,
+      icon: <Star className="h-6 w-6 text-primary" />,
       examples: ["Restaurant date reviews", "Activity date ratings", "Coffee date experiences"]
     },
     {
       title: "Relationship Reviews",
       description: "Anonymous reviews of dating relationships and partners",
-      icon: <Users className="h-6 w-6 text-juice-orange" />,
+      icon: <Users className="h-6 w-6 text-primary" />,
       examples: ["Compatibility ratings", "Communication reviews", "Overall relationship scores"]
     },
     {
       title: "Hookup Reviews",
       description: "Anonymous reviews of casual dating and hookup experiences",
-      icon: <Lock className="h-6 w-6 text-juice-orange" />,
+      icon: <Lock className="h-6 w-6 text-primary" />,
       examples: ["Casual dating reviews", "Hookup experience ratings", "Safety and communication scores"]
     }
   ];
@@ -83,7 +83,7 @@ const AnonymousDatingReviews = () => {
       <section className="py-16 px-4 bg-white/50">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
-            <Shield className="h-16 w-16 text-juice-orange mx-auto mb-4" />
+            <Shield className="h-16 w-16 text-primary mx-auto mb-4" />
             <h2 className="text-3xl font-bold text-foreground mb-4">Your identity never touches the review</h2>
             <p className="text-xl text-muted-foreground">
               Your identity is protected. Review with zero risk.
@@ -92,17 +92,17 @@ const AnonymousDatingReviews = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="text-center">
-              <Eye className="h-8 w-8 text-juice-orange mx-auto mb-3" />
+              <Eye className="h-8 w-8 text-primary mx-auto mb-3" />
               <h3 className="font-semibold mb-2">No Names Revealed</h3>
               <p className="text-sm text-muted-foreground">Reviews are completely anonymous - no personal information shared</p>
             </div>
             <div className="text-center">
-              <Lock className="h-8 w-8 text-juice-orange mx-auto mb-3" />
+              <Lock className="h-8 w-8 text-primary mx-auto mb-3" />
               <h3 className="font-semibold mb-2">Secure Platform</h3>
               <p className="text-sm text-muted-foreground">Advanced security keeps your reviews private and protected</p>
             </div>
             <div className="text-center">
-              <CheckCircle className="h-8 w-8 text-juice-orange mx-auto mb-3" />
+              <CheckCircle className="h-8 w-8 text-primary mx-auto mb-3" />
               <h3 className="font-semibold mb-2">Verified Only</h3>
               <p className="text-sm text-muted-foreground">Only verified men can read and write reviews</p>
             </div>
@@ -127,7 +127,7 @@ const AnonymousDatingReviews = () => {
               <Card key={index} className="border-0 shadow-card bg-white/80 backdrop-blur-sm hover:shadow-lg transition-shadow">
                 <CardHeader>
                   <div className="flex items-center gap-3 mb-2">
-                    <div className="p-2 bg-juice-orange/10 rounded-lg">
+                    <div className="p-2 bg-primary/10 rounded-lg">
                       {type.icon}
                     </div>
                     <CardTitle className="text-xl">{type.title}</CardTitle>
@@ -142,7 +142,7 @@ const AnonymousDatingReviews = () => {
                     <ul className="text-sm text-muted-foreground space-y-1">
                       {type.examples.map((example, idx) => (
                         <li key={idx} className="flex items-center gap-2">
-                          <div className="w-1.5 h-1.5 bg-juice-orange rounded-full"></div>
+                          <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
                           {example}
                         </li>
                       ))}
@@ -173,7 +173,7 @@ const AnonymousDatingReviews = () => {
                 <div className="flex-shrink-0">
                   <div className="flex">
                     {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="h-5 w-5 text-juice-orange fill-juice-orange" />
+                      <Star key={i} className="h-5 w-5 text-primary fill-primary" />
                     ))}
                   </div>
                 </div>
@@ -199,7 +199,7 @@ const AnonymousDatingReviews = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <Card className="text-center border-0 shadow-card bg-white/80">
               <CardHeader>
-                <MessageSquare className="h-12 w-12 text-juice-orange mx-auto mb-4" />
+                <MessageSquare className="h-12 w-12 text-primary mx-auto mb-4" />
                 <CardTitle>Honest Feedback</CardTitle>
               </CardHeader>
               <CardContent>
@@ -211,7 +211,7 @@ const AnonymousDatingReviews = () => {
             
             <Card className="text-center border-0 shadow-card bg-white/80">
               <CardHeader>
-                <Users className="h-12 w-12 text-juice-orange mx-auto mb-4" />
+                <Users className="h-12 w-12 text-primary mx-auto mb-4" />
                 <CardTitle>Help Other Men</CardTitle>
               </CardHeader>
               <CardContent>
@@ -223,7 +223,7 @@ const AnonymousDatingReviews = () => {
             
             <Card className="text-center border-0 shadow-card bg-white/80">
               <CardHeader>
-                <Shield className="h-12 w-12 text-juice-orange mx-auto mb-4" />
+                <Shield className="h-12 w-12 text-primary mx-auto mb-4" />
                 <CardTitle>No Retaliation</CardTitle>
               </CardHeader>
               <CardContent>
@@ -261,12 +261,6 @@ const AnonymousDatingReviews = () => {
       </main>
 
       {/* SEO Footer */}
-      <footer className="py-12 px-4 bg-white/80 border-t border-juice-orange/10">
-        <div className="max-w-4xl mx-auto text-center text-sm text-muted-foreground">
-          <p>Anonymous Dating Reviews | Men's Dating Ratings | Anonymous Dating Experiences | Juice</p>
-          <p className="mt-2">&copy; 2024 Juice. All rights reserved.</p>
-        </div>
-      </footer>
     </div>
   );
 };

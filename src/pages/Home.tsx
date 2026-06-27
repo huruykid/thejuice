@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef } from "react";
+import BrandLockup from "@/components/BrandLockup";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { Heart } from "lucide-react";
@@ -101,9 +102,7 @@ const Home = ({ onCreateStory }: HomeProps) => {
       {/* IG-style sticky header */}
       <header className="sticky top-0 z-40 bg-background/95 backdrop-blur border-b border-border lg:hidden">
         <div className="flex items-center justify-between px-4 h-12 max-w-md mx-auto">
-          <h1 className="ig-wordmark">
-            The <span className="accent">Juice</span> App
-          </h1>
+          <BrandLockup variant="inline" size="sm" />
           <button
             onClick={() => navigate('/activity')}
             aria-label="Activity"

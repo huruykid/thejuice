@@ -101,7 +101,7 @@ const AutomatedCampaignDashboard = () => {
     { 
       label: "Campaign Status", 
       value: isAutomationActive ? "ACTIVE" : "READY", 
-      icon: isAutomationActive ? <CheckCircle className="h-5 w-5 text-green-500" /> : <Clock className="h-5 w-5 text-orange-500" />
+      icon: isAutomationActive ? <CheckCircle className="h-5 w-5 text-success" /> : <Clock className="h-5 w-5 text-primary" />
     },
     { 
       label: "Monitoring", 
@@ -111,12 +111,12 @@ const AutomatedCampaignDashboard = () => {
     { 
       label: "Market Opportunity", 
       value: "100% BLUE OCEAN", 
-      icon: <TrendingUp className="h-5 w-5 text-green-500" />
+      icon: <TrendingUp className="h-5 w-5 text-success" />
     },
     { 
       label: "Competition", 
       value: "ZERO MALE APPS", 
-      icon: <Crown className="h-5 w-5 text-juice-orange" />
+      icon: <Crown className="h-5 w-5 text-primary" />
     }
   ];
 
@@ -147,7 +147,7 @@ const AutomatedCampaignDashboard = () => {
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2 bg-juice-orange/10 text-juice-orange px-4 py-2 rounded-full text-sm font-medium mb-4">
+          <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-4">
             <Bot className="w-4 h-4" />
             FULLY AUTOMATED MARKETING MACHINE
           </div>
@@ -175,12 +175,12 @@ const AutomatedCampaignDashboard = () => {
         </div>
 
         {/* Alert Banner */}
-        <Card className="mb-8 border-juice-orange bg-juice-orange/5">
+        <Card className="mb-8 border-primary bg-primary/5">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <AlertTriangle className="h-6 w-6 text-juice-orange" />
+              <AlertTriangle className="h-6 w-6 text-primary" />
               <div>
-                <div className="font-semibold text-juice-orange">MASSIVE OPPORTUNITY DETECTED</div>
+                <div className="font-semibold text-primary">MASSIVE OPPORTUNITY DETECTED</div>
                 <div className="text-sm text-muted-foreground">
                   Women's Tea app has 4M+ users, but ZERO male alternatives exist. Strike now!
                 </div>
@@ -211,7 +211,7 @@ const AutomatedCampaignDashboard = () => {
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   {quickLaunchCampaigns.map((campaign, index) => (
-                    <Card key={index} className="border-2 hover:border-juice-orange transition-colors">
+                    <Card key={index} className="border-2 hover:border-primary transition-colors">
                       <CardHeader>
                         <CardTitle className="text-lg">{campaign.title}</CardTitle>
                         <Badge variant="outline" className="w-fit">
@@ -247,9 +247,9 @@ const AutomatedCampaignDashboard = () => {
 
                 {/* Active Campaign Display */}
                 {campaignData && (
-                  <Card className="mt-6 border-green-200 bg-green-50">
+                  <Card className="mt-6 border-green-200 bg-success/10">
                     <CardHeader>
-                      <CardTitle className="flex items-center gap-2 text-green-800">
+                      <CardTitle className="flex items-center gap-2 text-success">
                         <CheckCircle className="h-5 w-5" />
                         Campaign Active: Running on Autopilot
                       </CardTitle>
@@ -274,7 +274,7 @@ const AutomatedCampaignDashboard = () => {
                         <ul className="text-xs space-y-1">
                           {campaignData.nextActions?.map((action: string, i: number) => (
                             <li key={i} className="flex items-center gap-2">
-                              <CheckCircle className="h-3 w-3 text-green-500" />
+                              <CheckCircle className="h-3 w-3 text-success" />
                               {action}
                             </li>
                           ))}
@@ -303,9 +303,9 @@ const AutomatedCampaignDashboard = () => {
                 {monitoringData?.alerts && (
                   <div className="space-y-3 mb-6">
                     {monitoringData.alerts.map((alert: string, index: number) => (
-                      <div key={index} className="flex items-center gap-3 p-3 bg-orange-50 border border-orange-200 rounded-lg">
-                        <AlertTriangle className="h-5 w-5 text-orange-600" />
-                        <span className="font-medium text-orange-800">{alert}</span>
+                      <div key={index} className="flex items-center gap-3 p-3 bg-primary/10 border border-orange-200 rounded-lg">
+                        <AlertTriangle className="h-5 w-5 text-primary" />
+                        <span className="font-medium text-primary">{alert}</span>
                       </div>
                     ))}
                   </div>
@@ -332,27 +332,27 @@ const AutomatedCampaignDashboard = () => {
                 {monitoringData && (
                   <div className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <Card className="border-red-200 bg-red-50">
+                      <Card className="border-red-200 bg-destructive/10">
                         <CardHeader className="pb-2">
-                          <CardTitle className="text-sm text-red-800">Threats</CardTitle>
+                          <CardTitle className="text-sm text-destructive">Threats</CardTitle>
                         </CardHeader>
                         <CardContent>
-                          <div className="text-2xl font-bold text-red-600">
+                          <div className="text-2xl font-bold text-destructive">
                             {monitoringData.monitoring?.competitiveThreats?.length || 0}
                           </div>
-                          <div className="text-xs text-red-600">Active threats</div>
+                          <div className="text-xs text-destructive">Active threats</div>
                         </CardContent>
                       </Card>
                       
-                      <Card className="border-green-200 bg-green-50">
+                      <Card className="border-green-200 bg-success/10">
                         <CardHeader className="pb-2">
-                          <CardTitle className="text-sm text-green-800">Opportunities</CardTitle>
+                          <CardTitle className="text-sm text-success">Opportunities</CardTitle>
                         </CardHeader>
                         <CardContent>
-                          <div className="text-2xl font-bold text-green-600">
+                          <div className="text-2xl font-bold text-success">
                             {monitoringData.monitoring?.immediateOpportunities?.length || 0}
                           </div>
-                          <div className="text-xs text-green-600">Ready to exploit</div>
+                          <div className="text-xs text-success">Ready to exploit</div>
                         </CardContent>
                       </Card>
                       
@@ -388,12 +388,12 @@ const AutomatedCampaignDashboard = () => {
               </CardHeader>
               <CardContent>
                 <div className="text-center py-8">
-                  <Bot className="h-16 w-16 text-juice-orange mx-auto mb-4" />
+                  <Bot className="h-16 w-16 text-primary mx-auto mb-4" />
                   <h3 className="text-xl font-semibold mb-2">Automation Engine Ready</h3>
                   <p className="text-muted-foreground mb-4">
                     Deploy a campaign to start seeing automated results and performance metrics
                   </p>
-                  <Badge variant="outline" className="bg-juice-orange/10 text-juice-orange">
+                  <Badge variant="outline" className="bg-primary/10 text-primary">
                     Ready to dominate the competition
                   </Badge>
                 </div>

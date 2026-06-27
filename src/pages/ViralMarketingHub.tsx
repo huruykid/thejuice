@@ -155,28 +155,28 @@ const ViralMarketingHub = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
           <Card className="text-center">
             <CardContent className="p-4">
-              <TrendingUp className="h-8 w-8 text-juice-orange mx-auto mb-2" />
+              <TrendingUp className="h-8 w-8 text-primary mx-auto mb-2" />
               <div className="text-2xl font-bold">4M+</div>
               <div className="text-sm text-muted-foreground">Women using Tea app</div>
             </CardContent>
           </Card>
           <Card className="text-center">
             <CardContent className="p-4">
-              <Target className="h-8 w-8 text-juice-orange mx-auto mb-2" />
+              <Target className="h-8 w-8 text-primary mx-auto mb-2" />
               <div className="text-2xl font-bold">0</div>
               <div className="text-sm text-muted-foreground">Competing male apps</div>
             </CardContent>
           </Card>
           <Card className="text-center">
             <CardContent className="p-4">
-              <Search className="h-8 w-8 text-juice-orange mx-auto mb-2" />
+              <Search className="h-8 w-8 text-primary mx-auto mb-2" />
               <div className="text-2xl font-bold">50M+</div>
               <div className="text-sm text-muted-foreground">Untapped male market</div>
             </CardContent>
           </Card>
           <Card className="text-center">
             <CardContent className="p-4">
-              <Zap className="h-8 w-8 text-juice-orange mx-auto mb-2" />
+              <Zap className="h-8 w-8 text-primary mx-auto mb-2" />
               <div className="text-2xl font-bold">100%</div>
               <div className="text-sm text-muted-foreground">Blue ocean opportunity</div>
             </CardContent>

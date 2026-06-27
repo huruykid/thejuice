@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CheckCircle, Clock, XCircle, UserPlus, Search, PenLine } from "lucide-react";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 
 interface Member {
   user_id: string;
@@ -73,19 +74,16 @@ const AdminMembers = () => {
       return <Badge variant="outline" className="text-muted-foreground"><Clock className="w-3 h-3 mr-1" />Pending</Badge>;
     if (s === "rejected")
       return <Badge variant="outline" className="text-destructive border-destructive"><XCircle className="w-3 h-3 mr-1" />Rejected</Badge>;
-    return <Badge variant="outline" className="text-amber-600 border-amber-600"><UserPlus className="w-3 h-3 mr-1" />No verification yet</Badge>;
+    return <Badge variant="outline" className="text-primary border-primary"><UserPlus className="w-3 h-3 mr-1" />No verification yet</Badge>;
   };
 
   return (
     <div className="bg-gradient-soft p-4">
       <div className="max-w-5xl mx-auto space-y-6">
-        <div className="flex items-center justify-between gap-2 flex-wrap">
-          <div>
-            <h1 className="text-2xl font-bold">Members</h1>
-            <p className="text-sm text-muted-foreground">
-              Every signup — including people who haven't started verification yet.
-            </p>
-          </div>
+        <AdminPageHeader
+          title="Members"
+          subtitle="Every signup — including people who haven't started verification yet."
+        >
           <div className="flex items-center gap-2">
             <div className="relative">
               <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -109,7 +107,7 @@ const AdminMembers = () => {
               </SelectContent>
             </Select>
           </div>
-        </div>
+        </AdminPageHeader>
 
         <p className="text-xs text-muted-foreground">{filtered.length} member{filtered.length === 1 ? "" : "s"}</p>
 

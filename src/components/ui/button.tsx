@@ -23,7 +23,7 @@ const buttonVariants = cva(
         
         // Juice App specific variants
         juice: "bg-gradient-primary text-primary-foreground hover:shadow-glow hover:scale-[1.02] transition-all duration-200 rounded-2xl font-semibold active:scale-[0.95]",
-        "juice-soft": "bg-juice-lavender text-juice-purple hover:bg-juice-pink/20 hover:text-juice-purple transition-all duration-200 rounded-xl active:scale-[0.95]",
+        "juice-soft": "bg-muted text-foreground hover:bg-primary/20 hover:text-foreground transition-all duration-200 rounded-xl active:scale-[0.95]",
         "juice-outline": "border-2 border-primary text-primary bg-background hover:bg-primary hover:text-primary-foreground transition-all duration-200 rounded-xl font-medium active:scale-[0.95]",
         
         // Interactive voting buttons

@@ -27,6 +27,7 @@ const AdminDisputes = lazy(() => import("./pages/AdminDisputes"));
 const AdminOverview = lazy(() => import("./pages/AdminOverview"));
 const AdminBlog = lazy(() => import("./pages/AdminBlog"));
 const AdminMembers = lazy(() => import("./pages/AdminMembers"));
+const AdminSeed = lazy(() => import("./pages/AdminSeed"));
 const SharePublic = lazy(() => import("./pages/SharePublic"));
 const DisputeRequest = lazy(() => import("./pages/DisputeRequest"));
 const PrivacySettings = lazy(() => import("./pages/PrivacySettings"));
@@ -235,6 +236,11 @@ const App = () => {
           <Route path="/admin/blog" element={
             <AdminRoute>
               <AdminLayout><AdminBlog /></AdminLayout>
+            </AdminRoute>
+          } />
+          <Route path="/admin/seed" element={
+            <AdminRoute>
+              <AdminLayout><AdminSeed /></AdminLayout>
             </AdminRoute>
           } />
           <Route path="/admin/disputes" element={

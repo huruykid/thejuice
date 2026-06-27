@@ -1,4 +1,5 @@
 import { useState } from "react";
+import BrandLockup from "@/components/BrandLockup";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -43,10 +44,7 @@ const WelcomeScreen = ({
       {/* Logo */}
       <div className="flex items-center justify-center pt-16 pb-8">
         <div className="flex items-center gap-3">
-          <img src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" alt="Juice" className="h-16 w-16" />
-          <h1 className="text-4xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-            Juice
-          </h1>
+          <BrandLockup variant="inline" size="lg" />
         </div>
       </div>
 
@@ -63,8 +61,8 @@ const WelcomeScreen = ({
 
               <div className="grid grid-cols-2 gap-4">
                 {features.map((feature, index) => <div key={index} className="text-center space-y-2">
-                  <div className="mx-auto w-12 h-12 bg-juice-peach rounded-2xl flex items-center justify-center">
-                    <feature.icon className="h-6 w-6 text-juice-orange" />
+                  <div className="mx-auto w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center">
+                    <feature.icon className="h-6 w-6 text-primary" />
                     </div>
                     <h3 className="font-semibold text-sm text-foreground">{feature.title}</h3>
                     <p className="text-xs text-muted-foreground">{feature.description}</p>
@@ -88,7 +86,7 @@ const WelcomeScreen = ({
               </div>
 
               <div className="space-y-4">
-                <Input value={inviteCode} onChange={e => setInviteCode(e.target.value.toUpperCase())} placeholder="INVITE-CODE" className="text-center text-lg tracking-wider rounded-2xl border-juice-orange/30 focus:border-juice-orange" maxLength={12} />
+                <Input value={inviteCode} onChange={e => setInviteCode(e.target.value.toUpperCase())} placeholder="INVITE-CODE" className="text-center text-lg tracking-wider rounded-2xl border-primary/30 focus:border-primary" maxLength={12} />
                 <p className="text-xs text-muted-foreground text-center">
                   Don't have a code? Ask a friend who's already on Juice!
                 </p>
@@ -117,7 +115,7 @@ const WelcomeScreen = ({
 
               <div className="space-y-4 text-sm">
                 <div className="flex gap-3">
-                  <div className="w-6 h-6 bg-juice-green rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <div className="w-6 h-6 bg-success rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                     <span className="text-xs text-white">✓</span>
                   </div>
                   <div>
@@ -127,7 +125,7 @@ const WelcomeScreen = ({
                 </div>
                 
                 <div className="flex gap-3">
-                  <div className="w-6 h-6 bg-juice-green rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <div className="w-6 h-6 bg-success rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                     <span className="text-xs text-white">✓</span>
                   </div>
                   <div>
@@ -137,7 +135,7 @@ const WelcomeScreen = ({
                 </div>
                 
                 <div className="flex gap-3">
-                  <div className="w-6 h-6 bg-juice-green rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <div className="w-6 h-6 bg-success rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                     <span className="text-xs text-white">✓</span>
                   </div>
                   <div>
@@ -161,7 +159,7 @@ const WelcomeScreen = ({
 
       {/* Step Indicator */}
       <div className="flex justify-center gap-2 pb-8">
-        {[0, 1, 2].map(index => <div key={index} className={`w-2 h-2 rounded-full transition-smooth ${index === step ? "bg-juice-orange" : "bg-juice-orange/30"}`} />)}
+        {[0, 1, 2].map(index => <div key={index} className={`w-2 h-2 rounded-full transition-smooth ${index === step ? "bg-primary" : "bg-primary/30"}`} />)}
       </div>
     </div>;
 };

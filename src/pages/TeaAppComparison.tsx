@@ -121,20 +121,20 @@ const TeaAppComparison = () => {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-juice-orange/10">
+                  <tr className="border-b border-primary/10">
                     <th className="text-left p-4 font-semibold text-foreground">Feature</th>
                     <th className="text-left p-4 font-semibold text-muted-foreground">Tea App</th>
-                    <th className="text-left p-4 font-semibold text-juice-orange">Juice</th>
+                    <th className="text-left p-4 font-semibold text-primary">Juice</th>
                   </tr>
                 </thead>
                 <tbody>
                   {comparisons.map((comparison, index) => (
-                    <tr key={index} className="border-b border-juice-orange/5 hover:bg-juice-orange/5 transition-colors">
+                    <tr key={index} className="border-b border-primary/5 hover:bg-primary/5 transition-colors">
                       <td className="p-4 font-medium text-foreground">{comparison.feature}</td>
                       <td className="p-4 text-muted-foreground">{comparison.original}</td>
                       <td className="p-4">
                         <div className="flex items-center gap-2">
-                          <Check className="h-4 w-4 text-green-600" />
+                          <Check className="h-4 w-4 text-success" />
                           <span className="text-foreground">{comparison.ours}</span>
                         </div>
                       </td>
@@ -164,7 +164,7 @@ const TeaAppComparison = () => {
               <Card key={index} className="border-0 shadow-card bg-white/80 backdrop-blur-sm">
                 <CardHeader>
                   <CardTitle className="text-xl flex items-center gap-2">
-                    <Check className="h-5 w-5 text-juice-orange" />
+                    <Check className="h-5 w-5 text-primary" />
                     {advantage.title}
                   </CardTitle>
                   <CardDescription className="text-base">
@@ -172,8 +172,8 @@ const TeaAppComparison = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="bg-juice-orange/10 p-4 rounded-lg">
-                    <p className="text-sm font-medium text-juice-orange">
+                  <div className="bg-primary/10 p-4 rounded-lg">
+                    <p className="text-sm font-medium text-primary">
                       <strong>Benefit:</strong> {advantage.benefit}
                     </p>
                   </div>
@@ -199,7 +199,7 @@ const TeaAppComparison = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <Card className="text-center border-0 shadow-card bg-white/80 backdrop-blur-sm">
               <CardContent className="p-8">
-                <div className="text-4xl font-bold text-juice-orange mb-2">4</div>
+                <div className="text-4xl font-bold text-primary mb-2">4</div>
                 <div className="text-lg font-semibold text-foreground mb-2">Rating Metrics</div>
                 <div className="text-sm text-muted-foreground">Every review covers communication, safety, vibe, and loyalty</div>
               </CardContent>
@@ -207,7 +207,7 @@ const TeaAppComparison = () => {
             
             <Card className="text-center border-0 shadow-card bg-white/80 backdrop-blur-sm">
               <CardContent className="p-8">
-                <div className="text-4xl font-bold text-juice-orange mb-2">100%</div>
+                <div className="text-4xl font-bold text-primary mb-2">100%</div>
                 <div className="text-lg font-semibold text-foreground mb-2">Manual Approval</div>
                 <div className="text-sm text-muted-foreground">Every member is reviewed before joining — no auto sign-ups</div>
               </CardContent>
@@ -215,7 +215,7 @@ const TeaAppComparison = () => {
             
             <Card className="text-center border-0 shadow-card bg-white/80 backdrop-blur-sm">
               <CardContent className="p-8">
-                <div className="text-4xl font-bold text-juice-orange mb-2">24h</div>
+                <div className="text-4xl font-bold text-primary mb-2">24h</div>
                 <div className="text-lg font-semibold text-foreground mb-2">Verification Time</div>
                 <div className="text-sm text-muted-foreground">Fast verification process to get you sharing quickly</div>
               </CardContent>

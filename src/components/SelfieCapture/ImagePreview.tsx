@@ -34,13 +34,13 @@ export const ImagePreview = ({
           </div>
         )}
         {quality === 'good' && (
-          <div className="absolute top-2 left-2 bg-green-500 text-white px-2 py-1 rounded text-xs flex items-center gap-1">
+          <div className="absolute top-2 left-2 bg-success text-white px-2 py-1 rounded text-xs flex items-center gap-1">
             <Check className="h-3 w-3" />
             Good quality
           </div>
         )}
         {quality === 'poor' && (
-          <div className="absolute top-2 left-2 bg-amber-500 text-white px-2 py-1 rounded text-xs flex items-center gap-1">
+          <div className="absolute top-2 left-2 bg-primary text-white px-2 py-1 rounded text-xs flex items-center gap-1">
             <AlertTriangle className="h-3 w-3" />
             Could be clearer
           </div>
@@ -61,7 +61,7 @@ export const ImagePreview = ({
           disabled={isUploading}
           className={cn(
             "flex-1",
-            quality === 'good' && "bg-green-600 hover:bg-green-700"
+            quality === 'good' && "bg-success hover:bg-success"
           )}
         >
           {isUploading ? (
@@ -79,12 +79,12 @@ export const ImagePreview = ({
       </div>
 
       {showQualityTips && quality === 'poor' && (
-        <div className="bg-amber-50 dark:bg-amber-900/20 p-3 rounded-lg text-sm">
+        <div className="bg-primary/10 dark:bg-amber-900/20 p-3 rounded-lg text-sm">
           <div className="flex items-start gap-2">
-            <Lightbulb className="h-4 w-4 text-amber-600 mt-0.5 flex-shrink-0" />
+            <Lightbulb className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
             <div>
-              <p className="font-medium text-amber-800 dark:text-amber-200">For best results:</p>
-              <ul className="text-amber-700 dark:text-amber-300 mt-1 text-xs space-y-1">
+              <p className="font-medium text-primary dark:text-amber-200">For best results:</p>
+              <ul className="text-primary dark:text-primary/30 mt-1 text-xs space-y-1">
                 <li>• Move to better lighting</li>
                 <li>• Hold camera steady</li>
                 <li>• Make sure face fills the frame</li>

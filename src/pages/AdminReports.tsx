@@ -10,7 +10,8 @@ import { Badge } from "@/components/ui/badge";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
-import { Flag, Loader2, ExternalLink } from "lucide-react";
+import { Loader2, ExternalLink } from "lucide-react";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { toast } from "sonner";
 import type { Report } from "@/hooks/useReports";
 
@@ -33,11 +34,11 @@ interface ReportWithContent extends Report {
   resolvedProfile?: ResolvedProfile;
 }
 
-const STATUS_STYLES: Record<Report["status"], string> = {
-  pending: "bg-muted text-foreground",
-  reviewing: "bg-primary/10 text-primary",
-  action_taken: "bg-success/15 text-success",
-  dismissed: "bg-muted text-muted-foreground",
+const STATUS_BADGE_CLASS: Record<Report["status"], string> = {
+  pending: "text-muted-foreground",
+  reviewing: "text-muted-foreground",
+  action_taken: "text-success border-success",
+  dismissed: "text-destructive border-destructive",
 };
 
 const AdminReports = () => {
@@ -132,15 +133,11 @@ const AdminReports = () => {
     <div className="bg-gradient-soft p-4 pb-20">
       <div className="max-w-5xl mx-auto space-y-6">
 
-        <div className="flex items-center justify-between mb-6">
+        <AdminPageHeader title="Reports">
           <div className="flex items-center gap-2">
-            <Flag className="h-6 w-6 text-juice-orange" />
-            <h1 className="text-2xl font-bold">Reports</h1>
             {filter === "pending" && pendingCount > 0 && (
               <Badge variant="secondary">{pendingCount}</Badge>
             )}
-          </div>
-          <div className="flex items-center gap-2">
             <Select value={sort} onValueChange={(v) => setSort(v as "newest" | "oldest")}>
               <SelectTrigger className="w-36">
                 <SelectValue />
@@ -163,7 +160,7 @@ const AdminReports = () => {
               </SelectContent>
             </Select>
           </div>
-        </div>
+        </AdminPageHeader>
 
         {isLoading ? (
           <div className="text-center py-10 text-muted-foreground">Loading reports…</div>
@@ -202,9 +199,9 @@ function ReportRow({
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-2 flex-wrap">
             <Badge variant="outline" className="capitalize">{report.target_type}</Badge>
-            <span className={`text-xs px-2 py-0.5 rounded-full ${STATUS_STYLES[report.status]}`}>
+            <Badge variant="outline" className={STATUS_BADGE_CLASS[report.status]}>
               {report.status.replace("_", " ")}
-            </span>
+            </Badge>
             <span className="text-xs text-muted-foreground">
               {new Date(report.created_at).toLocaleString()}
             </span>
@@ -244,7 +241,7 @@ function ReportRow({
         )}
 
         {report.action_taken && (
-          <p className="text-xs text-emerald-700">Action: {report.action_taken}</p>
+          <p className="text-xs text-success">Action: {report.action_taken}</p>
         )}
 
         {/* Actions */}

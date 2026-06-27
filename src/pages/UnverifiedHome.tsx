@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import BrandLockup from "@/components/BrandLockup";
 import { ShieldCheck, Sparkles, Clock, CheckCircle2, XCircle } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -33,9 +34,7 @@ const UnverifiedHome = ({ onCreateStory, onStartVerification }: UnverifiedHomePr
       {/* Header */}
       <header className="sticky top-0 z-40 bg-background/95 backdrop-blur border-b border-border">
         <div className="flex items-center justify-between px-4 h-12 max-w-xl mx-auto">
-          <h1 className="ig-wordmark">
-            The <span className="accent">Juice</span> App
-          </h1>
+          <BrandLockup variant="inline" size="sm" />
           <button
             onClick={onStartVerification}
             className="text-xs font-semibold text-primary"
