@@ -182,7 +182,7 @@ Topic: ${prompt}`
             slug: '', // Will be auto-generated
             keywords: keywords.split(',').map(k => k.trim()).filter(k => k.length > 0),
             meta_description: excerpt,
-            published: true,
+            published: false, // AI posts are drafts — an admin reviews & publishes from /admin/blog
             read_time_minutes: readTime,
             author_id: null // System generated
           })

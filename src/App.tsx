@@ -25,6 +25,7 @@ const AdminPosts = lazy(() => import("./pages/AdminPosts"));
 const AdminReports = lazy(() => import("./pages/AdminReports"));
 const AdminDisputes = lazy(() => import("./pages/AdminDisputes"));
 const AdminOverview = lazy(() => import("./pages/AdminOverview"));
+const AdminBlog = lazy(() => import("./pages/AdminBlog"));
 const SharePublic = lazy(() => import("./pages/SharePublic"));
 const DisputeRequest = lazy(() => import("./pages/DisputeRequest"));
 const PrivacySettings = lazy(() => import("./pages/PrivacySettings"));
@@ -223,6 +224,11 @@ const App = () => {
           <Route path="/admin/reports" element={
             <AdminRoute>
               <AdminLayout><AdminReports /></AdminLayout>
+            </AdminRoute>
+          } />
+          <Route path="/admin/blog" element={
+            <AdminRoute>
+              <AdminLayout><AdminBlog /></AdminLayout>
             </AdminRoute>
           } />
           <Route path="/admin/disputes" element={

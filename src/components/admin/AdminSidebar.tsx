@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from "react-router-dom";
-import { ShieldCheck, FileText, Flag, LayoutDashboard, Scale } from "lucide-react";
+import { ShieldCheck, FileText, Flag, LayoutDashboard, Scale, Newspaper } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -20,6 +20,7 @@ const items: Array<{ to: string; label: string; icon: typeof LayoutDashboard; co
   { to: "/admin", label: "Overview", icon: LayoutDashboard },
   { to: "/admin/verifications", label: "Verifications", icon: ShieldCheck, countKey: "verifications" },
   { to: "/admin/posts", label: "Posts", icon: FileText, countKey: "posts" },
+  { to: "/admin/blog", label: "Blog", icon: Newspaper },
   { to: "/admin/reports", label: "Reports", icon: Flag, countKey: "reports" },
   { to: "/admin/disputes", label: "Disputes", icon: Scale, countKey: "disputes" },
 ];
