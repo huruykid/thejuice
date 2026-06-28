@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { Textarea } from "@/components/ui/textarea";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
@@ -15,11 +16,26 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useUserPreferences, useUpdateUserPreferences, type UserPreferences } from "@/hooks/useUserPreferences";
 
+const DELETE_REASONS = [
+  "Privacy — don't want an account",
+  "Nothing to see yet",
+  "Couldn't figure out how it works",
+  "Just looking / testing",
+  "Something else",
+];
+
 const PrivacySettings = () => {
   const navigate = useNavigate();
   const { data: prefs, isLoading } = useUserPreferences();
   const updatePrefs = useUpdateUserPreferences();
   const [deleting, setDeleting] = useState(false);
+  const [reason, setReason] = useState<string | null>(null);
+  const [detail, setDetail] = useState("");
+
+  const handleLogoutInstead = async () => {
+    await supabase.auth.signOut();
+    navigate("/", { replace: true });
+  };
 
   const handleToggle = (key: keyof UserPreferences, value: boolean) => {
     updatePrefs.mutate({ [key]: value } as Partial<UserPreferences>, {
@@ -30,7 +46,9 @@ const PrivacySettings = () => {
   const handleAccountDeletion = async () => {
     setDeleting(true);
     try {
-      const { error } = await supabase.functions.invoke("delete-account");
+      const { error } = await supabase.functions.invoke("delete-account", {
+        body: { reason, detail: detail.trim() || null },
+      });
       if (error) throw error;
       toast.success("Your account has been deleted.");
       await supabase.auth.signOut();
@@ -143,19 +161,58 @@ const PrivacySettings = () => {
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Delete your account?</AlertDialogTitle>
+                  <AlertDialogTitle>Before you delete your account</AlertDialogTitle>
                   <AlertDialogDescription>
-                    This is permanent. Your profile, stories, comments, reactions, and verification
-                    will all be removed immediately. This cannot be undone.
+                    Your profile is anonymous — no one ever sees your real name. If you just want
+                    a break, you can log out instead and come back anytime. Deleting is permanent:
+                    your profile, stories, comments, and verification are removed for good.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
+
+                <button
+                  onClick={handleLogoutInstead}
+                  className="w-full rounded-lg border border-border py-2.5 text-sm font-semibold text-foreground hover:bg-muted transition-colors"
+                >
+                  Log out instead
+                </button>
+
+                <div className="space-y-2 pt-1">
+                  <p className="text-sm font-medium text-foreground">
+                    If you're sure — what's making you leave?
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {DELETE_REASONS.map((r) => (
+                      <button
+                        key={r}
+                        type="button"
+                        onClick={() => setReason((prev) => (prev === r ? null : r))}
+                        className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${
+                          reason === r
+                            ? "bg-primary text-primary-foreground border-primary"
+                            : "border-border text-foreground hover:bg-muted"
+                        }`}
+                      >
+                        {r}
+                      </button>
+                    ))}
+                  </div>
+                  <Textarea
+                    value={detail}
+                    onChange={(e) => setDetail(e.target.value)}
+                    placeholder="Anything else? (optional)"
+                    rows={2}
+                    aria-label="Additional feedback"
+                    className="text-sm"
+                  />
+                </div>
+
                 <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogCancel>Keep my account</AlertDialogCancel>
                   <AlertDialogAction
                     onClick={handleAccountDeletion}
-                    className="bg-destructive hover:bg-destructive"
+                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                   >
-                    Delete Account
+                    Delete account
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>

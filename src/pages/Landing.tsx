@@ -6,6 +6,7 @@ import { Shield, Users, MessageSquare, Star, ArrowRight, Quote, CheckCircle, Che
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useState } from "react";
+import { landingPhotoUrl } from "@/lib/landingPhotos";
 
 const Landing = () => {
   const navigate = useNavigate();
@@ -175,10 +176,14 @@ const Landing = () => {
                       <p className="text-[10px] text-muted-foreground">{card.time} ago · verified</p>
                     </div>
                   </div>
-                  {/* Identity-protected placeholder — no real faces, ever */}
-                  <div className="aspect-square w-full bg-gradient-to-br from-muted to-muted/50 flex flex-col items-center justify-center gap-1">
-                    <Shield className="h-7 w-7 text-primary/30" />
-                    <span className="text-[9px] text-muted-foreground/60">identity protected</span>
+                  {/* Subject photo — admin-uploaded (landing-assets). Soft gradient fallback if none. */}
+                  <div className="aspect-square w-full bg-gradient-to-br from-muted to-muted/50 relative overflow-hidden">
+                    <img
+                      src={landingPhotoUrl(i + 1)}
+                      alt=""
+                      className="absolute inset-0 w-full h-full object-cover"
+                      onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
+                    />
                   </div>
                   {/* Story text + flags + reactions */}
                   <div className="px-3 py-2.5">

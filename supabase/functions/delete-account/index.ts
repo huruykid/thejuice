@@ -54,6 +54,21 @@ Deno.serve(async (req) => {
     auth: { autoRefreshToken: false, persistSession: false },
   });
 
+  // Capture exit feedback BEFORE the cascade wipes the account. Stored in a standalone,
+  // PII-free table so it survives the deletion. Optional — never blocks the delete.
+  try {
+    const body = await req.json().catch(() => ({} as any));
+    const createdMs = userData.user.created_at ? new Date(userData.user.created_at).getTime() : null;
+    const secondsSinceSignup = createdMs ? Math.round((Date.now() - createdMs) / 1000) : null;
+    await admin.from("account_deletion_feedback").insert({
+      reason: typeof body?.reason === "string" ? body.reason.slice(0, 100) : null,
+      detail: typeof body?.detail === "string" ? body.detail.slice(0, 500) : null,
+      seconds_since_signup: secondsSinceSignup,
+    });
+  } catch (e) {
+    console.warn("[delete-account] feedback capture failed:", e);
+  }
+
   // Best-effort: clean up the verification selfie from private storage.
   try {
     const { data: ver } = await admin

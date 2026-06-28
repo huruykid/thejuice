@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -11,6 +11,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { CheckCircle, Clock, XCircle, UserPlus, Search, PenLine } from "lucide-react";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import QueryError from "@/components/QueryError";
+import { Button } from "@/components/ui/button";
+import { useConfirm } from "@/components/ConfirmDialog";
+import { toast } from "sonner";
 
 interface Member {
   user_id: string;
@@ -42,6 +45,21 @@ const AdminMembers = () => {
       if (error) throw error;
       return (data ?? []) as Member[];
     },
+  });
+
+  const { confirm, confirmDialog } = useConfirm();
+  const nudge = useMutation({
+    mutationFn: async (mode: "test" | "all") => {
+      const body = mode === "test" ? { test_email: user?.email } : {};
+      const { data, error } = await supabase.functions.invoke("verify-nudge", { body });
+      if (error) throw error;
+      return data as any;
+    },
+    onSuccess: (data, mode) => {
+      if (mode === "test") toast.success(`Test sent to ${user?.email}`);
+      else toast.success(`Sent ${data?.sent ?? 0} verify reminder${data?.sent === 1 ? "" : "s"}${data?.has_more ? " — more remain, run again" : ""}`);
+    },
+    onError: (e: any) => toast.error(e?.message || "Send failed"),
   });
 
   const filtered = useMemo(() => {
@@ -111,6 +129,35 @@ const AdminMembers = () => {
           </div>
         </AdminPageHeader>
 
+        <Card>
+          <CardContent className="py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div>
+              <p className="text-sm font-semibold text-foreground">Nudge unverified members to verify</p>
+              <p className="text-xs text-muted-foreground">
+                Emails everyone who signed up but hasn't verified. Skips verified, opted-out, and already-nudged members.
+              </p>
+            </div>
+            <div className="flex gap-2 shrink-0">
+              <Button size="sm" variant="outline" disabled={nudge.isPending} onClick={() => nudge.mutate("test")}>
+                Send test to me
+              </Button>
+              <Button
+                size="sm"
+                disabled={nudge.isPending}
+                onClick={async () => {
+                  if (await confirm({
+                    title: "Email all unverified members?",
+                    description: "Sends the verify reminder to everyone who signed up but hasn't verified yet (skipping anyone already nudged or opted out). Send a test to yourself first if you haven't.",
+                    confirmLabel: "Send to all",
+                  })) nudge.mutate("all");
+                }}
+              >
+                Send to all unverified
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
         <p className="text-xs text-muted-foreground">{filtered.length} member{filtered.length === 1 ? "" : "s"}</p>
 
         {isError ? (
@@ -152,6 +199,7 @@ const AdminMembers = () => {
           )}
         </div>
         )}
+        {confirmDialog}
       </div>
     </div>
   );

@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import {
   ShieldCheck, FileText, Flag, ArrowRight, Users,
-  CheckCircle2, BarChart2, Scale, Filter,
+  CheckCircle2, BarChart2, Scale, Filter, UserMinus,
 } from "lucide-react";
 
 // ─── Constants ───────────────────────────────────────────────────────────────
@@ -128,6 +128,33 @@ const useReferralBreakdown = (enabled: boolean) =>
     },
   });
 
+const useDeletionFeedback = (enabled: boolean) =>
+  useQuery({
+    queryKey: ["admin-deletion-feedback"],
+    enabled,
+    staleTime: 60_000,
+    queryFn: async () => {
+      // Cast: account_deletion_feedback is newer than the generated types.ts.
+      const { data, error } = await (supabase as any)
+        .from("account_deletion_feedback")
+        .select("reason, detail, seconds_since_signup, created_at")
+        .order("created_at", { ascending: false })
+        .limit(200);
+      if (error) throw error;
+      const rows = data ?? [];
+      const counts: Record<string, number> = {};
+      let fast = 0; // left within 10 minutes of signing up
+      const recentDetails: string[] = [];
+      for (const r of rows as any[]) {
+        const key = r.reason ?? "No reason given";
+        counts[key] = (counts[key] ?? 0) + 1;
+        if (r.seconds_since_signup != null && r.seconds_since_signup <= 600) fast++;
+        if (r.detail && recentDetails.length < 5) recentDetails.push(r.detail);
+      }
+      return { total: rows.length, counts, fast, recentDetails };
+    },
+  });
+
 // ─── Component ───────────────────────────────────────────────────────────────
 
 const AdminOverview = () => {
@@ -145,6 +172,7 @@ const AdminOverview = () => {
   const { data: lifetime } = useLifetimeTotals(enabled);
   const { data: activity } = useActivityMetrics(enabled, rangeDays);
   const { data: referral } = useReferralBreakdown(enabled);
+  const { data: deletions } = useDeletionFeedback(enabled);
 
   if (authLoading || roleLoading) {
     return (
@@ -342,6 +370,69 @@ const AdminOverview = () => {
                   {referral.total} total responses
                 </li>
               </ul>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Why people are leaving */}
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base flex items-center gap-2">
+              <UserMinus className="h-4 w-4" />
+              Why people are leaving
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {!deletions || deletions.total === 0 ? (
+              <p className="text-sm text-muted-foreground">
+                No account deletions recorded yet. Reasons show up here when someone deletes their account.
+              </p>
+            ) : (
+              <div className="space-y-3">
+                <div className="flex items-baseline justify-between">
+                  <span className="text-sm text-muted-foreground">Total deletions</span>
+                  <span className="font-semibold">{deletions.total}</span>
+                </div>
+                {deletions.fast > 0 && (
+                  <div className="flex items-baseline justify-between">
+                    <span className="text-sm text-destructive">Left within 10 min of signing up</span>
+                    <span className="font-semibold text-destructive">
+                      {deletions.fast} ({Math.round((deletions.fast / deletions.total) * 100)}%)
+                    </span>
+                  </div>
+                )}
+                <ul className="space-y-2 pt-1">
+                  {Object.entries(deletions.counts)
+                    .sort(([, a], [, b]) => b - a)
+                    .map(([reason, count]) => {
+                      const pct = Math.round((count / deletions.total) * 100);
+                      return (
+                        <li key={reason} className="space-y-1">
+                          <div className="flex justify-between text-sm">
+                            <span>{reason}</span>
+                            <span className="text-muted-foreground">{count} ({pct}%)</span>
+                          </div>
+                          <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+                            <div
+                              className="h-full bg-destructive rounded-full transition-all"
+                              style={{ width: `${pct}%` }}
+                            />
+                          </div>
+                        </li>
+                      );
+                    })}
+                </ul>
+                {deletions.recentDetails.length > 0 && (
+                  <div className="pt-2 border-t border-border">
+                    <p className="text-xs uppercase tracking-wide text-muted-foreground mb-2">Recent notes</p>
+                    <ul className="space-y-1.5">
+                      {deletions.recentDetails.map((d, i) => (
+                        <li key={i} className="text-sm text-foreground italic">"{d}"</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
             )}
           </CardContent>
         </Card>

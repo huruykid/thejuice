@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Flag, CheckCircle2, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { landingPhotoUrl } from "@/lib/landingPhotos";
 
 /**
  * Illustrative teaser feed for the UNVERIFIED home — gives signed-up-but-unverified users
@@ -29,16 +30,16 @@ interface TeaserCardData {
 
 // Balanced mix of green- and red-flag vibes — a demo of the product, not a pile-on.
 const EXAMPLES: TeaserCardData[] = [
-  { img: "/lovable-uploads/example-1.jpg", subject: "Maya", handle: "late_checkout", time: "2h", vibe: "💚 thoughtful · great communicator", green: 38, red: 2 },
-  { img: "/lovable-uploads/example-2.jpg", subject: "Jess", handle: "throwback_j", time: "5h", vibe: "🚩🚩 ghosted after 3 months", green: 9, red: 41 },
-  { img: "/lovable-uploads/example-3.jpg", subject: "Bri", handle: "quietly_done", time: "8h", vibe: "💯 loyal · honest to a fault", green: 52, red: 4 },
-  { img: "/lovable-uploads/example-4.jpg", subject: "Sam", handle: "weekend_plans", time: "11h", vibe: "☠️ hot & cold · plays games", green: 6, red: 28 },
-  { img: "/lovable-uploads/example-5.jpg", subject: "Alex", handle: "no_pressure", time: "1d", vibe: "✨ fun first date, zero pressure", green: 21, red: 3 },
+  { img: landingPhotoUrl(1), subject: "Maya", handle: "late_checkout", time: "2h", vibe: "💚 thoughtful · great communicator", green: 38, red: 2 },
+  { img: landingPhotoUrl(2), subject: "Jess", handle: "throwback_j", time: "5h", vibe: "🚩🚩 ghosted after 3 months", green: 9, red: 41 },
+  { img: landingPhotoUrl(3), subject: "Bri", handle: "quietly_done", time: "8h", vibe: "💯 loyal · honest to a fault", green: 52, red: 4 },
+  { img: landingPhotoUrl(4), subject: "Sam", handle: "weekend_plans", time: "11h", vibe: "☠️ hot & cold · plays games", green: 6, red: 28 },
+  { img: landingPhotoUrl(5), subject: "Alex", handle: "no_pressure", time: "1d", vibe: "✨ fun first date, zero pressure", green: 21, red: 3 },
 ];
 
 const BLURRED: TeaserCardData[] = [
-  { img: "/lovable-uploads/example-2.jpg", subject: "—", handle: "verified_member", time: "1d", vibe: "🚩 lovebombed then vanished", green: 4, red: 33 },
-  { img: "/lovable-uploads/example-3.jpg", subject: "—", handle: "verified_member", time: "2d", vibe: "💚 green flag all the way", green: 47, red: 1 },
+  { img: landingPhotoUrl(2), subject: "—", handle: "verified_member", time: "1d", vibe: "🚩 lovebombed then vanished", green: 4, red: 33 },
+  { img: landingPhotoUrl(3), subject: "—", handle: "verified_member", time: "2d", vibe: "💚 green flag all the way", green: 47, red: 1 },
 ];
 
 const CardImage = ({ src, label }: { src: string; label: string }) => {

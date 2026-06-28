@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Trash2 } from "lucide-react";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
+import LandingPhotosUploader from "@/components/admin/LandingPhotosUploader";
 import { useConfirm } from "@/components/ConfirmDialog";
 import { toast } from "sonner";
 
@@ -110,6 +111,8 @@ const AdminSeed = () => {
           title="Seed stories"
           subtitle="Drop curated stories into the feed while real ones ramp up. Keep them anonymized — never name a real, identifiable person."
         />
+
+        <LandingPhotosUploader />
 
         <Card>
           <CardHeader className="pb-2"><CardTitle className="text-base">Add a story</CardTitle></CardHeader>
