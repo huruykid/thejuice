@@ -23,6 +23,7 @@ import { useState, useRef, memo } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { formatDistance } from "@/lib/distance";
+import { JuiceIcon, MilkIcon } from "@/components/icons/BrandVoteIcons";
 import type { Story } from "@/hooks/useStories";
 
 const tagEmojis: { [key: string]: string } = {
@@ -226,12 +227,11 @@ const StoryCard = ({
         {showHeartBurst && (
           <div className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center">
             <span
-              role="img"
               aria-hidden="true"
-              className="text-8xl drop-shadow-lg"
+              className="drop-shadow-lg"
               style={{ animation: "heart-burst 700ms ease-out forwards" }}
             >
-              🧃
+              <JuiceIcon className="h-20 w-20" />
             </span>
           </div>
         )}
@@ -343,12 +343,11 @@ const StoryCard = ({
               }`}
             >
               <span
-                role="img"
                 aria-hidden="true"
-                className="text-xl leading-none"
+                className="leading-none"
                 style={{ animation: poppedType === 'green_flag' ? 'flag-pop 320ms ease-out' : undefined }}
               >
-                🧃
+                <JuiceIcon className="h-5 w-5" />
               </span>
               <span className="text-sm font-semibold">Juice</span>
             </button>
@@ -363,12 +362,11 @@ const StoryCard = ({
               }`}
             >
               <span
-                role="img"
                 aria-hidden="true"
-                className="text-xl leading-none"
+                className="leading-none"
                 style={{ animation: poppedType === 'red_flag' ? 'flag-pop 320ms ease-out' : undefined }}
               >
-                🥛
+                <MilkIcon className="h-5 w-5" />
               </span>
               <span className="text-sm font-semibold">Milk</span>
             </button>
@@ -402,13 +400,10 @@ const StoryCard = ({
 
         {/* Community read — OJ vs spoiled milk */}
         {totalVotes > 0 ? (
-          <div className="px-4 text-sm font-semibold text-foreground">
-            {greenMajority
-              ? `${majorityPct}% say she got the juice 🧃`
-              : `${majorityPct}% say spoiled milk 🥛`}
-            <span className="ml-2 text-xs font-normal text-muted-foreground">
-              {totalVotes} {totalVotes === 1 ? "vote" : "votes"}
-            </span>
+          <div className="px-4 flex items-center gap-1.5 text-sm font-semibold text-foreground">
+            {greenMajority ? <JuiceIcon className="h-4 w-4 shrink-0" /> : <MilkIcon className="h-4 w-4 shrink-0" />}
+            <span>{majorityPct}% say {greenMajority ? "she got the juice" : "spoiled milk"}</span>
+            <span className="text-xs font-normal text-muted-foreground">· {totalVotes} {totalVotes === 1 ? "vote" : "votes"}</span>
           </div>
         ) : (
           <div className="px-4 text-sm font-medium text-muted-foreground">
@@ -430,7 +425,7 @@ const StoryCard = ({
                 ? "bg-success/10 border-success/30 text-success"
                 : "bg-destructive/10 border-destructive/30 text-destructive"
             }`}>
-              <span role="img" aria-hidden="true">{(story.overall_vibe_rating ?? 0) > 0 ? "🧃" : "🥛"}</span>
+              {(story.overall_vibe_rating ?? 0) > 0 ? <JuiceIcon className="h-3.5 w-3.5" /> : <MilkIcon className="h-3.5 w-3.5" />}
               {(story.overall_vibe_rating ?? 0) > 0 ? "She got the juice" : "Spoiled milk behavior"}
             </span>
           </div>
