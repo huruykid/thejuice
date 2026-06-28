@@ -13,26 +13,40 @@ import { useAuth } from "@/hooks/useAuth";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useStories } from "@/hooks/useStories";
 import type { Story } from "@/hooks/useStories";
+import { useStoryImageUrls, parseStoryImageField } from "@/hooks/useStoryImageUrls";
 
 interface ExploreProps {
   onCreateStory?: () => void;
 }
 
 /**
- * Pull the first image URL from a story.
- * The DB stores image_url as a JSON-encoded string array, e.g. '["https://..."]'.
- * Matches the parsing logic in StoryCard.getImageUrls().
+ * One Explore grid tile. The story-images bucket is private, so images must be resolved to
+ * short-lived SIGNED urls (same as StoryCard) — rendering the raw stored path 404s. Falls
+ * back to the story text when there's no image.
  */
-const firstImage = (story: any): string | null => {
-  if (!story?.image_url) return null;
-  try {
-    const parsed = JSON.parse(story.image_url);
-    if (Array.isArray(parsed) && parsed.length > 0) return parsed[0];
-  } catch {
-    // Fallback: treat as a plain URL string
-    if (typeof story.image_url === "string") return story.image_url;
-  }
-  return null;
+const ExploreTile = ({ story, onOpen }: { story: any; onOpen: () => void }) => {
+  const hasImage = parseStoryImageField(story.image_url).length > 0;
+  const { data: signed, isLoading } = useStoryImageUrls(story.image_url);
+  const img = signed?.[0] ?? null;
+  return (
+    <button
+      onClick={onOpen}
+      className="relative aspect-square overflow-hidden bg-muted active:opacity-80 transition-opacity"
+      aria-label={story.content?.slice(0, 60) || "View story"}
+    >
+      {img ? (
+        <img src={img} alt="" loading="lazy" className="w-full h-full object-cover" />
+      ) : hasImage && isLoading ? (
+        <div className="absolute inset-0 bg-muted animate-pulse" />
+      ) : (
+        <div className="absolute inset-0 bg-primary p-3 flex items-center justify-center text-center">
+          <p className="text-[11px] sm:text-xs font-semibold leading-tight line-clamp-6 text-primary-foreground">
+            "{story.content}"
+          </p>
+        </div>
+      )}
+    </button>
+  );
 };
 
 const Explore = ({ onCreateStory }: ExploreProps) => {
@@ -142,32 +156,13 @@ const Explore = ({ onCreateStory }: ExploreProps) => {
           </div>
         ) : (
           <div className="grid grid-cols-3 gap-0.5">
-            {displayStories.map((story: any) => {
-              const img = firstImage(story);
-              return (
-                <button
-                  key={story.id}
-                  onClick={() => navigate(`/story/${story.id}`, { state: { story } })}
-                  className="relative aspect-square overflow-hidden bg-muted active:opacity-80 transition-opacity"
-                  aria-label={story.content?.slice(0, 60) || "View story"}
-                >
-                  {img ? (
-                    <img
-                      src={img}
-                      alt=""
-                      loading="lazy"
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="absolute inset-0 bg-primary p-3 flex items-center justify-center text-center">
-                      <p className="text-[11px] sm:text-xs font-semibold leading-tight line-clamp-6 text-primary-foreground">
-                        "{story.content}"
-                      </p>
-                    </div>
-                  )}
-                </button>
-              );
-            })}
+            {displayStories.map((story: any) => (
+              <ExploreTile
+                key={story.id}
+                story={story}
+                onOpen={() => navigate(`/story/${story.id}`, { state: { story } })}
+              />
+            ))}
           </div>
         )}
       </div>
