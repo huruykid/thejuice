@@ -80,11 +80,11 @@ const Landing = () => {
   return (
     <div className="min-h-screen bg-gradient-soft">
       <Helmet>
-        <title>The Tea App for Men — Anonymous Dating Stories | Juice</title>
-        <meta name="description" content="Juice is the Tea app for men, done right — verified members, anonymous dating stories, and honest ratings. No real names, no doxxing. Free to join." />
+        <title>The Tea App for Men — Anonymous Dating Reviews | Juice</title>
+        <meta name="description" content="Juice is the Tea app for men: verified men share honest reviews of the women they've dated — green flags and red. Look someone up before your next date. Free to join." />
         <link rel="canonical" href="https://sipjuice.app/" />
-        <meta property="og:title" content="The Tea App for Men — Anonymous Dating Stories | Juice" />
-        <meta property="og:description" content="Juice is the Tea app for men, done right — verified members, anonymous dating stories, and honest ratings. No real names, no doxxing. Free to join." />
+        <meta property="og:title" content="The Tea App for Men — Anonymous Dating Reviews | Juice" />
+        <meta property="og:description" content="Juice is the Tea app for men: verified men share honest reviews of the women they've dated — green flags and red. Look someone up before your next date. Free to join." />
         <meta property="og:url" content="https://sipjuice.app/" />
         <meta property="og:type" content="website" />
         <script type="application/ld+json">{JSON.stringify({
@@ -104,7 +104,7 @@ const Landing = () => {
           <div className="max-w-4xl mx-auto text-center">
             <div className="inline-flex items-center gap-2 text-xs font-medium text-primary bg-primary/10 px-3 py-1.5 rounded-full mb-6">
               <Shield className="h-3.5 w-3.5" />
-              Verified men only · No real names, ever
+              Verified men only · Anonymous to post
             </div>
 
             <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6 leading-tight">
@@ -113,8 +113,8 @@ const Landing = () => {
             </h1>
 
             <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-              Anonymous, verified dating stories — no real names, no doxxing, no drama.
-              Read the feed. Post yours.
+              See what verified men really experienced with the women they've dated —
+              green flags and red. Look her up before your next date. You post anonymously.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-3 justify-center mb-6">
@@ -137,7 +137,7 @@ const Landing = () => {
               <span className="hidden sm:block text-muted-foreground/40">·</span>
               <span className="flex items-center gap-1.5">
                 <CheckCircle className="h-4 w-4 text-primary" />
-                No names, no consequences
+                Anonymous to post
               </span>
               <span className="hidden sm:block text-muted-foreground/40">·</span>
               <span className="flex items-center gap-1.5">
