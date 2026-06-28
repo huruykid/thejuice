@@ -66,11 +66,11 @@ const TeaserCard = ({ card }: { card: TeaserCardData }) => (
   <div className="bg-background border border-border rounded-xl overflow-hidden">
     <div className="flex items-center gap-2 px-3 py-2">
       <div className="w-6 h-6 rounded-full bg-gradient-to-br from-primary to-primary flex items-center justify-center text-primary-foreground text-[10px] font-bold shrink-0">
-        {card.handle.charAt(0).toUpperCase()}
+        {card.subject.charAt(0).toUpperCase()}
       </div>
       <div className="min-w-0">
-        <p className="text-xs font-semibold text-foreground truncate">@{card.handle}</p>
-        <p className="text-[10px] text-muted-foreground">{card.time} ago · verified</p>
+        <p className="text-xs font-semibold text-foreground truncate">{card.subject}</p>
+        <p className="text-[10px] text-muted-foreground">@{card.handle} · {card.time} ago</p>
       </div>
     </div>
     <CardImage src={card.img} label={card.subject} />

@@ -159,21 +159,21 @@ const Landing = () => {
                   <div className="w-1.5 h-1.5 rounded-full bg-primary/20" />
                 </div>
               </div>
-              {/* Mock story cards — matches real StoryCard layout: header → subject photo → text → flags → reactions */}
+              {/* Mock cards — mirror the real StoryCard: subject (her name + photo) on top, anonymous reviewer below */}
               {[
-                { author: "throwback_j", time: "2h", flags: "🚩🚩 ghosted after 3 months", green: 12, red: 34 },
-                { author: "quietly_done", time: "5h", flags: "💯 loyal · honest to a fault", green: 41, red: 3 },
-                { author: "weekend_plans", time: "8h", flags: "☠️ toxic · clingy after week 1", green: 8, red: 29 },
+                { subject: "Maya", author: "throwback_j", time: "2h", flags: "🚩 ghosted after 3 great months", green: 12, red: 34 },
+                { subject: "Jess", author: "quietly_done", time: "5h", flags: "💚 loyal · honest to a fault", green: 41, red: 3 },
+                { subject: "Bri", author: "weekend_plans", time: "8h", flags: "🚩 hot & cold all week", green: 8, red: 29 },
               ].map((card, i) => (
                 <div key={i} className="border-b border-border last:border-b-0 bg-background">
-                  {/* Header — the verified author telling the story, anonymized (no real names) */}
+                  {/* Header — subject (the woman) on top, anonymous reviewer below (mirrors StoryCard) */}
                   <div className="flex items-center gap-2 px-3 pt-3 pb-2">
                     <div className="w-6 h-6 rounded-full bg-gradient-to-br from-primary to-primary flex items-center justify-center text-primary-foreground text-[10px] font-bold shrink-0">
-                      {card.author[0].toUpperCase()}
+                      {card.subject[0].toUpperCase()}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-xs font-semibold text-foreground truncate">@{card.author}</p>
-                      <p className="text-[10px] text-muted-foreground">{card.time} ago · verified</p>
+                      <p className="text-xs font-semibold text-foreground truncate">{card.subject}</p>
+                      <p className="text-[10px] text-muted-foreground">@{card.author} · {card.time} ago</p>
                     </div>
                   </div>
                   {/* Subject photo — admin-uploaded (landing-assets). Soft gradient fallback if none. */}
