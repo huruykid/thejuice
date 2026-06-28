@@ -127,6 +127,16 @@ const Landing = () => {
               </Button>
             </div>
 
+            <p className="text-sm text-muted-foreground mb-6">
+              Already a member?{" "}
+              <button
+                onClick={() => navigate("/app")}
+                className="text-primary font-semibold hover:underline"
+              >
+                Log in
+              </button>
+            </p>
+
             {/* Honest, non-numeric trust signals — no fabricated counts. When real
                 volume justifies it, swap in live numbers via a get_public_stats() RPC. */}
             <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-muted-foreground">

@@ -1,8 +1,9 @@
-import { NavLink, useLocation } from "react-router-dom";
-import { ShieldCheck, FileText, Flag, LayoutDashboard, Scale, Newspaper, Users, Sparkles } from "lucide-react";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { ShieldCheck, FileText, Flag, LayoutDashboard, Scale, Newspaper, Users, Sparkles, LogOut } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -13,6 +14,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useAdminPendingCounts } from "@/hooks/useAdminPendingCounts";
+import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
 
 type CountKey = "verifications" | "posts" | "reports" | "disputes";
@@ -31,7 +33,14 @@ export const AdminSidebar = () => {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
   const { pathname } = useLocation();
+  const navigate = useNavigate();
+  const { signOut } = useAuth();
   const { data: counts } = useAdminPendingCounts(true);
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate("/");
+  };
 
   const isActive = (path: string) =>
     path === "/admin" ? pathname === "/admin" : pathname.startsWith(path);
@@ -86,6 +95,16 @@ export const AdminSidebar = () => {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+      <SidebarFooter className="border-t border-sidebar-border">
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton onClick={handleSignOut} tooltip="Sign out">
+              <LogOut className="h-4 w-4" />
+              {!collapsed && <span>Sign out</span>}
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
     </Sidebar>
   );
 };

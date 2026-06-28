@@ -118,7 +118,7 @@ const AdminSeed = () => {
 
   return (
     <div className="bg-gradient-soft p-4">
-      <div className="max-w-3xl mx-auto space-y-6">
+      <div className="max-w-5xl mx-auto space-y-6">
         <AdminPageHeader
           title="Seed stories"
           subtitle="Drop curated stories into the feed while real ones ramp up. Keep them anonymized — never name a real, identifiable person."
