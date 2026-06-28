@@ -1,4 +1,4 @@
-import { MessageCircle, Flag, CheckCircle2, Trash2, MapPin, MoreVertical, Bookmark } from "lucide-react";
+import { MessageCircle, Flag, Trash2, MapPin, MoreVertical, Bookmark } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import {
@@ -210,6 +210,13 @@ const StoryCard = ({
   // Story images live in a private bucket; resolve them to short-lived signed URLs.
   const { data: imageUrls = [] } = useStoryImageUrls(story.image_url);
 
+  // Community read — OJ (green) vs spoiled milk (red). Shows the majority side as a %.
+  const greenVotes = reactionCounts?.green_flag || 0;
+  const redVotes = reactionCounts?.red_flag || 0;
+  const totalVotes = greenVotes + redVotes;
+  const greenMajority = greenVotes >= redVotes;
+  const majorityPct = totalVotes ? Math.round(((greenMajority ? greenVotes : redVotes) / totalVotes) * 100) : 0;
+
   return (
     <>
       <div
@@ -218,11 +225,14 @@ const StoryCard = ({
       >
         {showHeartBurst && (
           <div className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center">
-            <CheckCircle2
-              className="h-24 w-24 drop-shadow-lg"
-              fill="currentColor"
-              style={{ color: 'hsl(var(--success))', animation: "heart-burst 700ms ease-out forwards" }}
-            />
+            <span
+              role="img"
+              aria-hidden="true"
+              className="text-8xl drop-shadow-lg"
+              style={{ animation: "heart-burst 700ms ease-out forwards" }}
+            >
+              🧃
+            </span>
           </div>
         )}
 
@@ -240,7 +250,7 @@ const StoryCard = ({
                 onClick={(e) => { e.stopPropagation(); handleAuthorClick(); }}
                 className="text-xs text-muted-foreground hover:text-foreground transition-colors truncate"
               >
-                @{authorName} · {formatDate(story.created_at)}
+                Reviewed by @{authorName} · {formatDate(story.created_at)}
               </button>
             </div>
           </div>
@@ -319,31 +329,48 @@ const StoryCard = ({
             {/* Red flag = Flag icon. Green flag = check icon. Distinct SHAPES so the
                 two votes are distinguishable without relying on color (red/green
                 colorblindness affects ~8% of men). */}
-            <button
-              onClick={() => handleReaction('red_flag')}
-              aria-label="Red flag"
-              aria-pressed={isRedFlagged}
-              className="min-h-11 min-w-11 flex items-center justify-center -ml-1 rounded-full hover:bg-muted active:scale-95 transition-all"
-            >
-              <Flag
-                className="h-6 w-6"
-                style={{ color: 'hsl(var(--destructive))', opacity: isRedFlagged ? 1 : 0.7, animation: poppedType === 'red_flag' ? 'flag-pop 320ms ease-out' : undefined }}
-                strokeWidth={isRedFlagged ? 2.4 : 1.8}
-                fill={isRedFlagged ? "currentColor" : "none"}
-              />
-            </button>
+            {/* Vote = OJ (she got the juice) vs spoiled milk. Emoji + word label so the
+                meaning is legible without learning the metaphor; a tinted pill on the
+                selected one is the strong, non-color-alone "your vote" cue. */}
             <button
               onClick={() => handleReaction('green_flag')}
-              aria-label="Green flag"
+              aria-label="She got the juice (green flag)"
               aria-pressed={isGreenFlagged}
-              className="min-h-11 min-w-11 flex items-center justify-center rounded-full hover:bg-muted active:scale-95 transition-all"
+              className={`min-h-11 -ml-1 flex items-center gap-1.5 px-3 rounded-full border transition-all active:scale-95 ${
+                isGreenFlagged
+                  ? "bg-success/15 border-success/40 text-success"
+                  : "border-transparent text-foreground hover:bg-muted"
+              }`}
             >
-              <CheckCircle2
-                className="h-6 w-6"
-                style={{ color: 'hsl(var(--success))', opacity: isGreenFlagged ? 1 : 0.7, animation: poppedType === 'green_flag' ? 'flag-pop 320ms ease-out' : undefined }}
-                strokeWidth={isGreenFlagged ? 2.4 : 1.8}
-                fill={isGreenFlagged ? "currentColor" : "none"}
-              />
+              <span
+                role="img"
+                aria-hidden="true"
+                className="text-xl leading-none"
+                style={{ animation: poppedType === 'green_flag' ? 'flag-pop 320ms ease-out' : undefined }}
+              >
+                🧃
+              </span>
+              <span className="text-sm font-semibold">Juice</span>
+            </button>
+            <button
+              onClick={() => handleReaction('red_flag')}
+              aria-label="Spoiled milk (red flag)"
+              aria-pressed={isRedFlagged}
+              className={`min-h-11 flex items-center gap-1.5 px-3 rounded-full border transition-all active:scale-95 ${
+                isRedFlagged
+                  ? "bg-destructive/15 border-destructive/40 text-destructive"
+                  : "border-transparent text-foreground hover:bg-muted"
+              }`}
+            >
+              <span
+                role="img"
+                aria-hidden="true"
+                className="text-xl leading-none"
+                style={{ animation: poppedType === 'red_flag' ? 'flag-pop 320ms ease-out' : undefined }}
+              >
+                🥛
+              </span>
+              <span className="text-sm font-semibold">Milk</span>
             </button>
             <button
               onClick={handleComment}
@@ -373,25 +400,29 @@ const StoryCard = ({
           </button>
         </div>
 
-        {/* Counts */}
-        <div className="px-4 text-sm font-semibold text-foreground">
-          {(reactionCounts?.red_flag || 0) + (reactionCounts?.green_flag || 0)} flags
-          {((reactionCounts?.green_flag || 0) + (reactionCounts?.red_flag || 0)) > 0 && (
+        {/* Community read — OJ vs spoiled milk */}
+        {totalVotes > 0 ? (
+          <div className="px-4 text-sm font-semibold text-foreground">
+            {greenMajority
+              ? `${majorityPct}% say she got the juice 🧃`
+              : `${majorityPct}% say spoiled milk 🥛`}
             <span className="ml-2 text-xs font-normal text-muted-foreground">
-              {reactionCounts?.green_flag || 0} green · {reactionCounts?.red_flag || 0} red
+              {totalVotes} {totalVotes === 1 ? "vote" : "votes"}
             </span>
-          )}
-        </div>
+          </div>
+        ) : (
+          <div className="px-4 text-sm font-medium text-muted-foreground">
+            Would you sip or skip?
+          </div>
+        )}
 
-        {/* Caption */}
+        {/* Caption — attributed to the anonymous reviewer (the user), not the subject */}
         <div className="px-4 pt-1 pb-1 text-sm leading-snug text-foreground">
-          <span className="font-semibold mr-1.5">
-            {story.subject_name || subjectName || 'anonymous'}
-          </span>
+          <span className="font-semibold mr-1.5">@{authorName}</span>
           <span className="whitespace-pre-wrap">{story.content}</span>
         </div>
 
-        {/* Poster's overall verdict — single green/red flag */}
+        {/* Poster's overall verdict — OJ (she got the juice) vs spoiled milk */}
         {(story.overall_vibe_rating ?? 0) !== 0 && (
           <div className="px-4 pt-2">
             <span className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-semibold ${
@@ -399,8 +430,8 @@ const StoryCard = ({
                 ? "bg-success/10 border-success/30 text-success"
                 : "bg-destructive/10 border-destructive/30 text-destructive"
             }`}>
-              <Flag className="h-3 w-3" fill="currentColor" strokeWidth={2} />
-              {(story.overall_vibe_rating ?? 0) > 0 ? "Green flag" : "Red flag"}
+              <span role="img" aria-hidden="true">{(story.overall_vibe_rating ?? 0) > 0 ? "🧃" : "🥛"}</span>
+              {(story.overall_vibe_rating ?? 0) > 0 ? "She got the juice" : "Spoiled milk behavior"}
             </span>
           </div>
         )}
