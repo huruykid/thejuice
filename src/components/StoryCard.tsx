@@ -11,7 +11,6 @@ import CommentsModal from "./CommentsModal";
 import { useConfirm } from "./ConfirmDialog";
 import { BlockUserDialog } from "./BlockUserDialog";
 import { ReportContentDialog } from "./ReportContentDialog";
-import { FlagRatingDisplay } from "./FlagRating";
 import { useDeleteStory } from "@/hooks/useStories";
 import { useToggleReaction } from "@/hooks/useReactions";
 import { useReactionCounts } from "@/hooks/useReactionCounts";
@@ -392,15 +391,19 @@ const StoryCard = ({
           <span className="whitespace-pre-wrap">{story.content}</span>
         </div>
 
-        {/* Flag ratings */}
-        <FlagRatingDisplay
-          ratings={{
-            communication: story.communication_rating || 0,
-            loyalty: story.loyalty_rating || 0,
-            vibe: story.overall_vibe_rating || 0,
-            respect: story.emotional_safety_rating || 0,
-          }}
-        />
+        {/* Poster's overall verdict — single green/red flag */}
+        {(story.overall_vibe_rating ?? 0) !== 0 && (
+          <div className="px-4 pt-2">
+            <span className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-semibold ${
+              (story.overall_vibe_rating ?? 0) > 0
+                ? "bg-success/10 border-success/30 text-success"
+                : "bg-destructive/10 border-destructive/30 text-destructive"
+            }`}>
+              <Flag className="h-3 w-3" fill="currentColor" strokeWidth={2} />
+              {(story.overall_vibe_rating ?? 0) > 0 ? "Green flag" : "Red flag"}
+            </span>
+          </div>
+        )}
 
         {/* Tags */}
         {story.story_tags && story.story_tags.length > 0 && (

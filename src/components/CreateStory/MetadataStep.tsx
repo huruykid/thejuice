@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { CheckCircle2, Flag } from "lucide-react";
+import { cn } from "@/lib/utils";
 import type { StoryData } from "./index";
-import { FLAG_CATEGORIES, FlagRatingInput, type FlagValue } from "@/components/FlagRating";
 
 interface MetadataStepProps {
   storyData: StoryData;
@@ -22,6 +23,12 @@ const MetadataStep = ({
   uploading
 }: MetadataStepProps) => {
   const [ack, setAck] = useState(false);
+  const verdict = storyData.ratings.vibe || 0;
+  const setVerdict = (v: number) =>
+    setStoryData((prev) => ({
+      ...prev,
+      ratings: { ...prev.ratings, vibe: prev.ratings.vibe === v ? 0 : v },
+    }));
   const datingApps = [
     "Tinder", "Bumble", "Hinge", "Instagram", "IRL", "Raya", 
     "Facebook Dating", "Coffee Meets Bagel", "OkCupid", "Match", "eHarmony", "Other"
@@ -35,24 +42,37 @@ const MetadataStep = ({
   return (
     <div className="space-y-6 p-6">
       <div>
-        <h3 className="text-lg font-semibold mb-1">Rate the experience</h3>
+        <h3 className="text-lg font-semibold mb-1">Your verdict</h3>
         <p className="text-xs text-muted-foreground mb-3">
-          Tap a green or red flag for each. Skip any you don't want to rate.
+          Overall — is she a green flag or a red flag? (optional)
         </p>
-        <div className="space-y-2">
-          {FLAG_CATEGORIES.map((cat) => (
-            <FlagRatingInput
-              key={cat.key}
-              category={cat}
-              value={(storyData.ratings[cat.key] || 0) as FlagValue}
-              onChange={(next) =>
-                setStoryData((prev) => ({
-                  ...prev,
-                  ratings: { ...prev.ratings, [cat.key]: next },
-                }))
-              }
-            />
-          ))}
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={() => setVerdict(1)}
+            className={cn(
+              "flex-1 flex items-center justify-center gap-2 rounded-lg border py-3 text-sm font-semibold transition-all active:scale-95",
+              verdict > 0
+                ? "bg-success/15 border-success text-success"
+                : "bg-background border-border text-muted-foreground hover:text-foreground"
+            )}
+          >
+            <CheckCircle2 className="h-5 w-5" fill={verdict > 0 ? "currentColor" : "none"} />
+            Green flag
+          </button>
+          <button
+            type="button"
+            onClick={() => setVerdict(-1)}
+            className={cn(
+              "flex-1 flex items-center justify-center gap-2 rounded-lg border py-3 text-sm font-semibold transition-all active:scale-95",
+              verdict < 0
+                ? "bg-destructive/15 border-destructive text-destructive"
+                : "bg-background border-border text-muted-foreground hover:text-foreground"
+            )}
+          >
+            <Flag className="h-5 w-5" fill={verdict < 0 ? "currentColor" : "none"} />
+            Red flag
+          </button>
         </div>
       </div>
 

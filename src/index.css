@@ -194,14 +194,11 @@
   body {
     @apply bg-background text-foreground font-sans antialiased;
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
-    /* Prevent screenshots and screen recording */
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-    -webkit-touch-callout: none;
     -webkit-tap-highlight-color: transparent;
-    pointer-events: auto;
+    /* NOTE: text is selectable site-wide on purpose. Copy/screenshot protection of
+       sensitive content is scoped to the story feed (StoryCard has `select-none`) and
+       enforced natively via the Capacitor PrivacyScreen plugin — CSS user-select can't
+       actually prevent screenshots, so it was only costing copy/accessibility everywhere. */
   }
 
   h1, h2 {

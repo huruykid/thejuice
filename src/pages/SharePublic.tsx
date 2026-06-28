@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { CheckCircle2, Send } from "lucide-react";
+import { CheckCircle2, Flag, Send } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -10,7 +11,6 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { sanitizeText, validateStoryContent } from "@/lib/security";
-import { FLAG_CATEGORIES, FlagRatingInput, type FlagValue } from "@/components/FlagRating";
 
 /**
  * Public, no-auth submission flow. An anonymous visitor can submit a story
@@ -23,12 +23,7 @@ const SharePublic = () => {
   const [ack, setAck] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
-  const [ratings, setRatings] = useState<Record<string, FlagValue>>({
-    communication: 0,
-    loyalty: 0,
-    vibe: 0,
-    respect: 0,
-  });
+  const [verdict, setVerdict] = useState<number>(0); // 1 = green flag, -1 = red flag, 0 = none
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,10 +50,10 @@ const SharePublic = () => {
         is_seed: false,
         submitted_anonymously: true,
         status: "pending",
-        communication_rating: ratings.communication,
-        loyalty_rating: ratings.loyalty,
-        overall_vibe_rating: ratings.vibe,
-        emotional_safety_rating: ratings.respect,
+        communication_rating: 0,
+        loyalty_rating: 0,
+        overall_vibe_rating: verdict,
+        emotional_safety_rating: 0,
       });
       if (error) throw error;
       setDone(true);
@@ -138,20 +133,38 @@ const SharePublic = () => {
             </div>
 
             <div className="space-y-2">
-              <Label>Rate the experience</Label>
+              <Label>Your verdict</Label>
               <p className="text-xs text-muted-foreground">
-                Tap a green or red flag for each. Skip any you don't want to rate.
+                Overall — is she a green flag or a red flag? (optional)
               </p>
-              {FLAG_CATEGORIES.map((cat) => (
-                <FlagRatingInput
-                  key={cat.key}
-                  category={cat}
-                  value={ratings[cat.key]}
-                  onChange={(next) =>
-                    setRatings((prev) => ({ ...prev, [cat.key]: next }))
-                  }
-                />
-              ))}
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setVerdict(verdict === 1 ? 0 : 1)}
+                  className={cn(
+                    "flex-1 flex items-center justify-center gap-2 rounded-lg border py-3 text-sm font-semibold transition-all active:scale-95",
+                    verdict > 0
+                      ? "bg-success/15 border-success text-success"
+                      : "bg-background border-border text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  <CheckCircle2 className="h-5 w-5" fill={verdict > 0 ? "currentColor" : "none"} />
+                  Green flag
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setVerdict(verdict === -1 ? 0 : -1)}
+                  className={cn(
+                    "flex-1 flex items-center justify-center gap-2 rounded-lg border py-3 text-sm font-semibold transition-all active:scale-95",
+                    verdict < 0
+                      ? "bg-destructive/15 border-destructive text-destructive"
+                      : "bg-background border-border text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  <Flag className="h-5 w-5" fill={verdict < 0 ? "currentColor" : "none"} />
+                  Red flag
+                </button>
+              </div>
             </div>
 
             <label className="flex gap-2 items-start text-xs text-muted-foreground cursor-pointer">

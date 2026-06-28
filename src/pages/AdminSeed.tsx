@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Trash2 } from "lucide-react";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import LandingPhotosUploader from "@/components/admin/LandingPhotosUploader";
@@ -25,13 +24,6 @@ interface SeedStory {
   created_at: string;
 }
 
-const RATINGS = [
-  { key: "communication", label: "Communication" },
-  { key: "loyalty", label: "Loyalty" },
-  { key: "vibe", label: "Vibe" },
-  { key: "emotional_safety", label: "Respect" },
-] as const;
-
 /**
  * Founder seeding tool. Drops curated, anonymized stories straight into the feed (is_seed,
  * approved) while real supply ramps. All writes go through admin-gated RPCs.
@@ -46,9 +38,7 @@ const AdminSeed = () => {
   const [content, setContent] = useState("");
   const [subject, setSubject] = useState("");
   const [location, setLocation] = useState("");
-  const [ratings, setRatings] = useState<Record<string, number>>({
-    communication: 4, loyalty: 4, vibe: 4, emotional_safety: 4,
-  });
+  const [verdict, setVerdict] = useState<number>(0); // 1 = green flag, -1 = red flag, 0 = none
 
   useEffect(() => {
     if (!authLoading && !roleLoading && user && !isAdmin) navigate("/app");
@@ -74,16 +64,16 @@ const AdminSeed = () => {
         p_content: content,
         p_subject_name: subject || null,
         p_location: location || null,
-        p_communication: ratings.communication,
-        p_loyalty: ratings.loyalty,
-        p_vibe: ratings.vibe,
-        p_emotional_safety: ratings.emotional_safety,
+        p_communication: 0,
+        p_loyalty: 0,
+        p_vibe: verdict,
+        p_emotional_safety: 0,
       });
       if (error) throw error;
     },
     onSuccess: () => {
       toast.success("Story added to the feed");
-      setContent(""); setSubject(""); setLocation("");
+      setContent(""); setSubject(""); setLocation(""); setVerdict(0);
       queryClient.invalidateQueries({ queryKey: ["admin-seed-stories"] });
     },
     onError: (e: any) => toast.error(e?.message || "Failed to add story"),
@@ -137,21 +127,26 @@ const AdminSeed = () => {
                 <Input id="s-location" value={location} onChange={(e) => setLocation(e.target.value)} placeholder="e.g. Austin, TX" />
               </div>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              {RATINGS.map((r) => (
-                <div key={r.key} className="space-y-1.5">
-                  <Label className="text-xs">{r.label}</Label>
-                  <Select
-                    value={String(ratings[r.key])}
-                    onValueChange={(v) => setRatings((p) => ({ ...p, [r.key]: Number(v) }))}
-                  >
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      {[1, 2, 3, 4, 5].map((n) => <SelectItem key={n} value={String(n)}>{n}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
-                </div>
-              ))}
+            <div className="space-y-1.5">
+              <Label className="text-xs">Verdict (optional)</Label>
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  size="sm"
+                  variant={verdict > 0 ? "default" : "outline"}
+                  onClick={() => setVerdict(verdict === 1 ? 0 : 1)}
+                >
+                  Green flag
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant={verdict < 0 ? "destructive" : "outline"}
+                  onClick={() => setVerdict(verdict === -1 ? 0 : -1)}
+                >
+                  Red flag
+                </Button>
+              </div>
             </div>
             <Button
               onClick={() => create.mutate()}
