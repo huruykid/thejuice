@@ -54,10 +54,10 @@ const MaleDatingCommunity = () => {
     <div className="min-h-screen bg-gradient-soft">
       <Helmet>
         <title>A Verified, Men-Only Dating Community | Juice</title>
-        <meta name="description" content="A verified, anonymous space where men share real dating stories and advice — judgment-free, identity-protected, no public profiles." />
+        <meta name="description" content="A verified, men-only space to look up and review the women you've dated — green flags and red. Reviewers stay anonymous; no public profiles." />
         <link rel="canonical" href="https://sipjuice.app/male-dating-community" />
         <meta property="og:title" content="A Verified, Men-Only Dating Community | Juice" />
-        <meta property="og:description" content="A verified, anonymous space where men share real dating stories and advice — judgment-free, identity-protected, no public profiles." />
+        <meta property="og:description" content="A verified, men-only space to look up and review the women you've dated — green flags and red. Reviewers stay anonymous; no public profiles." />
         <meta property="og:url" content="https://sipjuice.app/male-dating-community" />
         <meta property="og:type" content="website" />
       </Helmet>

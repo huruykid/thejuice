@@ -10,7 +10,7 @@ const DatingStoriesForMen = () => {
   const stats = [
     { icon: <Users className="h-8 w-8 text-primary" />, number: "Verified", label: "Members only" },
     { icon: <MessageSquare className="h-8 w-8 text-primary" />, number: "Anonymous", label: "Every story, every time" },
-    { icon: <Eye className="h-8 w-8 text-primary" />, number: "100%", label: "Identity protected" },
+    { icon: <Eye className="h-8 w-8 text-primary" />, number: "Anonymous", label: "Reviewers stay hidden" },
     { icon: <Shield className="h-8 w-8 text-primary" />, number: "Manual", label: "Approval to join" }
   ];
 

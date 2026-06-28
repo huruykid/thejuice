@@ -27,6 +27,13 @@ const ReferralPrompt = ({ userId }: { userId: string }) => {
   const [confirmed, setConfirmed] = useState(false);
   const markedRef = useRef(false);
 
+  // Device-level backstop: even if the DB write to referral_prompt_dismissed flakes (it was
+  // silently re-nagging despite the column + RLS being correct), this guarantees it won't
+  // reappear on this device after the first show.
+  const LS_KEY = "juice_referral_dismissed";
+  const dismissedLocally =
+    typeof window !== "undefined" && window.localStorage.getItem(LS_KEY) === "1";
+
   // Hidden once the user has answered OR the prompt has already been shown/dismissed.
   const { data: alreadyAnswered, isLoading } = useQuery({
     queryKey: ["referral-answered", userId],
@@ -45,14 +52,17 @@ const ReferralPrompt = ({ userId }: { userId: string }) => {
   // visibility query resolves to "not answered", so the prompt still shows this session and
   // the user can answer — but it will never appear again, even if ignored.
   useEffect(() => {
-    if (isLoading || alreadyAnswered || markedRef.current) return;
+    if (isLoading || alreadyAnswered || dismissedLocally || markedRef.current) return;
     markedRef.current = true;
+    try { window.localStorage.setItem(LS_KEY, "1"); } catch { /* private mode */ }
     void (supabase as any)
       .from("profiles")
       .update({ referral_prompt_dismissed: true })
       .eq("user_id", userId)
-      .then(() => {});
-  }, [isLoading, alreadyAnswered, userId]);
+      .then(({ error }: any) => {
+        if (error) console.warn("[ReferralPrompt] could not persist dismissal:", error.message);
+      });
+  }, [isLoading, alreadyAnswered, dismissedLocally, userId]);
 
   const handleSelect = async (id: string) => {
     setSaving(true);

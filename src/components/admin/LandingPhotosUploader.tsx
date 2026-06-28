@@ -20,10 +20,27 @@ const LandingPhotosUploader = () => {
   const upload = async (n: number, file: File) => {
     setBusy(n);
     try {
+      // Pre-check the session. The bucket is admin-write only; if this page is open in an
+      // unpublished preview (or a logged-out tab), the upload would otherwise fail with a
+      // cryptic "row-level security" error. Surface something the founder can act on instead.
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error("You're not signed in on this page. Log in as the admin account, then upload.");
+        return;
+      }
+
       const { error } = await supabase.storage
         .from(BUCKET)
         .upload(`example-${n}.png`, file, { upsert: true, contentType: file.type || "image/png" });
-      if (error) throw error;
+
+      if (error) {
+        const blocked = /row-level security|unauthorized|403|401|not authorized/i.test(error.message);
+        throw new Error(
+          blocked
+            ? "Upload blocked — this session isn't recognized as an admin. Make sure you're on the published site (sipjuice.app) and signed in as the admin account, then try again."
+            : error.message
+        );
+      }
       setBust((b) => ({ ...b, [n]: Date.now() }));
       toast.success(`Photo ${n} updated`);
     } catch (e: any) {

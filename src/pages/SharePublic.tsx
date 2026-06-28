@@ -94,7 +94,7 @@ const SharePublic = () => {
     <div className="min-h-screen bg-background py-10 px-4">
       <div className="max-w-xl mx-auto">
         <div className="mb-6">
-          <h1 className="text-2xl font-bold">Share a story anonymously</h1>
+          <h1 className="text-2xl font-bold">Pass on the Juice anonymously</h1>
           <p className="text-sm text-muted-foreground mt-1">
             No account required. An admin reviews every submission before it
             goes live.

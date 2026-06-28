@@ -102,7 +102,7 @@ const DesktopSidebar = ({ onCreateStory }: DesktopSidebarProps) => {
               onClick={onCreateStory}
             >
               <Plus className="h-5 w-5 mr-2" />
-              Share your story
+              Pass on the Juice
             </Button>
           </div>
         )}
