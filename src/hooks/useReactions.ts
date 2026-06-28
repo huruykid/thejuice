@@ -37,22 +37,7 @@ export const useToggleReaction = () => {
           .eq('id', existingReaction.id);
 
         if (error) throw error;
-
-        // Decrement reactions count
-        const { data: currentStory } = await supabase
-          .from('stories')
-          .select('reactions_count')
-          .eq('id', storyId)
-          .single();
-
-        if (currentStory) {
-          const { error: updateError } = await supabase
-            .from('stories')
-            .update({ reactions_count: Math.max(0, currentStory.reactions_count - 1) })
-            .eq('id', storyId);
-
-          if (updateError) throw updateError;
-        }
+        // reactions_count is maintained atomically by the DB trigger (sync_story_reactions_count).
 
         return { action: 'removed', removedType: reactionType, reactorUserId: user.id, storyOwnerId: storyMeta?.user_id ?? null };
       } else {
@@ -67,34 +52,19 @@ export const useToggleReaction = () => {
           if (deleteError) throw deleteError;
         }
 
-        // Add the new reaction
+        // Add the new reaction. Upsert on the (story_id, user_id) unique constraint so a
+        // concurrent double-tap settles on a single row instead of erroring or duplicating.
         const { error } = await supabase
           .from('reactions')
-          .insert({
+          .upsert({
             story_id: storyId,
             user_id: user.id,
             reaction_type: reactionType,
-          });
+          }, { onConflict: 'story_id,user_id' });
 
         if (error) throw error;
-
-        // Only increment count if user didn't have any previous reaction
-        if (!otherReaction) {
-          const { data: currentStory } = await supabase
-            .from('stories')
-            .select('reactions_count')
-            .eq('id', storyId)
-            .single();
-
-          if (currentStory) {
-            const { error: updateError } = await supabase
-              .from('stories')
-              .update({ reactions_count: currentStory.reactions_count + 1 })
-              .eq('id', storyId);
-
-            if (updateError) throw updateError;
-          }
-        }
+        // reactions_count is maintained atomically by the DB trigger; a delete+insert
+        // (the "replace" case) nets zero because the trigger recomputes from the rows.
 
         return { action: 'added', addedType: reactionType, replacedType: otherReaction?.reaction_type, reactorUserId: user.id, storyOwnerId: storyMeta?.user_id ?? null };
       }

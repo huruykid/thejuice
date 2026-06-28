@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { parsePhoneNumber } from 'react-phone-number-input';
 import { useToast } from '@/hooks/use-toast';
@@ -24,6 +24,9 @@ export const useProfileSearch = () => {
   const [isSearching, setIsSearching] = useState(false);
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const { toast } = useToast();
+  // Monotonic request id — guards against a slow earlier search resolving after a
+  // newer one and overwriting it (which could attach a story to the wrong subject).
+  const requestIdRef = useRef(0);
 
   const normalizePhoneNumber = (input: string): string | null => {
     try {
@@ -133,12 +136,17 @@ export const useProfileSearch = () => {
   };
 
   const performSearch = async (query: string) => {
+    const reqId = ++requestIdRef.current;
     const results = await searchProfiles(query);
-    setSearchResults(results);
+    // Only apply if this is still the latest request; otherwise drop stale results.
+    if (reqId === requestIdRef.current) {
+      setSearchResults(results);
+    }
     return results;
   };
 
   const clearResults = () => {
+    requestIdRef.current++; // invalidate any in-flight search
     setSearchResults([]);
   };
 

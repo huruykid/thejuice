@@ -58,11 +58,15 @@ export const useSearchStories = (query: string, location?: string, tag?: string)
 
       // Handle tag-based search
       if (tag) {
-        const { data: taggedStoryIds } = await supabase
+        const { data: taggedStoryIds, error: tagError } = await supabase
           .from('story_tags')
           .select('story_id')
           .ilike('tag', `%${tag}%`);
-        
+
+        // Surface real failures instead of silently returning "no stories" — a transient
+        // DB error here must not look identical to a genuine empty result.
+        if (tagError) throw tagError;
+
         if (taggedStoryIds && taggedStoryIds.length > 0) {
           const storyIds = taggedStoryIds.map(item => item.story_id);
           dbQuery = dbQuery.in('id', storyIds);

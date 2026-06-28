@@ -9,6 +9,7 @@
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "typecheck": "tsc -p tsconfig.app.json --noEmit",
+    "design:check": "node scripts/check-design-tokens.mjs",
     "preview": "vite preview"
   },
   "dependencies": {

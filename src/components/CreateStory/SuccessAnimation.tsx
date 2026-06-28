@@ -8,7 +8,7 @@ const SuccessAnimation = () => {
         <div className="text-6xl mb-4">
           <Sparkles className="h-16 w-16 text-primary animate-pulse mx-auto" />
         </div>
-        <h2 className="text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-2">
+        <h2 className="text-3xl font-bold text-primary mb-2">
           Story submitted!
         </h2>
         <p className="text-lg text-muted-foreground">

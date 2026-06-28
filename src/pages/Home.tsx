@@ -6,6 +6,7 @@ import { Heart } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import StoryCard from "@/components/StoryCard";
 import StoryCardSkeleton from "@/components/StoryCardSkeleton";
+import QueryError from "@/components/QueryError";
 import ScrollToTopButton from "@/components/ScrollToTopButton";
 import PullToRefreshIndicator from "@/components/PullToRefreshIndicator";
 import LocationNudge from "@/components/LocationNudge";
@@ -45,6 +46,7 @@ const Home = ({ onCreateStory }: HomeProps) => {
   const {
     data: nearbyStories = [],
     isLoading: nearbyLoading,
+    isError: nearbyError,
     refetch: refetchNearby,
   } = useNearbyStories(coordinates ?? null, useLocationFeed);
 
@@ -52,6 +54,7 @@ const Home = ({ onCreateStory }: HomeProps) => {
   const {
     data: infiniteData,
     isLoading: infiniteLoading,
+    isError: infiniteError,
     isFetchingNextPage,
     fetchNextPage,
     hasNextPage,
@@ -66,6 +69,7 @@ const Home = ({ onCreateStory }: HomeProps) => {
 
   const stories = useLocationFeed ? nearbyStories : infiniteStories;
   const storiesLoading = useLocationFeed ? nearbyLoading : infiniteLoading || gateLoading;
+  const storiesError = useLocationFeed ? nearbyError : infiniteError;
 
   // ─── Pull-to-refresh ────────────────────────────────────────────────────────
   const handleRefresh = useCallback(async () => {
@@ -129,6 +133,12 @@ const Home = ({ onCreateStory }: HomeProps) => {
               <StoryCardSkeleton key={i} />
             ))}
           </div>
+        ) : storiesError && stories.length === 0 ? (
+          <QueryError
+            title="Couldn't load the feed"
+            message="Something went wrong loading stories. Check your connection and try again."
+            onRetry={handleRefresh}
+          />
         ) : stories.length > 0 ? (
           <>
             <div>

@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Helmet } from "react-helmet-async";
 import { supabase } from "@/integrations/supabase/client";
 import StoryCard from "@/components/StoryCard";
+import QueryError from "@/components/QueryError";
 import Navigation from "@/components/Navigation";
 import { useAuth } from "@/hooks/useAuth";
 import type { Story } from "@/hooks/useStories";
@@ -19,7 +20,7 @@ const StoryDetail = () => {
   const rawStateStory = (location.state as { story?: Story })?.story ?? null;
   const stateStory = rawStateStory?.id === storyId ? rawStateStory : null;
 
-  const { data: fetchedStory, isLoading } = useQuery({
+  const { data: fetchedStory, isLoading, isError, refetch } = useQuery({
     queryKey: ["story", storyId],
     enabled: !stateStory && !!storyId,
     queryFn: async () => {
@@ -100,6 +101,12 @@ const StoryDetail = () => {
           <div className="px-4 py-20 text-center text-sm text-muted-foreground">
             Loading…
           </div>
+        ) : isError && !story ? (
+          <QueryError
+            title="Couldn't load this story"
+            message="Something went wrong. Check your connection and try again."
+            onRetry={refetch}
+          />
         ) : !story ? (
           <div className="px-4 py-20 text-center text-sm text-muted-foreground">
             Story not found.

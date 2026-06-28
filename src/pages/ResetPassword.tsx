@@ -88,6 +88,7 @@ const ResetPassword = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="New password"
+                    aria-label="New password"
                     className="rounded-2xl border-primary/30 focus:border-primary pr-12"
                     required
                     minLength={8}
@@ -107,6 +108,7 @@ const ResetPassword = () => {
                   value={confirm}
                   onChange={(e) => setConfirm(e.target.value)}
                   placeholder="Confirm new password"
+                  aria-label="Confirm new password"
                   className="rounded-2xl border-primary/30 focus:border-primary"
                   required
                   minLength={8}

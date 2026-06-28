@@ -1,4 +1,4 @@
-import { Heart, MessageCircle, Flag, CheckCircle2, Trash2, MapPin, MoreVertical, Bookmark } from "lucide-react";
+import { MessageCircle, Flag, CheckCircle2, Trash2, MapPin, MoreVertical, Bookmark } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import {
@@ -8,6 +8,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import CommentsModal from "./CommentsModal";
+import { useConfirm } from "./ConfirmDialog";
 import { BlockUserDialog } from "./BlockUserDialog";
 import { ReportContentDialog } from "./ReportContentDialog";
 import { FlagRatingDisplay } from "./FlagRating";
@@ -59,7 +60,13 @@ const StoryCard = ({
 }: StoryCardProps) => {
   const [showComments, setShowComments] = useState(false);
   const [showHeartBurst, setShowHeartBurst] = useState(false);
+  const [poppedType, setPoppedType] = useState<string | null>(null);
   const lastTapRef = useRef<number>(0);
+  const { confirm, confirmDialog } = useConfirm();
+
+  // Light haptic on a real interaction. No-op where unsupported (iOS Safari/web);
+  // native iOS taps would use @capacitor/haptics if the plugin is added later.
+  const vibrate = () => { try { navigator.vibrate?.(10); } catch { /* unsupported */ } };
 
   const { user } = useAuth();
   const { isVerified } = useVerification(user?.id);
@@ -91,6 +98,16 @@ const StoryCard = ({
         variant: "destructive",
       });
       return;
+    }
+
+    // Tactile + visual feedback the instant the tap registers.
+    vibrate();
+    const willSelect =
+      (reactionType === 'green_flag' && !isGreenFlagged) ||
+      (reactionType === 'red_flag' && !isRedFlagged);
+    if (willSelect) {
+      setPoppedType(reactionType);
+      window.setTimeout(() => setPoppedType((p) => (p === reactionType ? null : p)), 320);
     }
 
     // Optimistic update — responds instantly before the mutation settles.
@@ -157,7 +174,15 @@ const StoryCard = ({
   };
 
   const handleDelete = async () => {
-    if (!window.confirm('Are you sure you want to delete this story?')) return;
+    if (
+      !(await confirm({
+        title: "Delete this story?",
+        description: "This permanently deletes your story and cannot be undone.",
+        destructive: true,
+        confirmLabel: "Delete",
+      }))
+    )
+      return;
     try {
       await deleteStory.mutateAsync(story.id);
       toast({ title: "Story deleted", description: "Your story has been deleted successfully." });
@@ -194,10 +219,10 @@ const StoryCard = ({
       >
         {showHeartBurst && (
           <div className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center">
-            <Heart
-              className="h-24 w-24 text-primary drop-shadow-lg"
+            <CheckCircle2
+              className="h-24 w-24 drop-shadow-lg"
               fill="currentColor"
-              style={{ animation: "heart-burst 700ms ease-out forwards" }}
+              style={{ color: 'hsl(var(--success))', animation: "heart-burst 700ms ease-out forwards" }}
             />
           </div>
         )}
@@ -303,7 +328,7 @@ const StoryCard = ({
             >
               <Flag
                 className="h-6 w-6"
-                style={{ color: 'hsl(var(--destructive))', opacity: isRedFlagged ? 1 : 0.7 }}
+                style={{ color: 'hsl(var(--destructive))', opacity: isRedFlagged ? 1 : 0.7, animation: poppedType === 'red_flag' ? 'flag-pop 320ms ease-out' : undefined }}
                 strokeWidth={isRedFlagged ? 2.4 : 1.8}
                 fill={isRedFlagged ? "currentColor" : "none"}
               />
@@ -316,7 +341,7 @@ const StoryCard = ({
             >
               <CheckCircle2
                 className="h-6 w-6"
-                style={{ color: 'hsl(var(--success))', opacity: isGreenFlagged ? 1 : 0.7 }}
+                style={{ color: 'hsl(var(--success))', opacity: isGreenFlagged ? 1 : 0.7, animation: poppedType === 'green_flag' ? 'flag-pop 320ms ease-out' : undefined }}
                 strokeWidth={isGreenFlagged ? 2.4 : 1.8}
                 fill={isGreenFlagged ? "currentColor" : "none"}
               />
@@ -352,9 +377,9 @@ const StoryCard = ({
         {/* Counts */}
         <div className="px-4 text-sm font-semibold text-foreground">
           {(reactionCounts?.red_flag || 0) + (reactionCounts?.green_flag || 0)} flags
-          {(reactionCounts?.green_flag || 0) > 0 && (
+          {((reactionCounts?.green_flag || 0) + (reactionCounts?.red_flag || 0)) > 0 && (
             <span className="ml-2 text-xs font-normal text-muted-foreground">
-              {reactionCounts?.green_flag} green · {reactionCounts?.red_flag || 0} red
+              {reactionCounts?.green_flag || 0} green · {reactionCounts?.red_flag || 0} red
             </span>
           )}
         </div>
@@ -426,6 +451,7 @@ const StoryCard = ({
           storyPreview={story.content.substring(0, 100) + (story.content.length > 100 ? '...' : '')}
         />
       )}
+      {confirmDialog}
     </>
   );
 };

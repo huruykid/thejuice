@@ -44,7 +44,7 @@ export const emailShell = (opts: { preheader: string; body: string }) => `
   <div style="max-width:520px;margin:0 auto;font-family:${BRAND.font};color:${BRAND.ink};padding:32px 24px">
     <div style="text-align:center;margin:0 0 28px">
       <img src="${BRAND.logo}" alt="The Juice App" width="56" height="56" style="display:inline-block;border:0;margin:0 0 8px">
-      <div style="font-size:22px;font-weight:700;letter-spacing:-0.01em;color:${BRAND.ink}">The <span style="color:${BRAND.amber}">Juice</span> App</div>
+      <div style="font-family:${BRAND.font};font-size:22px;font-weight:700;letter-spacing:-0.01em;color:${BRAND.ink}">The <span style="color:${BRAND.amber}">Juice</span> App</div>
     </div>
     ${opts.body}
   </div>`;

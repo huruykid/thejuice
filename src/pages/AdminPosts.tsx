@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/select";
 import { CheckCircle, XCircle, Clock, UserX, User, Trash2, Mail } from "lucide-react";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
+import QueryError from "@/components/QueryError";
 import { useConfirm } from "@/components/ConfirmDialog";
 import { toast } from "sonner";
 
@@ -63,7 +64,7 @@ const AdminPosts = () => {
     if (!authLoading && !roleLoading && user && !isAdmin) navigate("/app");
   }, [authLoading, roleLoading, isAdmin, user, navigate]);
 
-  const { data: posts, isLoading } = useQuery({
+  const { data: posts, isLoading, isError, refetch } = useQuery({
     queryKey: ["admin-posts", filter, sort],
     queryFn: async () => {
       let q = supabase
@@ -360,6 +361,13 @@ const AdminPosts = () => {
           </div>
         )}
 
+        {isError ? (
+          <QueryError
+            title="Couldn't load posts"
+            message="The post queue failed to load. Try again."
+            onRetry={refetch}
+          />
+        ) : (
         <div className="space-y-4">
           {(posts ?? []).map((p) => (
             <PostRow
@@ -393,6 +401,7 @@ const AdminPosts = () => {
             </Card>
           )}
         </div>
+        )}
         {confirmDialog}
       </div>
     </div>

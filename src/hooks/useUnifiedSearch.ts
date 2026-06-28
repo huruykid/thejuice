@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { parsePhoneNumber } from 'react-phone-number-input';
 import { useToast } from '@/hooks/use-toast';
@@ -28,6 +28,9 @@ export const useUnifiedSearch = () => {
   const [isSearching, setIsSearching] = useState(false);
   const [searchResults, setSearchResults] = useState<UnifiedSearchResult[]>([]);
   const { toast } = useToast();
+  // Monotonic request id — a slow earlier search (this issues 5+ round-trips) must not
+  // resolve after a newer query and overwrite the visible results with stale ones.
+  const requestIdRef = useRef(0);
 
   const normalizePhoneNumber = (input: string): string | null => {
     try {
@@ -244,12 +247,17 @@ export const useUnifiedSearch = () => {
   };
 
   const performSearch = async (query: string) => {
+    const reqId = ++requestIdRef.current;
     const results = await searchAll(query);
-    setSearchResults(results);
+    // Only apply if this is still the latest request; otherwise drop stale results.
+    if (reqId === requestIdRef.current) {
+      setSearchResults(results);
+    }
     return results;
   };
 
   const clearResults = () => {
+    requestIdRef.current++; // invalidate any in-flight search
     setSearchResults([]);
   };
 

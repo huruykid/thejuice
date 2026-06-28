@@ -84,11 +84,11 @@ const TeaAppComparison = () => {
   return (
     <div className="min-h-screen bg-gradient-soft">
       <Helmet>
-        <title>Juice vs. Tea App — Anonymous Dating Reviews for Men</title>
-        <meta name="description" content="See how Juice compares to Tea App — verified members, structured ratings, and full anonymity built specifically for men." />
+        <title>Tea App Alternative for Men — Anonymous Reviews | Juice</title>
+        <meta name="description" content="Looking for a Tea app alternative for men? Juice gives verified members, structured ratings, and full anonymity — built for how men date." />
         <link rel="canonical" href="https://sipjuice.app/tea-app-comparison" />
-        <meta property="og:title" content="Juice vs. Tea App — Anonymous Dating Reviews for Men" />
-        <meta property="og:description" content="See how Juice compares to Tea App — built specifically for men." />
+        <meta property="og:title" content="Tea App Alternative for Men — Anonymous Reviews | Juice" />
+        <meta property="og:description" content="Looking for a Tea app alternative for men? Juice gives verified members, structured ratings, and full anonymity — built for how men date." />
         <meta property="og:url" content="https://sipjuice.app/tea-app-comparison" />
         <meta property="og:type" content="website" />
       </Helmet>
@@ -227,7 +227,7 @@ const TeaAppComparison = () => {
       {/* CTA Section */}
       <section className="py-16 px-4">
         <div className="max-w-4xl mx-auto text-center">
-          <Card className="border-0 shadow-card bg-gradient-primary text-white">
+          <Card className="border-0 shadow-card bg-gradient-primary text-primary-foreground">
             <CardContent className="p-12">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">
                 One platform, built for how men actually date.
@@ -236,7 +236,7 @@ const TeaAppComparison = () => {
                 Verified members. Anonymous stories. No drama from the other side of the equation.
               </p>
               <Button size="lg" variant="secondary" onClick={() => navigate("/app")} className="text-lg px-8">
-                Request Access to Juice
+                Join free
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
               <p className="text-sm mt-4 opacity-75">

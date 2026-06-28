@@ -9,6 +9,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useMySubmissions } from "@/hooks/useStories";
 import ReferralPrompt from "@/components/ReferralPrompt";
 import SubjectSearch from "@/components/SubjectSearch";
+import TeaserFeed from "@/components/TeaserFeed";
 
 interface UnverifiedHomeProps {
   onCreateStory: () => void;
@@ -54,6 +55,9 @@ const UnverifiedHome = ({ onCreateStory, onStartVerification }: UnverifiedHomePr
           <span className="text-foreground font-medium">Verify with a quick selfie</span> to fully
           join and read every story — or share a story right now, no verification needed.
         </p>
+
+        {/* Illustrative teaser feed — gives the screen life and a reason to verify */}
+        <TeaserFeed onStartVerification={onStartVerification} />
 
         {/* Hero CTA */}
         <Card className="p-5 bg-card border-border">

@@ -58,21 +58,13 @@ export const useCreateComment = () => {
 
       if (error) throw error;
 
-      // Increment comments count and fetch story owner for push notification
+      // comments_count is maintained atomically by the DB trigger (sync_story_comments_count).
+      // Still fetch the story owner for the push notification.
       const { data: currentStory } = await supabase
         .from('stories')
-        .select('comments_count, user_id')
+        .select('user_id')
         .eq('id', storyId)
-        .single();
-
-      if (currentStory) {
-        const { error: updateError } = await supabase
-          .from('stories')
-          .update({ comments_count: currentStory.comments_count + 1 })
-          .eq('id', storyId);
-
-        if (updateError) throw updateError;
-      }
+        .maybeSingle();
 
       return { ...data, commenterUserId: user.id, storyOwnerId: currentStory?.user_id ?? null };
     },
@@ -102,22 +94,7 @@ export const useDeleteComment = () => {
         .eq('id', commentId);
 
       if (error) throw error;
-
-      // Decrement comments count
-      const { data: currentStory } = await supabase
-        .from('stories')
-        .select('comments_count')
-        .eq('id', storyId)
-        .single();
-
-      if (currentStory) {
-        const { error: updateError } = await supabase
-          .from('stories')
-          .update({ comments_count: Math.max(0, currentStory.comments_count - 1) })
-          .eq('id', storyId);
-
-        if (updateError) throw updateError;
-      }
+      // comments_count is maintained atomically by the DB trigger.
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['comments', variables.storyId] });

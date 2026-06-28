@@ -196,6 +196,7 @@ const UsernameCreation = ({ onComplete }: UsernameCreationProps) => {
                     value={username}
                     onChange={(e) => handleUsernameChange(e.target.value)}
                     placeholder="YourUsername"
+                    aria-label="Choose a username"
                     className="rounded-2xl border-primary/30 focus:border-primary pr-12"
                     maxLength={20}
                   />
@@ -205,10 +206,10 @@ const UsernameCreation = ({ onComplete }: UsernameCreationProps) => {
                 </div>
                 
                 {username.length > 0 && (
-                  <div className="flex items-center gap-2 text-sm">
+                  <div className="flex items-center gap-2 text-sm" aria-live="polite">
                     <span className={`${
-                      isAvailable === true ? 'text-success' : 
-                      isAvailable === false ? 'text-destructive' : 
+                      isAvailable === true ? 'text-success' :
+                      isAvailable === false ? 'text-destructive' :
                       'text-muted-foreground'
                     }`}>
                       {getStatusText()}

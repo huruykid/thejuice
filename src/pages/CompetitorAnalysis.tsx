@@ -83,7 +83,7 @@ const CompetitorAnalysis = () => {
           
           <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6">
             Men finally have their own{" "}
-            <span className="bg-gradient-primary bg-clip-text text-transparent">
+            <span className="text-primary">
               dating review platform.
             </span>
           </h1>

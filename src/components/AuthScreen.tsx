@@ -12,7 +12,7 @@ import { Eye, EyeOff, ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { track } from "@/lib/analytics";
 import BrandLockup from "@/components/BrandLockup";
-import SelfieCapture from './SelfieCapture';
+import SelfieCapture from './RefactoredSelfieCapture';
 
 interface AuthScreenProps {
   onAuthSuccess: () => void;
@@ -182,6 +182,7 @@ const AuthScreen = ({ onAuthSuccess }: AuthScreenProps) => {
                     value={resetEmail}
                     onChange={(e) => setResetEmail(e.target.value)}
                     placeholder="Email"
+                    aria-label="Email address"
                     className="rounded-2xl border-primary/30 focus:border-primary"
                     required
                   />
@@ -324,6 +325,7 @@ const AuthScreen = ({ onAuthSuccess }: AuthScreenProps) => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Email"
+                  aria-label="Email address"
                   className="rounded-2xl border-primary/30 focus:border-primary"
                   required
                 />
@@ -335,6 +337,7 @@ const AuthScreen = ({ onAuthSuccess }: AuthScreenProps) => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Password"
+                  aria-label="Password"
                   className="rounded-2xl border-primary/30 focus:border-primary pr-12"
                   required
                 />

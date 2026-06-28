@@ -45,10 +45,10 @@ const AnonymousDatingReviews = () => {
     <div className="min-h-screen bg-gradient-soft">
       <Helmet>
         <title>Anonymous Dating Reviews from Verified Men | Juice</title>
-        <meta name="description" content="Read anonymous date reviews from verified men. Rate first dates, apps, and relationships — your identity stays hidden." />
+        <meta name="description" content="Read and rate anonymous date reviews from verified men — first dates, apps, and relationships. No names, no trace, just honest signal." />
         <link rel="canonical" href="https://sipjuice.app/anonymous-dating-reviews" />
         <meta property="og:title" content="Anonymous Dating Reviews from Verified Men | Juice" />
-        <meta property="og:description" content="Read anonymous date reviews from verified men — your identity stays hidden." />
+        <meta property="og:description" content="Read and rate anonymous date reviews from verified men — first dates, apps, and relationships. No names, no trace, just honest signal." />
         <meta property="og:url" content="https://sipjuice.app/anonymous-dating-reviews" />
         <meta property="og:type" content="website" />
       </Helmet>
@@ -60,7 +60,7 @@ const AnonymousDatingReviews = () => {
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6">
             Anonymous Dating Reviews —{" "}
-            <span className="bg-gradient-primary bg-clip-text text-transparent">
+            <span className="text-primary">
               Written by Verified Men
             </span>
           </h1>
@@ -239,7 +239,7 @@ const AnonymousDatingReviews = () => {
       {/* CTA Section */}
       <section className="py-20 px-4">
         <div className="max-w-4xl mx-auto text-center">
-          <Card className="border-0 shadow-card bg-gradient-primary text-white">
+          <Card className="border-0 shadow-card bg-gradient-primary text-primary-foreground">
             <CardContent className="p-12">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">
                 The most honest dating reviews you'll ever read

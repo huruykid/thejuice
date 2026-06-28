@@ -267,7 +267,7 @@ const HowItWorks = () => {
                 Join a verified community of men sharing honest dating experiences.
               </p>
               <Button size="lg" variant="secondary" onClick={() => navigate("/app")} className="text-lg px-8">
-                Request Access
+                Join free
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </CardContent>

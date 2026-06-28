@@ -79,11 +79,11 @@ const Landing = () => {
   return (
     <div className="min-h-screen bg-gradient-soft">
       <Helmet>
-        <title>Juice — Real Dating Stories for Men. Zero Consequences.</title>
-        <meta name="description" content="Verified men share anonymous dating stories and honest ratings. Read the real feed. Post yours. No names, no judgment." />
+        <title>The Tea App for Men — Anonymous Dating Stories | Juice</title>
+        <meta name="description" content="Juice is the Tea app for men, done right — verified members, anonymous dating stories, and honest ratings. No real names, no doxxing. Free to join." />
         <link rel="canonical" href="https://sipjuice.app/" />
-        <meta property="og:title" content="Juice — Real Dating Stories for Men. Zero Consequences." />
-        <meta property="og:description" content="Verified men share anonymous dating stories. Read the feed. Post yours. No names, no consequences." />
+        <meta property="og:title" content="The Tea App for Men — Anonymous Dating Stories | Juice" />
+        <meta property="og:description" content="Juice is the Tea app for men, done right — verified members, anonymous dating stories, and honest ratings. No real names, no doxxing. Free to join." />
         <meta property="og:url" content="https://sipjuice.app/" />
         <meta property="og:type" content="website" />
         <script type="application/ld+json">{JSON.stringify({
@@ -103,16 +103,17 @@ const Landing = () => {
           <div className="max-w-4xl mx-auto text-center">
             <div className="inline-flex items-center gap-2 text-xs font-medium text-primary bg-primary/10 px-3 py-1.5 rounded-full mb-6">
               <Shield className="h-3.5 w-3.5" />
-              Every member verified by a real human
+              Verified men only · No real names, ever
             </div>
 
             <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6 leading-tight">
-              Real stories. Real men.{" "}
-              <span className="text-primary">Zero consequences.</span>
+              The Tea app,{" "}
+              <span className="text-primary">but for men.</span>
             </h1>
 
             <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-              Verified men. Anonymous stories. Read the feed. Post yours.
+              Anonymous, verified dating stories — no real names, no doxxing, no drama.
+              Read the feed. Post yours.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-3 justify-center mb-6">
@@ -125,19 +126,17 @@ const Landing = () => {
               </Button>
             </div>
 
-            {/* Social proof — NOTE: these counts are hardcoded. To make them honest,
-                expose a SECURITY DEFINER RPC (e.g. get_public_stats() returning counts
-                of verified users + approved stories, GRANT EXECUTE to anon) and read it
-                here. Left hardcoded pending a marketing decision on showing real numbers. */}
+            {/* Honest, non-numeric trust signals — no fabricated counts. When real
+                volume justifies it, swap in live numbers via a get_public_stats() RPC. */}
             <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-muted-foreground">
               <span className="flex items-center gap-1.5">
                 <CheckCircle className="h-4 w-4 text-primary" />
-                1,200+ verified men
+                Every member human-verified
               </span>
               <span className="hidden sm:block text-muted-foreground/40">·</span>
               <span className="flex items-center gap-1.5">
                 <CheckCircle className="h-4 w-4 text-primary" />
-                3,400+ stories shared
+                No names, no consequences
               </span>
               <span className="hidden sm:block text-muted-foreground/40">·</span>
               <span className="flex items-center gap-1.5">
@@ -161,28 +160,25 @@ const Landing = () => {
               </div>
               {/* Mock story cards — matches real StoryCard layout: header → subject photo → text → flags → reactions */}
               {[
-                { name: "Emma R.", photo: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=400&fit=crop&crop=face", author: "throwback_j", time: "2h", flags: "🚩🚩 ghosted after 3 months", green: 12, red: 34 },
-                { name: "Sophia K.", photo: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400&fit=crop&crop=face", author: "quietly_done", time: "5h", flags: "💯 loyal · honest to a fault", green: 41, red: 3 },
-                { name: "Mia T.", photo: "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=400&fit=crop&crop=face", author: "weekend_plans", time: "8h", flags: "☠️ toxic · clingy after week 1", green: 8, red: 29 },
+                { author: "throwback_j", time: "2h", flags: "🚩🚩 ghosted after 3 months", green: 12, red: 34 },
+                { author: "quietly_done", time: "5h", flags: "💯 loyal · honest to a fault", green: 41, red: 3 },
+                { author: "weekend_plans", time: "8h", flags: "☠️ toxic · clingy after week 1", green: 8, red: 29 },
               ].map((card, i) => (
                 <div key={i} className="border-b border-border last:border-b-0 bg-background">
-                  {/* Header */}
+                  {/* Header — the verified author telling the story, anonymized (no real names) */}
                   <div className="flex items-center gap-2 px-3 pt-3 pb-2">
-                    <div className="w-6 h-6 rounded-full bg-gradient-to-br from-primary to-primary flex items-center justify-center text-white text-[10px] font-bold shrink-0">
-                      {card.name[0]}
+                    <div className="w-6 h-6 rounded-full bg-gradient-to-br from-primary to-primary flex items-center justify-center text-primary-foreground text-[10px] font-bold shrink-0">
+                      {card.author[0].toUpperCase()}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-xs font-semibold text-foreground truncate">{card.name}</p>
-                      <p className="text-[10px] text-muted-foreground">@{card.author} · {card.time} ago</p>
+                      <p className="text-xs font-semibold text-foreground truncate">@{card.author}</p>
+                      <p className="text-[10px] text-muted-foreground">{card.time} ago · verified</p>
                     </div>
                   </div>
-                  {/* Subject photo — matches aspect-square carousel in real StoryCard */}
-                  <div className="aspect-square w-full overflow-hidden bg-muted">
-                    <img
-                      src={card.photo}
-                      alt=""
-                      className="w-full h-full object-cover"
-                    />
+                  {/* Identity-protected placeholder — no real faces, ever */}
+                  <div className="aspect-square w-full bg-gradient-to-br from-muted to-muted/50 flex flex-col items-center justify-center gap-1">
+                    <Shield className="h-7 w-7 text-primary/30" />
+                    <span className="text-[9px] text-muted-foreground/60">identity protected</span>
                   </div>
                   {/* Story text + flags + reactions */}
                   <div className="px-3 py-2.5">

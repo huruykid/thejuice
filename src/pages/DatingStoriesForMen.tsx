@@ -40,11 +40,11 @@ const DatingStoriesForMen = () => {
   return (
     <div className="min-h-screen bg-gradient-soft">
       <Helmet>
-        <title>Men's Anonymous Dating Stories | Juice</title>
-        <meta name="description" content="Read anonymous dating stories from verified men — first dates, red flags, app experiences, and relationship lessons." />
+        <title>Anonymous Dating Stories from Verified Men | Juice</title>
+        <meta name="description" content="Real, unfiltered dating stories from verified men — first dates, red flags, and app disasters. Read what actually happened, anonymously." />
         <link rel="canonical" href="https://sipjuice.app/dating-stories-for-men" />
-        <meta property="og:title" content="Men's Anonymous Dating Stories | Juice" />
-        <meta property="og:description" content="Read anonymous dating stories from verified men — first dates, red flags, app experiences, and relationship lessons." />
+        <meta property="og:title" content="Anonymous Dating Stories from Verified Men | Juice" />
+        <meta property="og:description" content="Real, unfiltered dating stories from verified men — first dates, red flags, and app disasters. Read what actually happened, anonymously." />
         <meta property="og:url" content="https://sipjuice.app/dating-stories-for-men" />
         <meta property="og:type" content="website" />
       </Helmet>
@@ -56,7 +56,7 @@ const DatingStoriesForMen = () => {
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6">
             Dating Stories from{" "}
-            <span className="bg-gradient-primary bg-clip-text text-transparent">
+            <span className="text-primary">
               Verified Men — Anonymous & Unfiltered
             </span>
           </h1>
@@ -155,7 +155,7 @@ const DatingStoriesForMen = () => {
       {/* CTA Section */}
       <section className="py-20 px-4">
         <div className="max-w-4xl mx-auto text-center">
-          <Card className="border-0 shadow-card bg-gradient-primary text-white">
+          <Card className="border-0 shadow-card bg-gradient-primary text-primary-foreground">
             <CardContent className="p-12">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">
                 The story you need is already in there.

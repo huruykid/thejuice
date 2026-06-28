@@ -53,11 +53,11 @@ const MaleDatingCommunity = () => {
   return (
     <div className="min-h-screen bg-gradient-soft">
       <Helmet>
-        <title>Juice — Verified Male Dating Community</title>
-        <meta name="description" content="A verified, anonymous space where men share real dating stories and advice — judgment-free, identity-protected." />
+        <title>A Verified, Men-Only Dating Community | Juice</title>
+        <meta name="description" content="A verified, anonymous space where men share real dating stories and advice — judgment-free, identity-protected, no public profiles." />
         <link rel="canonical" href="https://sipjuice.app/male-dating-community" />
-        <meta property="og:title" content="Juice — Verified Male Dating Community" />
-        <meta property="og:description" content="A verified, anonymous space where men share real dating stories and advice." />
+        <meta property="og:title" content="A Verified, Men-Only Dating Community | Juice" />
+        <meta property="og:description" content="A verified, anonymous space where men share real dating stories and advice — judgment-free, identity-protected, no public profiles." />
         <meta property="og:url" content="https://sipjuice.app/male-dating-community" />
         <meta property="og:type" content="website" />
       </Helmet>
@@ -69,7 +69,7 @@ const MaleDatingCommunity = () => {
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6">
             A Verified Dating Community —{" "}
-            <span className="bg-gradient-primary bg-clip-text text-transparent">
+            <span className="text-primary">
               Built for Men
             </span>
           </h1>
@@ -234,7 +234,7 @@ const MaleDatingCommunity = () => {
       {/* Join CTA */}
       <section className="py-20 px-4">
         <div className="max-w-4xl mx-auto text-center">
-          <Card className="border-0 shadow-card bg-gradient-primary text-white">
+          <Card className="border-0 shadow-card bg-gradient-primary text-primary-foreground">
             <CardContent className="p-12">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">
                 Verified stories from men who've been where you are.
@@ -243,7 +243,7 @@ const MaleDatingCommunity = () => {
                 Juice is a private, verified space — no public profiles, no drama.
               </p>
               <Button size="lg" variant="secondary" onClick={() => navigate("/app")} className="text-lg px-8">
-                Request Access
+                Join free
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
               <p className="text-sm mt-4 opacity-75">

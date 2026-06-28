@@ -1,12 +1,21 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "npm:resend@2.0.0";
 import { handleCorsPreFlight, createSecureResponse, createSecureErrorResponse, authenticateRequest, requireAdmin } from "../_shared/security.ts";
+import { emailShell, button, signoff, esc, BRAND } from "../_shared/email.ts";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
+
+// CAN-SPAM postal address for the transactional footer.
+// Use HTML entities (not raw multibyte chars) so encoding can't mangle them in email clients.
+const COMPANY = "Juice &middot; 4460 W Shaw Ave, Fresno, CA 93722";
 
 interface RejectionEmailRequest {
   email: string;
   username?: string;
+  // `reason` is accepted for backward compatibility and stored internally by the caller,
+  // but is intentionally NOT shown to the user. Reflecting a free-text reviewer note back
+  // to a rejected applicant is a discrimination/defamation surface and serves no purpose
+  // for the user — the email stays neutral and process-based on purpose.
   reason?: string;
 }
 
@@ -19,56 +28,59 @@ const handler = async (req: Request): Promise<Response> => {
     const adminCheck = await requireAdmin(auth.userId);
     if (adminCheck) return adminCheck;
 
-    const { email, username, reason }: RejectionEmailRequest = await req.json();
+    const { email, username }: RejectionEmailRequest = await req.json();
+    const greeting = username ? `Hey ${esc(username)},` : "Hey,";
 
-    // Escape any user/admin-supplied text before interpolating into the email HTML.
-    const escapeHtml = (s: string) =>
-      s.replace(/&/g, "&amp;")
-       .replace(/</g, "&lt;")
-       .replace(/>/g, "&gt;")
-       .replace(/"/g, "&quot;")
-       .replace(/'/g, "&#39;");
+    // Pin the font on every text element (not via inheritance) — some clients (Outlook)
+    // reset unstyled headings to a serif default, which reads as inconsistent fonts.
+    const fam = `font-family:${BRAND.font}`;
 
-    const greeting = username ? `Hey ${escapeHtml(username)},` : "Hey,";
-    const reasonBlock = reason
-      ? `<p style="margin:0 0 16px 0;"><strong>Reviewer note:</strong> ${escapeHtml(reason)}</p>`
-      : "";
+    // Neutral, non-judgmental, retry-forward. No identity claims, no guarantee of approval,
+    // no echoed reviewer note. This is a transactional account-status message.
+    // Non-ASCII punctuation is written as HTML entities (&mdash;) so encoding can't mangle it.
+    const body = `
+      <h1 style="${fam};font-size:22px;line-height:1.3;margin:0 0 16px;color:${BRAND.ink}">We couldn't approve your verification this time</h1>
+      <p style="${fam};font-size:15px;line-height:1.6;margin:0 0 16px;color:${BRAND.ink}">${greeting}</p>
+      <p style="${fam};font-size:15px;line-height:1.6;margin:0 0 16px;color:${BRAND.ink}">
+        Thanks for applying to Juice. After a manual review, we weren't able to approve your
+        verification this time. This isn't a judgment about you &mdash; most often it just means the
+        photo wasn't clear enough for us to confirm.
+      </p>
+      <p style="${fam};font-size:15px;line-height:1.6;margin:0 0 24px;color:${BRAND.ink}">
+        You're welcome to try again. Open the app, tap <strong>Resubmit verification</strong>,
+        and send a new photo &mdash; a clearer shot usually does it.
+      </p>
+      <p style="margin:0 0 24px">${button(`${BRAND.appUrl}/app`, "Resubmit verification")}</p>
+      <p style="${fam};font-size:14px;line-height:1.6;margin:0 0 8px;color:${BRAND.muted}">
+        For the best chance: good lighting, your face clearly visible, no filters or sunglasses,
+        and no one else in the frame.
+      </p>
+      <p style="${fam};font-size:14px;line-height:1.6;margin:0;color:${BRAND.muted}">
+        Questions? Visit <a href="${BRAND.appUrl}/support" style="color:${BRAND.muted}">sipjuice.app/support</a>.
+      </p>
+      ${signoff()}
+      <hr style="border:none;border-top:1px solid ${BRAND.hairline};margin:24px 0 12px">
+      <p style="${fam};font-size:12px;line-height:1.5;color:${BRAND.faint};margin:0">
+        You're receiving this because you applied to verify a Juice account.<br>${COMPANY}
+      </p>
+    `;
 
     const emailResponse = await resend.emails.send({
       from: "Juice <noreply@sipjuice.app>",
       to: [email],
-      subject: "Your Juice verification needs another look",
-      html: `
-        <!DOCTYPE html>
-        <html>
-          <body style="margin:0;padding:0;background:#faf7f2;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#1a1a1a;">
-            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#faf7f2;padding:32px 16px;">
-              <tr><td align="center">
-                <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="max-width:560px;background:#ffffff;border-radius:16px;overflow:hidden;border:1px solid #eee;">
-                  <tr><td style="padding:28px 32px 0 32px;">
-                    <div style="font-size:13px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:#f57c00;">The Juice</div>
-                    <h1 style="margin:8px 0 0 0;font-size:24px;line-height:1.25;color:#1a1a1a;">We couldn't approve your verification yet.</h1>
-                  </td></tr>
-                  <tr><td style="padding:20px 32px 0 32px;font-size:15px;line-height:1.55;color:#333;">
-                    <p style="margin:0 0 16px 0;">${greeting}</p>
-                    <p style="margin:0 0 16px 0;">Thanks for applying to The Juice. After review, we weren't able to approve this verification submission.</p>
-                    ${reasonBlock}
-                    <p style="margin:0 0 16px 0;">You can resubmit a new selfie from inside the app — just open the app and tap <strong>Resubmit verification</strong>.</p>
-                  </td></tr>
-                  <tr><td style="padding:0 32px 8px 32px;" align="left">
-                    <a href="https://sipjuice.app/app" style="display:inline-block;background:#f57c00;color:#ffffff;text-decoration:none;font-weight:600;font-size:15px;padding:12px 22px;border-radius:10px;">Resubmit verification</a>
-                  </td></tr>
-                  <tr><td style="padding:20px 32px 28px 32px;font-size:13px;line-height:1.55;color:#666;border-top:1px solid #f0f0f0;">
-                    <p style="margin:16px 0 0 0;">Tips for a clean selfie: good lighting, face clearly visible, no filters or sunglasses, no other people in frame.</p>
-                  </td></tr>
-                </table>
-                <p style="font-size:12px;color:#999;margin:16px 0 0 0;">The Juice · sipjuice.app</p>
-              </td></tr>
-            </table>
-          </body>
-        </html>
-      `,
+      subject: "Your Juice verification: let's try again",
+      html: emailShell({
+        preheader: "We couldn't approve your verification this time, but you can resubmit in a tap.",
+        body,
+      }),
     });
+
+    // Resend returns { error } rather than throwing — surface failures instead of
+    // silently reporting success.
+    if ((emailResponse as any)?.error) {
+      console.error("Resend rejected the send:", (emailResponse as any).error);
+      return createSecureErrorResponse("Email send failed", 502);
+    }
 
     return createSecureResponse(emailResponse);
   } catch (error: any) {

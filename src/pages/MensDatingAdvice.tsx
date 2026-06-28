@@ -46,11 +46,11 @@ const MensDatingAdvice = () => {
   return (
     <div className="min-h-screen bg-gradient-soft">
       <Helmet>
-        <title>Men's Dating Advice from Verified Men | Juice</title>
-        <meta name="description" content="Real dating advice from verified men on Juice — first dates, red flags, dating apps, and building relationships that last." />
+        <title>Real Dating Advice from Men Who've Been There | Juice</title>
+        <meta name="description" content="Honest dating advice from verified men who've actually been there — first dates, red flags, and apps. No coaches, no pickup artists, no theory." />
         <link rel="canonical" href="https://sipjuice.app/mens-dating-advice" />
-        <meta property="og:title" content="Men's Dating Advice from Verified Men | Juice" />
-        <meta property="og:description" content="Real dating advice from verified men — first dates, red flags, dating apps, and relationships that last." />
+        <meta property="og:title" content="Real Dating Advice from Men Who've Been There | Juice" />
+        <meta property="og:description" content="Honest dating advice from verified men who've actually been there — first dates, red flags, and apps. No coaches, no pickup artists, no theory." />
         <meta property="og:url" content="https://sipjuice.app/mens-dating-advice" />
         <meta property="og:type" content="website" />
       </Helmet>
@@ -62,7 +62,7 @@ const MensDatingAdvice = () => {
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6">
             Dating Advice from{" "}
-            <span className="bg-gradient-primary bg-clip-text text-transparent">
+            <span className="text-primary">
               Men Who've Actually Been There
             </span>
           </h1>
@@ -98,7 +98,7 @@ const MensDatingAdvice = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {quickTips.map((tip, index) => (
               <div key={index} className="flex items-start gap-3 p-4 bg-white/80 rounded-lg shadow-card">
-                <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center text-white font-bold text-sm mt-0.5">
+                <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center text-primary-foreground font-bold text-sm mt-0.5">
                   {index + 1}
                 </div>
                 <p className="text-foreground font-medium">{tip}</p>
@@ -194,7 +194,7 @@ const MensDatingAdvice = () => {
       {/* CTA Section */}
       <section className="py-20 px-4">
         <div className="max-w-4xl mx-auto text-center">
-          <Card className="border-0 shadow-card bg-gradient-primary text-white">
+          <Card className="border-0 shadow-card bg-gradient-primary text-primary-foreground">
             <CardContent className="p-12">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">
                 Stop guessing. Read what verified men have figured out.

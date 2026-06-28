@@ -228,9 +228,9 @@ const BlogPost = () => {
           <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
             Juice is a verified, anonymous space where men share real dating stories. Apply to read them all.
           </p>
-          <Link to="/auth">
+          <Link to="/app">
             <Button size="lg">
-              Request Access
+              Join free
             </Button>
           </Link>
         </div>

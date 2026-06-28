@@ -69,7 +69,7 @@ export const useAuth = () => {
     // SERVER-SIDE (keyed on client IP for login); the args below are ignored by the
     // hardened check_rate_limit and kept only for the RPC signature. Do not rely on
     // them — varying them no longer affects enforcement.
-    const { data: rateLimitOk } = await supabase.rpc('check_rate_limit', {
+    const { data: rateLimitOk, error: rateLimitErr } = await supabase.rpc('check_rate_limit', {
       p_identifier: email,
       p_action_type: 'login_attempt',
       p_max_attempts: 5,
@@ -77,9 +77,13 @@ export const useAuth = () => {
       p_block_minutes: 60
     });
 
-    if (!rateLimitOk) {
-      return { 
-        error: new Error('Too many login attempts. Please try again later.') 
+    // Fail OPEN: this client-side check is advisory — enforcement is hardened server-side
+    // (keyed on client IP). If the RPC itself errors (network blip, function exception),
+    // `rateLimitOk` is undefined; do NOT lock the user out of login over an infra hiccup.
+    // Only block when the RPC actually ran and explicitly said "not allowed".
+    if (!rateLimitErr && rateLimitOk === false) {
+      return {
+        error: new Error('Too many login attempts. Please try again later.')
       };
     }
 

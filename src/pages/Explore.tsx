@@ -5,6 +5,7 @@ import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import Navigation from "@/components/Navigation";
 import ScrollToTopButton from "@/components/ScrollToTopButton";
+import QueryError from "@/components/QueryError";
 import PullToRefreshIndicator from "@/components/PullToRefreshIndicator";
 import { usePullToRefresh } from "@/hooks/usePullToRefresh";
 import { useUnifiedSearch } from "@/hooks/useUnifiedSearch";
@@ -43,7 +44,7 @@ const Explore = ({ onCreateStory }: ExploreProps) => {
 
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
-  const { data: allStories, isLoading: allStoriesLoading } = useStories();
+  const { data: allStories, isLoading: allStoriesLoading, isError: allStoriesError, refetch: refetchStories } = useStories();
   const {
     searchResults,
     isSearching: searchLoading,
@@ -110,6 +111,7 @@ const Explore = ({ onCreateStory }: ExploreProps) => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search stories or @users"
+              aria-label="Search stories or users"
               className="pl-9 h-9 bg-muted border-0 text-sm rounded-lg focus-visible:ring-1 focus-visible:ring-primary/40"
             />
           </form>
@@ -123,11 +125,19 @@ const Explore = ({ onCreateStory }: ExploreProps) => {
               <div key={i} className="aspect-square bg-muted animate-pulse" />
             ))}
           </div>
+        ) : allStoriesError && !debouncedSearchQuery && displayStories.length === 0 ? (
+          <QueryError
+            title="Couldn't load stories"
+            message="Something went wrong. Check your connection and try again."
+            onRetry={refetchStories}
+          />
         ) : displayStories.length === 0 ? (
           <div className="px-6 py-20 text-center">
-            <h3 className="text-lg font-semibold mb-1">No stories found</h3>
+            <h3 className="text-lg font-semibold mb-1">
+              {debouncedSearchQuery ? "No stories found" : "Nothing here yet"}
+            </h3>
             <p className="text-sm text-muted-foreground">
-              Try a different search.
+              {debouncedSearchQuery ? "Try a different search." : "Check back soon for new stories."}
             </p>
           </div>
         ) : (

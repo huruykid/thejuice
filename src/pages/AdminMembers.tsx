@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CheckCircle, Clock, XCircle, UserPlus, Search, PenLine } from "lucide-react";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
+import QueryError from "@/components/QueryError";
 
 interface Member {
   user_id: string;
@@ -34,7 +35,7 @@ const AdminMembers = () => {
     if (!authLoading && !roleLoading && user && !isAdmin) navigate("/app");
   }, [authLoading, roleLoading, isAdmin, user, navigate]);
 
-  const { data: members, isLoading } = useQuery({
+  const { data: members, isLoading, isError, refetch } = useQuery({
     queryKey: ["admin-members"],
     queryFn: async () => {
       const { data, error } = await (supabase.rpc as any)("admin_list_members");
@@ -91,6 +92,7 @@ const AdminMembers = () => {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search email / username / city"
+                aria-label="Search members by email, username, or city"
                 className="pl-8 w-64"
               />
             </div>
@@ -111,6 +113,13 @@ const AdminMembers = () => {
 
         <p className="text-xs text-muted-foreground">{filtered.length} member{filtered.length === 1 ? "" : "s"}</p>
 
+        {isError ? (
+          <QueryError
+            title="Couldn't load members"
+            message="The member list failed to load. Try again."
+            onRetry={refetch}
+          />
+        ) : (
         <div className="space-y-2">
           {filtered.map((m) => (
             <Card key={m.user_id}>
@@ -142,6 +151,7 @@ const AdminMembers = () => {
             </Card>
           )}
         </div>
+        )}
       </div>
     </div>
   );
