@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Trash2 } from "lucide-react";
+import { Trash2, ImagePlus, X } from "lucide-react";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import LandingPhotosUploader from "@/components/admin/LandingPhotosUploader";
 import { useConfirm } from "@/components/ConfirmDialog";
@@ -39,6 +39,14 @@ const AdminSeed = () => {
   const [subject, setSubject] = useState("");
   const [location, setLocation] = useState("");
   const [verdict, setVerdict] = useState<number>(0); // 1 = green flag, -1 = red flag, 0 = none
+  const [image, setImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string>("");
+
+  const clearImage = () => {
+    if (imagePreview) URL.revokeObjectURL(imagePreview);
+    setImage(null);
+    setImagePreview("");
+  };
 
   useEffect(() => {
     if (!authLoading && !roleLoading && user && !isAdmin) navigate("/app");
@@ -60,6 +68,18 @@ const AdminSeed = () => {
 
   const create = useMutation({
     mutationFn: async () => {
+      // Optional image: upload to the private story-images bucket under the admin's own folder
+      // (the RLS path that works), then pass it to the RPC in the same JSON-array shape the
+      // normal post flow uses, so the feed renders it via the existing signed-URL hook.
+      let imageUrlParam: string | null = null;
+      if (image) {
+        if (!user) throw new Error("Not signed in");
+        const ext = (image.name.split(".").pop() || "png").toLowerCase();
+        const path = `${user.id}/seed-${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+        const { error: upErr } = await supabase.storage.from("story-images").upload(path, image);
+        if (upErr) throw upErr;
+        imageUrlParam = JSON.stringify([path]);
+      }
       const { error } = await (supabase.rpc as any)("admin_create_seed_story", {
         p_content: content,
         p_subject_name: subject || null,
@@ -68,12 +88,14 @@ const AdminSeed = () => {
         p_loyalty: 0,
         p_vibe: verdict,
         p_emotional_safety: 0,
+        p_image_url: imageUrlParam,
       });
       if (error) throw error;
     },
     onSuccess: () => {
       toast.success("Story added to the feed");
       setContent(""); setSubject(""); setLocation(""); setVerdict(0);
+      clearImage();
       queryClient.invalidateQueries({ queryKey: ["admin-seed-stories"] });
     },
     onError: (e: any) => toast.error(e?.message || "Failed to add story"),
@@ -148,6 +170,45 @@ const AdminSeed = () => {
                 </Button>
               </div>
             </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Image (optional)</Label>
+              {imagePreview ? (
+                <div className="relative w-24 h-24">
+                  <img
+                    src={imagePreview}
+                    alt="Selected"
+                    className="w-24 h-24 object-cover rounded-lg border border-border"
+                  />
+                  <button
+                    type="button"
+                    onClick={clearImage}
+                    aria-label="Remove image"
+                    className="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-background border border-border flex items-center justify-center text-muted-foreground hover:text-foreground"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              ) : (
+                <label className="inline-flex items-center gap-2 text-sm text-primary font-medium cursor-pointer hover:underline">
+                  <ImagePlus className="h-4 w-4" /> Add image
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      const f = e.target.files?.[0];
+                      if (f) {
+                        clearImage();
+                        setImage(f);
+                        setImagePreview(URL.createObjectURL(f));
+                      }
+                      e.target.value = "";
+                    }}
+                  />
+                </label>
+              )}
+            </div>
+
             <Button
               onClick={() => create.mutate()}
               disabled={create.isPending || !content.trim()}
