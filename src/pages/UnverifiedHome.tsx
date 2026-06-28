@@ -1,9 +1,15 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import BrandLockup from "@/components/BrandLockup";
-import { ShieldCheck, Sparkles, Clock, CheckCircle2, XCircle } from "lucide-react";
+import { ShieldCheck, Sparkles, Clock, CheckCircle2, XCircle, User, LogOut } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import Navigation from "@/components/Navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { useMySubmissions } from "@/hooks/useStories";
@@ -27,7 +33,7 @@ interface UnverifiedHomeProps {
  */
 const UnverifiedHome = ({ onCreateStory, onStartVerification }: UnverifiedHomeProps) => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
   const { data: submissions = [] } = useMySubmissions(user?.id);
 
   return (
@@ -35,13 +41,35 @@ const UnverifiedHome = ({ onCreateStory, onStartVerification }: UnverifiedHomePr
       {/* Header */}
       <header className="sticky top-0 z-40 bg-background/95 backdrop-blur border-b border-border">
         <div className="flex items-center justify-between px-4 h-12 max-w-xl mx-auto">
-          <BrandLockup variant="inline" size="sm" />
-          <button
-            onClick={onStartVerification}
-            className="text-xs font-semibold text-primary"
-          >
-            Verify
-          </button>
+          <Link to="/app" aria-label="Juice home">
+            <BrandLockup variant="inline" size="sm" />
+          </Link>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={onStartVerification}
+              className="text-xs font-semibold text-primary"
+            >
+              Verify
+            </button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  aria-label="Account menu"
+                  className="h-8 w-8 flex items-center justify-center rounded-full hover:bg-muted transition-colors"
+                >
+                  <User className="h-5 w-5 text-foreground" strokeWidth={1.8} />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => navigate("/profile")}>
+                  <User className="h-4 w-4 mr-2" /> Profile
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => signOut()}>
+                  <LogOut className="h-4 w-4 mr-2" /> Log out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
       </header>
 
