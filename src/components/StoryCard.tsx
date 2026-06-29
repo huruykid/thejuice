@@ -322,13 +322,16 @@ const StoryCard = ({
           </div>
         )}
 
+        {/* Story — the review, promoted right under the photo (it's the product). */}
+        <div className="px-4 pt-2.5 pb-1 text-[15px] leading-relaxed text-foreground">
+          <span className="font-semibold mr-1.5">@{authorName}</span>
+          <span className="whitespace-pre-wrap">{story.content}</span>
+        </div>
+
         {/* Action row */}
-        <div className="flex items-center justify-between px-3 pt-2 pb-1">
+        <div className="flex items-center justify-between px-3 pt-1 pb-1">
           <div className="flex items-center gap-1">
-            {/* Red flag = Flag icon. Green flag = check icon. Distinct SHAPES so the
-                two votes are distinguishable without relying on color (red/green
-                colorblindness affects ~8% of men). */}
-            {/* Vote = OJ (she got the juice) vs spoiled milk. Emoji + word label so the
+            {/* Vote = OJ (she got the juice) vs spoiled milk. Icon + word label so the
                 meaning is legible without learning the metaphor; a tinted pill on the
                 selected one is the strong, non-color-alone "your vote" cue. */}
             <button
@@ -397,47 +400,41 @@ const StoryCard = ({
           </button>
         </div>
 
-        {/* Community read — OJ vs spoiled milk */}
+        {/* Community read — the hero signal (social proof). */}
         {totalVotes > 0 ? (
-          <div className="px-4 flex items-center gap-1.5 text-sm font-semibold text-foreground">
-            {greenMajority ? <JuiceIcon className="h-4 w-4 shrink-0" /> : <MilkIcon className="h-4 w-4 shrink-0" />}
-            <span>{majorityPct}% say {greenMajority ? "she got the juice" : "spoiled milk"}</span>
-            <span className="text-xs font-normal text-muted-foreground">· {totalVotes} {totalVotes === 1 ? "vote" : "votes"}</span>
+          <div className="px-4 pt-0.5">
+            <div className="text-[11px] uppercase tracking-wide text-muted-foreground">The room says</div>
+            <div className="flex items-center gap-2 text-lg font-semibold text-foreground">
+              {greenMajority ? <JuiceIcon className="h-5 w-5 shrink-0" /> : <MilkIcon className="h-5 w-5 shrink-0" />}
+              <span>{majorityPct}% {greenMajority ? "she got the juice" : "spoiled milk"}</span>
+              <span className="text-xs font-normal text-muted-foreground">· {totalVotes} {totalVotes === 1 ? "vote" : "votes"}</span>
+            </div>
           </div>
         ) : (
-          <div className="px-4 text-sm font-medium text-muted-foreground">
+          <div className="px-4 pt-0.5 text-sm font-medium text-muted-foreground">
             Would you sip or skip?
           </div>
         )}
 
-        {/* Caption — attributed to the anonymous reviewer (the user), not the subject */}
-        <div className="px-4 pt-1 pb-1 text-sm leading-snug text-foreground">
-          <span className="font-semibold mr-1.5">@{authorName}</span>
-          <span className="whitespace-pre-wrap">{story.content}</span>
-        </div>
-
-        {/* Poster's overall verdict — OJ (she got the juice) vs spoiled milk */}
-        {(story.overall_vibe_rating ?? 0) !== 0 && (
-          <div className="px-4 pt-2">
-            <span className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-semibold ${
-              (story.overall_vibe_rating ?? 0) > 0
-                ? "bg-success/10 border-success/30 text-success"
-                : "bg-destructive/10 border-destructive/30 text-destructive"
-            }`}>
-              {(story.overall_vibe_rating ?? 0) > 0 ? <JuiceIcon className="h-3.5 w-3.5" /> : <MilkIcon className="h-3.5 w-3.5" />}
-              {(story.overall_vibe_rating ?? 0) > 0 ? "She got the juice" : "Spoiled milk behavior"}
-            </span>
-          </div>
-        )}
-
-        {/* Tags */}
-        {story.story_tags && story.story_tags.length > 0 && (
-          <div className="px-4 pt-0.5 text-sm leading-tight">
-            {story.story_tags.map((t, i) => (
-              <span key={i} className="ig-tag mr-1.5">
-                #{t.tag.replace(/\s+/g, '')}
+        {/* Poster's take (demoted to a quiet chip) + tags, one row */}
+        {((story.overall_vibe_rating ?? 0) !== 0 || (story.story_tags && story.story_tags.length > 0)) && (
+          <div className="px-4 pt-2 flex items-center gap-x-2 gap-y-1 flex-wrap">
+            {(story.overall_vibe_rating ?? 0) !== 0 && (
+              <span className="inline-flex items-center gap-1 rounded-full border border-border px-2 py-0.5 text-xs text-muted-foreground">
+                Poster's take:
+                {(story.overall_vibe_rating ?? 0) > 0 ? <JuiceIcon className="h-3.5 w-3.5" /> : <MilkIcon className="h-3.5 w-3.5" />}
+                {(story.overall_vibe_rating ?? 0) > 0 ? "juice" : "milk"}
               </span>
-            ))}
+            )}
+            {story.story_tags && story.story_tags.length > 0 && (
+              <span className="text-sm leading-tight">
+                {story.story_tags.map((t, i) => (
+                  <span key={i} className="ig-tag mr-1.5">
+                    #{t.tag.replace(/\s+/g, '')}
+                  </span>
+                ))}
+              </span>
+            )}
           </div>
         )}
 
