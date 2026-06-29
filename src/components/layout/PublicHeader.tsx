@@ -40,7 +40,10 @@ export const PublicHeader = () => {
               {l.label}
             </NavLink>
           ))}
-          <Button asChild size="sm" className="ml-2">
+          <Button asChild variant="ghost" size="sm" className="ml-2">
+            <Link to="/app?mode=login">Log in</Link>
+          </Button>
+          <Button asChild size="sm" className="ml-1">
             <Link to="/app">Join free</Link>
           </Button>
         </nav>
@@ -75,7 +78,12 @@ export const PublicHeader = () => {
                 </SheetClose>
               ))}
               <SheetClose asChild>
-                <Button asChild className="mt-4">
+                <Button asChild variant="outline" className="mt-4">
+                  <Link to="/app?mode=login">Log in</Link>
+                </Button>
+              </SheetClose>
+              <SheetClose asChild>
+                <Button asChild className="mt-1">
                   <Link to="/app">Join free</Link>
                 </Button>
               </SheetClose>

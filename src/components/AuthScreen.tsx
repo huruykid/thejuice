@@ -7,7 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 
 import { useUserSession } from "@/hooks/useUserSession";
 import { useToast } from "@/hooks/use-toast";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { Eye, EyeOff, ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { track } from "@/lib/analytics";
@@ -20,7 +20,13 @@ interface AuthScreenProps {
 
 const AuthScreen = ({ onAuthSuccess }: AuthScreenProps) => {
   const { isReturningUser } = useUserSession();
-  const [isSignUp, setIsSignUp] = useState(!isReturningUser);
+  // Respect an explicit intent from the entry point: "/app?mode=login" opens the sign-in view,
+  // "?mode=signup" opens sign-up. Otherwise fall back to returning-user heuristic.
+  const [searchParams] = useSearchParams();
+  const modeParam = searchParams.get("mode");
+  const [isSignUp, setIsSignUp] = useState(
+    modeParam === "login" ? false : modeParam === "signup" ? true : !isReturningUser
+  );
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   

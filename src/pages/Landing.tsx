@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
-import BrandLockup from "@/components/BrandLockup";
 import { Card, CardContent } from "@/components/ui/card";
 import { Shield, Users, MessageSquare, Star, ArrowRight, Quote, CheckCircle, ChevronDown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -99,21 +98,6 @@ const Landing = () => {
         })}</script>
       </Helmet>
 
-      {/* Minimal top bar — brand left, quiet Log in top-right (where returning users look) */}
-      <header className="sticky top-0 z-40 bg-background/90 backdrop-blur border-b border-border">
-        <div className="max-w-5xl mx-auto flex items-center justify-between px-4 h-14">
-          <BrandLockup variant="inline" size="sm" />
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate("/app")}
-            className="font-semibold min-h-11"
-          >
-            Log in
-          </Button>
-        </div>
-      </header>
-
       <main>
         {/* Hero */}
         <section className="py-20 px-4">
@@ -146,7 +130,7 @@ const Landing = () => {
             <p className="text-sm text-muted-foreground mb-6">
               Already a member?{" "}
               <button
-                onClick={() => navigate("/app")}
+                onClick={() => navigate("/app?mode=login")}
                 className="text-primary font-semibold hover:underline"
               >
                 Log in
