@@ -231,6 +231,19 @@ const AdminVerifications = () => {
         notes,
       });
 
+      // Delete the selfie immediately on reject (approval already does this), so the
+      // "your photo is already deleted" rejection email is literally true at send time.
+      // The daily selfie-sweep is the backstop.
+      if (selectedVerification.id && selectedVerification.selfie_url) {
+        try {
+          await supabase.functions.invoke('delete-verification-selfie', {
+            body: { verificationId: selectedVerification.id, selfieUrl: selectedVerification.selfie_url },
+          });
+        } catch (e) {
+          console.warn('Selfie deletion on reject failed:', e);
+        }
+      }
+
       // Fire-and-forget rejection email (don't block UX on email failure).
       try {
         const { data: emailResponse, error: emailError } =
@@ -374,6 +387,18 @@ const AdminVerifications = () => {
           })
           .eq('id', v.id);
         if (updErr) throw updErr;
+
+        // Delete the selfie immediately (backstopped by the daily sweep) so the rejection
+        // email's "already deleted" line is true.
+        if (v.id && v.selfie_url) {
+          try {
+            await supabase.functions.invoke('delete-verification-selfie', {
+              body: { verificationId: v.id, selfieUrl: v.selfie_url },
+            });
+          } catch (e) {
+            console.warn('Selfie deletion on bulk reject failed for', v.id, e);
+          }
+        }
 
         // Fire-and-forget rejection email (don't block on email failure).
         try {

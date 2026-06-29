@@ -4,7 +4,7 @@ import { Helmet } from 'react-helmet-async';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useBlogPost } from '@/hooks/useBlogPosts';
-import { Calendar, Clock, Eye, Share2 } from 'lucide-react';
+import { Calendar, Clock, Share2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import Breadcrumbs from '@/components/layout/Breadcrumbs';
@@ -120,10 +120,6 @@ const BlogPost = () => {
               <Clock className="w-4 h-4" />
               {estimatedReadTime} min read
             </div>
-            <div className="flex items-center gap-2">
-              <Eye className="w-4 h-4" />
-              {post.views.toLocaleString()} views
-            </div>
           </div>
           
           {post.keywords && post.keywords.length > 0 && (
@@ -152,25 +148,35 @@ const BlogPost = () => {
         <div className="prose prose-lg max-w-none">
           {post.content.split('\n').map((paragraph, index) => {
             if (paragraph.trim() === '') return <br key={index} />;
-            
+
+            // TL;DR callout — a flat tinted card so the summary stands out on-brand.
+            if (paragraph.trim().startsWith('TL;DR')) {
+              return (
+                <div key={index} className="not-prose my-6 rounded-lg bg-muted/50 px-4 py-3 text-base leading-relaxed text-foreground">
+                  <span className="font-semibold">TL;DR</span>
+                  {paragraph.trim().replace(/^TL;DR\s*[—–-]?\s*/, ' ')}
+                </div>
+              );
+            }
+
             // Handle headers (##, ###, etc.)
             if (paragraph.startsWith('###')) {
               return (
-                <h3 key={index} className="text-xl font-semibold mt-8 mb-4 text-primary">
+                <h3 key={index} className="text-xl font-semibold mt-8 mb-4 text-foreground">
                   {paragraph.replace('###', '').trim()}
                 </h3>
               );
             }
             if (paragraph.startsWith('##')) {
               return (
-                <h2 key={index} className="text-2xl font-semibold mt-8 mb-4 text-primary">
+                <h2 key={index} className="text-2xl font-semibold mt-8 mb-4 text-foreground">
                   {paragraph.replace('##', '').trim()}
                 </h2>
               );
             }
             if (paragraph.startsWith('#')) {
               return (
-                <h2 key={index} className="text-3xl font-bold mt-8 mb-4 text-primary">
+                <h2 key={index} className="text-3xl font-bold mt-8 mb-4 text-foreground">
                   {paragraph.replace('#', '').trim()}
                 </h2>
               );
@@ -222,7 +228,7 @@ const BlogPost = () => {
       </main>
 
       {/* Call to Action */}
-      <div className="bg-gradient-to-r from-primary/10 to-primary/5 border-t mt-12">
+      <div className="bg-primary/5 border-t border-border mt-12">
         <div className="max-w-4xl mx-auto px-4 py-12 text-center">
           <h3 className="text-2xl font-bold mb-4">Read more stories like this one</h3>
           <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">

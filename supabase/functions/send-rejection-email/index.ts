@@ -34,10 +34,11 @@ const handler = async (req: Request): Promise<Response> => {
     // Pin the font on every text element (not via inheritance) — some clients (Outlook)
     // reset unstyled headings to a serif default, which reads as inconsistent fonts.
     const fam = `font-family:${BRAND.font}`;
+    const blogUrl = `${BRAND.appUrl}/blog/how-juice-protects-your-privacy`;
 
     // Neutral, non-judgmental, retry-forward. No identity claims, no guarantee of approval,
-    // no echoed reviewer note. This is a transactional account-status message.
-    // Non-ASCII punctuation is written as HTML entities (&mdash;) so encoding can't mangle it.
+    // no echoed reviewer note. Leads with the privacy reassurance (the real anxiety) and links
+    // the safety blog. Non-ASCII punctuation is written as HTML entities so encoding can't mangle it.
     const body = `
       <h1 style="${fam};font-size:22px;line-height:1.3;margin:0 0 16px;color:${BRAND.ink}">We couldn't approve your verification this time</h1>
       <p style="${fam};font-size:15px;line-height:1.6;margin:0 0 16px;color:${BRAND.ink}">${greeting}</p>
@@ -46,14 +47,24 @@ const handler = async (req: Request): Promise<Response> => {
         verification this time. This isn't a judgment about you &mdash; most often it just means the
         photo wasn't clear enough for us to confirm.
       </p>
+      <p style="${fam};font-size:15px;line-height:1.6;margin:0 0 16px;color:${BRAND.ink}">
+        And before anything else: <strong>your verification photo is already deleted.</strong> Juice
+        doesn't keep them &mdash; once a photo is reviewed, approved or not, it's gone. No face
+        database, nothing sitting on a server to leak. That's by design &mdash; not like the apps
+        you've seen in the news.
+      </p>
       <p style="${fam};font-size:15px;line-height:1.6;margin:0 0 24px;color:${BRAND.ink}">
         You're welcome to try again. Open the app, tap <strong>Resubmit verification</strong>,
         and send a new photo &mdash; a clearer shot usually does it.
       </p>
       <p style="margin:0 0 24px">${button(`${BRAND.appUrl}/app`, "Resubmit verification")}</p>
-      <p style="${fam};font-size:14px;line-height:1.6;margin:0 0 8px;color:${BRAND.muted}">
+      <p style="${fam};font-size:14px;line-height:1.6;margin:0 0 16px;color:${BRAND.muted}">
         For the best chance: good lighting, your face clearly visible, no filters or sunglasses,
         and no one else in the frame.
+      </p>
+      <p style="${fam};font-size:14px;line-height:1.6;margin:0 0 8px;color:${BRAND.muted}">
+        Want the full picture of how we protect you? Read
+        <a href="${blogUrl}" style="color:${BRAND.ink}">how we keep you safe</a>.
       </p>
       <p style="${fam};font-size:14px;line-height:1.6;margin:0;color:${BRAND.muted}">
         Questions? Visit <a href="${BRAND.appUrl}/support" style="color:${BRAND.muted}">sipjuice.app/support</a>.

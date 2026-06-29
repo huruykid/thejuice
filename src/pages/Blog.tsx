@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useBlogPosts } from '@/hooks/useBlogPosts';
 import { useAuth } from '@/hooks/useAuth';
-import { Calendar, Clock, Eye, ArrowRight } from 'lucide-react';
+import { Calendar, Clock, ArrowRight } from 'lucide-react';
 import { format } from 'date-fns';
 import Breadcrumbs from '@/components/layout/Breadcrumbs';
 
@@ -60,7 +60,7 @@ const Blog = () => {
 
         {/* Featured Post */}
         {posts && posts.length > 0 && (
-          <Card className="mb-8 bg-gradient-to-r from-primary/5 to-primary/10 border-primary/20">
+          <Card className="mb-8 bg-primary/5 border-primary/20">
             <CardHeader>
               <Badge className="w-fit mb-2">Featured</Badge>
               <CardTitle className="text-2xl">
@@ -85,10 +85,6 @@ const Blog = () => {
                     {posts[0].read_time_minutes} min read
                   </div>
                 )}
-                <div className="flex items-center gap-1">
-                  <Eye className="w-4 h-4" />
-                  {posts[0].views.toLocaleString()} views
-                </div>
               </div>
             </CardHeader>
             <CardContent>
@@ -131,10 +127,6 @@ const Blog = () => {
                       {post.read_time_minutes}m
                     </div>
                   )}
-                  <div className="flex items-center gap-1">
-                    <Eye className="w-4 h-4" />
-                    {post.views.toLocaleString()}
-                  </div>
                 </div>
                 
                 {post.keywords && post.keywords.length > 0 && (
