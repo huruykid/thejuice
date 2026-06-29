@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "npm:resend@2.0.0";
 import { handleCorsPreFlight, createSecureResponse, createSecureErrorResponse, authenticateRequest, requireAdmin } from '../_shared/security.ts';
+import { esc } from '../_shared/email.ts';
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
@@ -25,7 +26,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log(`Sending approval email to: ${email}`);
 
-    const greeting = username ? `Hey ${username},` : "Hey,";
+    const greeting = username ? `Hey ${esc(username)},` : "Hey,";
     const emailResponse = await resend.emails.send({
       from: "Juice <noreply@sipjuice.app>",
       to: [email],
