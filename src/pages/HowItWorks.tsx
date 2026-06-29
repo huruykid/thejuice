@@ -96,10 +96,10 @@ const HowItWorks = () => {
     <div className="min-h-screen bg-gradient-soft">
       <Helmet>
         <title>How Juice Works — Anonymous Dating Stories for Men</title>
-        <meta name="description" content="Four steps: create an anonymous profile, verify, pass on the Juice, and read real experiences from verified men." />
+        <meta name="description" content="Four steps: create an anonymous profile, verify, share the Juice, and read real experiences from verified men." />
         <link rel="canonical" href="https://sipjuice.app/how-it-works" />
         <meta property="og:title" content="How Juice Works" />
-        <meta property="og:description" content="Four steps: create an anonymous profile, verify, pass on the Juice, and read real experiences from verified men." />
+        <meta property="og:description" content="Four steps: create an anonymous profile, verify, share the Juice, and read real experiences from verified men." />
         <meta property="og:url" content="https://sipjuice.app/how-it-works" />
         <meta property="og:type" content="website" />
         <script type="application/ld+json">{JSON.stringify(faqSchema)}</script>

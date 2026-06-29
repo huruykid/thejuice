@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { CheckCircle2, Flag } from "lucide-react";
+import { CheckCircle2, Flag, MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useCities } from "@/hooks/useCities";
 import type { StoryData } from "./index";
 
 interface MetadataStepProps {
@@ -23,6 +24,25 @@ const MetadataStep = ({
   uploading
 }: MetadataStepProps) => {
   const [ack, setAck] = useState(false);
+
+  // City — where this happened, so stories are findable/filterable by city. DB cities with a
+  // free-text fallback for anywhere not in the list. Optional.
+  const [cityQuery, setCityQuery] = useState(storyData.metadata.location ?? "");
+  const [cityOpen, setCityOpen] = useState(false);
+  const { data: cityResults = [] } = useCities(cityQuery);
+  const typedCity = cityQuery.trim();
+  const showCityFreeText =
+    typedCity.length >= 2 && !cityResults.some((c) => c.city_name.toLowerCase() === typedCity.toLowerCase());
+  const pickCity = (name: string, id: string | null) => {
+    setCityQuery(name);
+    setCityOpen(false);
+    setStoryData((prev) => ({ ...prev, metadata: { ...prev.metadata, city_id: id, location: name } }));
+  };
+  const clearCity = () => {
+    setCityQuery("");
+    setStoryData((prev) => ({ ...prev, metadata: { ...prev.metadata, city_id: null, location: "" } }));
+  };
+
   const verdict = storyData.ratings.vibe || 0;
   const setVerdict = (v: number) =>
     setStoryData((prev) => ({
@@ -41,6 +61,60 @@ const MetadataStep = ({
 
   return (
     <div className="space-y-6 p-6">
+      <div>
+        <h3 className="text-lg font-semibold mb-1">City <span className="text-xs font-normal text-muted-foreground">(optional)</span></h3>
+        <p className="text-xs text-muted-foreground mb-2">Where it happened — helps others find stories by city.</p>
+        <div className="relative">
+          <input
+            id="story-city"
+            value={cityQuery}
+            onChange={(e) => { setCityQuery(e.target.value); setCityOpen(true); }}
+            onFocus={() => setCityOpen(true)}
+            onBlur={() => window.setTimeout(() => setCityOpen(false), 150)}
+            placeholder="Search a city"
+            autoComplete="off"
+            className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary/40"
+          />
+          {cityQuery && (
+            <button
+              type="button"
+              onClick={clearCity}
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground hover:text-foreground"
+            >
+              Clear
+            </button>
+          )}
+          {cityOpen && (cityResults.length > 0 || showCityFreeText) && (
+            <div className="absolute z-20 mt-1 w-full max-h-56 overflow-auto rounded-lg border border-border bg-background shadow-lg">
+              {cityResults.map((c) => (
+                <button
+                  key={c.id}
+                  type="button"
+                  onClick={() => pickCity(c.state_province ? `${c.city_name}, ${c.state_province}` : c.city_name, c.id)}
+                  className="w-full flex items-center gap-2 px-3 py-2 text-left text-sm hover:bg-muted"
+                >
+                  <MapPin className="h-4 w-4 text-muted-foreground shrink-0" />
+                  <span>
+                    {c.city_name}
+                    {c.state_province && <span className="text-muted-foreground">, {c.state_province}</span>}
+                  </span>
+                </button>
+              ))}
+              {showCityFreeText && (
+                <button
+                  type="button"
+                  onClick={() => pickCity(typedCity, null)}
+                  className="w-full flex items-center gap-2 px-3 py-2 text-left text-sm hover:bg-muted border-t border-border"
+                >
+                  <MapPin className="h-4 w-4 text-primary shrink-0" />
+                  <span>Use “<span className="font-medium">{typedCity}</span>”</span>
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+
       <div>
         <h3 className="text-lg font-semibold mb-1">Your verdict</h3>
         <p className="text-xs text-muted-foreground mb-3">

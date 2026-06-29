@@ -286,7 +286,7 @@ const Landing = () => {
                 <div className="w-14 h-14 bg-primary rounded-full flex items-center justify-center text-white font-bold text-xl mx-auto mb-4">
                   3
                 </div>
-                <h3 className="text-lg font-semibold mb-2">Pass on the Juice</h3>
+                <h3 className="text-lg font-semibold mb-2">Share the Juice</h3>
                 <p className="text-muted-foreground text-sm">
                   Post under your codename — green flag or red, with the story. You stay anonymous.
                 </p>

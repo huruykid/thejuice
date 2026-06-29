@@ -130,7 +130,7 @@ const Profile = () => {
             className="h-9 text-sm font-semibold"
             onClick={() => setShowCreateStory(true)}
           >
-            Pass on the Juice
+            Share the Juice
           </Button>
           <Button
             variant="secondary"

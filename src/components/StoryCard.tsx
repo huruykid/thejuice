@@ -22,7 +22,6 @@ import { useStoryImageUrls } from "@/hooks/useStoryImageUrls";
 import { useState, useRef, memo } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
-import { formatDistance } from "@/lib/distance";
 import { JuiceIcon, MilkIcon } from "@/components/icons/BrandVoteIcons";
 import type { Story } from "@/hooks/useStories";
 
@@ -460,9 +459,6 @@ const StoryCard = ({
               {story.cities
                 ? `${story.cities.city_name}${story.cities.state_province ? ', ' + story.cities.state_province : ''}`
                 : story.location}
-              {story.distance && (
-                <span className="ml-1 text-primary">· {formatDistance(story.distance)} away</span>
-              )}
             </span>
           </div>
         ) : (

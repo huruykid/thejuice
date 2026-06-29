@@ -32,7 +32,7 @@ const UnlockBanner = ({ onCreateStory }: UnlockBannerProps) => {
               onClick={onCreateStory}
               className="mt-3 h-8 text-xs"
             >
-              Pass on the Juice
+              Share the Juice
             </Button>
           )}
         </div>

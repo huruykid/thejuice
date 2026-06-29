@@ -9,11 +9,8 @@ import StoryCardSkeleton from "@/components/StoryCardSkeleton";
 import QueryError from "@/components/QueryError";
 import ScrollToTopButton from "@/components/ScrollToTopButton";
 import PullToRefreshIndicator from "@/components/PullToRefreshIndicator";
-import LocationNudge from "@/components/LocationNudge";
 import { usePullToRefresh } from "@/hooks/usePullToRefresh";
 import { useInfiniteStories } from "@/hooks/useStories";
-import { useNearbyStories } from "@/hooks/useNearbyStories";
-import { useGeolocation } from "@/hooks/useGeolocation";
 import { useFeedGate } from "@/hooks/useFeedGate";
 import ReferralPrompt from "@/components/ReferralPrompt";
 import { useAuth } from "@/hooks/useAuth";
@@ -29,64 +26,34 @@ const Home = ({ onCreateStory }: HomeProps) => {
 
   const { feedMode, isLoading: gateLoading } = useFeedGate(user?.id);
 
-  // ─── Geolocation ────────────────────────────────────────────────────────────
-  const { coordinates, permissionState, requestLocation } = useGeolocation();
-
-  // If permission was already granted by a returning user, grab coords silently.
-  useEffect(() => {
-    if (permissionState === "granted" && !coordinates) {
-      requestLocation();
-    }
-  }, [permissionState, coordinates, requestLocation]);
-
-  // Use location-sorted feed only for community mode when coords are available.
-  const useLocationFeed = feedMode === "community" && !!coordinates;
-
-  // ─── Location-sorted feed (all stories, closest first) ─────────────────────
-  const {
-    data: nearbyStories = [],
-    isLoading: nearbyLoading,
-    isError: nearbyError,
-    refetch: refetchNearby,
-  } = useNearbyStories(coordinates ?? null, useLocationFeed);
-
-  // ─── Chronological paginated feed (fallback / seed mode) ───────────────────
+  // Chronological paginated feed — newest first. (No geolocation/"near me" sorting;
+  // discovery is by city via search/filter, not device GPS.)
   const {
     data: infiniteData,
     isLoading: infiniteLoading,
-    isError: infiniteError,
+    isError: storiesError,
     isFetchingNextPage,
     fetchNextPage,
     hasNextPage,
     refetch: refetchInfinite,
-  // Disable when using the location feed to prevent a redundant background fetch.
-  } = useInfiniteStories(undefined, feedMode, !useLocationFeed);
+  } = useInfiniteStories(undefined, feedMode);
 
-  const infiniteStories = useMemo(
+  const stories = useMemo(
     () => infiniteData?.pages?.flatMap((p) => p) ?? [],
     [infiniteData]
   );
+  const storiesLoading = infiniteLoading || gateLoading;
 
-  const stories = useLocationFeed ? nearbyStories : infiniteStories;
-  const storiesLoading = useLocationFeed ? nearbyLoading : infiniteLoading || gateLoading;
-  const storiesError = useLocationFeed ? nearbyError : infiniteError;
-
-  // ─── Pull-to-refresh ────────────────────────────────────────────────────────
   const handleRefresh = useCallback(async () => {
-    if (useLocationFeed) {
-      await refetchNearby();
-    } else {
-      await queryClient.resetQueries({ queryKey: ["stories", "infinite"] });
-      await refetchInfinite();
-    }
-  }, [queryClient, refetchNearby, refetchInfinite, useLocationFeed]);
+    await queryClient.resetQueries({ queryKey: ["stories", "infinite"] });
+    await refetchInfinite();
+  }, [queryClient, refetchInfinite]);
 
   const { pullDistance, status } = usePullToRefresh({ onRefresh: handleRefresh });
 
-  // ─── Infinite scroll sentinel (paginated feed only) ─────────────────────────
+  // Infinite scroll sentinel.
   const sentinelRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
-    if (useLocationFeed) return;
     const el = sentinelRef.current;
     if (!el || !hasNextPage || isFetchingNextPage) return;
     const observer = new IntersectionObserver(
@@ -97,7 +64,7 @@ const Home = ({ onCreateStory }: HomeProps) => {
     );
     observer.observe(el);
     return () => observer.disconnect();
-  }, [hasNextPage, isFetchingNextPage, fetchNextPage, useLocationFeed, stories.length]);
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage, stories.length]);
 
   return (
     <div className="min-h-screen bg-background pb-20 lg:pb-8">
@@ -117,11 +84,6 @@ const Home = ({ onCreateStory }: HomeProps) => {
             <Heart className="h-6 w-6" strokeWidth={1.8} />
           </button>
         </div>
-
-        {/* One-time location nudge — only when permission hasn't been decided yet */}
-        {feedMode === "community" && permissionState === "prompt" && (
-          <LocationNudge onEnable={requestLocation} />
-        )}
       </header>
 
       {/* Feed */}
@@ -158,8 +120,8 @@ const Home = ({ onCreateStory }: HomeProps) => {
                 ))}
             </div>
 
-            {!useLocationFeed && <div ref={sentinelRef} className="h-1" aria-hidden />}
-            {(useLocationFeed || !hasNextPage) && (
+            <div ref={sentinelRef} className="h-1" aria-hidden />
+            {!hasNextPage && (
               <div className="py-8 text-center text-xs text-muted-foreground">
                 You're all caught up
               </div>
@@ -175,7 +137,7 @@ const Home = ({ onCreateStory }: HomeProps) => {
               onClick={onCreateStory}
               className="bg-primary text-primary-foreground rounded-lg px-5 py-2.5 text-sm font-semibold hover:bg-primary-dark transition-colors"
             >
-              Pass on the Juice
+              Share the Juice
             </button>
           </div>
         )}

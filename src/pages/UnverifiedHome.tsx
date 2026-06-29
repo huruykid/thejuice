@@ -81,7 +81,7 @@ const UnverifiedHome = ({ onCreateStory, onStartVerification }: UnverifiedHomePr
         <p className="text-sm text-muted-foreground px-1 pt-1 leading-relaxed">
           You're signed up.{" "}
           <span className="text-foreground font-medium">Verify with a quick selfie</span> to fully
-          join and read every story — or pass on the Juice right now, no verification needed.
+          join and read every story — or share the Juice right now, no verification needed.
         </p>
 
         {/* Illustrative teaser feed — gives the screen life and a reason to verify */}
@@ -94,14 +94,14 @@ const UnverifiedHome = ({ onCreateStory, onStartVerification }: UnverifiedHomePr
               <Sparkles className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <h2 className="text-base font-semibold text-foreground">Pass on the Juice — no verification needed</h2>
+              <h2 className="text-base font-semibold text-foreground">Share the Juice — no verification needed</h2>
               <p className="text-sm text-muted-foreground mt-0.5">
                 You can post right now. An admin reviews every story before it's published on the site.
               </p>
             </div>
           </div>
           <Button onClick={onCreateStory} className="w-full">
-            Pass on the Juice
+            Share the Juice
           </Button>
         </Card>
 
