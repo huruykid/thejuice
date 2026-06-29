@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { CheckCircle2, Flag, MapPin } from "lucide-react";
+import { MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { JuiceIcon, MilkIcon } from "@/components/icons/BrandVoteIcons";
 import { useCities } from "@/hooks/useCities";
 import type { StoryData } from "./index";
 
@@ -118,7 +119,7 @@ const MetadataStep = ({
       <div>
         <h3 className="text-lg font-semibold mb-1">Your verdict</h3>
         <p className="text-xs text-muted-foreground mb-3">
-          Overall — is she a green flag or a red flag? (optional)
+          Overall — did she have the juice, or spoiled milk? (optional)
         </p>
         <div className="flex gap-2">
           <button
@@ -131,8 +132,8 @@ const MetadataStep = ({
                 : "bg-background border-border text-muted-foreground hover:text-foreground"
             )}
           >
-            <CheckCircle2 className="h-5 w-5" fill={verdict > 0 ? "currentColor" : "none"} />
-            Green flag
+            <JuiceIcon className="h-5 w-5" />
+            Juice
           </button>
           <button
             type="button"
@@ -144,8 +145,8 @@ const MetadataStep = ({
                 : "bg-background border-border text-muted-foreground hover:text-foreground"
             )}
           >
-            <Flag className="h-5 w-5" fill={verdict < 0 ? "currentColor" : "none"} />
-            Red flag
+            <MilkIcon className="h-5 w-5" />
+            Milk
           </button>
         </div>
       </div>

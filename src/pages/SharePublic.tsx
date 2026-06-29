@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { CheckCircle2, Flag, Send } from "lucide-react";
+import { CheckCircle2, Send } from "lucide-react";
+import { JuiceIcon, MilkIcon } from "@/components/icons/BrandVoteIcons";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
@@ -135,7 +136,7 @@ const SharePublic = () => {
             <div className="space-y-2">
               <Label>Your verdict</Label>
               <p className="text-xs text-muted-foreground">
-                Overall — is she a green flag or a red flag? (optional)
+                Overall — did she have the juice, or spoiled milk? (optional)
               </p>
               <div className="flex gap-2">
                 <button
@@ -148,8 +149,8 @@ const SharePublic = () => {
                       : "bg-background border-border text-muted-foreground hover:text-foreground"
                   )}
                 >
-                  <CheckCircle2 className="h-5 w-5" fill={verdict > 0 ? "currentColor" : "none"} />
-                  Green flag
+                  <JuiceIcon className="h-5 w-5" />
+                  Juice
                 </button>
                 <button
                   type="button"
@@ -161,8 +162,8 @@ const SharePublic = () => {
                       : "bg-background border-border text-muted-foreground hover:text-foreground"
                   )}
                 >
-                  <Flag className="h-5 w-5" fill={verdict < 0 ? "currentColor" : "none"} />
-                  Red flag
+                  <MilkIcon className="h-5 w-5" />
+                  Milk
                 </button>
               </div>
             </div>

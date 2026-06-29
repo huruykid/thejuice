@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Flag, CheckCircle2, Lock } from "lucide-react";
+import { Lock } from "lucide-react";
+import { JuiceIcon, MilkIcon } from "@/components/icons/BrandVoteIcons";
 import { Button } from "@/components/ui/button";
 import { landingPhotoUrl } from "@/lib/landingPhotos";
 
@@ -76,9 +77,13 @@ const TeaserCard = ({ card }: { card: TeaserCardData }) => (
     <CardImage src={card.img} label={card.subject} />
     <div className="px-3 py-2">
       <div className="flex items-center gap-2 mb-1">
-        <Flag className="h-4 w-4" style={{ color: "hsl(var(--destructive))" }} strokeWidth={1.8} />
-        <CheckCircle2 className="h-4 w-4" style={{ color: "hsl(var(--success))" }} strokeWidth={1.8} />
-        <span className="text-[11px] text-muted-foreground">{card.green} green · {card.red} red</span>
+        <JuiceIcon className="h-4 w-4" />
+        <MilkIcon className="h-4 w-4" />
+        <span className="text-[11px] text-muted-foreground">
+          {card.green >= card.red
+            ? `${Math.round((card.green / (card.green + card.red)) * 100)}% say she got the juice`
+            : `${Math.round((card.red / (card.green + card.red)) * 100)}% say spoiled milk`}
+        </span>
       </div>
       <p className="text-xs text-foreground">{card.vibe}</p>
     </div>
