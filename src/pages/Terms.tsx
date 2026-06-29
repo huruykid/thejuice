@@ -33,7 +33,7 @@ const Terms = () => {
     <div className="min-h-screen bg-background py-12 px-4">
       <div className="max-w-2xl mx-auto prose prose-neutral">
         <h1 className="text-3xl font-bold text-foreground mb-1">Terms &amp; Community Guidelines</h1>
-        <p className="text-sm text-muted-foreground mb-8">Effective date: {new Date().toLocaleDateString()}</p>
+        <p className="text-sm text-muted-foreground mb-8">Effective date: 06/25/2026</p>
 
         <h2 className="text-xl font-semibold text-foreground mt-8 mb-2">1. Who can use Juice</h2>
         <p className="text-muted-foreground mb-4">

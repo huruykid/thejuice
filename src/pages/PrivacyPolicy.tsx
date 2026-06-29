@@ -63,7 +63,7 @@ const PrivacyPolicy = () => {
         <section className="space-y-3">
           <h2 className="text-lg font-medium">Information We Collect</h2>
           <ul className="list-disc pl-6 text-muted-foreground space-y-1">
-            <li>Account info: email, a codename/username, your date of birth (used only to confirm you are 18+), and your city.</li>
+            <li>Account info: email, a codename/username, your date of birth (used only to confirm you are 18+), and your city. If you sign in with Google, we receive only your basic profile (email address and name) from Google to create and secure your account — nothing else.</li>
             <li>Verification: a one-time selfie, reviewed by a human to confirm you are a real person. Your selfie is permanently deleted from our storage once you are approved — we do not keep it.</li>
             <li>Content you create: stories, comments, reactions, and bookmarks, with timestamps and tags.</li>
             <li>Device info: device model, OS/app version, and basic diagnostics to keep the app working.</li>
