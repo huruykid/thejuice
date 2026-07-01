@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import BrandLockup from "@/components/BrandLockup";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate, Link } from "react-router-dom";
@@ -13,7 +13,9 @@ import { usePullToRefresh } from "@/hooks/usePullToRefresh";
 import { useInfiniteStories } from "@/hooks/useStories";
 import { useFeedGate } from "@/hooks/useFeedGate";
 import ReferralPrompt from "@/components/ReferralPrompt";
+import CityFilterChips, { FeedScope } from "@/components/CityFilterChips";
 import { useAuth } from "@/hooks/useAuth";
+import { useProfile } from "@/hooks/useProfile";
 
 interface HomeProps {
   onCreateStory?: () => void;
@@ -26,6 +28,13 @@ const Home = ({ onCreateStory }: HomeProps) => {
 
   const { feedMode, isLoading: gateLoading } = useFeedGate(user?.id);
 
+  // "All" vs "my city" feed scope. City comes from the user's profile;
+  // CityFilterChips opens the picker when no city is saved yet.
+  const [scope, setScope] = useState<FeedScope>("all");
+  const { profile } = useProfile(user);
+  const profileCityId = (profile as { city_id?: string | null } | null)?.city_id ?? null;
+  const cityFilterId = scope === "city" ? profileCityId : null;
+
   // Chronological paginated feed — newest first. (No geolocation/"near me" sorting;
   // discovery is by city via search/filter, not device GPS.)
   const {
@@ -36,7 +45,7 @@ const Home = ({ onCreateStory }: HomeProps) => {
     fetchNextPage,
     hasNextPage,
     refetch: refetchInfinite,
-  } = useInfiniteStories(undefined, feedMode);
+  } = useInfiniteStories(undefined, feedMode, true, cityFilterId);
 
   const stories = useMemo(
     () => infiniteData?.pages?.flatMap((p) => p) ?? [],
@@ -88,6 +97,8 @@ const Home = ({ onCreateStory }: HomeProps) => {
 
       {/* Feed */}
       <div className="max-w-xl mx-auto sm:px-0 py-0 sm:py-2">
+        <CityFilterChips scope={scope} onScopeChange={setScope} cityId={profileCityId} />
+
         {/* Catches users who verified before answering the referral question */}
         {user && <ReferralPrompt userId={user.id} />}
 
@@ -129,10 +140,22 @@ const Home = ({ onCreateStory }: HomeProps) => {
           </>
         ) : (
           <div className="px-6 py-20 text-center">
-            <h3 className="text-lg font-semibold mb-1">No stories yet</h3>
+            <h3 className="text-lg font-semibold mb-1">
+              {scope === "city" ? "No stories in your city yet" : "No stories yet"}
+            </h3>
             <p className="text-sm text-muted-foreground mb-6">
-              Be the first to share your dating story.
+              {scope === "city"
+                ? "Be the first to pass on the Juice in your city — or browse everywhere."
+                : "Be the first to share your dating story."}
             </p>
+            {scope === "city" && (
+              <button
+                onClick={() => setScope("all")}
+                className="mr-3 border border-border text-foreground rounded-lg px-5 py-2.5 text-sm font-semibold hover:bg-muted transition-colors"
+              >
+                Show all stories
+              </button>
+            )}
             <button
               onClick={onCreateStory}
               className="bg-primary text-primary-foreground rounded-lg px-5 py-2.5 text-sm font-semibold hover:bg-primary-dark transition-colors"

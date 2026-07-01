@@ -145,6 +145,7 @@ const Index = () => {
       <UnverifiedHome
         onCreateStory={() => setShowCreateStory(true)}
         onStartVerification={startVerification}
+        resumeVerification={hasProfile && !hasVerification}
       />
       {showCreateStory && (
         <CreateStory onClose={() => setShowCreateStory(false)} isUnverified />

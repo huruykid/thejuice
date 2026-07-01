@@ -71,11 +71,13 @@ export type FeedMode = "community" | "seed";
 export const useInfiniteStories = (
   pageSize: number = STORIES_PAGE_SIZE,
   mode: FeedMode = "community",
-  enabled: boolean = true
+  enabled: boolean = true,
+  /** When set, only stories tagged to this city are returned. */
+  cityId: string | null = null
 ) => {
   const { data: blockedIds = [] } = useBlockedUserIds();
   return useInfiniteQuery({
-    queryKey: ['stories', 'infinite', pageSize, { blocked: blockedIds }],
+    queryKey: ['stories', 'infinite', pageSize, { blocked: blockedIds, cityId }],
     enabled,
     initialPageParam: 0,
     queryFn: async ({ pageParam = 0 }): Promise<Story[]> => {
@@ -97,6 +99,9 @@ export const useInfiniteStories = (
         .not('image_url', 'is', null)
         .order('created_at', { ascending: false })
         .range(from, to);
+      if (cityId) {
+        query = query.eq('city_id', cityId);
+      }
       if (blockedIds.length > 0) {
         query = query.not('user_id', 'in', `(${blockedIds.join(',')})`);
       }

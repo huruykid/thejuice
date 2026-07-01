@@ -20,6 +20,12 @@ import TeaserFeed from "@/components/TeaserFeed";
 interface UnverifiedHomeProps {
   onCreateStory: () => void;
   onStartVerification: () => void;
+  /**
+   * True when the user created a profile earlier but never submitted the
+   * selfie — i.e. they opted into verification and stalled one step from done.
+   * Surfaces a prominent resume card instead of the generic verify pitch.
+   */
+  resumeVerification?: boolean;
 }
 
 /**
@@ -31,7 +37,7 @@ interface UnverifiedHomeProps {
  *   blur could leak PII via devtools)
  * - Your submissions: only the current user's own posts, with status badges
  */
-const UnverifiedHome = ({ onCreateStory, onStartVerification }: UnverifiedHomeProps) => {
+const UnverifiedHome = ({ onCreateStory, onStartVerification, resumeVerification }: UnverifiedHomeProps) => {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const { data: submissions = [] } = useMySubmissions(user?.id);
@@ -74,6 +80,30 @@ const UnverifiedHome = ({ onCreateStory, onStartVerification }: UnverifiedHomePr
       </header>
 
       <div className="max-w-xl mx-auto px-4 py-4 space-y-4">
+        {/* Resume card — user finished the profile but stalled at the selfie.
+            Shown first: they already opted in, one step re-engages them. */}
+        {resumeVerification && (
+          <Card className="p-4 border-primary/40 bg-primary/5">
+            <div className="flex items-start gap-3">
+              <div className="h-10 w-10 rounded-full bg-primary/15 flex items-center justify-center shrink-0">
+                <ShieldCheck className="h-5 w-5 text-primary" />
+              </div>
+              <div className="flex-1">
+                <h2 className="text-base font-semibold text-foreground">
+                  You're one step from verified
+                </h2>
+                <p className="text-sm text-muted-foreground mt-0.5 mb-3">
+                  Your profile's done — all that's left is a 30-second selfie.
+                  Finish now to unlock every real story.
+                </p>
+                <Button onClick={onStartVerification} className="w-full">
+                  Finish verification
+                </Button>
+              </div>
+            </div>
+          </Card>
+        )}
+
         {/* Search-led magic moment — look someone up before anything else */}
         <SubjectSearch onStartVerification={onStartVerification} />
 
@@ -105,7 +135,8 @@ const UnverifiedHome = ({ onCreateStory, onStartVerification }: UnverifiedHomePr
           </Button>
         </Card>
 
-        {/* Verify card */}
+        {/* Verify card (hidden when the resume card is already pitching it) */}
+        {!resumeVerification && (
         <Card className="p-5 bg-card border-border">
           <div className="flex items-start gap-3 mb-3">
             <div className="h-10 w-10 rounded-full bg-primary/15 flex items-center justify-center shrink-0">
@@ -122,6 +153,7 @@ const UnverifiedHome = ({ onCreateStory, onStartVerification }: UnverifiedHomePr
             Verify with a selfie
           </Button>
         </Card>
+        )}
 
         {/* "How did you hear about us?" — below CTAs so it doesn't block onboarding */}
         {user && <ReferralPrompt userId={user.id} />}

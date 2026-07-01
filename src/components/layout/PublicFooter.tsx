@@ -25,7 +25,9 @@ export const PublicFooter = () => {
         <div>
           <h3 className="font-semibold mb-3 text-foreground">Legal</h3>
           <ul className="space-y-2 text-muted-foreground">
+            <li><Link to="/terms" className="hover:text-foreground">Terms of Service</Link></li>
             <li><Link to="/privacy-policy" className="hover:text-foreground">Privacy Policy</Link></li>
+            <li><Link to="/dispute" className="hover:text-foreground">Request Removal</Link></li>
             <li><Link to="/support" className="hover:text-foreground">Support</Link></li>
           </ul>
         </div>
