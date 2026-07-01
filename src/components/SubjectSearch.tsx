@@ -53,10 +53,12 @@ const SubjectSearch = ({ onStartVerification, pending = false }: SubjectSearchPr
     },
   });
 
+  // Verdicts are stored as +1 (juice/green) / -1 (milk/red), so the average's SIGN is the
+  // signal. (The old 5-point-scale thresholds classified everything as red.)
   const verdict = (v: number | null) => {
     if (v == null) return null;
-    if (v <= 2.5) return { label: "mostly red flags", icon: <Flag className="h-3.5 w-3.5" style={{ color: "hsl(var(--destructive))" }} /> };
-    if (v >= 3.5) return { label: "mostly green flags", icon: <CheckCircle2 className="h-3.5 w-3.5" style={{ color: "hsl(var(--success))" }} /> };
+    if (v < 0) return { label: "mostly red flags", icon: <Flag className="h-3.5 w-3.5" style={{ color: "hsl(var(--destructive))" }} /> };
+    if (v > 0) return { label: "mostly green flags", icon: <CheckCircle2 className="h-3.5 w-3.5" style={{ color: "hsl(var(--success))" }} /> };
     return { label: "mixed", icon: <Flag className="h-3.5 w-3.5 text-muted-foreground" /> };
   };
 
