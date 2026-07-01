@@ -1,4 +1,4 @@
-import { MessageCircle, Flag, Trash2, MapPin, MoreVertical, Bookmark } from "lucide-react";
+import { MessageCircle, Flag, Trash2, MapPin, MoreVertical, Bookmark, LifeBuoy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import {
@@ -282,6 +282,16 @@ const StoryCard = ({
                   </ReportContentDialog>
                 </>
               )}
+              {/* Always visible: the removal path for the person the story is about.
+                  /dispute is public (no auth) and pre-fills the subject name. */}
+              <DropdownMenuItem
+                onClick={() =>
+                  navigate(`/dispute?name=${encodeURIComponent(story.subject_name || subjectName || "")}`)
+                }
+              >
+                <LifeBuoy className="h-4 w-4 mr-2" />
+                Request removal
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

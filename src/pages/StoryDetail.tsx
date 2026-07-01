@@ -112,11 +112,24 @@ const StoryDetail = () => {
             Story not found.
           </div>
         ) : (
-          <StoryCard
-            story={story}
-            authorName={story.profiles?.anonymous_username ?? "Anonymous"}
-            user_id={user?.id}
-          />
+          <>
+            <StoryCard
+              story={story}
+              authorName={story.profiles?.anonymous_username ?? "Anonymous"}
+              user_id={user?.id}
+            />
+            {/* Same removal affordance as /share/:id — the subject shouldn't need to
+                find the footer to ask for a takedown. /dispute is public (no auth). */}
+            <div className="px-4 py-4 text-center text-xs text-muted-foreground">
+              Mentioned in this story?{" "}
+              <a
+                href={`/dispute?name=${encodeURIComponent((story as any).subject_name ?? "")}`}
+                className="underline hover:text-foreground transition-colors"
+              >
+                Request removal
+              </a>
+            </div>
+          </>
         )}
       </div>
 
