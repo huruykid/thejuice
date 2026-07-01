@@ -124,8 +124,8 @@ const Explore = ({ onCreateStory }: ExploreProps) => {
             <Input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search stories or @users"
-              aria-label="Search stories or users"
+              placeholder="Look her up — search a name"
+              aria-label="Look her up — search a name, story, or @user"
               className="pl-9 h-9 bg-muted border-0 text-sm rounded-lg focus-visible:ring-1 focus-visible:ring-primary/40"
             />
           </form>

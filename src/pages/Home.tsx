@@ -13,6 +13,7 @@ import { usePullToRefresh } from "@/hooks/usePullToRefresh";
 import { useInfiniteStories } from "@/hooks/useStories";
 import { useFeedGate } from "@/hooks/useFeedGate";
 import ReferralPrompt from "@/components/ReferralPrompt";
+import SubjectLookup from "@/components/SubjectLookup";
 import CityFilterChips, { FeedScope } from "@/components/CityFilterChips";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
@@ -31,6 +32,8 @@ const Home = ({ onCreateStory }: HomeProps) => {
   // "All" vs "my city" feed scope. City comes from the user's profile;
   // CityFilterChips opens the picker when no city is saved yet.
   const [scope, setScope] = useState<FeedScope>("all");
+  // True while a name lookup is active — the feed steps aside for the results.
+  const [lookupActive, setLookupActive] = useState(false);
   const { profile } = useProfile(user);
   const profileCityId = (profile as { city_id?: string | null } | null)?.city_id ?? null;
   const cityFilterId = scope === "city" ? profileCityId : null;
@@ -97,6 +100,15 @@ const Home = ({ onCreateStory }: HomeProps) => {
 
       {/* Feed */}
       <div className="max-w-xl mx-auto sm:px-0 py-0 sm:py-2">
+        {/* The magic moment, front and center: look her up by name. */}
+        <SubjectLookup
+          user_id={user?.id}
+          onCreateStory={onCreateStory}
+          onActiveChange={setLookupActive}
+        />
+
+        {lookupActive ? null : (
+        <>
         <CityFilterChips scope={scope} onScopeChange={setScope} cityId={profileCityId} />
 
         {/* Catches users who verified before answering the referral question */}
@@ -163,6 +175,8 @@ const Home = ({ onCreateStory }: HomeProps) => {
               Share the Juice
             </button>
           </div>
+        )}
+        </>
         )}
       </div>
 
