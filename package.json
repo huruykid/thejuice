@@ -1,7 +1,7 @@
 {
   "name": "vite_react_shadcn_ts",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -10,7 +10,8 @@
     "lint": "eslint .",
     "typecheck": "tsc -p tsconfig.app.json --noEmit",
     "design:check": "node scripts/check-design-tokens.mjs",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "assets:generate": "capacitor-assets generate --iconBackgroundColor '#ff6b35' --iconBackgroundColorDark '#ff6b35' --splashBackgroundColor '#ff6b35' --splashBackgroundColorDark '#ff6b35'"
   },
   "dependencies": {
     "@capacitor/android": "^7.4.2",
@@ -81,6 +82,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
     "@eslint/js": "^9.9.0",
     "@tailwindcss/typography": "^0.5.15",
     "@types/node": "^22.5.5",

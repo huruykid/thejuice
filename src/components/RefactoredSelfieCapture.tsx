@@ -109,9 +109,10 @@ const RefactoredSelfieCapture: React.FC<RefactoredSelfieCaptureProps> = ({ onCom
         <CardHeader className="text-center space-y-4">
           <BrandLockup variant="mark" size="lg" className="mx-auto" />
           <div>
-            <CardTitle className="text-2xl font-bold">Verify Your Identity</CardTitle>
+            <CardTitle className="text-2xl font-bold">Verify you're a real man</CardTitle>
             <CardDescription>
-              Take a clear selfie to verify you're a real person and keep our community safe.
+              Juice is a verified-men-only community. A real person reviews every
+              selfie — accounts that aren't eligible aren't approved.
             </CardDescription>
           </div>
           

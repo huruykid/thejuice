@@ -285,6 +285,12 @@ const AuthScreen = ({ onAuthSuccess }: AuthScreenProps) => {
                   ? "Create your account"
                   : "Sign in to share and discover dating stories"}
               </p>
+              {isSignUp && (
+                <p className="text-sm font-semibold text-foreground bg-muted rounded-lg px-3 py-2">
+                  Juice is for verified men who date women. Every account is
+                  identity-checked by a real person before it's approved.
+                </p>
+              )}
             </div>
 
             {/* Google OAuth — lead with the lowest-friction path */}
@@ -309,7 +315,7 @@ const AuthScreen = ({ onAuthSuccess }: AuthScreenProps) => {
                 <span className="block text-foreground/80 font-medium mb-0.5">
                   Google is only for sign-in — we never post anything or show your name.
                 </span>
-                By continuing you confirm you're 18 or older and agree to the{" "}
+                By continuing you confirm you're a man, 18 or older, and agree to the{" "}
                 <Link to="/terms" target="_blank" className="text-primary underline">
                   Terms &amp; Community Guidelines
                 </Link>.

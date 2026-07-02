@@ -1,18 +1,30 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'app.lovable.da2e9ee24548482f80e76cfedc4bfcb9',
-  appName: 'thejuice',
+  // Reverse-domain bundle identifier for sipjuice.app. This is PERMANENT once
+  // the app is first submitted to either store — change it before running
+  // `npx cap add ios/android` if you want a different one (e.g. com.sipjuice.app).
+  appId: 'app.sipjuice',
+  appName: 'Juice',
   webDir: 'dist',
   // server.url removed for production. Re-add for on-device live-reload during development.
+
+  ios: {
+    // Camera capture is our only image source (no photo-library picker), so the
+    // app doesn't need NSPhotoLibraryUsageDescription — keeps the review surface small.
+    contentInset: 'always',
+  },
 
   plugins: {
     SplashScreen: {
       launchShowDuration: 2000,
       backgroundColor: '#ff6b35',
-      showSpinner: false
-    }
-  }
+      showSpinner: false,
+    },
+    PushNotifications: {
+      presentationOptions: ['badge', 'sound', 'alert'],
+    },
+  },
 };
 
 export default config;
