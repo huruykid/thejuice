@@ -9,6 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import CommentsModal from "./CommentsModal";
+import PhotoLightbox from "./PhotoLightbox";
 import { useConfirm } from "./ConfirmDialog";
 import { BlockUserDialog } from "./BlockUserDialog";
 import { ReportContentDialog } from "./ReportContentDialog";
@@ -61,7 +62,9 @@ const StoryCard = ({
   const [showComments, setShowComments] = useState(false);
   const [showHeartBurst, setShowHeartBurst] = useState(false);
   const [poppedType, setPoppedType] = useState<string | null>(null);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const lastTapRef = useRef<number>(0);
+  const photoTapTimer = useRef<number | null>(null);
   const { confirm, confirmDialog } = useConfirm();
 
   // Light haptic on a real interaction. No-op where unsupported (iOS Safari/web);
@@ -196,6 +199,36 @@ const StoryCard = ({
     if (story.profile_id) navigate(`/author/${story.profile_id}`);
   };
 
+  // IG pattern: tapping the subject identity opens "everything about her" —
+  // the name lookup on Home (subject-grouped results with the room's verdict).
+  const handleSubjectClick = () => {
+    const subject = (story.subject_name || subjectName || "").trim();
+    if (subject) navigate(`/app?q=${encodeURIComponent(subject)}`);
+  };
+
+  // IG pattern: the location line links to a place feed — here, Explore
+  // filtered to the city.
+  const handleLocationClick = () => {
+    const city = story.cities?.city_name ?? story.location;
+    if (city) navigate(`/explore?q=${encodeURIComponent(city)}`);
+  };
+
+  // Photo taps: single tap opens the in-app lightbox, double-tap votes juice
+  // (IG's double-tap-to-like). The short delay disambiguates the two.
+  const handlePhotoTap = (e: React.MouseEvent, index: number) => {
+    e.stopPropagation();
+    if (photoTapTimer.current) {
+      window.clearTimeout(photoTapTimer.current);
+      photoTapTimer.current = null;
+      triggerDoubleTap();
+    } else {
+      photoTapTimer.current = window.setTimeout(() => {
+        photoTapTimer.current = null;
+        setLightboxIndex(index);
+      }, 280);
+    }
+  };
+
   const canDelete = user_id === story.user_id;
 
   const formatDate = (dateString: string) => {
@@ -239,13 +272,21 @@ const StoryCard = ({
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-2.5">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary-dark flex items-center justify-center text-primary-foreground text-xs font-semibold flex-shrink-0">
+            {/* IG pattern: tapping the subject identity → all stories about her */}
+            <button
+              onClick={(e) => { e.stopPropagation(); handleSubjectClick(); }}
+              aria-label={`See all stories about ${story.subject_name || subjectName || 'this person'}`}
+              className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary-dark flex items-center justify-center text-primary-foreground text-xs font-semibold flex-shrink-0"
+            >
               {(story.subject_name || subjectName || 'A').charAt(0).toUpperCase()}
-            </div>
+            </button>
             <div className="min-w-0 leading-tight">
-              <p className="text-sm font-semibold text-foreground truncate">
+              <button
+                onClick={(e) => { e.stopPropagation(); handleSubjectClick(); }}
+                className="block text-sm font-semibold text-foreground truncate hover:underline"
+              >
                 {story.subject_name || subjectName || 'Anonymous'}
-              </p>
+              </button>
               <button
                 onClick={(e) => { e.stopPropagation(); handleAuthorClick(); }}
                 className="text-xs text-muted-foreground hover:text-foreground transition-colors truncate"
@@ -312,7 +353,7 @@ const StoryCard = ({
                         alt={`Story image ${index + 1}`}
                         className="w-full h-full object-cover cursor-pointer"
                         loading="lazy"
-                        onClick={() => window.open(url, '_blank')}
+                        onClick={(e) => handlePhotoTap(e, index)}
                       />
                     </div>
                   </CarouselItem>
@@ -337,7 +378,13 @@ const StoryCard = ({
 
         {/* Story — the review, promoted right under the photo (it's the product). */}
         <div className="px-4 pt-2.5 pb-1 text-[15px] leading-relaxed text-foreground">
-          <span className="font-semibold mr-1.5">@{authorName}</span>
+          {/* IG pattern: the caption username links to the profile too */}
+          <button
+            onClick={(e) => { e.stopPropagation(); handleAuthorClick(); }}
+            className="font-semibold mr-1.5 hover:underline"
+          >
+            @{authorName}
+          </button>
           <span className="whitespace-pre-wrap">{story.content}</span>
         </div>
 
@@ -461,22 +508,33 @@ const StoryCard = ({
           </button>
         )}
 
-        {/* Location / timestamp footer */}
+        {/* Location / timestamp footer — IG pattern: location links to a place feed */}
         {(story.location || story.cities) ? (
-          <div className="px-4 pt-1 pb-3 flex items-center gap-1 text-xs text-muted-foreground">
+          <button
+            onClick={(e) => { e.stopPropagation(); handleLocationClick(); }}
+            className="px-4 pt-1 pb-3 flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+          >
             <MapPin className="h-3 w-3" />
             <span>
               {story.cities
                 ? `${story.cities.city_name}${story.cities.state_province ? ', ' + story.cities.state_province : ''}`
                 : story.location}
             </span>
-          </div>
+          </button>
         ) : (
           <div className="px-4 pt-0.5 pb-3 text-[11px] uppercase tracking-wide text-muted-foreground">
             {formatDate(story.created_at)}
           </div>
         )}
       </div>
+
+      {lightboxIndex !== null && imageUrls.length > 0 && (
+        <PhotoLightbox
+          urls={imageUrls}
+          initialIndex={lightboxIndex}
+          onClose={() => setLightboxIndex(null)}
+        />
+      )}
 
       {showComments && (
         <CommentsModal

@@ -23,6 +23,28 @@ export interface SubjectGroup {
   stories: Story[];
 }
 
+/** Pure grouping step — exported for tests. */
+export function groupStoriesBySubject(stories: Story[]): SubjectGroup[] {
+  const groups = new Map<string, SubjectGroup>();
+  for (const story of stories) {
+    const raw = (story.subject_name ?? '').trim();
+    if (!raw) continue;
+    const key = raw.toLowerCase();
+    let group = groups.get(key);
+    if (!group) {
+      group = { name: raw, key, count: 0, green: 0, red: 0, stories: [] };
+      groups.set(key, group);
+    }
+    group.count += 1;
+    const verdict = story.overall_vibe_rating ?? 0;
+    if (verdict > 0) group.green += 1;
+    else if (verdict < 0) group.red += 1;
+    group.stories.push(story);
+  }
+  // Most-reviewed first — the person with the most tea is the likeliest match.
+  return [...groups.values()].sort((a, b) => b.count - a.count);
+}
+
 export const useSubjectLookup = (query: string) => {
   const { data: blockedIds = [] } = useBlockedUserIds();
   const q = query.trim();
@@ -55,25 +77,7 @@ export const useSubjectLookup = (query: string) => {
       }
       const { data, error } = await dbQuery;
       if (error) throw error;
-
-      const groups = new Map<string, SubjectGroup>();
-      for (const story of (data ?? []) as Story[]) {
-        const raw = (story.subject_name ?? '').trim();
-        if (!raw) continue;
-        const key = raw.toLowerCase();
-        let group = groups.get(key);
-        if (!group) {
-          group = { name: raw, key, count: 0, green: 0, red: 0, stories: [] };
-          groups.set(key, group);
-        }
-        group.count += 1;
-        const verdict = story.overall_vibe_rating ?? 0;
-        if (verdict > 0) group.green += 1;
-        else if (verdict < 0) group.red += 1;
-        group.stories.push(story);
-      }
-      // Most-reviewed first — the person with the most tea is the likeliest match.
-      return [...groups.values()].sort((a, b) => b.count - a.count);
+      return groupStoriesBySubject((data ?? []) as Story[]);
     },
   });
 };

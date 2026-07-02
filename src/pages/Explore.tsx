@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { Search } from "lucide-react";
@@ -50,11 +50,21 @@ const ExploreTile = ({ story, onOpen }: { story: any; onOpen: () => void }) => {
 };
 
 const Explore = ({ onCreateStory }: ExploreProps) => {
-  const [searchQuery, setSearchQuery] = useState("");
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
+  // Deep-linkable: /explore?q=<term> pre-fills search (location taps on story
+  // cards land here). Synced on param change so it works while mounted.
+  const [searchQuery, setSearchQuery] = useState(() => searchParams.get("q") ?? "");
+  const appliedParamRef = useRef(searchParams.get("q") ?? "");
+  useEffect(() => {
+    const q = searchParams.get("q") ?? "";
+    if (q && q !== appliedParamRef.current) {
+      appliedParamRef.current = q;
+      setSearchQuery(q);
+    }
+  }, [searchParams]);
 
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
 

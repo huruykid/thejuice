@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Search, X, ChevronDown } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import StoryCard from "@/components/StoryCard";
@@ -31,8 +32,19 @@ const roomVerdict = (g: SubjectGroup) => {
 };
 
 const SubjectLookup = ({ user_id, onCreateStory, onActiveChange }: SubjectLookupProps) => {
-  const [query, setQuery] = useState("");
+  // Deep-linkable: /app?q=<name> pre-fills the lookup (subject-name taps on
+  // story cards land here). Synced on param change so it works while mounted.
+  const [searchParams] = useSearchParams();
+  const [query, setQuery] = useState(() => searchParams.get("q") ?? "");
   const [expandedKey, setExpandedKey] = useState<string | null>(null);
+  const appliedParamRef = useRef(searchParams.get("q") ?? "");
+  useEffect(() => {
+    const q = searchParams.get("q") ?? "";
+    if (q && q !== appliedParamRef.current) {
+      appliedParamRef.current = q;
+      setQuery(q);
+    }
+  }, [searchParams]);
   const debounced = useDebounce(query, 250);
   const active = debounced.trim().length >= 2;
 
