@@ -643,7 +643,6 @@ export type Database = {
           rejection_reason: string | null
           status: string
           subject_name: string | null
-          subject_phone: string | null
           subject_phone_hash: string | null
           submitted_anonymously: boolean
           updated_at: string
@@ -673,7 +672,6 @@ export type Database = {
           rejection_reason?: string | null
           status?: string
           subject_name?: string | null
-          subject_phone?: string | null
           subject_phone_hash?: string | null
           submitted_anonymously?: boolean
           updated_at?: string
@@ -703,7 +701,6 @@ export type Database = {
           rejection_reason?: string | null
           status?: string
           subject_name?: string | null
-          subject_phone?: string | null
           subject_phone_hash?: string | null
           submitted_anonymously?: boolean
           updated_at?: string
@@ -1022,7 +1019,6 @@ export type Database = {
           rejection_reason: string | null
           status: string
           subject_name: string | null
-          subject_phone: string | null
           subject_phone_hash: string | null
           submitted_anonymously: boolean
           updated_at: string
@@ -1045,6 +1041,10 @@ export type Database = {
           review_count: number
           subject_name: string
         }[]
+      }
+      set_story_subject_phone_hash: {
+        Args: { p_phone: string; p_story_id: string }
+        Returns: undefined
       }
       user_has_approved_post: { Args: { _user_id: string }; Returns: boolean }
       validate_file_upload: {

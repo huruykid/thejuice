@@ -227,7 +227,6 @@ export const useCreateStory = () => {
           location: location ? sanitizeText(location) : null,
           image_url: imageUrl || null,
           subject_name: sanitizedSubjectName,
-          subject_phone: sanitizedSubjectPhone,
           user_id: user.id,
           // Legacy multi-axis rating columns are dead — the product is a single
           // green/red verdict, stored in overall_vibe_rating (+1/-1/0).
@@ -240,6 +239,17 @@ export const useCreateStory = () => {
         .single();
 
       if (storyError) throw storyError;
+
+      // Phone (if provided) is hashed server-side and stored ONLY as a peppered
+      // hash — the raw number is never sent to a persisted column. Best-effort:
+      // a failure here must not lose the whole story.
+      if (sanitizedSubjectPhone) {
+        const { error: phoneErr } = await supabase.rpc('set_story_subject_phone_hash', {
+          p_story_id: story.id,
+          p_phone: sanitizedSubjectPhone,
+        });
+        if (phoneErr) console.error('Failed to set subject phone hash:', phoneErr);
+      }
 
       // Add tags
       if (sanitizedTags.length > 0) {
