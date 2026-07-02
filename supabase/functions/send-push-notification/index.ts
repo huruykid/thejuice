@@ -20,7 +20,10 @@ import {
 //    the action on that story.
 //  - verification_approved: recipient = the approved user; caller must be an
 //    admin, and the target's verification row must actually be approved.
-type PushEventType = "reaction" | "comment" | "verification_approved";
+//  - post_rejected: recipient = the story author; caller must be an admin, and
+//    the story must actually be rejected. Body carries the admin-set rejection
+//    reason (from the DB row, not the request).
+type PushEventType = "reaction" | "comment" | "verification_approved" | "post_rejected";
 
 interface SendPushRequest {
   type: PushEventType;
@@ -37,6 +40,10 @@ const NOTIFICATION_TEMPLATES: Record<
   verification_approved: {
     title: "You're verified ✅",
     body: "Welcome to Juice — the full feed is unlocked.",
+  },
+  post_rejected: {
+    title: "Your post wasn't approved",
+    body: "Tap to review the guidelines and post again.",
   },
 };
 
@@ -105,8 +112,38 @@ const handler = async (req: Request): Promise<Response> => {
 
     let recipientId: string;
     let route: string;
+    let rejectionReason: string | null = null;
 
-    if (type === "verification_approved") {
+    if (type === "post_rejected") {
+      // Admin-only. Confirm the story is actually rejected before notifying —
+      // the endpoint can't be used to send rejection notices for live posts.
+      if (!storyId) {
+        return createSecureErrorResponse("Missing field: storyId", 400);
+      }
+      const adminCheck = await requireAdmin(auth.userId);
+      if (adminCheck) return adminCheck;
+
+      const { data: story, error: storyError } = await supabase
+        .from("stories")
+        .select("user_id, status, rejection_reason")
+        .eq("id", storyId)
+        .maybeSingle();
+
+      if (storyError) {
+        console.error("Error fetching story:", storyError);
+        return createSecureErrorResponse("Failed to resolve story", 500);
+      }
+      if (!story || story.status !== "rejected") {
+        return createSecureErrorResponse("Forbidden", 403);
+      }
+      if (!story.user_id) {
+        return createSecureResponse({ sent: 0, message: "Anonymous post — no account to notify" });
+      }
+
+      recipientId = story.user_id;
+      route = "/app";
+      rejectionReason = story.rejection_reason ?? null;
+    } else if (type === "verification_approved") {
       // Admin-only event. Recipient is the approved user, and we confirm the
       // approval actually happened before notifying — the endpoint can't be
       // used to send "you're verified" to arbitrary users.
@@ -182,8 +219,13 @@ const handler = async (req: Request): Promise<Response> => {
       route = `/story/${storyId}`;
     }
 
-    // Server-templated content + route. Caller cannot inject any of this.
-    const { title, body } = NOTIFICATION_TEMPLATES[type];
+    // Server-templated content + route. Caller cannot inject any of this —
+    // the rejection reason comes from the DB row (admin-set), not the request.
+    const { title, body: templateBody } = NOTIFICATION_TEMPLATES[type];
+    const body =
+      type === "post_rejected" && rejectionReason
+        ? `Reason: ${rejectionReason}`
+        : templateBody;
     const data: Record<string, string> = { route };
     const userId = recipientId;
 

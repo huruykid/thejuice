@@ -48,7 +48,10 @@ export const useStories = () => {
         `)
         .eq('status', 'approved')
         .not('image_url', 'is', null)
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        // Explore grid — cap it. Unbounded, this query grows with every story
+        // ever posted; 60 fills several screens and keeps payloads flat.
+        .limit(60);
       if (blockedIds.length > 0) {
         query = query.not('user_id', 'in', `(${blockedIds.join(',')})`);
       }

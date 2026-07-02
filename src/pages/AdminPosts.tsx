@@ -19,6 +19,8 @@ import { CheckCircle, XCircle, Clock, UserX, User, Trash2, Mail } from "lucide-r
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import QueryError from "@/components/QueryError";
 import { useConfirm } from "@/components/ConfirmDialog";
+import { useStoryImageUrls } from "@/hooks/useStoryImageUrls";
+import { sendPostRejectedNotification } from "@/lib/sendPushNotification";
 import { toast } from "sonner";
 
 const REJECTION_REASONS = [
@@ -40,6 +42,10 @@ interface PendingPost {
   rejection_reason: string | null;
   rejected_at: string | null;
   is_seed: boolean;
+  image_url: string | null;
+  location: string | null;
+  overall_vibe_rating: number | null;
+  profiles: { anonymous_username: string } | null;
 }
 
 const AdminPosts = () => {
@@ -70,10 +76,13 @@ const AdminPosts = () => {
       let q = supabase
         .from("stories")
         .select(
-          "id, content, subject_name, created_at, status, user_id, submitted_anonymously, rejection_reason, rejected_at, is_seed"
+          "id, content, subject_name, created_at, status, user_id, submitted_anonymously, rejection_reason, rejected_at, is_seed, image_url, location, overall_vibe_rating, profiles ( anonymous_username )"
         )
         .eq("is_seed", false)
-        .order("created_at", { ascending: sort === "oldest" });
+        .order("created_at", { ascending: sort === "oldest" })
+        // Keep the queue snappy as volume grows; oldest/newest sort still
+        // surfaces whichever end matters.
+        .limit(200);
       if (filter !== "all") q = q.eq("status", filter);
       const { data, error } = await q;
       if (error) throw error;
@@ -126,9 +135,14 @@ const AdminPosts = () => {
         })
         .eq("id", id);
       if (error) throw error;
+      // Tell the author (with the reason). Fire-and-forget — rejection must not
+      // fail because push did. Anonymous posts are skipped server-side.
+      sendPostRejectedNotification(id).catch((e) =>
+        console.error("Failed to send rejection push:", e)
+      );
     },
     onSuccess: () => {
-      toast.success("Post rejected");
+      toast.success("Post rejected — author notified");
       queryClient.invalidateQueries({ queryKey: ["admin-posts"] });
       queryClient.invalidateQueries({ queryKey: ["admin-pending-counts"] });
     },
@@ -146,10 +160,16 @@ const AdminPosts = () => {
         })
         .in("id", ids);
       if (error) throw error;
+      // Notify each author. Fire-and-forget; anonymous posts skipped server-side.
+      ids.forEach((id) =>
+        sendPostRejectedNotification(id).catch((e) =>
+          console.error("Failed to send rejection push:", e)
+        )
+      );
       return ids.length;
     },
     onSuccess: (count) => {
-      toast.success(`Rejected ${count} post${count === 1 ? "" : "s"}`);
+      toast.success(`Rejected ${count} post${count === 1 ? "" : "s"} — authors notified`);
       setSelected(new Set());
       queryClient.invalidateQueries({ queryKey: ["admin-posts"] });
       queryClient.invalidateQueries({ queryKey: ["admin-pending-counts"] });
@@ -428,11 +448,15 @@ const PostRow = ({
   onDelete: () => void;
 }) => {
   const [reasonId, setReasonId] = useState(REJECTION_REASONS[0].id);
+  // Private bucket — resolve stored paths to short-lived signed URLs, same as the feed.
+  const { data: imageUrls = [], isLoading: imagesLoading } = useStoryImageUrls(
+    post.image_url ?? undefined
+  );
   return (
     <Card>
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between gap-2 flex-wrap">
-          <CardTitle className="text-base flex items-center gap-2">
+          <CardTitle className="text-base flex items-center gap-2 flex-wrap">
             {selectable && (
               <Checkbox
                 checked={selected}
@@ -446,14 +470,60 @@ const PostRow = ({
               <User className="w-4 h-4 text-muted-foreground" />
             )}
             {post.subject_name || "(no subject)"}
+            {post.overall_vibe_rating != null && post.overall_vibe_rating !== 0 && (
+              <span
+                className={
+                  post.overall_vibe_rating > 0
+                    ? "text-xs font-semibold text-success"
+                    : "text-xs font-semibold text-destructive"
+                }
+              >
+                {post.overall_vibe_rating > 0 ? "Juice" : "Milk"}
+              </span>
+            )}
             <span className="text-xs font-normal text-muted-foreground">
-              · {new Date(post.created_at).toLocaleString()}
+              by {post.submitted_anonymously
+                ? "anonymous submission"
+                : `@${post.profiles?.anonymous_username ?? "unknown"}`}
+              {post.location ? ` · ${post.location}` : ""} ·{" "}
+              {new Date(post.created_at).toLocaleString()}
             </span>
           </CardTitle>
           {badge(post.status)}
         </div>
       </CardHeader>
       <CardContent className="space-y-3">
+        {/* Photos — reviewed BEFORE approve/reject. Click to open full size. */}
+        {post.image_url && (
+          imagesLoading ? (
+            <div className="flex gap-2">
+              {Array.from({ length: 2 }).map((_, i) => (
+                <div key={i} className="h-28 w-28 rounded-lg bg-muted animate-pulse" />
+              ))}
+            </div>
+          ) : imageUrls.length > 0 ? (
+            <div className="flex gap-2 flex-wrap">
+              {imageUrls.map((url, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  onClick={() => window.open(url, "_blank")}
+                  className="h-28 w-28 rounded-lg overflow-hidden border border-border hover:opacity-80 transition-opacity"
+                  aria-label={`Open photo ${i + 1} full size`}
+                >
+                  <img src={url} alt={`Post photo ${i + 1}`} className="h-full w-full object-cover" />
+                </button>
+              ))}
+            </div>
+          ) : (
+            <p className="text-xs text-destructive">
+              Photos failed to load — check the storage bucket before approving.
+            </p>
+          )
+        )}
+        {!post.image_url && (
+          <p className="text-xs text-muted-foreground">No photos attached.</p>
+        )}
         <p className="text-sm whitespace-pre-wrap">{post.content}</p>
         {post.rejection_reason && (
           <p className="text-xs text-destructive">

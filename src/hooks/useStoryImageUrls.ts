@@ -1,8 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { getSignedUrlsBatched, SIGNED_URL_TTL_SECONDS } from "@/lib/signedUrlBatcher";
 
 const BUCKET = "story-images";
-const SIGNED_URL_TTL_SECONDS = 3600; // 1 hour
 
 /**
  * Parse the `image_url` column. Stories store it as a JSON array (e.g.
@@ -37,7 +36,8 @@ function toObjectPath(value: string): string {
 /**
  * Resolve a story's `image_url` field to short-lived signed URLs for the now-private
  * `story-images` bucket. Only verified/authenticated users can sign these (enforced
- * by the bucket SELECT policy). Batched into a single createSignedUrls call.
+ * by the bucket SELECT policy). All cards mounting in the same tick share ONE
+ * storage round-trip via the micro-batching signer.
  */
 export function useStoryImageUrls(image_url: string | null | undefined) {
   const paths = parseStoryImageField(image_url).map(toObjectPath);
@@ -48,14 +48,6 @@ export function useStoryImageUrls(image_url: string | null | undefined) {
     // Refresh comfortably before the 1h signed URLs expire.
     staleTime: (SIGNED_URL_TTL_SECONDS - 300) * 1000,
     gcTime: SIGNED_URL_TTL_SECONDS * 1000,
-    queryFn: async (): Promise<string[]> => {
-      const { data, error } = await supabase.storage
-        .from(BUCKET)
-        .createSignedUrls(paths, SIGNED_URL_TTL_SECONDS);
-      if (error) throw error;
-      return (data ?? [])
-        .map((d) => d.signedUrl)
-        .filter((u): u is string => Boolean(u));
-    },
+    queryFn: () => getSignedUrlsBatched(paths),
   });
 }

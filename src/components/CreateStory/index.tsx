@@ -1,13 +1,11 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { X, Sparkles } from "lucide-react";
+import { X } from "lucide-react";
 import { useCreateStory } from "@/hooks/useStories";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import PersonDetailsStep from "./PersonDetailsStep";
-import StoryContentStep from "./StoryContentStep";
-import MetadataStep from "./MetadataStep";
+import Composer from "./Composer";
 import SuccessAnimation from "./SuccessAnimation";
 
 export interface StoryData {
@@ -30,7 +28,6 @@ const CreateStory = ({
   onClose: () => void;
   isUnverified?: boolean;
 }) => {
-  const [step, setStep] = useState(0);
   const [showSuccess, setShowSuccess] = useState(false);
   const [uploadedImages, setUploadedImages] = useState<File[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
@@ -50,14 +47,6 @@ const CreateStory = ({
 
   const createStory = useCreateStory();
   const { toast } = useToast();
-
-  const handleNext = () => {
-    if (step < 2) setStep(step + 1);
-  };
-
-  const handleBack = () => {
-    if (step > 0) setStep(step - 1);
-  };
 
   const uploadImageToStorage = async (file: File): Promise<string | null> => {
     try {
@@ -128,15 +117,6 @@ const CreateStory = ({
         setUploading(false);
       }
 
-      if (imageUrls.length === 0) {
-        toast({
-          title: "Photo required",
-          description: "At least one photo is required to publish a story.",
-          variant: "destructive"
-        });
-        return;
-      }
-
       const storyPayload = {
         content: storyData.content,
         tags: storyData.selectedTags,
@@ -161,7 +141,6 @@ const CreateStory = ({
       });
       setUploadedImages([]);
       setImagePreviews([]);
-      setStep(0);
 
       setShowSuccess(true);
       if (isUnverified) {
@@ -212,39 +191,19 @@ const CreateStory = ({
           </Button>
         </div>
 
-        <div className="overflow-y-auto max-h-[calc(90vh-200px)]">
-          {step === 0 && (
-            <PersonDetailsStep
-              storyData={storyData}
-              setStoryData={setStoryData}
-              uploadedImages={uploadedImages}
-              setUploadedImages={setUploadedImages}
-              imagePreviews={imagePreviews}
-              setImagePreviews={setImagePreviews}
-              onNext={handleNext}
-              onClose={onClose}
-            />
-          )}
-
-          {step === 1 && (
-            <StoryContentStep
-              storyData={storyData}
-              setStoryData={setStoryData}
-              onNext={handleNext}
-              onBack={handleBack}
-            />
-          )}
-
-          {step === 2 && (
-            <MetadataStep
-              storyData={storyData}
-              setStoryData={setStoryData}
-              onPublish={handlePublish}
-              onBack={handleBack}
-              isLoading={createStory.isPending || uploading}
-              uploading={uploading}
-            />
-          )}
+        <div className="overflow-y-auto max-h-[calc(90vh-88px)]">
+          <Composer
+            storyData={storyData}
+            setStoryData={setStoryData}
+            uploadedImages={uploadedImages}
+            setUploadedImages={setUploadedImages}
+            imagePreviews={imagePreviews}
+            setImagePreviews={setImagePreviews}
+            onPublish={handlePublish}
+            onClose={onClose}
+            isLoading={createStory.isPending || uploading}
+            uploading={uploading}
+          />
         </div>
       </Card>
     </div>

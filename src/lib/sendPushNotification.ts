@@ -29,3 +29,14 @@ export async function sendVerificationApprovedNotification(
     body: { type: "verification_approved", userId },
   });
 }
+
+/**
+ * Notify a story author their post was rejected. Admin-only — the backend
+ * verifies the caller's admin role AND that the story is actually rejected;
+ * the notification body carries the admin-set rejection reason from the DB.
+ */
+export async function sendPostRejectedNotification(storyId: string): Promise<void> {
+  await supabase.functions.invoke("send-push-notification", {
+    body: { type: "post_rejected", storyId },
+  });
+}

@@ -1,249 +1,131 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { parsePhoneNumber } from 'react-phone-number-input';
 import { useToast } from '@/hooks/use-toast';
-import { fuzzySearchCities, getUniqueCities, normalizeCityName } from '@/lib/citySearch';
+import { normalizeCityName } from '@/lib/citySearch';
 import type { Story } from '@/hooks/useStories';
 
-interface Profile {
-  id: string;
-  user_id: string;
-  anonymous_username: string;
-  phone_number: string | null;
-  created_at: string;
-  updated_at: string;
-  date_of_birth: string | null;
-  city: string | null;
-  relationship_status: string | null;
+/**
+ * Story search for Explore.
+ *
+ * Rewritten for speed (was 5+ sequential round-trips, including a full-table
+ * scan of story locations for client-side fuzzy city matching, per search):
+ *  - phone-like queries: ONE server-side hashed-phone RPC, nothing else
+ *  - text queries: content, subject-name, and city matches run in PARALLEL
+ *  - city matching is a single indexed ilike on normalized_location — no
+ *    full-table location fetch, no per-city follow-up queries
+ *  - profile search removed: Explore (the only consumer) discarded profile
+ *    results, and returning members by phone number was a deanonymization
+ *    vector anyway.
+ */
+interface UnifiedSearchResult {
+  type: 'story';
+  story: Story;
+  matchType: 'content' | 'subject_name' | 'subject_phone' | 'city';
 }
 
-interface UnifiedSearchResult {
-  type: 'story' | 'profile';
-  story?: Story;
-  profile?: Profile;
-  matchType: 'content' | 'username' | 'phone' | 'subject_name' | 'subject_phone';
-}
+const STORY_SELECT = `
+  *,
+  profiles!stories_profile_id_fkey(id, anonymous_username),
+  story_tags(tag)
+`;
 
 export const useUnifiedSearch = () => {
   const [isSearching, setIsSearching] = useState(false);
   const [searchResults, setSearchResults] = useState<UnifiedSearchResult[]>([]);
   const { toast } = useToast();
-  // Monotonic request id — a slow earlier search (this issues 5+ round-trips) must not
-  // resolve after a newer query and overwrite the visible results with stale ones.
+  // Monotonic request id — a slow earlier search must not resolve after a
+  // newer query and overwrite the visible results with stale ones.
   const requestIdRef = useRef(0);
 
-  const normalizePhoneNumber = (input: string): string | null => {
+  const normalizePhone = (input: string): string | null => {
     try {
-      const cleanInput = input.replace('@', '');
-      const phoneNumber = parsePhoneNumber(cleanInput);
-      
-      if (phoneNumber && phoneNumber.isValid()) {
-        return phoneNumber.format('E.164');
-      }
-      return null;
-    } catch (error) {
+      const parsed = parsePhoneNumber(input.replace('@', ''));
+      return parsed && parsed.isValid() ? parsed.format('E.164') : null;
+    } catch {
       return null;
     }
   };
 
-  const isPhoneNumberInput = (input: string): boolean => {
-    const cleanInput = input.replace(/[@\s\-\(\)\.]/g, '');
-    return /^[\+]?[\d\s\-\(\)\.]{7,}$/.test(input);
-  };
+  const isPhoneNumberInput = (input: string): boolean =>
+    /^[\+]?[\d\s\-\(\)\.]{7,}$/.test(input);
+
+  const toResult = (matchType: UnifiedSearchResult['matchType']) => (story: any): UnifiedSearchResult => ({
+    type: 'story',
+    story: { ...story, story_tags: story.story_tags || [] },
+    matchType,
+  });
 
   const searchAll = async (query: string): Promise<UnifiedSearchResult[]> => {
-    if (!query || query.trim().length < 2) {
-      return [];
-    }
+    const trimmed = query.trim();
+    if (trimmed.length < 2) return [];
 
     setIsSearching(true);
     const results: UnifiedSearchResult[] = [];
 
     try {
-      const trimmedQuery = query.trim();
-      const isPhoneQuery = isPhoneNumberInput(trimmedQuery);
-      const normalizedPhone = normalizePhoneNumber(trimmedQuery);
-      
-      // Search profiles by username
-      if (!isPhoneQuery) {
-        const usernameQuery = trimmedQuery.startsWith('@') 
-          ? trimmedQuery.substring(1) 
-          : trimmedQuery;
+      const normalizedPhone = normalizePhone(trimmed);
 
-        const { data: profileResults, error: profileError } = await supabase
-          .from('profiles')
-          .select('*')
-          .ilike('anonymous_username', `%${usernameQuery}%`);
-
-        if (!profileError && profileResults) {
-          profileResults.forEach(profile => {
-            results.push({
-              type: 'profile',
-              profile,
-              matchType: 'username'
-            });
+      if (isPhoneNumberInput(trimmed) || normalizedPhone) {
+        // Phone lookup — matched server-side against the one-way hash. The raw
+        // number is never stored or queried from the client.
+        if (normalizedPhone) {
+          const { data, error } = await supabase.rpc('search_stories_by_phone', {
+            p: normalizedPhone,
           });
+          if (!error && Array.isArray(data)) results.push(...data.map(toResult('subject_phone')));
         }
+      } else {
+        const term = trimmed.startsWith('@') ? trimmed.substring(1) : trimmed;
+
+        // All three matchers fire in parallel — one round-trip of latency, not three.
+        const [byContent, bySubject, byCity] = await Promise.all([
+          supabase
+            .from('stories')
+            .select(STORY_SELECT)
+            .eq('status', 'approved')
+            .ilike('content', `%${term}%`)
+            .order('created_at', { ascending: false })
+            .limit(10),
+          supabase
+            .from('stories')
+            .select(STORY_SELECT)
+            .eq('status', 'approved')
+            .ilike('subject_name', `%${term}%`)
+            .order('created_at', { ascending: false })
+            .limit(10),
+          supabase
+            .from('stories')
+            .select(STORY_SELECT)
+            .eq('status', 'approved')
+            .ilike('normalized_location', `%${normalizeCityName(term)}%`)
+            .order('created_at', { ascending: false })
+            .limit(10),
+        ]);
+
+        // Subject matches first — "is there tea on <name>" is the primary intent.
+        if (!bySubject.error && bySubject.data) results.push(...bySubject.data.map(toResult('subject_name')));
+        if (!byContent.error && byContent.data) results.push(...byContent.data.map(toResult('content')));
+        if (!byCity.error && byCity.data) results.push(...byCity.data.map(toResult('city')));
       }
-
-      // Search profiles by phone number
-      if (normalizedPhone) {
-        const { data: phoneProfileResults, error: phoneProfileError } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('phone_number', normalizedPhone);
-
-        if (!phoneProfileError && phoneProfileResults) {
-          phoneProfileResults.forEach(profile => {
-            results.push({
-              type: 'profile',
-              profile,
-              matchType: 'phone'
-            });
-          });
-        }
-      }
-
-      // Search stories by content and location
-      if (!isPhoneQuery) {
-        // First, try content search
-        const { data: storyResults, error: storyError } = await supabase
-          .from('stories')
-          .select(`
-            *,
-            profiles!stories_profile_id_fkey(id, anonymous_username),
-            story_tags(tag)
-          `)
-          .ilike('content', `%${trimmedQuery}%`)
-          .limit(10);
-
-        if (!storyError && storyResults) {
-          storyResults.forEach(story => {
-            results.push({
-              type: 'story',
-              story: {
-                ...story,
-                story_tags: story.story_tags || []
-              },
-              matchType: 'content'
-            });
-          });
-        }
-
-        // Then try fuzzy city search if query could be a location
-        const allStoriesForCitySearch = await supabase
-          .from('stories')
-          .select('location, normalized_location')
-          .not('location', 'is', null);
-
-        if (allStoriesForCitySearch.data) {
-          const uniqueCities = getUniqueCities(allStoriesForCitySearch.data);
-          const cityMatches = fuzzySearchCities(trimmedQuery, uniqueCities, 5);
-          
-          if (cityMatches.length > 0) {
-            for (const cityMatch of cityMatches) {
-              const { data: cityStories, error: cityError } = await supabase
-                .from('stories')
-                .select(`
-                  *,
-                  profiles!stories_profile_id_fkey(id, anonymous_username),
-                  story_tags(tag)
-                `)
-                .eq('normalized_location', cityMatch.item)
-                .limit(3);
-
-              if (!cityError && cityStories) {
-                cityStories.forEach(story => {
-                  results.push({
-                    type: 'story',
-                    story: {
-                      ...story,
-                      story_tags: story.story_tags || []
-                    },
-                    matchType: 'content'
-                  });
-                });
-              }
-            }
-          }
-        }
-      }
-
-      // Search stories by subject name
-      if (!isPhoneQuery) {
-        const usernameQuery = trimmedQuery.startsWith('@') 
-          ? trimmedQuery.substring(1) 
-          : trimmedQuery;
-
-        const { data: subjectNameResults, error: subjectNameError } = await supabase
-          .from('stories')
-          .select(`
-            *,
-            profiles!stories_profile_id_fkey(id, anonymous_username),
-            story_tags(tag)
-          `)
-          .ilike('subject_name', `%${usernameQuery}%`)
-          .limit(5);
-
-        if (!subjectNameError && subjectNameResults) {
-          subjectNameResults.forEach(story => {
-            results.push({
-              type: 'story',
-              story: {
-                ...story,
-                story_tags: story.story_tags || []
-              },
-              matchType: 'subject_name'
-            });
-          });
-        }
-      }
-
-      // Search stories by subject phone — matched SERVER-SIDE against a one-way hash.
-      // The raw number is hashed in the database and never stored or returned, so we
-      // never query the raw column from the client.
-      if (normalizedPhone) {
-        const { data: subjectPhoneResults, error: subjectPhoneError } = await supabase.rpc(
-          'search_stories_by_phone',
-          { p: normalizedPhone }
-        );
-
-        if (!subjectPhoneError && Array.isArray(subjectPhoneResults)) {
-          subjectPhoneResults.forEach((story: any) => {
-            results.push({
-              type: 'story',
-              story: {
-                ...story,
-                story_tags: story.story_tags || []
-              },
-              matchType: 'subject_phone'
-            });
-          });
-        }
-      }
-
     } catch (error) {
       console.error('Unified search error:', error);
       toast({
-        title: "Search Error",
-        description: "An error occurred while searching. Please try again.",
-        variant: "destructive"
+        title: 'Search Error',
+        description: 'An error occurred while searching. Please try again.',
+        variant: 'destructive',
       });
     } finally {
       setIsSearching(false);
     }
 
-    // Remove duplicates and sort by relevance
-    const uniqueResults = Array.from(
-      new Map(
-        results.map(item => [
-          item.type === 'profile' ? `profile-${item.profile?.id}` : `story-${item.story?.id}`,
-          item
-        ])
-      ).values()
-    );
-
-    return uniqueResults;
+    // Dedupe by story id, keeping the first (highest-priority) match type.
+    const seen = new Set<string>();
+    return results.filter((r) => {
+      if (seen.has(r.story.id)) return false;
+      seen.add(r.story.id);
+      return true;
+    });
   };
 
   const performSearch = async (query: string) => {
@@ -265,6 +147,6 @@ export const useUnifiedSearch = () => {
     isSearching,
     searchResults,
     performSearch,
-    clearResults
+    clearResults,
   };
 };
