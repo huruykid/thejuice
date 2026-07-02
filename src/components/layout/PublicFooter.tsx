@@ -18,6 +18,8 @@ export const PublicFooter = () => {
             <li><Link to="/" className="hover:text-foreground">Home</Link></li>
             <li><Link to="/blog" className="hover:text-foreground">Blog</Link></li>
             <li><Link to="/how-it-works" className="hover:text-foreground">How It Works</Link></li>
+            <li><Link to="/tea-app-comparison" className="hover:text-foreground">Juice vs. Tea App</Link></li>
+            <li><Link to="/teaonher-alternative" className="hover:text-foreground">TeaOnHer Alternative</Link></li>
             <li><Link to="/app" className="hover:text-foreground">Sign In</Link></li>
           </ul>
         </div>

@@ -16,6 +16,7 @@ import Landing from "./pages/Landing";
 // pages no longer ship in the initial bundle (they loaded on every first paint).
 const HowItWorks = lazy(() => import("./pages/HowItWorks"));
 const TeaAppComparison = lazy(() => import("./pages/TeaAppComparison"));
+const TeaOnHerAlternative = lazy(() => import("./pages/TeaOnHerAlternative"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const Explore = lazy(() => import("./pages/Explore"));
 const Profile = lazy(() => import("./pages/Profile"));
@@ -187,6 +188,7 @@ const App = () => {
           <Route path="/" element={<PublicLayout><Landing /></PublicLayout>} />
           <Route path="/how-it-works" element={<PublicLayout><HowItWorks /></PublicLayout>} />
           <Route path="/tea-app-comparison" element={<PublicLayout><TeaAppComparison /></PublicLayout>} />
+          <Route path="/teaonher-alternative" element={<PublicLayout><TeaOnHerAlternative /></PublicLayout>} />
           <Route path="/app" element={<Index />} />
           <Route path="/explore" element={
             <VerifiedRoute>
