@@ -201,9 +201,9 @@ export const useUnifiedSearch = () => {
 
       // Search stories by subject phone — matched SERVER-SIDE against a one-way hash.
       // The raw number is hashed in the database and never stored or returned, so we
-      // never query the raw column from the client. (RPC cast until types are regenerated.)
+      // never query the raw column from the client.
       if (normalizedPhone) {
-        const { data: subjectPhoneResults, error: subjectPhoneError } = await (supabase.rpc as any)(
+        const { data: subjectPhoneResults, error: subjectPhoneError } = await supabase.rpc(
           'search_stories_by_phone',
           { p: normalizedPhone }
         );

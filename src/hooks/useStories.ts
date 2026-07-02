@@ -153,7 +153,7 @@ export const useCreateStory = () => {
       imageUrl,
       subjectName,
       subjectPhone,
-      ratings,
+      verdict,
     }: {
       content: string;
       tags: string[];
@@ -162,12 +162,8 @@ export const useCreateStory = () => {
       imageUrl?: string;
       subjectName?: string;
       subjectPhone?: string;
-      ratings?: {
-        communication: number;
-        loyalty: number;
-        vibe: number;
-        respect: number;
-      };
+      /** The single green/red verdict: +1 juice, -1 milk, 0 none. */
+      verdict?: number;
     }) => {
       // Validate and sanitize input
       const contentValidation = validateStoryContent(content);
@@ -230,10 +226,12 @@ export const useCreateStory = () => {
           subject_name: sanitizedSubjectName,
           subject_phone: sanitizedSubjectPhone,
           user_id: user.id,
-          communication_rating: ratings?.communication ?? 0,
-          loyalty_rating: ratings?.loyalty ?? 0,
-          overall_vibe_rating: ratings?.vibe ?? 0,
-          emotional_safety_rating: ratings?.respect ?? 0,
+          // Legacy multi-axis rating columns are dead — the product is a single
+          // green/red verdict, stored in overall_vibe_rating (+1/-1/0).
+          communication_rating: 0,
+          loyalty_rating: 0,
+          overall_vibe_rating: verdict ?? 0,
+          emotional_safety_rating: 0,
         })
         .select()
         .single();

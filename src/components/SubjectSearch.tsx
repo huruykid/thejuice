@@ -47,7 +47,7 @@ const SubjectSearch = ({ onStartVerification, pending = false }: SubjectSearchPr
     queryKey: ["subject-search", debounced],
     staleTime: 60_000,
     queryFn: async (): Promise<SubjectPreview[]> => {
-      const { data, error } = await (supabase.rpc as any)("search_subject_preview", { q: debounced });
+      const { data, error } = await supabase.rpc("search_subject_preview", { q: debounced });
       if (error) throw error;
       return (data ?? []) as SubjectPreview[];
     },

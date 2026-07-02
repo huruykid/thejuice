@@ -16,3 +16,16 @@ export async function sendStoryEventNotification(
     body: { type, storyId },
   });
 }
+
+/**
+ * Notify a user their verification was approved. Admin-only — the backend
+ * verifies the caller's admin role AND that the approval actually happened
+ * before sending.
+ */
+export async function sendVerificationApprovedNotification(
+  userId: string,
+): Promise<void> {
+  await supabase.functions.invoke("send-push-notification", {
+    body: { type: "verification_approved", userId },
+  });
+}

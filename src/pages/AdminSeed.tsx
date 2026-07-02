@@ -80,7 +80,7 @@ const AdminSeed = () => {
         if (upErr) throw upErr;
         imageUrlParam = JSON.stringify([path]);
       }
-      const { error } = await (supabase.rpc as any)("admin_create_seed_story", {
+      const { error } = await supabase.rpc("admin_create_seed_story", {
         p_content: content,
         p_subject_name: subject || null,
         p_location: location || null,
@@ -103,7 +103,7 @@ const AdminSeed = () => {
 
   const remove = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await (supabase.rpc as any)("admin_delete_seed_story", { p_id: id });
+      const { error } = await supabase.rpc("admin_delete_seed_story", { p_id: id });
       if (error) throw error;
     },
     onSuccess: () => {

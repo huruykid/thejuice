@@ -5,6 +5,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import CommentsModal from "./CommentsModal";
@@ -283,7 +284,9 @@ const StoryCard = ({
                 </>
               )}
               {/* Always visible: the removal path for the person the story is about.
-                  /dispute is public (no auth) and pre-fills the subject name. */}
+                  /dispute is public (no auth) and pre-fills the subject name.
+                  Separated — this is about the SUBJECT, not the author. */}
+              <DropdownMenuSeparator />
               <DropdownMenuItem
                 onClick={() =>
                   navigate(`/dispute?name=${encodeURIComponent(story.subject_name || subjectName || "")}`)

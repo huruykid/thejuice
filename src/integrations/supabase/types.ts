@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      account_deletion_feedback: {
+        Row: {
+          created_at: string
+          detail: string | null
+          id: string
+          reason: string | null
+          seconds_since_signup: number | null
+        }
+        Insert: {
+          created_at?: string
+          detail?: string | null
+          id?: string
+          reason?: string | null
+          seconds_since_signup?: number | null
+        }
+        Update: {
+          created_at?: string
+          detail?: string | null
+          id?: string
+          reason?: string | null
+          seconds_since_signup?: number | null
+        }
+        Relationships: []
+      }
       analytics_events: {
         Row: {
           created_at: string
@@ -875,6 +899,32 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_create_seed_story: {
+        Args: {
+          p_communication?: number
+          p_content: string
+          p_emotional_safety?: number
+          p_image_url?: string
+          p_location?: string
+          p_loyalty?: number
+          p_subject_name?: string
+          p_vibe?: number
+        }
+        Returns: string
+      }
+      admin_delete_seed_story: { Args: { p_id: string }; Returns: undefined }
+      admin_list_members: {
+        Args: never
+        Returns: {
+          anonymous_username: string
+          city: string
+          created_at: string
+          email: string
+          has_post: boolean
+          user_id: string
+          verification_status: string
+        }[]
+      }
       check_rate_limit: {
         Args: {
           p_action_type: string
@@ -918,6 +968,7 @@ export type Database = {
         Returns: boolean
       }
       is_pg_net_exception_acceptable: { Args: never; Returns: boolean }
+      is_seed_story: { Args: { _story_id: string }; Returns: boolean }
       is_user_suspended: { Args: { _user: string }; Returns: boolean }
       is_user_verified: { Args: { _user_id: string }; Returns: boolean }
       is_username_available: { Args: { username: string }; Returns: boolean }

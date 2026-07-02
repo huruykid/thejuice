@@ -41,7 +41,7 @@ const AdminMembers = () => {
   const { data: members, isLoading, isError, refetch } = useQuery({
     queryKey: ["admin-members"],
     queryFn: async () => {
-      const { data, error } = await (supabase.rpc as any)("admin_list_members");
+      const { data, error } = await supabase.rpc("admin_list_members");
       if (error) throw error;
       return (data ?? []) as Member[];
     },

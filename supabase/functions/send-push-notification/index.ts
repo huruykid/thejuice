@@ -6,18 +6,26 @@ import {
   createSecureResponse,
   createSecureErrorResponse,
   authenticateRequest,
+  requireAdmin,
 } from "../_shared/security.ts";
 
 // The client may ONLY ask us to send a templated notification tied to a
-// specific event on a specific story. It cannot choose the recipient, the
-// title/body, or the deep-link route — those are all derived server-side from
-// the verified event. This closes the IDOR where any authenticated caller
-// could push arbitrary content to any user.
-type PushEventType = "reaction" | "comment";
+// specific verified event. It cannot choose the recipient, the title/body, or
+// the deep-link route — those are all derived server-side from the verified
+// event. This closes the IDOR where any authenticated caller could push
+// arbitrary content to any user.
+//
+// Events:
+//  - reaction / comment: recipient = story owner; caller must have performed
+//    the action on that story.
+//  - verification_approved: recipient = the approved user; caller must be an
+//    admin, and the target's verification row must actually be approved.
+type PushEventType = "reaction" | "comment" | "verification_approved";
 
 interface SendPushRequest {
   type: PushEventType;
-  storyId: string;
+  storyId?: string;
+  userId?: string;
 }
 
 const NOTIFICATION_TEMPLATES: Record<
@@ -26,6 +34,10 @@ const NOTIFICATION_TEMPLATES: Record<
 > = {
   reaction: { title: "New reaction 🚩", body: "Someone reacted to your story" },
   comment: { title: "New comment 💬", body: "Someone commented on your story" },
+  verification_approved: {
+    title: "You're verified ✅",
+    body: "Welcome to Juice — the full feed is unlocked.",
+  },
 };
 
 const getFcmAccessToken = async (): Promise<string> => {
@@ -74,10 +86,10 @@ const handler = async (req: Request): Promise<Response> => {
     const auth = await authenticateRequest(req);
     if (auth instanceof Response) return auth;
 
-    const { type, storyId }: SendPushRequest = await req.json();
+    const { type, storyId, userId: targetUserId }: SendPushRequest = await req.json();
 
-    if (!type || !storyId || !(type in NOTIFICATION_TEMPLATES)) {
-      return createSecureErrorResponse("Missing or invalid fields: type, storyId", 400);
+    if (!type || !(type in NOTIFICATION_TEMPLATES)) {
+      return createSecureErrorResponse("Missing or invalid field: type", 400);
     }
 
     const projectId = Deno.env.get("FIREBASE_PROJECT_ID");
@@ -91,51 +103,88 @@ const handler = async (req: Request): Promise<Response> => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
     );
 
-    // Derive the recipient server-side: notifications go to the STORY OWNER,
-    // never to a caller-supplied user id.
-    const { data: story, error: storyError } = await supabase
-      .from("stories")
-      .select("user_id")
-      .eq("id", storyId)
-      .maybeSingle();
+    let recipientId: string;
+    let route: string;
 
-    if (storyError) {
-      console.error("Error fetching story:", storyError);
-      return createSecureErrorResponse("Failed to resolve story", 500);
-    }
+    if (type === "verification_approved") {
+      // Admin-only event. Recipient is the approved user, and we confirm the
+      // approval actually happened before notifying — the endpoint can't be
+      // used to send "you're verified" to arbitrary users.
+      if (!targetUserId) {
+        return createSecureErrorResponse("Missing field: userId", 400);
+      }
+      const adminCheck = await requireAdmin(auth.userId);
+      if (adminCheck) return adminCheck;
 
-    const recipientId: string | null = story?.user_id ?? null;
-    if (!recipientId) {
-      return createSecureResponse({ sent: 0, message: "Story has no owner to notify" });
-    }
+      const { data: verification, error: verificationError } = await supabase
+        .from("user_verifications")
+        .select("verification_status")
+        .eq("user_id", targetUserId)
+        .maybeSingle();
 
-    // Never notify yourself about your own action.
-    if (recipientId === auth.userId) {
-      return createSecureResponse({ sent: 0, message: "No self-notification" });
-    }
+      if (verificationError) {
+        console.error("Error verifying approval:", verificationError);
+        return createSecureErrorResponse("Failed to verify approval", 500);
+      }
+      if (verification?.verification_status !== "approved") {
+        return createSecureErrorResponse("Forbidden", 403);
+      }
 
-    // Defense in depth: confirm the caller actually performed the action they
-    // claim, so this endpoint can't be used to spam a story owner.
-    const actionTable = type === "reaction" ? "reactions" : "comments";
-    const { data: actionRow, error: actionError } = await supabase
-      .from(actionTable)
-      .select("id")
-      .eq("story_id", storyId)
-      .eq("user_id", auth.userId)
-      .limit(1)
-      .maybeSingle();
+      recipientId = targetUserId;
+      route = "/app";
+    } else {
+      if (!storyId) {
+        return createSecureErrorResponse("Missing field: storyId", 400);
+      }
 
-    if (actionError) {
-      console.error("Error verifying caller action:", actionError);
-      return createSecureErrorResponse("Failed to verify action", 500);
-    }
-    if (!actionRow) {
-      return createSecureErrorResponse("Forbidden", 403);
+      // Derive the recipient server-side: notifications go to the STORY OWNER,
+      // never to a caller-supplied user id.
+      const { data: story, error: storyError } = await supabase
+        .from("stories")
+        .select("user_id")
+        .eq("id", storyId)
+        .maybeSingle();
+
+      if (storyError) {
+        console.error("Error fetching story:", storyError);
+        return createSecureErrorResponse("Failed to resolve story", 500);
+      }
+
+      if (!story?.user_id) {
+        return createSecureResponse({ sent: 0, message: "Story has no owner to notify" });
+      }
+
+      // Never notify yourself about your own action.
+      if (story.user_id === auth.userId) {
+        return createSecureResponse({ sent: 0, message: "No self-notification" });
+      }
+
+      // Defense in depth: confirm the caller actually performed the action they
+      // claim, so this endpoint can't be used to spam a story owner.
+      const actionTable = type === "reaction" ? "reactions" : "comments";
+      const { data: actionRow, error: actionError } = await supabase
+        .from(actionTable)
+        .select("id")
+        .eq("story_id", storyId)
+        .eq("user_id", auth.userId)
+        .limit(1)
+        .maybeSingle();
+
+      if (actionError) {
+        console.error("Error verifying caller action:", actionError);
+        return createSecureErrorResponse("Failed to verify action", 500);
+      }
+      if (!actionRow) {
+        return createSecureErrorResponse("Forbidden", 403);
+      }
+
+      recipientId = story.user_id;
+      route = `/story/${storyId}`;
     }
 
     // Server-templated content + route. Caller cannot inject any of this.
     const { title, body } = NOTIFICATION_TEMPLATES[type];
-    const data: Record<string, string> = { route: `/story/${storyId}` };
+    const data: Record<string, string> = { route };
     const userId = recipientId;
 
     // Fetch all push tokens for the recipient

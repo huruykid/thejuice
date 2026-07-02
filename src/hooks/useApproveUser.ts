@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { sendVerificationApprovedNotification } from '@/lib/sendPushNotification';
 
 interface ApproveUserData {
   userId: string;
@@ -50,6 +51,12 @@ export const useApproveUser = () => {
           // Continue with approval process even if deletion fails
         }
       }
+
+      // Notify on-device too — the email often lands hours after the user last
+      // checked. Fire-and-forget: approval must not fail because push did.
+      sendVerificationApprovedNotification(userId).catch((e) =>
+        console.error('Failed to send approval push:', e)
+      );
 
       // Send approval email
       const { error: emailError } = await supabase.functions.invoke('send-approval-email', {

@@ -44,11 +44,11 @@ const MetadataStep = ({
     setStoryData((prev) => ({ ...prev, metadata: { ...prev.metadata, city_id: null, location: "" } }));
   };
 
-  const verdict = storyData.ratings.vibe || 0;
+  const verdict = storyData.verdict || 0;
   const setVerdict = (v: number) =>
     setStoryData((prev) => ({
       ...prev,
-      ratings: { ...prev.ratings, vibe: prev.ratings.vibe === v ? 0 : v },
+      verdict: prev.verdict === v ? 0 : v,
     }));
   const datingApps = [
     "Tinder", "Bumble", "Hinge", "Instagram", "IRL", "Raya", 
