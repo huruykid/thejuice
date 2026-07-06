@@ -1,5 +1,10 @@
 # UX Audit — Juice (journey-focused)
 
+> **STATUS 2026-07-06:** all items below were implemented the same day (verdict vocabulary
+> pairing, returnTo deep links, publish-button guidance, CTA copy, per-file photo validation,
+> orientation banner, branded 404, ipapi.co removal, tap targets, pending-overdue support link,
+> landing hero search). Kept for the record of rationale.
+
 **Date:** 2026-07-06 · **Method:** drove the built app in headless Chromium (public journey,
 mobile + desktop viewports) and traced the auth-gated flows in code (`Index.tsx` gate,
 onboarding components, composer, search, feed). Complements `DESIGN_AUDIT.md`, which covers

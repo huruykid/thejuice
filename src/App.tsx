@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { lazy, Suspense, useState, useEffect } from "react";
 import { SecurityProvider } from "@/components/SecurityProvider";
 import AppShell from "@/components/layout/AppShell";
@@ -56,6 +56,17 @@ import { useIosCaptureProtection } from "./hooks/useIosCaptureProtection";
 import { useTheme } from "./hooks/useTheme";
 import ViewAsBar from "./components/ViewAsBar";
 
+/**
+ * Logged-out users hitting a gated route are sent to the login screen with the
+ * original destination attached, so signing in lands them where the link pointed
+ * (Index honors returnTo once the user is verified) instead of on the marketing page.
+ */
+const LoginRedirect = () => {
+  const location = useLocation();
+  const returnTo = encodeURIComponent(location.pathname + location.search);
+  return <Navigate to={`/app?mode=login&returnTo=${returnTo}`} replace />;
+};
+
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
   
@@ -71,9 +82,9 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   }
   
   if (!user) {
-    return <Navigate to="/" replace />;
+    return <LoginRedirect />;
   }
-  
+
   return <>{children}</>;
 };
 
@@ -97,7 +108,7 @@ const VerifiedRoute = ({ children }: { children: React.ReactNode }) => {
     );
   }
 
-  if (!user) return <Navigate to="/" replace />;
+  if (!user) return <LoginRedirect />;
   if (!isVerified) return <Navigate to="/app" replace />;
 
   return <>{children}</>;
@@ -123,7 +134,7 @@ const AdminRoute = ({ children }: { children: React.ReactNode }) => {
     );
   }
 
-  if (!user) return <Navigate to="/" replace />;
+  if (!user) return <LoginRedirect />;
   if (!isAdmin) return <Navigate to="/app" replace />;
 
   return <>{children}</>;

@@ -158,7 +158,7 @@ const SubjectLookup = ({ user_id, onCreateStory, onActiveChange }: SubjectLookup
                 onClick={onCreateStory}
                 className="bg-primary text-primary-foreground rounded-lg px-5 py-2.5 text-sm font-semibold hover:bg-primary-dark transition-colors"
               >
-                Pass on the Juice
+                Share the Juice
               </button>
             </div>
           )}

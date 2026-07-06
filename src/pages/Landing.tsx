@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, ChevronDown, Flag } from "lucide-react";
+import { ArrowRight, ChevronDown, Flag, Search } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useState } from "react";
@@ -11,6 +11,14 @@ const Landing = () => {
   const navigate = useNavigate();
   const { user, loading } = useAuth();
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  // Hero search: signup-with-intent. The name rides along as /app?q=<name> and
+  // SubjectSearch picks it up the moment the account exists.
+  const [heroQuery, setHeroQuery] = useState("");
+  const handleHeroSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    const q = heroQuery.trim();
+    navigate(q ? `/app?q=${encodeURIComponent(q)}` : "/app");
+  };
 
   useEffect(() => {
     if (!loading && user) {
@@ -131,6 +139,28 @@ const Landing = () => {
                 See what verified men really experienced with the women they've dated —
                 green flags and red. Look her up before your next date. You post anonymously.
               </p>
+
+              {/* The magic moment, on the front page: type a name, arrive with intent */}
+              <form onSubmit={handleHeroSearch} className="max-w-xl mb-4">
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" aria-hidden />
+                    <input
+                      value={heroQuery}
+                      onChange={(e) => setHeroQuery(e.target.value)}
+                      placeholder="Type her first name…"
+                      aria-label="Search for a person"
+                      className="w-full h-12 pl-10 pr-3 rounded-lg bg-input border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary"
+                    />
+                  </div>
+                  <Button type="submit" size="lg" variant="juice" className="h-12 font-bold shrink-0">
+                    Look her up
+                  </Button>
+                </div>
+                <p className="text-xs text-muted-foreground mt-2">
+                  Free to search — takes you straight to results after a quick sign-up.
+                </p>
+              </form>
 
               <div className="flex flex-col sm:flex-row gap-3 mb-5">
                 <Button size="xl" variant="juice" asChild className="font-bold">

@@ -411,7 +411,10 @@ const StoryCard = ({
               >
                 <JuiceIcon className="h-5 w-5" />
               </span>
-              <span className="text-sm font-semibold">Juice</span>
+              <span className="flex flex-col items-start leading-tight">
+                <span className="text-sm font-semibold">Juice</span>
+                <span className="text-[9px] font-medium opacity-70">green flag</span>
+              </span>
             </button>
             <button
               onClick={() => handleReaction('red_flag')}
@@ -430,7 +433,10 @@ const StoryCard = ({
               >
                 <MilkIcon className="h-5 w-5" />
               </span>
-              <span className="text-sm font-semibold">Milk</span>
+              <span className="flex flex-col items-start leading-tight">
+                <span className="text-sm font-semibold">Milk</span>
+                <span className="text-[9px] font-medium opacity-70">red flag</span>
+              </span>
             </button>
             <button
               onClick={handleComment}

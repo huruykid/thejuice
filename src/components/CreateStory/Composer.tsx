@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 import { JuiceIcon, MilkIcon } from "@/components/icons/BrandVoteIcons";
 import { useToast } from "@/hooks/use-toast";
 import { useCities } from "@/hooks/useCities";
-import PhoneInput, { parsePhoneNumber } from "react-phone-number-input";
+import PhoneInput, { parsePhoneNumber, type Country } from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 import type { StoryData } from "./index";
 
@@ -48,14 +48,14 @@ const Composer = ({
   const [ack, setAck] = useState(false);
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [phoneError, setPhoneError] = useState("");
-  const [defaultCountry, setDefaultCountry] = useState("US");
+  const [defaultCountry, setDefaultCountry] = useState<Country>("US");
 
-  // Auto-detect country for the phone input (fallback US).
+  // Preset the phone country from the browser locale (e.g. "en-GB" → GB).
+  // Deliberately NOT an IP-geolocation call: this is a privacy-first product,
+  // and shipping every composer-open to a third party is off-posture.
   useEffect(() => {
-    fetch("https://ipapi.co/json/")
-      .then((r) => r.json())
-      .then((d) => d.country_code && setDefaultCountry(d.country_code))
-      .catch(() => setDefaultCountry("US"));
+    const region = navigator.language?.split("-")[1]?.toUpperCase();
+    if (region && /^[A-Z]{2}$/.test(region)) setDefaultCountry(region as Country);
   }, []);
 
   // City picker (optional) — DB cities with free-text fallback.
@@ -91,23 +91,39 @@ const Composer = ({
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (!files) return;
-    const newFiles = Array.from(files);
-    if (uploadedImages.length + newFiles.length > 5) {
-      toast({ title: "Error", description: "You can only upload up to 5 photos", variant: "destructive" });
-      return;
-    }
-    for (const file of newFiles) {
-      if (file.size > 5 * 1024 * 1024) {
-        toast({ title: "Error", description: `${file.name} must be less than 5MB`, variant: "destructive" });
-        return;
-      }
+
+    // Keep every valid file; report the rejects. One bad file in a batch of
+    // five must not throw away the other four.
+    const rejected: string[] = [];
+    const valid = Array.from(files).filter((file) => {
       if (!file.type.startsWith("image/")) {
-        toast({ title: "Error", description: `${file.name} is not an image file`, variant: "destructive" });
-        return;
+        rejected.push(`${file.name} isn't an image`);
+        return false;
       }
+      if (file.size > 5 * 1024 * 1024) {
+        rejected.push(`${file.name} is over 5MB`);
+        return false;
+      }
+      return true;
+    });
+
+    const room = 5 - uploadedImages.length;
+    if (valid.length > room) {
+      rejected.push(`only ${room} more photo${room === 1 ? "" : "s"} fit (max 5)`);
     }
-    setUploadedImages((prev) => [...prev, ...newFiles]);
-    newFiles.forEach((file) => {
+    const accepted = valid.slice(0, Math.max(room, 0));
+
+    if (rejected.length > 0) {
+      toast({
+        title: accepted.length > 0 ? "Some photos were skipped" : "Photos not added",
+        description: rejected.join("; "),
+        variant: "destructive",
+      });
+    }
+    if (accepted.length === 0) return;
+
+    setUploadedImages((prev) => [...prev, ...accepted]);
+    accepted.forEach((file) => {
       const reader = new FileReader();
       reader.onload = (e) => setImagePreviews((prev) => [...prev, e.target?.result as string]);
       reader.readAsDataURL(file);
@@ -169,7 +185,10 @@ const Composer = ({
             )}
           >
             <JuiceIcon className="h-5 w-5" />
-            Juice
+            <span className="flex flex-col items-start leading-tight">
+              <span>Juice</span>
+              <span className="text-[10px] font-medium opacity-70">green flag</span>
+            </span>
           </button>
           <button
             type="button"
@@ -183,7 +202,10 @@ const Composer = ({
             )}
           >
             <MilkIcon className="h-5 w-5" />
-            Milk
+            <span className="flex flex-col items-start leading-tight">
+              <span>Milk</span>
+              <span className="text-[10px] font-medium opacity-70">red flag</span>
+            </span>
           </button>
         </div>
       </div>
@@ -302,7 +324,7 @@ const Composer = ({
             <div>
               <span className="block text-sm font-medium mb-1">Her phone</span>
               <PhoneInput
-                defaultCountry={defaultCountry as any}
+                defaultCountry={defaultCountry}
                 value={storyData.personPhone}
                 onChange={handlePhoneChange}
                 placeholder="+1 555-555-5555"
@@ -389,20 +411,38 @@ const Composer = ({
         </span>
       </label>
 
-      <div className="flex justify-between">
-        <Button variant="outline" onClick={onClose}>
-          Cancel
-        </Button>
-        <Button onClick={onPublish} disabled={isLoading || !canPublish}>
-          {isLoading ? (
-            <span className="flex items-center gap-2">
-              <div className="animate-spin rounded-full h-4 w-4 border-2 border-current border-t-transparent" />
-              {uploading ? "Uploading..." : "Publishing..."}
-            </span>
-          ) : (
-            "Pass on the Juice"
-          )}
-        </Button>
+      <div>
+        <div className="flex justify-between">
+          <Button variant="outline" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button onClick={onPublish} disabled={isLoading || !canPublish}>
+            {isLoading ? (
+              <span className="flex items-center gap-2">
+                <div className="animate-spin rounded-full h-4 w-4 border-2 border-current border-t-transparent" />
+                {uploading ? "Uploading..." : "Publishing..."}
+              </span>
+            ) : (
+              "Share the Juice"
+            )}
+          </Button>
+        </div>
+        {/* Name the first missing requirement instead of leaving a dead button. */}
+        {!isLoading && !canPublish && (
+          <p className="text-xs text-muted-foreground text-right mt-2" aria-live="polite">
+            {!storyData.personName.trim()
+              ? "Add her name to publish"
+              : verdict === 0
+                ? "Pick a verdict to publish"
+                : !storyData.content.trim()
+                  ? "Write what happened to publish"
+                  : uploadedImages.length === 0
+                    ? "Add at least one photo to publish"
+                    : phoneError
+                      ? "Fix the phone number to publish"
+                      : "Confirm the honesty checkbox to publish"}
+          </p>
+        )}
       </div>
     </div>
   );

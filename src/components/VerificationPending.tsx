@@ -10,10 +10,14 @@ import SubjectSearch from '@/components/SubjectSearch';
 
 interface VerificationPendingProps {
   onRefresh: () => void;
+  /** When the selfie was submitted — drives the "taking longer than expected" escape hatch. */
+  submittedAt?: string | null;
 }
 
-const VerificationPending = ({ onRefresh }: VerificationPendingProps) => {
+const VerificationPending = ({ onRefresh, submittedAt }: VerificationPendingProps) => {
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const overdue =
+    !!submittedAt && Date.now() - new Date(submittedAt).getTime() > 48 * 60 * 60 * 1000;
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
@@ -63,6 +67,15 @@ const VerificationPending = ({ onRefresh }: VerificationPendingProps) => {
             <p className="text-sm text-muted-foreground">
               No need to keep checking back &mdash; we'll come to you.
             </p>
+            {overdue && (
+              <p className="text-sm text-muted-foreground">
+                Taking longer than 48 hours?{" "}
+                <a href="/support" className="text-primary font-semibold hover:underline">
+                  Contact support
+                </a>{" "}
+                and we'll chase it down.
+              </p>
+            )}
           </div>
 
           <div className="space-y-3">
