@@ -4,16 +4,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
-    <script>
-      (function() {
-        var host = window.location.hostname;
-        if (host === 'teaappformen.com' || host === 'www.teaappformen.com') {
-          var target = 'https://sipjuice.app' + window.location.pathname + window.location.search + window.location.hash;
-          window.location.replace(target);
-        }
-      })();
-    </script>
-    
     <!-- SEO Meta Tags -->
     <title>The Tea App for Men — Anonymous Dating Reviews | Juice</title>
     <meta name="description" content="Juice is the Tea app for men: verified men share honest reviews of the women they've dated — green flags and red. Look someone up before your next date. Free to join." />
@@ -21,6 +11,30 @@
     <meta name="keywords" content="tea app for men, male dating app, men's dating stories, anonymous dating reviews, dating experiences men, men's dating advice, dating app guys, male dating community, dating stories app, men only dating app, dating reviews for men, anonymous dating platform" />
     <meta name="author" content="Juice" />
     <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+    <script>
+      (function() {
+        var host = window.location.hostname;
+        // Alias domain → hard redirect to the canonical host.
+        if (host === 'teaappformen.com' || host === 'www.teaappformen.com') {
+          var target = 'https://sipjuice.app' + window.location.pathname + window.location.search + window.location.hash;
+          window.location.replace(target);
+          return;
+        }
+        // Any other non-canonical host (thejuice.lovable.app staging, previews,
+        // future mirrors) must not compete with sipjuice.app in search: flip the
+        // robots meta to noindex. Local dev is exempt only to avoid confusion —
+        // crawlers can't reach it anyway.
+        if (host !== 'sipjuice.app' && host !== 'localhost' && host !== '127.0.0.1') {
+          var robots = document.querySelector('meta[name="robots"]');
+          if (!robots) {
+            robots = document.createElement('meta');
+            robots.setAttribute('name', 'robots');
+            document.head.appendChild(robots);
+          }
+          robots.setAttribute('content', 'noindex, nofollow');
+        }
+      })();
+    </script>
     
     <!-- Geo Targeting -->
     <meta name="geo.region" content="US" />
