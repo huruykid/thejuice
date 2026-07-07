@@ -20,6 +20,8 @@ Disallow: /admin/
 Disallow: /profile
 Disallow: /activity
 Disallow: /privacy-settings
+Disallow: /competitor-analysis
+Disallow: /viral-marketing-hub
 Disallow: /api/
 Disallow: /auth/
 Disallow: /_next/

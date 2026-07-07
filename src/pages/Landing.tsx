@@ -77,6 +77,10 @@ const Landing = () => {
 
   const faqs = [
     {
+      question: "Is there a Tea app for men?",
+      answer: "Yes — Juice is the Tea app for men. Verified men anonymously review the women they've dated, green flags and red, and you can look someone up by first name before a date. It's the male version of the Tea app, free and in your browser.",
+    },
+    {
       question: "Is it free?",
       answer: "Yes. Juice is free to join. Creating an account, reading stories, and posting your own — all free.",
     },
@@ -104,6 +108,7 @@ const Landing = () => {
           "@context": "https://schema.org",
           "@type": "FAQPage",
           "mainEntity": [
+            { "@type": "Question", "name": "Is there a Tea app for men?", "acceptedAnswer": { "@type": "Answer", "text": "Yes — Juice is the Tea app for men. Verified men anonymously review the women they've dated, green flags and red, and you can look someone up by first name before a date. It's the male version of the Tea app, free and in your browser." } },
             { "@type": "Question", "name": "Is it free?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Juice is free to join. Creating an account, reading stories, and posting your own — all free." } },
             { "@type": "Question", "name": "Are stories actually anonymous?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Your name is never attached to your stories. You post under a randomly assigned codename. The only thing that's verified is that you're a real man — not who you are." } },
             { "@type": "Question", "name": "Who reviews my selfie?", "acceptedAnswer": { "@type": "Answer", "text": "A real human admin reviews your selfie to confirm you're a real person. Your photo is never stored publicly or shared. It's used only for the one-time verification check." } }
