@@ -19,6 +19,7 @@ Only verified men can read real member content; only admins reach admin surfaces
 ## P2 — hardening (recommended, not urgent)
 
 **P2-1: Anonymous story inserts have no DB-level rate limit.**
+> **STATUS 2026-07-06: APPLIED** via `20260706120000_p2_hardening_anon_rate_limit_and_rpc_grants.sql` (+ grant correction in `20260706121500_p2_rpc_grants_revoke_public.sql`, which also revoked anon/authenticated EXECUTE on internal-only SECURITY DEFINER RPCs — advisor warnings dropped 59 → 28, remainder are policy-referenced or intentionally client-callable). Verified: 31st anonymous insert within an hour is rejected; grant matrix and anon-impersonation checks pass.
 The `anon` role can INSERT pending stories (correctly forced to `status='pending'`, `user_id IS NULL`, `is_seed=false`, content-validated). But nothing at the DB layer throttles volume — a script could queue thousands of pending posts and bury the moderation queue. Proposed fix (do not apply without approval):
 
 ```sql

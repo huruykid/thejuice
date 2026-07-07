@@ -1,6 +1,7 @@
+import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import BrandLockup from "@/components/BrandLockup";
-import { ShieldCheck, Sparkles, Clock, CheckCircle2, XCircle, User, LogOut } from "lucide-react";
+import { ShieldCheck, Sparkles, Clock, CheckCircle2, XCircle, User, LogOut, X } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -42,6 +43,16 @@ const UnverifiedHome = ({ onCreateStory, onStartVerification, resumeVerification
   const { user, signOut } = useAuth();
   const { data: submissions = [] } = useMySubmissions(user?.id);
 
+  // First-visit orientation: name the two paths explicitly, dismissible forever.
+  const orientationKey = `juice_orientation_dismissed_${user?.id ?? "anon"}`;
+  const [showOrientation, setShowOrientation] = useState(
+    () => !localStorage.getItem(orientationKey)
+  );
+  const dismissOrientation = () => {
+    localStorage.setItem(orientationKey, "1");
+    setShowOrientation(false);
+  };
+
   return (
     <div className="min-h-screen bg-background pb-20">
       {/* Header */}
@@ -53,7 +64,7 @@ const UnverifiedHome = ({ onCreateStory, onStartVerification, resumeVerification
           <div className="flex items-center gap-3">
             <button
               onClick={onStartVerification}
-              className="text-xs font-semibold text-primary"
+              className="min-h-11 px-3 -mx-1 flex items-center text-xs font-semibold text-primary"
             >
               Verify
             </button>
@@ -61,7 +72,7 @@ const UnverifiedHome = ({ onCreateStory, onStartVerification, resumeVerification
               <DropdownMenuTrigger asChild>
                 <button
                   aria-label="Account menu"
-                  className="h-8 w-8 flex items-center justify-center rounded-full hover:bg-muted transition-colors"
+                  className="h-11 w-11 -mr-1.5 flex items-center justify-center rounded-full hover:bg-muted transition-colors"
                 >
                   <User className="h-5 w-5 text-foreground" strokeWidth={1.8} />
                 </button>
@@ -107,12 +118,37 @@ const UnverifiedHome = ({ onCreateStory, onStartVerification, resumeVerification
         {/* Search-led magic moment — look someone up before anything else */}
         <SubjectSearch onStartVerification={onStartVerification} />
 
-        {/* Orientation — make the unverified path explicit */}
-        <p className="text-sm text-muted-foreground px-1 pt-1 leading-relaxed">
-          You're signed up.{" "}
-          <span className="text-foreground font-medium">Verify with a quick selfie</span> to fully
-          join and read every story — or share the Juice right now, no verification needed.
-        </p>
+        {/* Orientation — make the two unverified paths explicit, once */}
+        {showOrientation && (
+          <Card className="p-4 bg-card border-border relative">
+            <button
+              onClick={dismissOrientation}
+              aria-label="Dismiss"
+              className="absolute top-1 right-1 h-10 w-10 flex items-center justify-center text-muted-foreground hover:text-foreground"
+            >
+              <X className="h-4 w-4" />
+            </button>
+            <p className="text-sm font-semibold text-foreground mb-2 pr-8">
+              You're signed up. Two ways to start:
+            </p>
+            <ul className="text-sm text-muted-foreground space-y-1.5">
+              <li className="flex gap-2">
+                <ShieldCheck className="h-4 w-4 text-primary shrink-0 mt-0.5" aria-hidden />
+                <span>
+                  <span className="text-foreground font-medium">Verify with a 30-second selfie</span>{" "}
+                  — unlocks every real story.
+                </span>
+              </li>
+              <li className="flex gap-2">
+                <Sparkles className="h-4 w-4 text-primary shrink-0 mt-0.5" aria-hidden />
+                <span>
+                  <span className="text-foreground font-medium">Or post right now</span> — no
+                  verification needed; an admin reviews it before it's published.
+                </span>
+              </li>
+            </ul>
+          </Card>
+        )}
 
         {/* Illustrative teaser feed — gives the screen life and a reason to verify */}
         <TeaserFeed onStartVerification={onStartVerification} />

@@ -91,7 +91,7 @@ const Home = ({ onCreateStory }: HomeProps) => {
           <button
             onClick={() => navigate('/activity')}
             aria-label="Activity"
-            className="p-1 -mr-1 text-foreground hover:text-primary transition-colors"
+            className="min-h-11 min-w-11 -mr-2 flex items-center justify-center text-foreground hover:text-primary transition-colors"
           >
             <Heart className="h-6 w-6" strokeWidth={1.8} />
           </button>
@@ -157,7 +157,7 @@ const Home = ({ onCreateStory }: HomeProps) => {
             </h3>
             <p className="text-sm text-muted-foreground mb-6">
               {scope === "city"
-                ? "Be the first to pass on the Juice in your city — or browse everywhere."
+                ? "Be the first to share the Juice in your city — or browse everywhere."
                 : "Be the first to share your dating story."}
             </p>
             {scope === "city" && (

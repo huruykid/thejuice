@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import Home from "./Home";
 import UnverifiedHome from "./UnverifiedHome";
@@ -41,6 +42,19 @@ const Index = () => {
     isRejected,
   } = useVerification(user?.id);
   const { currentStep, setCurrentStep, markStepCompleted, isStepCompleted } = useOnboardingState(user?.id);
+
+  // Honor a returnTo deep link (set by LoginRedirect for gated routes) once the
+  // user is verified, so a shared /story/:id link survives the login round-trip.
+  // Only same-origin paths are allowed — no protocol-relative or absolute URLs.
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const returnTo = searchParams.get("returnTo");
+  useEffect(() => {
+    if (verificationLoading || !isVerified || !returnTo) return;
+    if (returnTo.startsWith("/") && !returnTo.startsWith("//")) {
+      navigate(returnTo, { replace: true });
+    }
+  }, [verificationLoading, isVerified, returnTo, navigate]);
 
   // Show the success animation exactly once — the first time this user is verified,
   // regardless of whether they were in the app when it happened or came back later.
@@ -110,7 +124,12 @@ const Index = () => {
 
   // Submitted verification: pending / rejected
   if (hasVerification && isPending && !resubmitting) {
-    return <VerificationPending onRefresh={refreshVerificationStatus} />;
+    return (
+      <VerificationPending
+        onRefresh={refreshVerificationStatus}
+        submittedAt={verification?.created_at}
+      />
+    );
   }
   if (hasVerification && isRejected && !resubmitting) {
     return (
