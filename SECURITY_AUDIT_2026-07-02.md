@@ -43,6 +43,13 @@ for each row execute function public.check_anon_story_rate();
 
 **P2-2: Auth dashboard settings (manual check — not queryable via SQL).**
 In Supabase Dashboard → Authentication: enable leaked-password protection, review OTP expiry (≤1 hour), consider MFA options for admin accounts. Five minutes of clicking; do it before store submission.
+> **STATUS 2026-07-08:** OTP expiry confirmed at 3600s (compliant, no change needed).
+> Server-side leaked-password protection is gated to Supabase Pro (save rejected on Free
+> plan); implemented a client-side compensating control instead — HIBP k-anonymity check
+> (`src/lib/passwordCheck.ts`) gating signup (`useAuth.signUp`) and password reset
+> (`ResetPassword`). Covers the form paths, not direct auth-API calls; replace with the
+> server-side toggle when/if the project moves to Pro. Postgres security-patch upgrade
+> (17.4.1.057 → 17.6.1.141) initiated by owner via dashboard.
 
 ## P3 — cleanup
 

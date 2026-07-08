@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { User, Session } from '@supabase/supabase-js';
+import { User, Session, AuthError } from '@supabase/supabase-js';
+import { isPasswordLeaked } from '@/lib/passwordCheck';
 import { useSecurityMonitoring } from './useSecurityMonitoring';
 import { useViewAs } from '@/contexts/ViewAsContext';
 import { useRealIsAdmin } from './useRealIsAdmin';
@@ -36,8 +37,19 @@ export const useAuth = () => {
   }, []);
 
   const signUp = async (email: string, password: string) => {
+    // Leaked-password gate (HIBP k-anonymity; see src/lib/passwordCheck.ts).
+    // Server-side enforcement is a Supabase Pro feature — this covers the
+    // signup form. Fails open if HIBP is unreachable.
+    if (await isPasswordLeaked(password)) {
+      return {
+        error: new AuthError(
+          'That password has appeared in a known data breach — please choose a different one.'
+        ),
+      };
+    }
+
     // Use a more robust redirect URL that works in all environments
-    const redirectUrl = window.location.href.includes('lovableproject.com') 
+    const redirectUrl = window.location.href.includes('lovableproject.com')
       ? 'https://da2e9ee2-4548-482f-80e7-6cfedc4bfcb9.lovableproject.com/'
       : `${window.location.origin}/`;
 
