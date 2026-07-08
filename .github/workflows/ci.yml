@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      # --ignore-scripts: sharp's postinstall needs native downloads and is only
+      # used for icon generation; nothing in typecheck/tests/build needs it.
+      - name: Install
+        run: npm ci --ignore-scripts
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Tests
+        run: npx vitest run
+
+      - name: Design-token guardrail
+        run: npm run design:check
+
+      - name: Build
+        run: npm run build
+
+      # Lint is informational for now: the repo carries ~125 pre-existing
+      # no-explicit-any errors. Gate on it once that debt is paid down.
+      - name: Lint (non-blocking)
+        run: npm run lint
+        continue-on-error: true
