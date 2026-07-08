@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { Helmet } from "react-helmet-async";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Check, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -119,8 +118,26 @@ const TeaAppComparison = () => {
     }
   ];
 
+  const stats = [
+    {
+      value: "4",
+      label: "Rating Metrics",
+      detail: "Every review covers communication, safety, vibe, and loyalty",
+    },
+    {
+      value: "100%",
+      label: "Manual Approval",
+      detail: "Every member is reviewed before joining — no auto sign-ups",
+    },
+    {
+      value: "24h",
+      label: "Verification Time",
+      detail: "Fast verification process to get you sharing quickly",
+    },
+  ];
+
   return (
-    <div className="min-h-screen bg-gradient-soft">
+    <div className="min-h-screen bg-background">
       <Helmet>
         <title>Tea App for Men — Juice Is the Male Version of Tea</title>
         <meta name="description" content="Yes, there's a Tea app for men. Juice is the male version of the Tea app: verified men anonymously review the women they've dated — green flags and red. Free, no download." />
@@ -133,21 +150,21 @@ const TeaAppComparison = () => {
       </Helmet>
 
       {/* Hero Section */}
-      <section className="py-16 px-4">
-        <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
+      <section className="px-4 pt-14 pb-16 md:pt-20">
+        <div className="max-w-6xl mx-auto">
+          <h1 className="font-display font-extrabold uppercase leading-[0.9] tracking-tight text-5xl md:text-6xl lg:text-7xl text-foreground mb-6 max-w-4xl">
             Yes, there's a Tea app for men. <span className="text-primary">It's called Juice.</span>
           </h1>
-          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+          <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl leading-relaxed">
             Juice is the male version of the Tea app: verified men anonymously review the women
             they've dated — green flags and red — so you can look her up before the date.
             Here's how it compares to the original.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" asChild className="text-lg px-8">
+          <div className="flex flex-col sm:flex-row gap-3">
+            <Button size="xl" variant="juice" asChild className="font-bold">
               <Link to="/app">Join Juice free <ArrowRight className="ml-2 h-5 w-5" /></Link>
             </Button>
-            <Button size="lg" variant="outline" asChild className="text-lg px-8">
+            <Button size="xl" variant="outline" asChild>
               <Link to="/how-it-works">How it works</Link>
             </Button>
           </div>
@@ -155,141 +172,121 @@ const TeaAppComparison = () => {
       </section>
 
       {/* Comparison Table */}
-      <section className="py-16 px-4">
+      <section className="px-4 py-16 md:py-20">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+          <div className="border-t-2 border-foreground pt-4 mb-10 flex items-baseline justify-between gap-4 flex-wrap">
+            <h2 className="font-display font-extrabold uppercase tracking-tight text-3xl md:text-4xl text-foreground">
               Tea app vs. Juice — feature by feature
             </h2>
-            <p className="text-xl text-muted-foreground">
+            <p className="text-sm text-muted-foreground">
               Why verified men prefer Juice
             </p>
           </div>
 
-          <Card className="border-0 shadow-card bg-white/80 backdrop-blur-sm overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-primary/10">
-                    <th className="text-left p-4 font-semibold text-foreground">Feature</th>
-                    <th className="text-left p-4 font-semibold text-muted-foreground">Tea App</th>
-                    <th className="text-left p-4 font-semibold text-primary">Juice</th>
+          <div className="overflow-x-auto">
+            <table className="w-full border-b border-border">
+              <thead>
+                <tr className="border-b-2 border-foreground">
+                  <th className="text-left py-3 pr-4 text-[11px] font-semibold uppercase tracking-[0.18em] text-foreground">Feature</th>
+                  <th className="text-left py-3 pr-4 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">Tea App</th>
+                  <th className="text-left py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">Juice</th>
+                </tr>
+              </thead>
+              <tbody>
+                {comparisons.map((comparison, index) => (
+                  <tr key={index} className="border-t border-border first:border-t-0">
+                    <td className="py-4 pr-4 font-medium text-foreground">{comparison.feature}</td>
+                    <td className="py-4 pr-4 text-muted-foreground">{comparison.original}</td>
+                    <td className="py-4">
+                      <div className="flex items-center gap-2">
+                        <Check className="h-4 w-4 text-success shrink-0" />
+                        <span className="text-foreground">{comparison.ours}</span>
+                      </div>
+                    </td>
                   </tr>
-                </thead>
-                <tbody>
-                  {comparisons.map((comparison, index) => (
-                    <tr key={index} className="border-b border-primary/5 hover:bg-primary/5 transition-colors">
-                      <td className="p-4 font-medium text-foreground">{comparison.feature}</td>
-                      <td className="p-4 text-muted-foreground">{comparison.original}</td>
-                      <td className="p-4">
-                        <div className="flex items-center gap-2">
-                          <Check className="h-4 w-4 text-success" />
-                          <span className="text-foreground">{comparison.ours}</span>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </Card>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </section>
 
       {/* Advantages Section */}
-      <section className="py-16 px-4 bg-white/50">
+      <section className="px-4 py-16 md:py-20 bg-secondary">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+          <div className="border-t-2 border-foreground pt-4 mb-10 flex items-baseline justify-between gap-4 flex-wrap">
+            <h2 className="font-display font-extrabold uppercase tracking-tight text-3xl md:text-4xl text-foreground">
               What Only Juice Offers
             </h2>
-            <p className="text-xl text-muted-foreground">
+            <p className="text-sm text-muted-foreground">
               What makes the difference
             </p>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-0 md:gap-y-2">
             {advantages.map((advantage, index) => (
-              <Card key={index} className="border-0 shadow-card bg-white/80 backdrop-blur-sm">
-                <CardHeader>
-                  <CardTitle className="text-xl flex items-center gap-2">
-                    <Check className="h-5 w-5 text-primary" />
-                    {advantage.title}
-                  </CardTitle>
-                  <CardDescription className="text-base">
+              <div key={index} className="border-t border-border py-6 flex gap-5">
+                <span className="font-display font-extrabold text-2xl text-primary leading-none pt-0.5 w-10 shrink-0" aria-hidden>
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <div>
+                  <h3 className="text-base font-bold text-foreground mb-1">{advantage.title}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed mb-3">
                     {advantage.description}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="bg-primary/10 p-4 rounded-lg">
-                    <p className="text-sm font-medium text-primary">
-                      <strong>Benefit:</strong> {advantage.benefit}
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
+                  </p>
+                  <p className="text-sm font-medium text-primary">
+                    <strong>Benefit:</strong> {advantage.benefit}
+                  </p>
+                </div>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
       {/* Statistics Section */}
-      <section className="py-16 px-4">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+      <section className="px-4 py-16 md:py-20">
+        <div className="max-w-6xl mx-auto">
+          <div className="border-t-2 border-foreground pt-4 mb-10 flex items-baseline justify-between gap-4 flex-wrap">
+            <h2 className="font-display font-extrabold uppercase tracking-tight text-3xl md:text-4xl text-foreground">
               By the Numbers
             </h2>
-            <p className="text-xl text-muted-foreground">
+            <p className="text-sm text-muted-foreground">
               Operational specifics from how Juice is built
             </p>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <Card className="text-center border-0 shadow-card bg-white/80 backdrop-blur-sm">
-              <CardContent className="p-8">
-                <div className="text-4xl font-bold text-primary mb-2">4</div>
-                <div className="text-lg font-semibold text-foreground mb-2">Rating Metrics</div>
-                <div className="text-sm text-muted-foreground">Every review covers communication, safety, vibe, and loyalty</div>
-              </CardContent>
-            </Card>
-            
-            <Card className="text-center border-0 shadow-card bg-white/80 backdrop-blur-sm">
-              <CardContent className="p-8">
-                <div className="text-4xl font-bold text-primary mb-2">100%</div>
-                <div className="text-lg font-semibold text-foreground mb-2">Manual Approval</div>
-                <div className="text-sm text-muted-foreground">Every member is reviewed before joining — no auto sign-ups</div>
-              </CardContent>
-            </Card>
-            
-            <Card className="text-center border-0 shadow-card bg-white/80 backdrop-blur-sm">
-              <CardContent className="p-8">
-                <div className="text-4xl font-bold text-primary mb-2">24h</div>
-                <div className="text-lg font-semibold text-foreground mb-2">Verification Time</div>
-                <div className="text-sm text-muted-foreground">Fast verification process to get you sharing quickly</div>
-              </CardContent>
-            </Card>
+            {stats.map((stat) => (
+              <div key={stat.label} className="border-t border-border pt-5">
+                <span className="font-display font-extrabold text-5xl text-primary leading-none block mb-3" aria-hidden>
+                  {stat.value}
+                </span>
+                <h3 className="text-lg font-bold text-foreground mb-2">{stat.label}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{stat.detail}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* FAQ — mirrors the "tea app for men / male version of tea" query family */}
-      <section className="py-16 px-4">
-        <div className="max-w-3xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-10 text-center">
-            Tea app for men — your questions, answered
-          </h2>
-          <div className="space-y-6">
+      <section className="px-4 py-16 md:py-20">
+        <div className="max-w-6xl mx-auto">
+          <div className="border-t-2 border-foreground pt-4 mb-8">
+            <h2 className="font-display font-extrabold uppercase tracking-tight text-3xl md:text-4xl text-foreground">
+              Tea app for men — your questions, answered
+            </h2>
+          </div>
+          <div className="divide-y divide-border border-b border-border max-w-3xl">
             {faqs.map((f) => (
-              <Card key={f.q} className="border-0 shadow-card bg-white/80 backdrop-blur-sm">
-                <CardContent className="p-6">
-                  <h3 className="text-lg font-semibold text-foreground mb-2">{f.q}</h3>
-                  <p className="text-muted-foreground">{f.a}</p>
-                </CardContent>
-              </Card>
+              <div key={f.q} className="py-6">
+                <h3 className="text-lg font-bold text-foreground mb-2">{f.q}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{f.a}</p>
+              </div>
             ))}
           </div>
-          <p className="text-muted-foreground mt-8 text-center">
+          <p className="text-sm text-muted-foreground mt-8 max-w-3xl leading-relaxed">
             Also looking at TeaOnHer? See the{" "}
             <Link to="/teaonher-alternative" className="text-primary underline underline-offset-4">
               TeaOnHer alternative that still works
@@ -311,28 +308,26 @@ const TeaAppComparison = () => {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-16 px-4">
-        <div className="max-w-4xl mx-auto text-center">
-          <Card className="border-0 shadow-card bg-gradient-primary text-primary-foreground">
-            <CardContent className="p-12">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                One platform, built for how men actually date.
-              </h2>
-              <p className="text-xl mb-8 opacity-90">
-                Verified members. Anonymous stories. No drama from the other side of the equation.
-              </p>
-              <Button size="lg" variant="secondary" asChild className="text-lg px-8">
-                <Link to="/app">
-                  Join free
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
-              </Button>
-              <p className="text-sm mt-4 opacity-75">
-                Free to join • Verified community • Anonymous sharing
-              </p>
-            </CardContent>
-          </Card>
+      {/* CTA Section — flat ink band */}
+      <section className="bg-foreground text-background">
+        <div className="max-w-6xl mx-auto px-4 py-16 md:py-24">
+          <h2 className="font-display font-extrabold uppercase tracking-tight leading-[0.95] text-4xl md:text-6xl mb-4 max-w-3xl">
+            One platform, built for how men actually date.
+          </h2>
+          <p className="text-lg text-background/70 mb-10 max-w-xl">
+            Verified members. Anonymous stories. No drama from the other side of the equation.
+          </p>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-5">
+            <Button size="xl" variant="juice" asChild className="font-bold w-fit">
+              <Link to="/app">
+                Join free
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Link>
+            </Button>
+            <p className="text-sm text-background/60 uppercase tracking-[0.18em] font-semibold">
+              Free to join • Verified community • Anonymous sharing
+            </p>
+          </div>
         </div>
       </section>
     </div>

@@ -1,7 +1,6 @@
 import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Check, ShieldCheck, ArrowRight, Search, EyeOff, Scale } from "lucide-react";
+import { Check, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const faqs = [
@@ -44,29 +43,25 @@ const TeaOnHerAlternative = () => {
 
   const differences = [
     {
-      icon: ShieldCheck,
       title: "Human-verified members, no ID uploads",
       body: "TeaOnHer leaked driver's licenses. Juice verifies you're a real man with a one-time selfie reviewed by a human — no government ID ever touches our servers, and you can delete the selfie afterward.",
     },
     {
-      icon: EyeOff,
       title: "Anonymous by design",
       body: "Your name never appears on anything you post. Sign-in is only for access — the community sees a codename, nothing else.",
     },
     {
-      icon: Search,
       title: "Look her up before the date",
       body: "Search a first name and city and see what verified men actually experienced — one green or red flag plus the story.",
     },
     {
-      icon: Scale,
       title: "Real moderation and a public dispute process",
       body: "Every post can be reported, a moderation team reviews flagged content, and anyone — member or not — can request removal of a post about them. That accountability is why we're still here.",
     },
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-soft">
+    <div className="min-h-screen bg-background">
       <Helmet>
         <title>TeaOnHer Alternative That Still Works (2026) | Juice</title>
         <meta
@@ -89,118 +84,134 @@ const TeaOnHerAlternative = () => {
         <script type="application/ld+json">{JSON.stringify(faqJsonLd)}</script>
       </Helmet>
 
-      {/* Hero */}
-      <section className="py-16 px-4">
-        <div className="max-w-4xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 text-xs font-medium text-primary bg-primary/10 px-3 py-1.5 rounded-full mb-6">
-            <ShieldCheck className="h-3.5 w-3.5" />
-            Verified men only · Anonymous to post · No ID uploads
-          </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
-            Looking for TeaOnHer? It's gone. <span className="text-primary">Juice is what's next.</span>
+      {/* Wire strip — masthead ticker instead of a floating pill badge */}
+      <div className="border-y border-border">
+        <div className="max-w-6xl mx-auto px-4 py-2 flex items-center gap-3 overflow-x-auto whitespace-nowrap text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+          <span className="text-primary">Verified men only</span>
+          <span aria-hidden className="text-border">·</span>
+          <span>Anonymous to post</span>
+          <span aria-hidden className="text-border">·</span>
+          <span>No ID uploads</span>
+        </div>
+      </div>
+
+      {/* Hero — type-led, left-aligned */}
+      <section className="px-4 pt-14 pb-16 md:pt-20">
+        <div className="max-w-6xl mx-auto">
+          <h1 className="font-display font-extrabold uppercase leading-[0.9] tracking-tight text-5xl md:text-6xl lg:text-7xl text-foreground mb-6 max-w-4xl">
+            Looking for TeaOnHer? It's gone.{" "}
+            <span className="text-primary">Juice is what's next.</span>
           </h1>
-          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+          <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl leading-relaxed">
             TeaOnHer was removed from the App Store in 2025 after repeated security leaks and is no
             longer active. Juice does what it promised — verified men, anonymous reviews, green and
             red flags — and it runs right in your browser. No download, nothing to take down.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" asChild className="text-lg px-8">
+          <div className="flex flex-col sm:flex-row gap-3 mb-4">
+            <Button size="xl" variant="juice" asChild className="font-bold">
               <Link to="/app">Join Juice free <ArrowRight className="ml-2 h-5 w-5" /></Link>
             </Button>
-            <Button size="lg" variant="outline" asChild className="text-lg px-8">
+            <Button size="xl" variant="outline" asChild>
               <Link to="/how-it-works">How it works</Link>
             </Button>
           </div>
-          <p className="text-sm text-muted-foreground mt-4">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
             Free · Anonymous · We never ask for your ID
           </p>
         </div>
       </section>
 
       {/* What happened */}
-      <section className="py-12 px-4">
-        <div className="max-w-3xl mx-auto">
-          <h2 className="text-3xl font-bold text-foreground mb-4 text-center">What happened to TeaOnHer?</h2>
-          <p className="text-lg text-muted-foreground mb-4">
-            TeaOnHer launched in 2025 as the men's answer to the Tea app and hit millions of
-            downloads in weeks. Then security researchers found it was exposing users' driver's
-            licenses, email addresses, locations, and selfies. In October 2025, Apple removed both
-            Tea and TeaOnHer from the App Store over privacy and moderation failures, and TeaOnHer
-            never recovered — by 2026 it was inactive.
-          </p>
-          <p className="text-lg text-muted-foreground">
-            The idea wasn't the problem. The execution was. Juice was built from day one around the
-            two things TeaOnHer neglected: member privacy and real moderation. Curious how Juice
-            stacks up against the original Tea app too? See the full{" "}
-            <Link to="/tea-app-comparison" className="text-primary underline underline-offset-4">
-              Juice vs. Tea app comparison
-            </Link>
-            .
-          </p>
+      <section className="px-4 py-16 md:py-20 bg-secondary">
+        <div className="max-w-6xl mx-auto">
+          <div className="border-t-2 border-foreground pt-4 mb-10">
+            <h2 className="font-display font-extrabold uppercase tracking-tight text-3xl md:text-4xl text-foreground">What happened to TeaOnHer?</h2>
+          </div>
+          <div className="max-w-3xl">
+            <p className="text-lg text-muted-foreground mb-4 leading-relaxed">
+              TeaOnHer launched in 2025 as the men's answer to the Tea app and hit millions of
+              downloads in weeks. Then security researchers found it was exposing users' driver's
+              licenses, email addresses, locations, and selfies. In October 2025, Apple removed both
+              Tea and TeaOnHer from the App Store over privacy and moderation failures, and TeaOnHer
+              never recovered — by 2026 it was inactive.
+            </p>
+            <p className="text-lg text-muted-foreground leading-relaxed">
+              The idea wasn't the problem. The execution was. Juice was built from day one around the
+              two things TeaOnHer neglected: member privacy and real moderation. Curious how Juice
+              stacks up against the original Tea app too? See the full{" "}
+              <Link to="/tea-app-comparison" className="text-primary underline underline-offset-4">
+                Juice vs. Tea app comparison
+              </Link>
+              .
+            </p>
+          </div>
         </div>
       </section>
 
-      {/* Differences */}
-      <section className="py-12 px-4">
-        <div className="max-w-5xl mx-auto">
-          <h2 className="text-3xl font-bold text-foreground mb-10 text-center">
-            How Juice is different
-          </h2>
-          <div className="grid md:grid-cols-2 gap-6">
-            {differences.map((d) => (
-              <Card key={d.title} className="border-0 shadow-card bg-white/80 backdrop-blur-sm">
-                <CardContent className="p-6">
-                  <d.icon className="h-8 w-8 text-primary mb-3" />
-                  <h3 className="text-xl font-semibold text-foreground mb-2">{d.title}</h3>
-                  <p className="text-muted-foreground">{d.body}</p>
-                </CardContent>
-              </Card>
+      {/* Differences — numbered editorial index */}
+      <section className="px-4 py-16 md:py-20">
+        <div className="max-w-6xl mx-auto">
+          <div className="border-t-2 border-foreground pt-4 mb-10">
+            <h2 className="font-display font-extrabold uppercase tracking-tight text-3xl md:text-4xl text-foreground">
+              How Juice is different
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-0 md:gap-y-2">
+            {differences.map((d, index) => (
+              <div key={d.title} className="border-t border-border py-6 flex gap-5">
+                <span className="font-display font-extrabold text-2xl text-primary leading-none pt-0.5 w-10 shrink-0" aria-hidden>
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <div>
+                  <h3 className="text-base font-bold text-foreground mb-1">{d.title}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{d.body}</p>
+                </div>
+              </div>
             ))}
           </div>
-          <div className="text-center mt-10">
-            <Button size="lg" asChild className="text-lg px-8">
+          <div className="mt-10">
+            <Button size="xl" variant="juice" asChild className="font-bold">
               <Link to="/app">Look someone up now <ArrowRight className="ml-2 h-5 w-5" /></Link>
             </Button>
           </div>
         </div>
       </section>
 
-      {/* FAQ */}
-      <section className="py-12 px-4">
-        <div className="max-w-3xl mx-auto">
-          <h2 className="text-3xl font-bold text-foreground mb-10 text-center">
-            TeaOnHer questions, answered
-          </h2>
-          <div className="space-y-6">
+      {/* FAQ — ruled list, no boxes */}
+      <section className="px-4 py-16 md:py-20 bg-secondary">
+        <div className="max-w-6xl mx-auto">
+          <div className="border-t-2 border-foreground pt-4 mb-8">
+            <h2 className="font-display font-extrabold uppercase tracking-tight text-3xl md:text-4xl text-foreground">
+              TeaOnHer questions, answered
+            </h2>
+          </div>
+          <div className="divide-y divide-border border-b border-border max-w-3xl">
             {faqs.map((f) => (
-              <Card key={f.q} className="border-0 shadow-card bg-white/80 backdrop-blur-sm">
-                <CardContent className="p-6">
-                  <h3 className="text-lg font-semibold text-foreground mb-2">{f.q}</h3>
-                  <p className="text-muted-foreground">{f.a}</p>
-                </CardContent>
-              </Card>
+              <div key={f.q} className="py-6">
+                <h3 className="text-lg font-bold text-foreground mb-2">{f.q}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{f.a}</p>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="py-16 px-4">
-        <div className="max-w-3xl mx-auto text-center">
-          <h2 className="text-3xl font-bold text-foreground mb-4">
+      {/* Final CTA — flat ink band */}
+      <section className="bg-foreground text-background">
+        <div className="max-w-6xl mx-auto px-4 py-16 md:py-24">
+          <h2 className="font-display font-extrabold uppercase tracking-tight leading-[0.95] text-4xl md:text-6xl mb-4 max-w-3xl">
             The Tea app for men — done right this time
           </h2>
-          <p className="text-lg text-muted-foreground mb-8">
+          <p className="text-lg text-background/70 mb-8 max-w-xl">
             Free to join. Verification takes about a minute. Works on any phone, straight from the
             browser.
           </p>
-          <div className="flex flex-wrap gap-6 justify-center text-muted-foreground mb-8">
-            <span className="flex items-center gap-2"><Check className="h-5 w-5 text-primary" /> Every member human-verified</span>
-            <span className="flex items-center gap-2"><Check className="h-5 w-5 text-primary" /> Anonymous to post</span>
-            <span className="flex items-center gap-2"><Check className="h-5 w-5 text-primary" /> No download needed</span>
+          <div className="flex flex-wrap gap-x-8 gap-y-2 text-background/70 mb-10">
+            <span className="flex items-center gap-2 text-sm font-semibold"><Check className="h-4 w-4 text-primary" /> Every member human-verified</span>
+            <span className="flex items-center gap-2 text-sm font-semibold"><Check className="h-4 w-4 text-primary" /> Anonymous to post</span>
+            <span className="flex items-center gap-2 text-sm font-semibold"><Check className="h-4 w-4 text-primary" /> No download needed</span>
           </div>
-          <Button size="lg" asChild className="text-lg px-8">
+          <Button size="xl" variant="juice" asChild className="font-bold w-fit">
             <Link to="/app">Get the Juice <ArrowRight className="ml-2 h-5 w-5" /></Link>
           </Button>
         </div>
