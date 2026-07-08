@@ -1,11 +1,49 @@
 import { Button } from "@/components/ui/button";
 import { Helmet } from "react-helmet-async";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Check, X, ArrowLeft, ArrowRight } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Check, ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
+
+/* FAQ copy mirrors the exact phrasings searchers use ("tea app for men",
+   "male version of tea", "tea app for guys") — this page earns impressions
+   for that whole family, so questions and answers are written to match it. */
+const faqs = [
+  {
+    q: "Is there a Tea app for men?",
+    a: "Yes. Juice is the Tea app for men — verified men anonymously share reviews of the women they've dated, with green flags and red flags, exactly like Tea did for women. It's free and runs in your browser at sipjuice.app.",
+  },
+  {
+    q: "What is the male version of the Tea app?",
+    a: "Juice is the male version of the Tea app. Same concept flipped: a men-only, verified community where you can look up a woman by first name and city before a date and read what other men experienced.",
+  },
+  {
+    q: "Can guys use the original Tea app?",
+    a: "No — Tea was women-only, and it was removed from the Apple App Store in October 2025 over privacy and moderation failures. Men looking for the same thing use Juice, which was built for men from day one.",
+  },
+  {
+    q: "Is the Tea app for men free?",
+    a: "Yes. Juice is free — creating an account, verifying, searching names, and posting your own reviews all cost nothing.",
+  },
+  {
+    q: "Do I need to download the Tea app for men from an app store?",
+    a: "No download needed. Juice works instantly in any mobile browser at sipjuice.app — add it to your home screen and it behaves like a native app.",
+  },
+  {
+    q: "How do I know the reviews are from real men?",
+    a: "Every member passes a one-time, human-reviewed selfie verification before they can read or post. No government ID is ever required, and posts are published under anonymous codenames.",
+  },
+];
 
 const TeaAppComparison = () => {
-  const navigate = useNavigate();
+  const faqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((f) => ({
+      "@type": "Question",
+      name: f.q,
+      acceptedAnswer: { "@type": "Answer", text: f.a },
+    })),
+  };
 
   const comparisons = [
     {
@@ -84,24 +122,35 @@ const TeaAppComparison = () => {
   return (
     <div className="min-h-screen bg-gradient-soft">
       <Helmet>
-        <title>Tea App Alternative for Men — Anonymous Reviews | Juice</title>
-        <meta name="description" content="Looking for a Tea app alternative for men? Juice gives verified members, structured ratings, and full anonymity — built for how men date." />
+        <title>Tea App for Men — Juice Is the Male Version of Tea</title>
+        <meta name="description" content="Yes, there's a Tea app for men. Juice is the male version of the Tea app: verified men anonymously review the women they've dated — green flags and red. Free, no download." />
         <link rel="canonical" href="https://sipjuice.app/tea-app-comparison" />
-        <meta property="og:title" content="Tea App Alternative for Men — Anonymous Reviews | Juice" />
-        <meta property="og:description" content="Looking for a Tea app alternative for men? Juice gives verified members, structured ratings, and full anonymity — built for how men date." />
+        <meta property="og:title" content="Tea App for Men — Juice Is the Male Version of Tea" />
+        <meta property="og:description" content="Yes, there's a Tea app for men. Juice is the male version of the Tea app: verified men anonymously review the women they've dated — green flags and red. Free, no download." />
         <meta property="og:url" content="https://sipjuice.app/tea-app-comparison" />
         <meta property="og:type" content="website" />
+        <script type="application/ld+json">{JSON.stringify(faqJsonLd)}</script>
       </Helmet>
 
       {/* Hero Section */}
       <section className="py-16 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
-            Juice vs. Tea App — A Side-by-Side Comparison
+            Yes, there's a Tea app for men. <span className="text-primary">It's called Juice.</span>
           </h1>
           <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Same concept — built properly for men. Here's what's different.
+            Juice is the male version of the Tea app: verified men anonymously review the women
+            they've dated — green flags and red — so you can look her up before the date.
+            Here's how it compares to the original.
           </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button size="lg" asChild className="text-lg px-8">
+              <Link to="/app">Join Juice free <ArrowRight className="ml-2 h-5 w-5" /></Link>
+            </Button>
+            <Button size="lg" variant="outline" asChild className="text-lg px-8">
+              <Link to="/how-it-works">How it works</Link>
+            </Button>
+          </div>
         </div>
       </section>
 
@@ -110,7 +159,7 @@ const TeaAppComparison = () => {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Feature by Feature
+              Tea app vs. Juice — feature by feature
             </h2>
             <p className="text-xl text-muted-foreground">
               Why verified men prefer Juice
@@ -224,6 +273,44 @@ const TeaAppComparison = () => {
         </div>
       </section>
 
+      {/* FAQ — mirrors the "tea app for men / male version of tea" query family */}
+      <section className="py-16 px-4">
+        <div className="max-w-3xl mx-auto">
+          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-10 text-center">
+            Tea app for men — your questions, answered
+          </h2>
+          <div className="space-y-6">
+            {faqs.map((f) => (
+              <Card key={f.q} className="border-0 shadow-card bg-white/80 backdrop-blur-sm">
+                <CardContent className="p-6">
+                  <h3 className="text-lg font-semibold text-foreground mb-2">{f.q}</h3>
+                  <p className="text-muted-foreground">{f.a}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+          <p className="text-muted-foreground mt-8 text-center">
+            Also looking at TeaOnHer? See the{" "}
+            <Link to="/teaonher-alternative" className="text-primary underline underline-offset-4">
+              TeaOnHer alternative that still works
+            </Link>
+            , read{" "}
+            <Link to="/mens-dating-advice" className="text-primary underline underline-offset-4">
+              dating advice from verified men
+            </Link>
+            , or browse{" "}
+            <Link to="/anonymous-dating-reviews" className="text-primary underline underline-offset-4">
+              anonymous dating reviews
+            </Link>{" "}
+            and the{" "}
+            <Link to="/blog" className="text-primary underline underline-offset-4">
+              Juice blog
+            </Link>
+            .
+          </p>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="py-16 px-4">
         <div className="max-w-4xl mx-auto text-center">
@@ -235,9 +322,11 @@ const TeaAppComparison = () => {
               <p className="text-xl mb-8 opacity-90">
                 Verified members. Anonymous stories. No drama from the other side of the equation.
               </p>
-              <Button size="lg" variant="secondary" onClick={() => navigate("/app")} className="text-lg px-8">
-                Join free
-                <ArrowRight className="ml-2 h-5 w-5" />
+              <Button size="lg" variant="secondary" asChild className="text-lg px-8">
+                <Link to="/app">
+                  Join free
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
               </Button>
               <p className="text-sm mt-4 opacity-75">
                 Free to join • Verified community • Anonymous sharing
