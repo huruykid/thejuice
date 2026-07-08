@@ -1,35 +1,28 @@
 import { Button } from "@/components/ui/button";
 import { Helmet } from "react-helmet-async";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Star, Shield, Users, MessageSquare, ArrowRight, Eye, Lock, CheckCircle } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const AnonymousDatingReviews = () => {
-  const navigate = useNavigate();
-
   const reviewTypes = [
     {
       title: "Dating App Reviews",
       description: "Anonymous reviews of Tinder, Bumble, Hinge matches and conversations",
-      icon: <MessageSquare className="h-6 w-6 text-primary" />,
       examples: ["Tinder date reviews", "Bumble experience ratings", "Hinge conversation reviews"]
     },
     {
       title: "First Date Reviews",
       description: "Honest ratings and reviews of first date experiences",
-      icon: <Star className="h-6 w-6 text-primary" />,
       examples: ["Restaurant date reviews", "Activity date ratings", "Coffee date experiences"]
     },
     {
       title: "Relationship Reviews",
       description: "Anonymous reviews of dating relationships and partners",
-      icon: <Users className="h-6 w-6 text-primary" />,
       examples: ["Compatibility ratings", "Communication reviews", "Overall relationship scores"]
     },
     {
       title: "Hookup Reviews",
       description: "Anonymous reviews of casual dating and hookup experiences",
-      icon: <Lock className="h-6 w-6 text-primary" />,
       examples: ["Casual dating reviews", "Hookup experience ratings", "Safety and communication scores"]
     }
   ];
@@ -41,8 +34,38 @@ const AnonymousDatingReviews = () => {
     { category: "Loyalty", description: "Were they honest and trustworthy?" }
   ];
 
+  const privacyPoints = [
+    {
+      title: "No Names Revealed",
+      description: "Reviews are completely anonymous - no personal information shared"
+    },
+    {
+      title: "Secure Platform",
+      description: "Advanced security keeps your reviews private and protected"
+    },
+    {
+      title: "Verified Only",
+      description: "Only verified men can read and write reviews"
+    }
+  ];
+
+  const benefits = [
+    {
+      title: "Honest Feedback",
+      description: "Anonymity allows for brutally honest reviews without social consequences"
+    },
+    {
+      title: "Help Other Men",
+      description: "Your anonymous reviews help other men make better dating decisions"
+    },
+    {
+      title: "No Retaliation",
+      description: "Complete anonymity means no worries about confrontation or backlash"
+    }
+  ];
+
   return (
-    <div className="min-h-screen bg-gradient-soft">
+    <div className="min-h-screen bg-background">
       <Helmet>
         <title>Anonymous Dating Reviews from Verified Men | Juice</title>
         <meta name="description" content="Read and rate anonymous date reviews from verified men — first dates, apps, and relationships. No names, no trace, just honest signal." />
@@ -56,130 +79,119 @@ const AnonymousDatingReviews = () => {
 
       <main>
       {/* Hero Section */}
-      <section className="py-20 px-4">
-        <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6">
+      <section className="px-4 pt-14 pb-16 md:pt-20">
+        <div className="max-w-6xl mx-auto">
+          <h1 className="font-display font-extrabold uppercase leading-[0.9] tracking-tight text-5xl md:text-6xl lg:text-7xl text-foreground mb-6 max-w-4xl">
             Anonymous Dating Reviews —{" "}
             <span className="text-primary">
               Written by Verified Men
             </span>
           </h1>
-          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+          <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl leading-relaxed">
             Read honest date reviews from verified men. Write your own anonymously — no names, no trace.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" onClick={() => navigate("/app")} className="text-lg px-8">
-              Browse Verified Reviews
-              <ArrowRight className="ml-2 h-5 w-5" />
+          <div className="flex flex-col sm:flex-row gap-3">
+            <Button size="xl" variant="juice" asChild className="font-bold">
+              <Link to="/app">
+                Browse Verified Reviews
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Link>
             </Button>
-            <Button size="lg" variant="outline" onClick={() => navigate("/app")} className="text-lg px-8">
-              Submit a Review
+            <Button size="xl" variant="outline" asChild>
+              <Link to="/app">Submit a Review</Link>
             </Button>
           </div>
         </div>
       </section>
 
       {/* Privacy Promise */}
-      <section className="py-16 px-4 bg-white/50">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-12">
-            <Shield className="h-16 w-16 text-primary mx-auto mb-4" />
-            <h2 className="text-3xl font-bold text-foreground mb-4">Your identity never touches the review</h2>
-            <p className="text-xl text-muted-foreground">
+      <section className="px-4 py-16 md:py-20 bg-secondary">
+        <div className="max-w-6xl mx-auto">
+          <div className="border-t-2 border-foreground pt-4 mb-10 flex items-baseline justify-between gap-4 flex-wrap">
+            <h2 className="font-display font-extrabold uppercase tracking-tight text-3xl md:text-4xl text-foreground">
+              Your identity never touches the review
+            </h2>
+            <p className="text-sm text-muted-foreground">
               Your identity is protected. Review with zero risk.
             </p>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <Eye className="h-8 w-8 text-primary mx-auto mb-3" />
-              <h3 className="font-semibold mb-2">No Names Revealed</h3>
-              <p className="text-sm text-muted-foreground">Reviews are completely anonymous - no personal information shared</p>
-            </div>
-            <div className="text-center">
-              <Lock className="h-8 w-8 text-primary mx-auto mb-3" />
-              <h3 className="font-semibold mb-2">Secure Platform</h3>
-              <p className="text-sm text-muted-foreground">Advanced security keeps your reviews private and protected</p>
-            </div>
-            <div className="text-center">
-              <CheckCircle className="h-8 w-8 text-primary mx-auto mb-3" />
-              <h3 className="font-semibold mb-2">Verified Only</h3>
-              <p className="text-sm text-muted-foreground">Only verified men can read and write reviews</p>
-            </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-x-12 gap-y-0 md:gap-y-2">
+            {privacyPoints.map((point, index) => (
+              <div key={index} className="border-t border-border py-6 flex gap-5">
+                <span className="font-display font-extrabold text-2xl text-primary leading-none pt-0.5 w-10 shrink-0" aria-hidden>
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <div>
+                  <h3 className="text-base font-bold text-foreground mb-1">{point.title}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{point.description}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* Review Types */}
-      <section className="py-20 px-4">
+      <section className="px-4 py-16 md:py-20">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+          <div className="border-t-2 border-foreground pt-4 mb-10 flex items-baseline justify-between gap-4 flex-wrap">
+            <h2 className="font-display font-extrabold uppercase tracking-tight text-3xl md:text-4xl text-foreground">
               What Men Review on Juice
             </h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-sm text-muted-foreground">
               Rate and review all your dating experiences with complete anonymity
             </p>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-0 md:gap-y-2">
             {reviewTypes.map((type, index) => (
-              <Card key={index} className="border-0 shadow-card bg-white/80 backdrop-blur-sm hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className="p-2 bg-primary/10 rounded-lg">
-                      {type.icon}
-                    </div>
-                    <CardTitle className="text-xl">{type.title}</CardTitle>
-                  </div>
-                  <CardDescription className="text-base">
+              <div key={index} className="border-t border-border py-6 flex gap-5">
+                <span className="font-display font-extrabold text-2xl text-primary leading-none pt-0.5 w-10 shrink-0" aria-hidden>
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <div>
+                  <h3 className="text-lg font-bold text-foreground mb-1">{type.title}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed mb-3">
                     {type.description}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    <h4 className="font-semibold text-sm">Examples:</h4>
-                    <ul className="text-sm text-muted-foreground space-y-1">
-                      {type.examples.map((example, idx) => (
-                        <li key={idx} className="flex items-center gap-2">
-                          <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
-                          {example}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </CardContent>
-              </Card>
+                  </p>
+                  <h4 className="text-[11px] font-semibold uppercase tracking-[0.18em] text-foreground mb-2">Examples:</h4>
+                  <ul className="text-sm text-muted-foreground space-y-1">
+                    {type.examples.map((example, idx) => (
+                      <li key={idx} className="flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
+                        {example}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
       {/* Rating System */}
-      <section className="py-20 px-4 bg-white/50">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+      <section className="px-4 py-16 md:py-20 bg-secondary">
+        <div className="max-w-6xl mx-auto">
+          <div className="border-t-2 border-foreground pt-4 mb-10 flex items-baseline justify-between gap-4 flex-wrap">
+            <h2 className="font-display font-extrabold uppercase tracking-tight text-3xl md:text-4xl text-foreground">
               4 Things Every Review Covers
             </h2>
-            <p className="text-xl text-muted-foreground">
+            <p className="text-sm text-muted-foreground">
               Rate your experiences across these key areas
             </p>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-0 md:gap-y-2">
             {ratingCategories.map((category, index) => (
-              <div key={index} className="flex items-center gap-4 p-6 bg-white/80 rounded-lg shadow-card">
-                <div className="flex-shrink-0">
-                  <div className="flex">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="h-5 w-5 text-primary fill-primary" />
-                    ))}
-                  </div>
-                </div>
+              <div key={index} className="border-t border-border py-6 flex gap-5">
+                <span className="font-display font-extrabold text-2xl text-primary leading-none pt-0.5 w-10 shrink-0" aria-hidden>
+                  {String(index + 1).padStart(2, "0")}
+                </span>
                 <div>
-                  <h3 className="font-semibold text-lg">{category.category}</h3>
-                  <p className="text-muted-foreground">{category.description}</p>
+                  <h3 className="text-lg font-bold text-foreground mb-1">{category.category}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{category.description}</p>
                 </div>
               </div>
             ))}
@@ -188,74 +200,50 @@ const AnonymousDatingReviews = () => {
       </section>
 
       {/* Benefits */}
-      <section className="py-20 px-4">
+      <section className="px-4 py-16 md:py-20">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+          <div className="border-t-2 border-foreground pt-4 mb-10">
+            <h2 className="font-display font-extrabold uppercase tracking-tight text-3xl md:text-4xl text-foreground">
               Why Anonymity Unlocks Honesty
             </h2>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <Card className="text-center border-0 shadow-card bg-white/80">
-              <CardHeader>
-                <MessageSquare className="h-12 w-12 text-primary mx-auto mb-4" />
-                <CardTitle>Honest Feedback</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">
-                  Anonymity allows for brutally honest reviews without social consequences
-                </p>
-              </CardContent>
-            </Card>
-            
-            <Card className="text-center border-0 shadow-card bg-white/80">
-              <CardHeader>
-                <Users className="h-12 w-12 text-primary mx-auto mb-4" />
-                <CardTitle>Help Other Men</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">
-                  Your anonymous reviews help other men make better dating decisions
-                </p>
-              </CardContent>
-            </Card>
-            
-            <Card className="text-center border-0 shadow-card bg-white/80">
-              <CardHeader>
-                <Shield className="h-12 w-12 text-primary mx-auto mb-4" />
-                <CardTitle>No Retaliation</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">
-                  Complete anonymity means no worries about confrontation or backlash
-                </p>
-              </CardContent>
-            </Card>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-x-12 gap-y-0 md:gap-y-2">
+            {benefits.map((benefit, index) => (
+              <div key={index} className="border-t border-border py-6 flex gap-5">
+                <span className="font-display font-extrabold text-2xl text-primary leading-none pt-0.5 w-10 shrink-0" aria-hidden>
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <div>
+                  <h3 className="text-base font-bold text-foreground mb-1">{benefit.title}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{benefit.description}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-20 px-4">
-        <div className="max-w-4xl mx-auto text-center">
-          <Card className="border-0 shadow-card bg-gradient-primary text-primary-foreground">
-            <CardContent className="p-12">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                The most honest dating reviews you'll ever read
-              </h2>
-              <p className="text-xl mb-8 opacity-90">
-                Join a verified community of men sharing honest dating reviews.
-              </p>
-              <Button size="lg" variant="secondary" onClick={() => navigate("/app")} className="text-lg px-8">
+      {/* CTA Section — flat ink band */}
+      <section className="bg-foreground text-background">
+        <div className="max-w-6xl mx-auto px-4 py-16 md:py-24">
+          <h2 className="font-display font-extrabold uppercase tracking-tight leading-[0.95] text-4xl md:text-6xl mb-4 max-w-3xl">
+            The most honest dating reviews you'll ever read
+          </h2>
+          <p className="text-lg text-background/70 mb-10 max-w-xl">
+            Join a verified community of men sharing honest dating reviews.
+          </p>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-5">
+            <Button size="xl" variant="juice" asChild className="font-bold w-fit">
+              <Link to="/app">
                 Browse Reviews
                 <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-              <p className="text-sm mt-4 opacity-75">
-                Free to join • 100% anonymous • Verified men only
-              </p>
-            </CardContent>
-          </Card>
+              </Link>
+            </Button>
+            <p className="text-sm text-background/60 uppercase tracking-[0.18em] font-semibold">
+              Free to join • 100% anonymous • Verified men only
+            </p>
+          </div>
         </div>
       </section>
       </main>

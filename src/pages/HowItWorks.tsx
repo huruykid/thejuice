@@ -1,18 +1,14 @@
 import { Button } from "@/components/ui/button";
 import { Helmet } from "react-helmet-async";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Shield, MessageSquare, Eye, Users, CheckCircle, Star, ArrowRight, ArrowLeft } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { CheckCircle, ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const HowItWorks = () => {
-  const navigate = useNavigate();
-
   const steps = [
     {
       number: 1,
       title: "Create Your Anonymous Profile",
       description: "Sign up with just an email and create your anonymous username. No real names required.",
-      icon: <Users className="h-6 w-6 md:h-8 md:w-8 text-primary" />,
       details: [
         "Choose a unique anonymous username",
         "Add basic info like age and city",
@@ -24,7 +20,6 @@ const HowItWorks = () => {
       number: 2,
       title: "Verify Your Account",
       description: "Quick selfie verification ensures our community stays authentic and trustworthy.",
-      icon: <Shield className="h-6 w-6 md:h-8 md:w-8 text-primary" />,
       details: [
         "Take a simple verification selfie",
         "Our team reviews within 24 hours",
@@ -36,7 +31,6 @@ const HowItWorks = () => {
       number: 3,
       title: "Share Your Dating Stories",
       description: "Rate and review your dating experiences with complete anonymity and honesty.",
-      icon: <MessageSquare className="h-6 w-6 md:h-8 md:w-8 text-primary" />,
       details: [
         "Rate dates on 4 key metrics",
         "Share detailed experiences",
@@ -48,7 +42,6 @@ const HowItWorks = () => {
       number: 4,
       title: "Read Real Insights",
       description: "Read genuine insights from verified men about their real dating experiences.",
-      icon: <Eye className="h-6 w-6 md:h-8 md:w-8 text-primary" />,
       details: [
         "Browse verified stories by experience type",
         "Filter by ratings and experiences",
@@ -60,24 +53,39 @@ const HowItWorks = () => {
 
   const features = [
     {
-      icon: <Shield className="h-6 w-6" />,
       title: "100% Anonymous",
       description: "Your real identity is never revealed to other users"
     },
     {
-      icon: <CheckCircle className="h-6 w-6" />,
       title: "Verified Community",
       description: "All members are verified to ensure authentic stories"
     },
     {
-      icon: <Star className="h-6 w-6" />,
       title: "Honest Reviews",
       description: "Rate dates on communication, safety, and overall vibe"
     },
     {
-      icon: <Users className="h-6 w-6" />,
       title: "Men-Only Space",
       description: "A judgment-free zone designed specifically for men"
+    }
+  ];
+
+  const faqs = [
+    {
+      question: "Is my identity really anonymous?",
+      answer: "Yes, completely. Your real name and photo are never shown to other users. Only your anonymous username and the stories you choose to share are visible to the community."
+    },
+    {
+      question: "Why do you need verification?",
+      answer: "Verification keeps fake accounts out. Every story you read comes from a real, manually approved member."
+    },
+    {
+      question: "What happens to my verification photo?",
+      answer: "Your verification selfie is used only for account verification and is never shared publicly or with other users. It's stored securely and only accessible to our verification team."
+    },
+    {
+      question: "Can women join the app?",
+      answer: "This platform is designed specifically for men to share their dating experiences in a judgment-free environment. We believe men deserve a space to be honest about their dating lives."
     }
   ];
 
@@ -93,7 +101,7 @@ const HowItWorks = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-soft">
+    <div className="min-h-screen bg-background">
       <Helmet>
         <title>How Juice Works — Anonymous Dating Stories for Men</title>
         <meta name="description" content="Four steps: create an anonymous profile, verify, share the Juice, and read real experiences from verified men." />
@@ -104,176 +112,117 @@ const HowItWorks = () => {
         <meta property="og:type" content="website" />
         <script type="application/ld+json">{JSON.stringify(faqSchema)}</script>
       </Helmet>
-      {/* Header */}
 
       <main>
-      {/* Hero Section */}
-      <section className="py-10 md:py-16 px-4">
-        <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-            How Juice Works
-          </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Four steps. Full anonymity. Verified men only.
-          </p>
-        </div>
-      </section>
-
-      {/* Steps Section */}
-      <section className="py-8 md:py-16 px-4">
-        <div className="max-w-6xl mx-auto">
-          <div className="space-y-8 md:space-y-16">
-            {steps.map((step, index) => (
-              <div key={step.number} className={`flex flex-col lg:flex-row items-center gap-6 lg:gap-12 ${index % 2 === 1 ? 'lg:flex-row-reverse' : ''}`}>
-                <div className="flex-1">
-                  <Card className="border-0 shadow-card bg-white/80 backdrop-blur-sm">
-                    <CardHeader className="text-center lg:text-left pb-3 md:pb-6">
-                      <div className="flex items-center justify-center lg:justify-start gap-3 md:gap-4 mb-2 md:mb-4">
-                        <div className="w-10 h-10 md:w-12 md:h-12 bg-primary rounded-full flex items-center justify-center text-white font-bold text-base md:text-lg">
-                          {step.number}
-                        </div>
-                        {step.icon}
-                      </div>
-                      <CardTitle className="text-xl md:text-2xl mb-1 md:mb-2">{step.title}</CardTitle>
-                      <CardDescription className="text-base md:text-lg">{step.description}</CardDescription>
-                    </CardHeader>
-                    <CardContent className="pt-0 md:pt-6">
-                      <ul className="space-y-2 md:space-y-3">
-                        {step.details.map((detail, i) => (
-                          <li key={i} className="flex items-center gap-3">
-                            <CheckCircle className="h-4 w-4 md:h-5 md:w-5 text-primary flex-shrink-0" />
-                            <span className="text-muted-foreground">{detail}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </CardContent>
-                  </Card>
-                </div>
-                
-                <div className="hidden lg:flex flex-1 justify-center">
-                  <div className="w-64 h-64 bg-gradient-primary rounded-3xl flex items-center justify-center">
-                    <div className="text-white text-6xl">
-                      {step.number === 1 && "👤"}
-                      {step.number === 2 && "📸"}
-                      {step.number === 3 && "📝"}
-                      {step.number === 4 && "👀"}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Features Grid */}
-      <section className="py-10 md:py-16 px-4 bg-white/50">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-8 md:mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              What Makes Juice Different
-            </h2>
-            <p className="text-xl text-muted-foreground">
-              Built specifically for authentic male experiences
+        {/* Hero — type-led, left-aligned editorial masthead */}
+        <section className="px-4 pt-14 pb-12 md:pt-20 md:pb-16">
+          <div className="max-w-6xl mx-auto">
+            <h1 className="font-display font-extrabold uppercase leading-[0.9] tracking-tight text-5xl md:text-7xl text-foreground mb-6 max-w-3xl">
+              How <span className="text-primary">Juice</span> Works
+            </h1>
+            <p className="text-lg md:text-xl text-muted-foreground max-w-xl leading-relaxed">
+              Four steps. Full anonymity. Verified men only.
             </p>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {features.map((feature, index) => (
-              <Card key={index} className="text-center border-0 shadow-card bg-white/80 backdrop-blur-sm">
-                <CardHeader>
-                  <div className="mx-auto mb-4 p-3 bg-primary/10 rounded-full w-fit text-primary">
-                    {feature.icon}
-                  </div>
-                  <CardTitle className="text-lg">{feature.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <CardDescription>
-                    {feature.description}
-                  </CardDescription>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
+        </section>
 
-      {/* FAQ Section */}
-      <section className="py-10 md:py-16 px-4">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-8 md:mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Common Questions
-            </h2>
+        {/* Steps — numbered editorial index with ruled detail lists */}
+        <section className="px-4 py-12 md:py-16">
+          <div className="max-w-6xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-0 md:gap-y-4">
+              {steps.map((step) => (
+                <div key={step.number} className="border-t border-border py-8">
+                  <span className="font-display font-extrabold text-5xl text-primary leading-none block mb-4" aria-hidden>
+                    {String(step.number).padStart(2, "0")}
+                  </span>
+                  <h3 className="text-xl md:text-2xl font-bold text-foreground mb-2">{step.title}</h3>
+                  <p className="text-base md:text-lg text-muted-foreground leading-relaxed mb-5">{step.description}</p>
+                  <ul className="space-y-2 md:space-y-3">
+                    {step.details.map((detail, i) => (
+                      <li key={i} className="flex items-center gap-3">
+                        <CheckCircle className="h-4 w-4 text-primary flex-shrink-0" aria-hidden />
+                        <span className="text-sm text-muted-foreground">{detail}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
           </div>
-          
-          <div className="space-y-6">
-            <Card className="border-0 shadow-card bg-white/80 backdrop-blur-sm">
-              <CardHeader>
-                <CardTitle className="text-lg">Is my identity really anonymous?</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">
-                  Yes, completely. Your real name and photo are never shown to other users. Only your anonymous username and the stories you choose to share are visible to the community.
-                </p>
-              </CardContent>
-            </Card>
-            
-            <Card className="border-0 shadow-card bg-white/80 backdrop-blur-sm">
-              <CardHeader>
-                <CardTitle className="text-lg">Why do you need verification?</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">
-                  Verification keeps fake accounts out. Every story you read comes from a real, manually approved member.
-                </p>
-              </CardContent>
-            </Card>
-            
-            <Card className="border-0 shadow-card bg-white/80 backdrop-blur-sm">
-              <CardHeader>
-                <CardTitle className="text-lg">What happens to my verification photo?</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">
-                  Your verification selfie is used only for account verification and is never shared publicly or with other users. It's stored securely and only accessible to our verification team.
-                </p>
-              </CardContent>
-            </Card>
-            
-            <Card className="border-0 shadow-card bg-white/80 backdrop-blur-sm">
-              <CardHeader>
-                <CardTitle className="text-lg">Can women join the app?</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">
-                  This platform is designed specifically for men to share their dating experiences in a judgment-free environment. We believe men deserve a space to be honest about their dating lives.
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
+        </section>
 
-      {/* CTA Section */}
-      <section className="py-10 md:py-16 px-4">
-        <div className="max-w-4xl mx-auto text-center">
-          <Card className="border-0 shadow-card bg-gradient-primary text-white">
-            <CardContent className="p-12">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                Your story is safe here.
+        {/* Features — numbered index on alternating background */}
+        <section className="px-4 py-16 md:py-20 bg-secondary">
+          <div className="max-w-6xl mx-auto">
+            <div className="border-t-2 border-foreground pt-4 mb-10 flex items-baseline justify-between gap-4 flex-wrap">
+              <h2 className="font-display font-extrabold uppercase tracking-tight text-3xl md:text-4xl text-foreground">
+                What Makes Juice Different
               </h2>
-              <p className="text-xl mb-8 opacity-90">
-                Join a verified community of men sharing honest dating experiences.
+              <p className="text-sm text-muted-foreground">
+                Built specifically for authentic male experiences
               </p>
-              <Button size="lg" variant="secondary" onClick={() => navigate("/app")} className="text-lg px-8">
-                Join free
-                <ArrowRight className="ml-2 h-5 w-5" />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-0 md:gap-y-2">
+              {features.map((feature, index) => (
+                <div key={index} className="border-t border-border py-6 flex gap-5">
+                  <span className="font-display font-extrabold text-2xl text-primary leading-none pt-0.5 w-10 shrink-0" aria-hidden>
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+                  <div>
+                    <h3 className="text-base font-bold text-foreground mb-1">{feature.title}</h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">{feature.description}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* FAQ — ruled list, no boxes */}
+        <section className="px-4 py-16 md:py-20">
+          <div className="max-w-6xl mx-auto">
+            <div className="border-t-2 border-foreground pt-4 mb-8">
+              <h2 className="font-display font-extrabold uppercase tracking-tight text-3xl md:text-4xl text-foreground">
+                Common Questions
+              </h2>
+            </div>
+
+            <div className="divide-y divide-border border-b border-border max-w-3xl">
+              {faqs.map((faq, index) => (
+                <div key={index} className="py-6">
+                  <h3 className="font-bold text-foreground mb-2">{faq.question}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed max-w-xl">
+                    {faq.answer}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Final CTA — flat ink band */}
+        <section className="bg-foreground text-background">
+          <div className="max-w-6xl mx-auto px-4 py-16 md:py-24">
+            <h2 className="font-display font-extrabold uppercase tracking-tight leading-[0.95] text-4xl md:text-6xl mb-4 max-w-3xl">
+              Your story is safe here.
+            </h2>
+            <p className="text-lg text-background/70 mb-10 max-w-xl">
+              Join a verified community of men sharing honest dating experiences.
+            </p>
+            <div className="flex flex-col sm:flex-row sm:items-center gap-5">
+              <Button size="xl" variant="juice" asChild className="font-bold w-fit">
+                <Link to="/app">
+                  Join free
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
               </Button>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
+              <p className="text-sm text-background/60 uppercase tracking-[0.18em] font-semibold">
+                Free · Anonymous · Verified men only
+              </p>
+            </div>
+          </div>
+        </section>
       </main>
     </div>
   );
