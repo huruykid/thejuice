@@ -1,44 +1,52 @@
 import { Button } from "@/components/ui/button";
 import { Helmet } from "react-helmet-async";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, Shield, MessageSquare, Star, ArrowRight, Heart, ThumbsUp, Eye } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const DatingStoriesForMen = () => {
-  const navigate = useNavigate();
-
   const stats = [
-    { icon: <Users className="h-8 w-8 text-primary" />, number: "Verified", label: "Members only" },
-    { icon: <MessageSquare className="h-8 w-8 text-primary" />, number: "Anonymous", label: "Every story, every time" },
-    { icon: <Eye className="h-8 w-8 text-primary" />, number: "Anonymous", label: "Reviewers stay hidden" },
-    { icon: <Shield className="h-8 w-8 text-primary" />, number: "Manual", label: "Approval to join" }
+    { number: "Verified", label: "Members only" },
+    { number: "Anonymous", label: "Every story, every time" },
+    { number: "Anonymous", label: "Reviewers stay hidden" },
+    { number: "Manual", label: "Approval to join" }
   ];
 
   const storyTypes = [
     {
       title: "First Date Experiences",
-      description: "Real stories about first dates - the good, bad, and everything in between",
-      icon: <Heart className="h-6 w-6 text-primary" />
+      description: "Real stories about first dates - the good, bad, and everything in between"
     },
     {
       title: "Relationship Reviews",
-      description: "Honest ratings and reviews of dating experiences and relationships",
-      icon: <Star className="h-6 w-6 text-primary" />
+      description: "Honest ratings and reviews of dating experiences and relationships"
     },
     {
       title: "Dating App Stories",
-      description: "Real experiences from Tinder, Bumble, Hinge and other dating platforms",
-      icon: <MessageSquare className="h-6 w-6 text-primary" />
+      description: "Real experiences from Tinder, Bumble, Hinge and other dating platforms"
     },
     {
       title: "Red Flag Warnings",
-      description: "Men sharing warning signs and red flags to help others avoid problems",
-      icon: <Shield className="h-6 w-6 text-primary" />
+      description: "Men sharing warning signs and red flags to help others avoid problems"
+    }
+  ];
+
+  const benefits = [
+    {
+      title: "100% Anonymous",
+      description: "Share your real experiences without revealing your identity. Complete privacy guaranteed."
+    },
+    {
+      title: "Men-Only Community",
+      description: "A space designed specifically for men to share honest dating experiences without judgment."
+    },
+    {
+      title: "Verified Users",
+      description: "All stories come from verified men, ensuring authentic and trustworthy experiences."
     }
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-soft">
+    <div className="min-h-screen bg-background">
       <Helmet>
         <title>Anonymous Dating Stories from Verified Men | Juice</title>
         <meta name="description" content="Real, unfiltered dating stories from verified men — first dates, red flags, and app disasters. Read what actually happened, anonymously." />
@@ -52,39 +60,38 @@ const DatingStoriesForMen = () => {
 
       <main>
       {/* Hero Section */}
-      <section className="py-20 px-4">
-        <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6">
+      <section className="px-4 pt-14 pb-16 md:pt-20">
+        <div className="max-w-6xl mx-auto">
+          <h1 className="font-display font-extrabold uppercase leading-[0.9] tracking-tight text-5xl md:text-6xl lg:text-7xl text-foreground mb-6 max-w-4xl">
             Dating Stories from{" "}
             <span className="text-primary">
               Verified Men — Anonymous & Unfiltered
             </span>
           </h1>
-          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+          <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl leading-relaxed">
             Read anonymous dating experiences from verified men. Honest, unrated by influencers, unsponsored.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" onClick={() => navigate("/app")} className="text-lg px-8">
-              Browse Stories
-              <ArrowRight className="ml-2 h-5 w-5" />
+          <div className="flex flex-col sm:flex-row gap-3">
+            <Button size="xl" variant="juice" asChild className="font-bold">
+              <Link to="/app">
+                Browse Stories
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Link>
             </Button>
-            <Button size="lg" variant="outline" onClick={() => navigate("/how-it-works")} className="text-lg px-8">
-              See How It Works
+            <Button size="xl" variant="outline" asChild>
+              <Link to="/how-it-works">See How It Works</Link>
             </Button>
           </div>
         </div>
       </section>
 
       {/* Stats Section */}
-      <section className="py-16 px-4 bg-white/50">
+      <section className="px-4 py-16 bg-secondary">
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {stats.map((stat, index) => (
-              <div key={index} className="text-center">
-                <div className="mx-auto mb-4 p-3 bg-primary/10 rounded-full w-fit">
-                  {stat.icon}
-                </div>
-                <div className="text-3xl font-bold text-foreground mb-2">{stat.number}</div>
+              <div key={index} className="border-t border-border pt-5">
+                <div className="font-display font-extrabold text-3xl text-primary leading-none mb-3">{stat.number}</div>
                 <div className="text-sm text-muted-foreground">{stat.label}</div>
               </div>
             ))}
@@ -93,85 +100,77 @@ const DatingStoriesForMen = () => {
       </section>
 
       {/* Story Types */}
-      <section className="py-20 px-4">
+      <section className="px-4 py-16 md:py-20">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+          <div className="border-t-2 border-foreground pt-4 mb-10 flex items-baseline justify-between gap-4 flex-wrap">
+            <h2 className="font-display font-extrabold uppercase tracking-tight text-3xl md:text-4xl text-foreground">
               What Men Share on Juice
             </h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-sm text-muted-foreground">
               From first dates to long-term relationships - men share it all anonymously
             </p>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-0 md:gap-y-2">
             {storyTypes.map((type, index) => (
-              <Card key={index} className="border-0 shadow-card bg-white/80 backdrop-blur-sm hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className="p-2 bg-primary/10 rounded-lg">
-                      {type.icon}
-                    </div>
-                    <CardTitle className="text-xl">{type.title}</CardTitle>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <CardDescription className="text-base">
+              <div key={index} className="border-t border-border py-6 flex gap-5">
+                <span className="font-display font-extrabold text-2xl text-primary leading-none pt-0.5 w-10 shrink-0" aria-hidden>
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <div>
+                  <h3 className="text-base font-bold text-foreground mb-1">{type.title}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
                     {type.description}
-                  </CardDescription>
-                </CardContent>
-              </Card>
+                  </p>
+                </div>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
       {/* Benefits Section */}
-      <section className="py-20 px-4 bg-white/50">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-8">
-            Why Juice, Not Reddit or DMs
-          </h2>
+      <section className="px-4 py-16 md:py-20 bg-secondary">
+        <div className="max-w-6xl mx-auto">
+          <div className="border-t-2 border-foreground pt-4 mb-10">
+            <h2 className="font-display font-extrabold uppercase tracking-tight text-3xl md:text-4xl text-foreground">
+              Why Juice, Not Reddit or DMs
+            </h2>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="space-y-4">
-              <Shield className="h-12 w-12 text-primary mx-auto" />
-              <h3 className="text-xl font-semibold">100% Anonymous</h3>
-              <p className="text-muted-foreground">Share your real experiences without revealing your identity. Complete privacy guaranteed.</p>
-            </div>
-            <div className="space-y-4">
-              <Users className="h-12 w-12 text-primary mx-auto" />
-              <h3 className="text-xl font-semibold">Men-Only Community</h3>
-              <p className="text-muted-foreground">A space designed specifically for men to share honest dating experiences without judgment.</p>
-            </div>
-            <div className="space-y-4">
-              <ThumbsUp className="h-12 w-12 text-primary mx-auto" />
-              <h3 className="text-xl font-semibold">Verified Users</h3>
-              <p className="text-muted-foreground">All stories come from verified men, ensuring authentic and trustworthy experiences.</p>
-            </div>
+            {benefits.map((benefit, index) => (
+              <div key={index} className="border-t border-border pt-5">
+                <span className="font-display font-extrabold text-2xl text-primary leading-none block mb-3" aria-hidden>
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <h3 className="text-lg font-bold text-foreground mb-2">{benefit.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{benefit.description}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-20 px-4">
-        <div className="max-w-4xl mx-auto text-center">
-          <Card className="border-0 shadow-card bg-gradient-primary text-primary-foreground">
-            <CardContent className="p-12">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                The story you need is already in there.
-              </h2>
-              <p className="text-xl mb-8 opacity-90">
-                Join a verified community of men sharing authentic dating experiences.
-              </p>
-              <Button size="lg" variant="secondary" onClick={() => navigate("/app")} className="text-lg px-8">
+      {/* CTA Section — flat ink band */}
+      <section className="bg-foreground text-background">
+        <div className="max-w-6xl mx-auto px-4 py-16 md:py-24">
+          <h2 className="font-display font-extrabold uppercase tracking-tight leading-[0.95] text-4xl md:text-6xl mb-4 max-w-3xl">
+            The story you need is already in there.
+          </h2>
+          <p className="text-lg text-background/70 mb-10 max-w-xl">
+            Join a verified community of men sharing authentic dating experiences.
+          </p>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-5">
+            <Button size="xl" variant="juice" asChild className="font-bold w-fit">
+              <Link to="/app">
                 Browse Stories
                 <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-              <p className="text-sm mt-4 opacity-75">
-                Free to join • Anonymous sharing • Verified community
-              </p>
-            </CardContent>
-          </Card>
+              </Link>
+            </Button>
+            <p className="text-sm text-background/60 uppercase tracking-[0.18em] font-semibold">
+              Free to join • Anonymous sharing • Verified community
+            </p>
+          </div>
         </div>
       </section>
       </main>

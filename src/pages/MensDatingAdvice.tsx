@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Helmet } from "react-helmet-async";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { BookOpen, Users, Shield, MessageSquare, ArrowRight, Lightbulb, Heart, AlertTriangle } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const MensDatingAdvice = () => {
@@ -11,7 +10,6 @@ const MensDatingAdvice = () => {
     {
       title: "First Date Tips",
       description: "Real advice from men who've been on hundreds of first dates",
-      icon: <Heart className="h-6 w-6 text-primary" />,
       points: [
         {
           tip: "Pick a place where you can actually talk",
@@ -34,7 +32,6 @@ const MensDatingAdvice = () => {
     {
       title: "Dating App Strategy",
       description: "Proven strategies for Tinder, Bumble, Hinge and other apps",
-      icon: <MessageSquare className="h-6 w-6 text-primary" />,
       points: [
         {
           tip: "Your first photo decides everything",
@@ -57,7 +54,6 @@ const MensDatingAdvice = () => {
     {
       title: "Red Flag Recognition",
       description: "Learn to spot warning signs early from men's experiences",
-      icon: <AlertTriangle className="h-6 w-6 text-primary" />,
       points: [
         {
           tip: "Inconsistent stories are the flag",
@@ -80,7 +76,6 @@ const MensDatingAdvice = () => {
     {
       title: "Relationship Building",
       description: "How to build healthy, lasting relationships with women",
-      icon: <Users className="h-6 w-6 text-primary" />,
       points: [
         {
           tip: "Say the hard thing early",
@@ -111,8 +106,23 @@ const MensDatingAdvice = () => {
     "Set clear boundaries and stick to them"
   ];
 
+  const whyItWorks = [
+    {
+      title: "Real Experiences",
+      detail: "Advice comes from men who've actually been in relationships, not just theory",
+    },
+    {
+      title: "Anonymous Honesty",
+      detail: "Men share brutally honest advice without worrying about judgment",
+    },
+    {
+      title: "Proven Results",
+      detail: "Strategies drawn from the real experiences our verified community shares",
+    },
+  ];
+
   return (
-    <div className="min-h-screen bg-gradient-soft">
+    <div className="min-h-screen bg-background">
       <Helmet>
         <title>Real Dating Advice from Men Who've Been There | Juice</title>
         <meta name="description" content="Honest dating advice from verified men who've actually been there — first dates, red flags, and apps. No coaches, no pickup artists, no theory." />
@@ -126,51 +136,50 @@ const MensDatingAdvice = () => {
 
       <main>
       {/* Hero Section */}
-      <section className="py-20 px-4">
-        <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6">
+      <section className="px-4 pt-14 pb-16 md:pt-20">
+        <div className="max-w-6xl mx-auto">
+          <h1 className="font-display font-extrabold uppercase leading-[0.9] tracking-tight text-5xl md:text-6xl lg:text-7xl text-foreground mb-6 max-w-4xl">
             Dating Advice from{" "}
             <span className="text-primary">
               Men Who've Actually Been There
             </span>
           </h1>
-          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+          <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl leading-relaxed">
             Practical advice from verified men — not coaches, not influencers, not theory.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" asChild className="text-lg px-8">
+          <div className="flex flex-col sm:flex-row gap-3">
+            <Button size="xl" variant="juice" asChild className="font-bold">
               <Link to="/app">
                 Read Advice from Verified Men
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
-            <Button size="lg" variant="outline" asChild className="text-lg px-8">
+            <Button size="xl" variant="outline" asChild>
               <Link to="/how-it-works">See How It Works</Link>
             </Button>
           </div>
-          <p className="text-sm text-muted-foreground mt-4">
+          <p className="text-sm text-muted-foreground mt-4 uppercase tracking-[0.18em] font-semibold">
             Verified members only — apply to join
           </p>
         </div>
       </section>
 
       {/* Quick Tips */}
-      <section className="py-16 px-4 bg-white/50">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-12">
-            <Lightbulb className="h-12 w-12 text-primary mx-auto mb-4" />
-            <h2 className="text-3xl font-bold text-foreground mb-4">6 Things Verified Men Wish They'd Known Earlier</h2>
-            <p className="text-xl text-muted-foreground">
+      <section className="px-4 py-16 md:py-20 bg-secondary">
+        <div className="max-w-6xl mx-auto">
+          <div className="border-t-2 border-foreground pt-4 mb-10 flex items-baseline justify-between gap-4 flex-wrap">
+            <h2 className="font-display font-extrabold uppercase tracking-tight text-3xl md:text-4xl text-foreground">6 Things Verified Men Wish They'd Known Earlier</h2>
+            <p className="text-sm text-muted-foreground">
               Essential advice — short, blunt, hard-won.
             </p>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-0 md:gap-y-2">
             {quickTips.map((tip, index) => (
-              <div key={index} className="flex items-start gap-3 p-4 bg-white/80 rounded-lg shadow-card">
-                <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center text-primary-foreground font-bold text-sm mt-0.5">
-                  {index + 1}
-                </div>
+              <div key={index} className="border-t border-border py-6 flex gap-5">
+                <span className="font-display font-extrabold text-2xl text-primary leading-none pt-0.5 w-10 shrink-0" aria-hidden>
+                  {String(index + 1).padStart(2, "0")}
+                </span>
                 <p className="text-foreground font-medium">{tip}</p>
               </div>
             ))}
@@ -179,32 +188,28 @@ const MensDatingAdvice = () => {
       </section>
 
       {/* Advice Categories */}
-      <section className="py-20 px-4">
+      <section className="px-4 py-16 md:py-20">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+          <div className="border-t-2 border-foreground pt-4 mb-10 flex items-baseline justify-between gap-4 flex-wrap">
+            <h2 className="font-display font-extrabold uppercase tracking-tight text-3xl md:text-4xl text-foreground">
               Advice for Every Stage of Dating
             </h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-sm text-muted-foreground">
               Specific guidance, sorted by where you are right now.
             </p>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-0 md:gap-y-2">
             {adviceCategories.map((category, index) => (
-              <Card key={index} className="border-0 shadow-card bg-white/80 backdrop-blur-sm hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className="p-2 bg-primary/10 rounded-lg">
-                      {category.icon}
-                    </div>
-                    <CardTitle className="text-xl">{category.title}</CardTitle>
-                  </div>
-                  <CardDescription className="text-base">
+              <div key={index} className="border-t border-border py-8 flex gap-5">
+                <span className="font-display font-extrabold text-2xl text-primary leading-none pt-1 w-10 shrink-0" aria-hidden>
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <div>
+                  <h3 className="font-display font-extrabold uppercase tracking-tight text-xl text-foreground mb-1">{category.title}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed mb-5">
                     {category.description}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
+                  </p>
                   <div className="space-y-4">
                     {category.points.map((point, idx) => (
                       <div key={idx}>
@@ -213,74 +218,68 @@ const MensDatingAdvice = () => {
                       </div>
                     ))}
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
       {/* Why Our Advice Works */}
-      <section className="py-20 px-4 bg-white/50">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+      <section className="px-4 py-16 md:py-20 bg-secondary">
+        <div className="max-w-6xl mx-auto">
+          <div className="border-t-2 border-foreground pt-4 mb-10 flex items-baseline justify-between gap-4 flex-wrap">
+            <h2 className="font-display font-extrabold uppercase tracking-tight text-3xl md:text-4xl text-foreground">
               Why Juice Advice Hits Different
             </h2>
-            <p className="text-xl text-muted-foreground">
+            <p className="text-sm text-muted-foreground">
               From men with skin in the game — not pickup artists.
             </p>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center space-y-4">
-              <Users className="h-12 w-12 text-primary mx-auto" />
-              <h3 className="text-xl font-semibold">Real Experiences</h3>
-              <p className="text-muted-foreground">
-                Advice comes from men who've actually been in relationships, not just theory
-              </p>
-            </div>
-            <div className="text-center space-y-4">
-              <Shield className="h-12 w-12 text-primary mx-auto" />
-              <h3 className="text-xl font-semibold">Anonymous Honesty</h3>
-              <p className="text-muted-foreground">
-                Men share brutally honest advice without worrying about judgment
-              </p>
-            </div>
-            <div className="text-center space-y-4">
-              <BookOpen className="h-12 w-12 text-primary mx-auto" />
-              <h3 className="text-xl font-semibold">Proven Results</h3>
-              <p className="text-muted-foreground">
-                Strategies drawn from the real experiences our verified community shares
-              </p>
-            </div>
+            {whyItWorks.map((item, index) => (
+              <div key={item.title} className="border-t border-border pt-5">
+                <span className="font-display font-extrabold text-5xl text-primary leading-none block mb-3" aria-hidden>
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <h3 className="text-lg font-bold text-foreground mb-2">{item.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  {item.detail}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-20 px-4">
-        <div className="max-w-4xl mx-auto text-center">
-          <Card className="border-0 shadow-card bg-gradient-primary text-primary-foreground">
-            <CardContent className="p-12">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                Stop guessing. Read what verified men have figured out.
-              </h2>
-              <p className="text-xl mb-8 opacity-90">
-                Real dating experience and advice from a verified community of men.
-              </p>
-              <Button size="lg" variant="secondary" asChild className="text-lg px-8">
-                <Link to="/app">
-                  Read Verified Advice
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
-              </Button>
-              <p className="text-sm mt-4 opacity-75">
-                Free to join • Real advice from real men • Anonymous community
-              </p>
-            </CardContent>
-          </Card>
-          <p className="text-muted-foreground mt-8">
+      {/* CTA Section — flat ink band */}
+      <section className="bg-foreground text-background">
+        <div className="max-w-6xl mx-auto px-4 py-16 md:py-24">
+          <h2 className="font-display font-extrabold uppercase tracking-tight leading-[0.95] text-4xl md:text-6xl mb-4 max-w-3xl">
+            Stop guessing. Read what verified men have figured out.
+          </h2>
+          <p className="text-lg text-background/70 mb-10 max-w-xl">
+            Real dating experience and advice from a verified community of men.
+          </p>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-5">
+            <Button size="xl" variant="juice" asChild className="font-bold w-fit">
+              <Link to="/app">
+                Read Verified Advice
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Link>
+            </Button>
+            <p className="text-sm text-background/60 uppercase tracking-[0.18em] font-semibold">
+              Free to join • Real advice from real men • Anonymous community
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Internal links */}
+      <section className="px-4 py-12">
+        <div className="max-w-6xl mx-auto">
+          <p className="text-sm text-muted-foreground leading-relaxed">
             More from Juice: real{" "}
             <Link to="/dating-stories-for-men" className="text-primary underline underline-offset-4">
               dating stories from men
