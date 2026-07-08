@@ -159,7 +159,7 @@ const MensDatingAdvice = () => {
             </Button>
           </div>
           <p className="text-sm text-muted-foreground mt-4 uppercase tracking-[0.18em] font-semibold">
-            Verified members only — apply to join
+            Free · Anonymous · Verified men only
           </p>
         </div>
       </section>

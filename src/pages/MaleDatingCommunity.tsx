@@ -87,7 +87,7 @@ const MaleDatingCommunity = () => {
           <div className="flex flex-col sm:flex-row gap-3">
             <Button size="xl" variant="juice" asChild className="font-bold">
               <Link to="/app">
-                Request Access
+                Join free
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
