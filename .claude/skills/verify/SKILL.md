@@ -60,6 +60,13 @@ or hanging responses must fail open (4s timeout) and proceed.
 
 ## Gotchas
 
+- AuthScreen has BOTH a "Create account" tab and a "Create Account" submit
+  button — `button:has-text("Create Account")` matches the tab first, and
+  clicking it re-mounts the form and silently wipes the password field. Use
+  `button[type="submit"]` for the submit. Signup blocked-by-gate evidence:
+  count `POST {SB}/auth/v1/signup` (0 = blocked); breach errors surface as a
+  "Sign up failed" toast with the gate's message.
+
 - Wait for the form with `waitForSelector('input', {timeout: 15000})`, not a
   fixed sleep — the recovery event lands at variable times.
 - Toasts persist several seconds; a second submit's toast may read as the
