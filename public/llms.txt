@@ -2,7 +2,7 @@
 
 > Juice is an anonymous, men-only social platform for sharing and reading honest dating reviews. Verified men post structured reviews using codenames and a 4-metric rating system (Communication, Loyalty, Emotional Safety, Overall Vibe).
 
-Juice uses manual user approval (no invite codes), never retains phone numbers after approval, and has no location features. The web experience is the marketing and SEO surface; the app itself is iOS-first via Capacitor.
+Juice uses manual user approval (no invite codes), never retains phone numbers after approval, and has no location features. Juice is not distributed through app stores: it runs in the browser at sipjuice.app as an installable web app (Add to Home Screen), with native iOS/Android builds in development via Capacitor.
 
 ## Pages
 
@@ -21,3 +21,7 @@ Juice uses manual user approval (no invite codes), never retains phone numbers a
 
 - [Anonymous Dating Reviews — How It Works](/blog/anonymous-dating-reviews-how-it-works): Pillar guide to anonymous dating reviews on Juice.
 - [Men Finally Have a Voice in Dating](/blog/men-finally-have-a-voice-in-dating-and-its-going-viral): Why an honest, men-only review community is gaining traction.
+- [First Date Tips for Men](/blog/first-date-tips-for-men-dos-and-donts): No-fluff first-date advice drawn from real stories on Juice.
+- [The Tea App for Men That Doesn't Keep Your Photo](/blog/tea-app-for-men-privacy): How Juice verifies members without retaining selfies.
+- [What Juice Does With Your Data](/blog/how-juice-protects-your-privacy): Exactly what Juice keeps, what it deletes, and why.
+- [Why Juice Isn't in the App Store](/blog/why-juice-isnt-in-the-app-store): Why Juice is web-first, what happened to the Tea apps, and how to install Juice on your home screen.

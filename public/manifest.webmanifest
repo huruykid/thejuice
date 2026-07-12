@@ -1,0 +1,19 @@
+{
+  "name": "Juice — Anonymous Dating Reviews for Men",
+  "short_name": "Juice",
+  "id": "/",
+  "start_url": "/app",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#F8B23A",
+  "description": "Verified men share honest reviews of the women they've dated. Look someone up before your next date.",
+  "icons": [
+    {
+      "src": "/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
