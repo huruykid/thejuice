@@ -152,7 +152,7 @@ const BlogPost = () => {
             // TL;DR callout — a flat tinted card so the summary stands out on-brand.
             if (paragraph.trim().startsWith('TL;DR')) {
               return (
-                <div key={index} className="not-prose my-6 rounded-lg bg-muted/50 px-4 py-3 text-base leading-relaxed text-foreground">
+                <div key={index} className="not-prose my-6 rounded-lg bg-muted/50 px-4 py-3 text-base leading-normal text-foreground">
                   <span className="font-semibold">TL;DR</span>
                   {paragraph.trim().replace(/^TL;DR\s*[—–-]?\s*/, ' ')}
                 </div>
@@ -202,7 +202,7 @@ const BlogPost = () => {
             
             // Regular paragraphs
             return (
-              <p key={index} className="mb-4 leading-relaxed">
+              <p key={index} className="mb-4 leading-normal">
                 {paragraph}
               </p>
             );
