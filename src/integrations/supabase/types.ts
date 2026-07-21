@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "12.2.12 (cd3cf9e)"
+    PostgrestVersion: "14.5"
   }
   public: {
     Tables: {
@@ -125,6 +125,57 @@ export type Database = {
           title?: string
           updated_at?: string
           views?: number
+        }
+        Relationships: []
+      }
+      blog_posts_backup_20260712: {
+        Row: {
+          author_id: string | null
+          content: string | null
+          created_at: string | null
+          excerpt: string | null
+          featured_image_url: string | null
+          id: string | null
+          keywords: string[] | null
+          meta_description: string | null
+          published: boolean | null
+          read_time_minutes: number | null
+          slug: string | null
+          title: string | null
+          updated_at: string | null
+          views: number | null
+        }
+        Insert: {
+          author_id?: string | null
+          content?: string | null
+          created_at?: string | null
+          excerpt?: string | null
+          featured_image_url?: string | null
+          id?: string | null
+          keywords?: string[] | null
+          meta_description?: string | null
+          published?: boolean | null
+          read_time_minutes?: number | null
+          slug?: string | null
+          title?: string | null
+          updated_at?: string | null
+          views?: number | null
+        }
+        Update: {
+          author_id?: string | null
+          content?: string | null
+          created_at?: string | null
+          excerpt?: string | null
+          featured_image_url?: string | null
+          id?: string | null
+          keywords?: string[] | null
+          meta_description?: string | null
+          published?: boolean | null
+          read_time_minutes?: number | null
+          slug?: string | null
+          title?: string | null
+          updated_at?: string | null
+          views?: number | null
         }
         Relationships: []
       }

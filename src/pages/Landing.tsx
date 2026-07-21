@@ -119,7 +119,7 @@ const Landing = () => {
       <main>
         {/* Wire strip — masthead ticker instead of a floating pill badge */}
         <div className="border-y border-border">
-          <div className="max-w-6xl mx-auto px-4 py-2 flex items-center gap-3 overflow-x-auto whitespace-nowrap text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+          <div className="max-w-6xl mx-auto px-4 py-2 flex flex-wrap items-center justify-center md:justify-start gap-x-3 gap-y-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
             <span className="text-primary">Verified men only</span>
             <span aria-hidden className="text-border">/</span>
             <span>Anonymous to post</span>
