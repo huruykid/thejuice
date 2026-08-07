@@ -8,10 +8,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Trash2, Plus, Library, Wand2 } from "lucide-react";
+import { Trash2, Plus, Wand2 } from "lucide-react";
 import { toast } from "sonner";
-import { SEED_STORY_LIBRARY, type SeedStoryDraft } from "@/lib/seedStoryLibrary";
 import { generateSeedImage } from "@/lib/seedAvatar";
+
+interface SeedStoryDraft {
+  content: string;
+  subject_name: string;
+  location: string;
+  /** -1 milk (red flag) / 0 none / +1 juice (green flag) */
+  verdict: -1 | 0 | 1;
+}
 
 /** Matches the max batch size enforced by admin_create_seed_stories_bulk. */
 const MAX_BATCH = 50;
@@ -42,11 +49,6 @@ const BulkSeedPanel = () => {
     setDrafts((d) => d.map((row, idx) => (idx === i ? { ...row, ...patch } : row)));
 
   const removeAt = (i: number) => setDrafts((d) => d.filter((_, idx) => idx !== i));
-
-  const loadLibrary = () => {
-    setDrafts(SEED_STORY_LIBRARY.map((s) => ({ ...s })));
-    toast.success(`Loaded ${SEED_STORY_LIBRARY.length} starter stories — edit or drop any before publishing`);
-  };
 
   /** Blank-line-separated paragraphs become one draft each. */
   const applyPaste = () => {
@@ -129,10 +131,6 @@ const BulkSeedPanel = () => {
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex flex-wrap gap-2">
-          <Button type="button" size="sm" variant="outline" onClick={loadLibrary}>
-            <Library className="h-4 w-4 mr-1.5" />
-            Load starter library ({SEED_STORY_LIBRARY.length})
-          </Button>
           <Button
             type="button"
             size="sm"
@@ -173,8 +171,8 @@ const BulkSeedPanel = () => {
 
         {drafts.length === 0 ? (
           <p className="text-sm text-muted-foreground">
-            Nothing staged. Load the starter library or paste your own, then review each one
-            before publishing. Every story gets an illustrated image automatically — the feed
+            Nothing staged. Paste stories in or add them one at a time, then review each
+            before publishing. Every story gets an image attached automatically — the feed
             hides stories without one.
           </p>
         ) : (

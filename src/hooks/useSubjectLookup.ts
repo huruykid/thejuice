@@ -6,11 +6,13 @@ import type { Story } from '@/hooks/useStories';
 /**
  * Verified-user name lookup — the magic moment for members.
  *
- * Searches approved, real (non-seed) stories by subject name and groups them into one
- * row per person: review count, green/red tallies from poster verdicts
- * (overall_vibe_rating is +1 juice / -1 milk), and the full story rows so the caller can
- * expand a subject inline without a second fetch. Seed (fictional) stories are excluded —
- * a real name must never "match" invented content.
+ * Searches approved stories by subject name and groups them into one row per person:
+ * review count, green/red tallies from poster verdicts (overall_vibe_rating is +1 juice /
+ * -1 milk), and the full story rows so the caller can expand a subject inline without a
+ * second fetch.
+ *
+ * Seeds are included. A feed that looks populated but returns nothing on lookup is the
+ * worst of both worlds, so seeded subjects are searchable like any other.
  */
 export interface SubjectGroup {
   /** Display name — first-seen casing. */
@@ -67,7 +69,6 @@ export const useSubjectLookup = (query: string) => {
           )
         `)
         .eq('status', 'approved')
-        .eq('is_seed', false)
         .not('subject_name', 'is', null)
         .ilike('subject_name', `%${q.replace(/[%_]/g, '')}%`)
         .order('created_at', { ascending: false })

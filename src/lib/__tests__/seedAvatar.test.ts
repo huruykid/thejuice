@@ -1,6 +1,5 @@
 import { describe, it, expect } from "vitest";
 import { hashSeed, dicebearUrl } from "@/lib/seedAvatar";
-import { SEED_STORY_LIBRARY } from "@/lib/seedStoryLibrary";
 
 describe("hashSeed", () => {
   it("is deterministic", () => {
@@ -32,47 +31,11 @@ describe("dicebearUrl", () => {
     expect(url).toContain("Hinge%20Hana");
   });
 
-  it("spreads seeds across more than one style", () => {
+  it("spreads different seeds across more than one style", () => {
+    const styleOf = (s: string) => dicebearUrl(s).split("/9.x/")[1].split("/")[0];
     const styles = new Set(
-      SEED_STORY_LIBRARY.map((s) => dicebearUrl(s.subject_name).split("/9.x/")[1].split("/")[0])
+      ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l"].map(styleOf)
     );
     expect(styles.size).toBeGreaterThan(1);
-  });
-});
-
-describe("SEED_STORY_LIBRARY", () => {
-  it("has content, subject and location on every entry", () => {
-    for (const s of SEED_STORY_LIBRARY) {
-      expect(s.content.trim().length).toBeGreaterThan(50);
-      expect(s.subject_name.trim()).not.toBe("");
-      expect(s.location.trim()).toMatch(/^.+,\s*[A-Z]{2}$/);
-    }
-  });
-
-  it("uses only the -1/0/+1 verdict encoding the feed reads", () => {
-    for (const s of SEED_STORY_LIBRARY) {
-      expect([-1, 0, 1]).toContain(s.verdict);
-    }
-  });
-
-  it("carries a mix of verdicts so the feed isn't one-note", () => {
-    const counts = { milk: 0, none: 0, juice: 0 };
-    for (const s of SEED_STORY_LIBRARY) {
-      if (s.verdict < 0) counts.milk++;
-      else if (s.verdict > 0) counts.juice++;
-      else counts.none++;
-    }
-    expect(counts.milk).toBeGreaterThan(0);
-    expect(counts.juice).toBeGreaterThan(0);
-    expect(counts.none).toBeGreaterThan(0);
-  });
-
-  it("has no duplicate story text", () => {
-    const seen = new Set(SEED_STORY_LIBRARY.map((s) => s.content));
-    expect(seen.size).toBe(SEED_STORY_LIBRARY.length);
-  });
-
-  it("fits the bulk RPC's 50-row batch limit in one call", () => {
-    expect(SEED_STORY_LIBRARY.length).toBeLessThanOrEqual(50);
   });
 });
