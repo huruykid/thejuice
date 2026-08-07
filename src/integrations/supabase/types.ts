@@ -960,6 +960,10 @@ export type Database = {
         }
         Returns: string
       }
+      admin_create_seed_stories_bulk: {
+        Args: { p_stories: Json }
+        Returns: number
+      }
       admin_delete_seed_story: { Args: { p_id: string }; Returns: undefined }
       admin_list_members: {
         Args: never

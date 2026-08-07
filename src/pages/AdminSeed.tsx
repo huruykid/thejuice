@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Trash2, ImagePlus, X } from "lucide-react";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import LandingPhotosUploader from "@/components/admin/LandingPhotosUploader";
+import BulkSeedPanel from "@/components/admin/BulkSeedPanel";
 import { useConfirm } from "@/components/ConfirmDialog";
 import { toast } from "sonner";
 
@@ -125,6 +126,8 @@ const AdminSeed = () => {
         />
 
         <LandingPhotosUploader />
+
+        <BulkSeedPanel />
 
         <Card>
           <CardHeader className="pb-2"><CardTitle className="text-base">Add a story</CardTitle></CardHeader>
