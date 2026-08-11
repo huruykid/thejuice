@@ -70,9 +70,16 @@ const CitySheet = ({ open, onClose, onSelect, currentCityId }: Props) => {
     onError: (e: any) => {
       const raw: string = e?.message ?? "";
       let friendly = "Something went wrong saving your city. Please try again.";
+      // Was: "your username is blocking this save — go change it." That blamed
+      // the member for a trigger bug (username validation ran on every profile
+      // update, not just username writes; fixed in
+      // 20260811160000_fix_username_validation_blocking_profile_updates.sql).
+      // Saving a city never writes the username, so this branch is now a
+      // genuine server-side rejection — say so instead of sending people off to
+      // edit an unrelated field.
       if (/reserved/i.test(raw) || /username/i.test(raw)) {
         friendly =
-          "Your profile username is blocking this save. Open Profile and change your username, then pick a city again.";
+          "Something on your profile rejected this change. Try again — if it keeps happening, contact support and we'll sort it out.";
       } else if (/permission|denied|rls/i.test(raw)) {
         friendly = "You don't have permission to update this profile.";
       } else if (/network|fetch/i.test(raw)) {
