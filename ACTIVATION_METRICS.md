@@ -74,6 +74,31 @@ group by 1
 order by 1 desc;
 ```
 
+## 5. Review-loop notifications (added 2026-08-11)
+
+`moderate-post` logs a `post_status_emailed` event per author it actually reaches, with
+`props = { story_id, action }`. This is the closing half of the post loop: a submission is
+visible to its author immediately (pending badge) and the author is emailed on the decision.
+
+```sql
+select date_trunc('week', created_at) as week,
+       count(*) filter (where props->>'action' = 'approve') as approved_emails,
+       count(*) filter (where props->>'action' = 'reject')  as rejected_emails
+from public.analytics_events
+where event = 'post_status_emailed'
+group by 1
+order by 1 desc;
+```
+
+Gap to watch: moderated posts vs. emails sent. A shortfall is anonymous submissions,
+unsubscribed authors, or Resend failures — the admin toast reports which at the time.
+
+```sql
+select count(*) filter (where status <> 'pending' and coalesce(is_seed, false) = false) as moderated,
+       (select count(*) from public.analytics_events where event = 'post_status_emailed') as emailed
+from public.stories;
+```
+
 ## North-star to watch
 Real **posts/week** (supply) and **W1 return %** (retention). If supply climbs but return
 stays flat, the search loop isn't paying off; if return climbs but supply is flat, people

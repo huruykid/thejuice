@@ -1,10 +1,9 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import BrandLockup from "@/components/BrandLockup";
-import { ShieldCheck, Sparkles, Clock, CheckCircle2, XCircle, User, LogOut, X } from "lucide-react";
+import { ShieldCheck, Sparkles, User, LogOut, X } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,7 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import Navigation from "@/components/Navigation";
 import { useAuth } from "@/hooks/useAuth";
-import { useMySubmissions } from "@/hooks/useStories";
+import MySubmissions from "@/components/MySubmissions";
 import ReferralPrompt from "@/components/ReferralPrompt";
 import SubjectSearch from "@/components/SubjectSearch";
 import TeaserFeed from "@/components/TeaserFeed";
@@ -41,7 +40,6 @@ interface UnverifiedHomeProps {
 const UnverifiedHome = ({ onCreateStory, onStartVerification, resumeVerification }: UnverifiedHomeProps) => {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
-  const { data: submissions = [] } = useMySubmissions(user?.id);
 
   // First-visit orientation: name the two paths explicitly, dismissible forever.
   const orientationKey = `juice_orientation_dismissed_${user?.id ?? "anon"}`;
@@ -195,39 +193,7 @@ const UnverifiedHome = ({ onCreateStory, onStartVerification, resumeVerification
         {user && <ReferralPrompt userId={user.id} />}
 
         {/* Your submissions */}
-        <div>
-          <h3 className="text-sm font-semibold text-foreground mb-2 px-1">Your submissions</h3>
-          {submissions.length === 0 ? (
-            <p className="text-sm text-muted-foreground px-1">
-              You haven't posted anything yet.
-            </p>
-          ) : (
-            <div className="space-y-2">
-              {submissions.map((s) => (
-                <Card key={s.id} className="p-3 bg-card border-border">
-                  <div className="flex items-start justify-between gap-3">
-                    <p className="text-sm text-foreground line-clamp-2 flex-1">{s.content}</p>
-                    {s.status === 'pending' && (
-                      <Badge variant="secondary" className="shrink-0">
-                        <Clock className="h-3 w-3 mr-1" /> Pending
-                      </Badge>
-                    )}
-                    {s.status === 'approved' && (
-                      <Badge className="shrink-0 bg-primary text-primary-foreground">
-                        <CheckCircle2 className="h-3 w-3 mr-1" /> Approved
-                      </Badge>
-                    )}
-                    {s.status === 'rejected' && (
-                      <Badge variant="destructive" className="shrink-0">
-                        <XCircle className="h-3 w-3 mr-1" /> Rejected
-                      </Badge>
-                    )}
-                  </div>
-                </Card>
-              ))}
-            </div>
-          )}
-        </div>
+        <MySubmissions userId={user?.id} variant="full" />
 
       </div>
 

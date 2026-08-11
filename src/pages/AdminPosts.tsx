@@ -21,6 +21,7 @@ import QueryError from "@/components/QueryError";
 import { useConfirm } from "@/components/ConfirmDialog";
 import { useStoryImageUrls } from "@/hooks/useStoryImageUrls";
 import { sendPostRejectedNotification } from "@/lib/sendPushNotification";
+import { moderatePosts, describeModeration } from "@/lib/moderatePost";
 import { toast } from "sonner";
 
 const REJECTION_REASONS = [
@@ -90,89 +91,66 @@ const AdminPosts = () => {
     },
   });
 
+  // Moderation runs through the `moderate-post` edge function, not a direct
+  // table update: the status change and the author's email happen in the same
+  // server-side request, so closing this tab can't drop the notification.
+  const invalidateQueues = () => {
+    queryClient.invalidateQueries({ queryKey: ["admin-posts"] });
+    queryClient.invalidateQueries({ queryKey: ["admin-pending-counts"] });
+    // The author's own view of their submissions.
+    queryClient.invalidateQueries({ queryKey: ["stories"] });
+  };
+
   const approve = useMutation({
-    mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from("stories")
-        .update({ status: "approved", approved_at: new Date().toISOString() })
-        .eq("id", id);
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      toast.success("Post approved");
-      queryClient.invalidateQueries({ queryKey: ["admin-posts"] });
-      queryClient.invalidateQueries({ queryKey: ["admin-pending-counts"] });
+    mutationFn: (id: string) => moderatePosts("approve", [id]),
+    onSuccess: (result) => {
+      toast.success(describeModeration("approve", result));
+      invalidateQueues();
     },
     onError: (e: any) => toast.error(e?.message || "Approval failed"),
   });
 
   const bulkApprove = useMutation({
-    mutationFn: async (ids: string[]) => {
-      const { error } = await supabase
-        .from("stories")
-        .update({ status: "approved", approved_at: new Date().toISOString() })
-        .in("id", ids);
-      if (error) throw error;
-      return ids.length;
-    },
-    onSuccess: (count) => {
-      toast.success(`Approved ${count} post${count === 1 ? "" : "s"}`);
+    mutationFn: (ids: string[]) => moderatePosts("approve", ids),
+    onSuccess: (result) => {
+      toast.success(describeModeration("approve", result));
       setSelected(new Set());
-      queryClient.invalidateQueries({ queryKey: ["admin-posts"] });
-      queryClient.invalidateQueries({ queryKey: ["admin-pending-counts"] });
+      invalidateQueues();
     },
     onError: (e: any) => toast.error(e?.message || "Bulk approval failed"),
   });
 
   const reject = useMutation({
     mutationFn: async ({ id, reasonLabel }: { id: string; reasonLabel: string }) => {
-      const { error } = await supabase
-        .from("stories")
-        .update({
-          status: "rejected",
-          rejection_reason: reasonLabel,
-          rejected_at: new Date().toISOString(),
-        })
-        .eq("id", id);
-      if (error) throw error;
-      // Tell the author (with the reason). Fire-and-forget — rejection must not
-      // fail because push did. Anonymous posts are skipped server-side.
+      const result = await moderatePosts("reject", [id], reasonLabel);
+      // Push is additive on top of the email the function already sent, and
+      // best-effort: a rejection must not fail because push did.
       sendPostRejectedNotification(id).catch((e) =>
         console.error("Failed to send rejection push:", e)
       );
+      return result;
     },
-    onSuccess: () => {
-      toast.success("Post rejected — author notified");
-      queryClient.invalidateQueries({ queryKey: ["admin-posts"] });
-      queryClient.invalidateQueries({ queryKey: ["admin-pending-counts"] });
+    onSuccess: (result) => {
+      toast.success(describeModeration("reject", result));
+      invalidateQueues();
     },
     onError: (e: any) => toast.error(e?.message || "Rejection failed"),
   });
 
   const bulkReject = useMutation({
     mutationFn: async ({ ids, reasonLabel }: { ids: string[]; reasonLabel: string }) => {
-      const { error } = await supabase
-        .from("stories")
-        .update({
-          status: "rejected",
-          rejection_reason: reasonLabel,
-          rejected_at: new Date().toISOString(),
-        })
-        .in("id", ids);
-      if (error) throw error;
-      // Notify each author. Fire-and-forget; anonymous posts skipped server-side.
+      const result = await moderatePosts("reject", ids, reasonLabel);
       ids.forEach((id) =>
         sendPostRejectedNotification(id).catch((e) =>
           console.error("Failed to send rejection push:", e)
         )
       );
-      return ids.length;
+      return result;
     },
-    onSuccess: (count) => {
-      toast.success(`Rejected ${count} post${count === 1 ? "" : "s"} — authors notified`);
+    onSuccess: (result) => {
+      toast.success(describeModeration("reject", result));
       setSelected(new Set());
-      queryClient.invalidateQueries({ queryKey: ["admin-posts"] });
-      queryClient.invalidateQueries({ queryKey: ["admin-pending-counts"] });
+      invalidateQueues();
     },
     onError: (e: any) => toast.error(e?.message || "Bulk rejection failed"),
   });

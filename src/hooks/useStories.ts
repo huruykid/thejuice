@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { sanitizeText, validateStoryContent, validateRating, validateTag } from '@/lib/security';
 import { useBlockedUserIds } from '@/hooks/useBlockedUserIds';
 import { track } from '@/lib/analytics';
+import type { Submission } from '@/lib/submissions';
 
 export interface Story {
   id: string;
@@ -279,26 +280,23 @@ export const useCreateStory = () => {
 
 /**
  * Current user's own submissions, all statuses (pending/approved/rejected).
- * Used by UnverifiedHome's "Your submissions" list.
+ * Backs the <MySubmissions> list on UnverifiedHome and the pinned strip above
+ * the verified feed — the author's only view of a post before it's approved.
+ * RLS allows this: the SELECT policy matches on `auth.uid() = user_id` first,
+ * independent of status.
  */
 export const useMySubmissions = (userId?: string) => {
   return useQuery({
     queryKey: ['stories', 'mine', userId],
     enabled: !!userId,
-    queryFn: async () => {
+    queryFn: async (): Promise<Submission[]> => {
       const { data, error } = await supabase
         .from('stories')
-        .select('id, content, status, created_at, image_url')
+        .select('id, content, status, created_at, image_url, rejection_reason')
         .eq('user_id', userId)
         .order('created_at', { ascending: false });
       if (error) throw error;
-      return data as Array<{
-        id: string;
-        content: string;
-        status: 'pending' | 'approved' | 'rejected';
-        created_at: string;
-        image_url: string | null;
-      }>;
+      return (data ?? []) as Submission[];
     },
   });
 };

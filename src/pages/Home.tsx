@@ -13,6 +13,7 @@ import { usePullToRefresh } from "@/hooks/usePullToRefresh";
 import { useInfiniteStories } from "@/hooks/useStories";
 import { useFeedGate } from "@/hooks/useFeedGate";
 import ReferralPrompt from "@/components/ReferralPrompt";
+import MySubmissions from "@/components/MySubmissions";
 import SubjectLookup from "@/components/SubjectLookup";
 import CityFilterChips, { FeedScope } from "@/components/CityFilterChips";
 import { useAuth } from "@/hooks/useAuth";
@@ -113,6 +114,11 @@ const Home = ({ onCreateStory }: HomeProps) => {
 
         {/* Catches users who verified before answering the referral question */}
         {user && <ReferralPrompt userId={user.id} />}
+
+        {/* The author's own posts that the feed below can't show them: anything
+            still in review, plus anything we turned down. Renders nothing when
+            there's neither. */}
+        <MySubmissions userId={user?.id} variant="pinned" className="px-4 pt-2 pb-4" />
 
         {storiesLoading && stories.length === 0 ? (
           <div>
