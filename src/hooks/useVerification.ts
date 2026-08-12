@@ -4,6 +4,7 @@ import { rateLimiter } from '@/lib/security';
 import { useSecurityEventLogger } from './useSecurityAudit';
 import { useViewAs } from '@/contexts/ViewAsContext';
 import { useRealIsAdmin } from './useRealIsAdmin';
+import { activePreview } from '@/lib/viewAs';
 import { track } from '@/lib/analytics';
 
 export interface UserVerification {
@@ -129,12 +130,13 @@ export const useVerification = (userId?: string) => {
   let isRejected = verification?.verification_status === 'rejected';
 
   // Apply "View as" override for admins previewing other user types.
-  if (realIsAdmin && viewAs) {
-    if (viewAs === 'unverified_user' || viewAs === 'logged_out') {
+  const preview = activePreview(realIsAdmin, viewAs);
+  if (preview) {
+    if (preview === 'unverified_user' || preview === 'logged_out') {
       isVerified = false;
       isPending = false;
       isRejected = false;
-    } else if (viewAs === 'verified_user') {
+    } else if (preview === 'verified_user') {
       isVerified = true;
       isPending = false;
       isRejected = false;

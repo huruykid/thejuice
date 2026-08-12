@@ -18,6 +18,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useStoriesByProfile } from "@/hooks/useStories";
 import { useBookmarkedStories } from "@/hooks/useBookmarks";
 import { getStoryAuthorName } from "@/lib/storyAuthor";
+import ViewAsMenu from "@/components/ViewAsMenu";
 
 type ProfileTab = "stories" | "saved";
 
@@ -141,6 +142,11 @@ const Profile = () => {
             Edit profile
           </Button>
         </div>
+
+        {/* Admin-only, and the mobile home for "Preview as" — the desktop sidebar
+            has its own copy, but there is no admin menu on small screens. Renders
+            nothing for everyone else, and nothing while a preview is running. */}
+        <ViewAsMenu className="mb-5 rounded-lg border border-border p-3" />
 
         {/* IG-style tab bar */}
         <div className="border-t border-border -mx-4 mb-0">

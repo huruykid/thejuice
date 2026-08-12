@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserRole } from "@/hooks/useUserRole";
+import ViewAsMenu from "@/components/ViewAsMenu";
 
 interface DesktopSidebarProps {
   onCreateStory?: () => void;
@@ -91,6 +92,10 @@ const DesktopSidebar = ({ onCreateStory }: DesktopSidebarProps) => {
               <Flag className="h-5 w-5" />
               <span className="text-sm">Reports</span>
             </NavLink>
+            {/* Was a permanent floating bar over the feed; it's a menu item now.
+                Exiting a preview is still ViewAsBar's job — this section is hidden
+                while one is active. */}
+            <ViewAsMenu className="px-4 pt-3 pb-1" />
           </div>
         )}
 

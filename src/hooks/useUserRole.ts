@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useViewAs } from '@/contexts/ViewAsContext';
+import { activePreview } from '@/lib/viewAs';
 
 export type UserRole = 'admin' | 'moderator' | 'user';
 
@@ -25,9 +26,10 @@ export const useUserRole = (userId?: string) => {
   // Apply "View as" override: if a real admin is previewing another role,
   // strip the admin/moderator capabilities so the UI behaves like that role.
   const realIsAdmin = roles?.includes('admin') || false;
+  const preview = activePreview(realIsAdmin, viewAs);
   const effectiveRoles: UserRole[] =
-    realIsAdmin && viewAs
-      ? viewAs === 'logged_out'
+    preview
+      ? preview === 'logged_out'
         ? []
         : ['user']
       : roles || [];
