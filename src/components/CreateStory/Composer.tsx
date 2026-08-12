@@ -30,6 +30,13 @@ interface ComposerProps {
   onClose: () => void;
   isLoading: boolean;
   uploading: boolean;
+  /** Operator posting: this one publishes under a fresh random codename. */
+  postAsAlias?: boolean;
+  /**
+   * Hold the publish button without claiming anything is in flight — used while the
+   * caller is still resolving which identity the post goes out under.
+   */
+  publishBlocked?: boolean;
 }
 
 const Composer = ({
@@ -43,6 +50,8 @@ const Composer = ({
   onClose,
   isLoading,
   uploading,
+  postAsAlias = false,
+  publishBlocked = false,
 }: ComposerProps) => {
   const { toast } = useToast();
   const [ack, setAck] = useState(false);
@@ -152,6 +161,14 @@ const Composer = ({
 
   return (
     <div className="space-y-5 p-6">
+      {/* Operator posting. Say it out loud in the composer — silently publishing under
+          a name you didn't choose is exactly the kind of thing you want confirmed. */}
+      {postAsAlias && (
+        <p className="rounded-lg border border-border bg-muted/50 px-3 py-2 text-xs text-muted-foreground">
+          Publishing under a new random codename — a different one on every post.
+        </p>
+      )}
+
       {/* Who */}
       <div>
         <label htmlFor="composer-name" className="block text-sm font-medium mb-1">
@@ -416,7 +433,7 @@ const Composer = ({
           <Button variant="outline" onClick={onClose}>
             Cancel
           </Button>
-          <Button onClick={onPublish} disabled={isLoading || !canPublish}>
+          <Button onClick={onPublish} disabled={isLoading || publishBlocked || !canPublish}>
             {isLoading ? (
               <span className="flex items-center gap-2">
                 <div className="animate-spin rounded-full h-4 w-4 border-2 border-current border-t-transparent" />

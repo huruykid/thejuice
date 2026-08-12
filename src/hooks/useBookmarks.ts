@@ -95,7 +95,7 @@ export const useBookmarkedStories = (userId?: string) => {
             user_id, profile_id, image_url, location,
             communication_rating, loyalty_rating,
             overall_vibe_rating, emotional_safety_rating,
-            comments_count, submitted_anonymously, is_seed,
+            comments_count, submitted_anonymously, is_seed, author_alias,
             story_tags (tag),
             profiles (anonymous_username)
           )

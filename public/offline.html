@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="theme-color" content="#F8B23A" />
+    <title>Offline — Juice</title>
+    <!--
+      Served by the service worker when a navigation fails and there is no cached
+      shell to fall back to. Standalone CSS on purpose: the app's stylesheet is a
+      hashed asset that may not be in the cache at the moment this page is needed.
+      Colors are the literal values behind the design tokens in src/index.css.
+    -->
+    <style>
+      :root {
+        --background: #ffffff;
+        --foreground: #0a0a0a;
+        --muted-foreground: #6b6b6b;
+        --border: #e5e5e5;
+        --primary: #f8b23a;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --background: #000000;
+          --foreground: #fafafa;
+          --muted-foreground: #a1a1a1;
+          --border: #262626;
+          --primary: #f9b13c;
+        }
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        background: var(--background);
+        color: var(--foreground);
+        font-family: "Barlow", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        min-height: 100%;
+      }
+      main {
+        max-width: 34rem;
+        margin: 0 auto;
+        padding: max(3rem, env(safe-area-inset-top)) 1.5rem 3rem;
+      }
+      .rule {
+        border-top: 2px solid var(--foreground);
+        padding-top: 0.75rem;
+        margin-bottom: 2.5rem;
+        font-size: 0.75rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        font-weight: 700;
+      }
+      h1 {
+        font-family: "Barlow Condensed", "Barlow", sans-serif;
+        font-size: clamp(2.5rem, 12vw, 4rem);
+        line-height: 0.95;
+        letter-spacing: -0.01em;
+        text-transform: uppercase;
+        font-weight: 800;
+        margin: 0 0 1rem;
+      }
+      p {
+        font-size: 1rem;
+        line-height: 1.6;
+        color: var(--muted-foreground);
+        margin: 0 0 1rem;
+      }
+      a.button {
+        display: inline-block;
+        margin-top: 1.5rem;
+        background: var(--foreground);
+        color: var(--background);
+        text-decoration: none;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        font-size: 0.875rem;
+        padding: 0.9rem 1.75rem;
+        min-height: 44px;
+      }
+      .hint {
+        margin-top: 2.5rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border);
+        font-size: 0.8125rem;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p class="rule">Juice</p>
+      <h1>No signal</h1>
+      <p>
+        You're offline, so there's nothing new to pour. Anything you were reading is still
+        here once you reconnect.
+      </p>
+      <p>Drafts aren't saved yet — finish a post while you have a connection.</p>
+      <a class="button" href="/app">Try again</a>
+      <p class="hint">If this keeps happening on Wi-Fi, close the app fully and reopen it.</p>
+    </main>
+    <script>
+      // Come back on its own the moment the radio returns, so the user doesn't
+      // have to notice and tap.
+      window.addEventListener("online", function () {
+        window.location.replace("/app");
+      });
+    </script>
+  </body>
+</html>

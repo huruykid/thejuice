@@ -5,6 +5,7 @@ import Navigation from "@/components/Navigation";
 import StoryCard from "@/components/StoryCard";
 import { useStoriesByProfile } from "@/hooks/useStories";
 import { useAuth } from "@/hooks/useAuth";
+import { getStoryAuthorName } from "@/lib/storyAuthor";
 
 const AuthorStories = () => {
   const { profileId } = useParams<{ profileId: string }>();
@@ -14,7 +15,7 @@ const AuthorStories = () => {
 
   const { data: stories, isLoading: storiesLoading, isError } = useStoriesByProfile(profileId || '');
 
-  const authorName = stories?.[0]?.profiles?.anonymous_username || 'Unknown Author';
+  const authorName = getStoryAuthorName(stories?.[0], 'Unknown Author');
 
   return (
     <div className="min-h-screen bg-gradient-soft">
@@ -65,7 +66,7 @@ const AuthorStories = () => {
               <StoryCard
                 key={story.id}
                 story={story}
-                authorName={story.profiles?.anonymous_username || 'Anonymous'}
+                authorName={getStoryAuthorName(story)}
                 subjectName={story.subject_name}
                 user_id={currentUserId}
               />

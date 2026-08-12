@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import { useCreateStory } from "@/hooks/useStories";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
+import { useRealIsAdmin } from "@/hooks/useRealIsAdmin";
 import { supabase } from "@/integrations/supabase/client";
 import Composer from "./Composer";
 import SuccessAnimation from "./SuccessAnimation";
@@ -47,6 +49,17 @@ const CreateStory = ({
 
   const createStory = useCreateStory();
   const { toast } = useToast();
+  const { user: authUser } = useAuth();
+  // Operator posts publish under a fresh random codename instead of the admin's own
+  // handle, so the feed doesn't read as one person talking to himself. The real role
+  // check (not the "View as" override) decides; the RPC re-checks it server-side.
+  //
+  // Publishing is held until this resolves. Losing that race would publish under the
+  // admin's real handle — the exact outcome this feature exists to prevent, and not
+  // something you can take back once it is in the feed. In practice the wait is zero:
+  // useAuth primes the same query key before this modal can open.
+  const { isAdmin: postAsAlias, isLoading: roleLoading } = useRealIsAdmin(authUser?.id);
+  const roleUnresolved = !authUser || roleLoading;
 
   const uploadImageToStorage = async (file: File): Promise<string | null> => {
     try {
@@ -61,8 +74,13 @@ const CreateStory = ({
       }
       const fileExt = file.name.split('.').pop();
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-      // RLS on story-images requires the first folder segment to equal auth.uid()
-      const filePath = `${user.id}/${fileName}`;
+      // Object paths ship to every client inside `image_url`. Normal posts go under
+      // the poster's uid (what the storage RLS policy requires); aliased posts must
+      // NOT, or the admin's uid would be printed on every one of them and undo the
+      // anonymity. `seed/` is the operator prefix admins are allowed to write to.
+      const filePath = postAsAlias
+        ? `seed/${crypto.randomUUID()}/${fileName}`
+        : `${user.id}/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
         .from('story-images')
@@ -126,9 +144,10 @@ const CreateStory = ({
         subjectName: storyData.personName,
         subjectPhone: storyData.personPhone,
         verdict: storyData.verdict,
+        asAlias: postAsAlias,
       };
-      
-      await createStory.mutateAsync(storyPayload);
+
+      const published = await createStory.mutateAsync(storyPayload);
 
       // Reset form state so re-opening the modal starts fresh.
       setStoryData({
@@ -143,6 +162,12 @@ const CreateStory = ({
       setImagePreviews([]);
 
       setShowSuccess(true);
+      if (published?.author_alias) {
+        toast({
+          title: "Posted",
+          description: `Published as @${published.author_alias}.`,
+        });
+      }
       if (isUnverified) {
         toast({
           title: "Submitted!",
@@ -203,6 +228,8 @@ const CreateStory = ({
             onClose={onClose}
             isLoading={createStory.isPending || uploading}
             uploading={uploading}
+            postAsAlias={postAsAlias}
+            publishBlocked={roleUnresolved}
           />
         </div>
       </Card>

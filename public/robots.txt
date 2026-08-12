@@ -26,6 +26,9 @@ Disallow: /api/
 Disallow: /auth/
 Disallow: /_next/
 Disallow: /verification-selfies/
+# Service-worker fallback, not a page anyone should land on from search.
+# (It also self-noindexes; this just keeps it out of the crawl budget.)
+Disallow: /offline.html
 
 # Allow public assets
 Allow: /juice-logo.png

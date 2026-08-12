@@ -15,8 +15,10 @@ import { useFeedGate } from "@/hooks/useFeedGate";
 import ReferralPrompt from "@/components/ReferralPrompt";
 import SubjectLookup from "@/components/SubjectLookup";
 import CityFilterChips, { FeedScope } from "@/components/CityFilterChips";
+import InstallPrompt from "@/components/InstallPrompt";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
+import { getStoryAuthorName } from "@/lib/storyAuthor";
 
 interface HomeProps {
   onCreateStory?: () => void;
@@ -98,6 +100,9 @@ const Home = ({ onCreateStory }: HomeProps) => {
         </div>
       </header>
 
+      {/* Self-hides when already installed, dismissed, or unsupported. */}
+      <InstallPrompt />
+
       {/* Feed */}
       <div className="max-w-xl mx-auto sm:px-0 py-0 sm:py-2">
         {/* The magic moment, front and center: look her up by name. */}
@@ -133,7 +138,7 @@ const Home = ({ onCreateStory }: HomeProps) => {
                 <StoryCard
                   key={story.id}
                   story={story}
-                  authorName={story.profiles?.anonymous_username || "Anonymous"}
+                  authorName={getStoryAuthorName(story)}
                   user_id={user?.id}
                 />
               ))}

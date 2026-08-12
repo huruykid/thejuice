@@ -20,6 +20,11 @@ export interface Story {
   image_url?: string;
   subject_name?: string;
   location?: string | null;
+  /**
+   * Per-story display handle for operator-authored posts. When set it wins over
+   * `profiles.anonymous_username` — resolve it through getStoryAuthorName().
+   */
+  author_alias?: string | null;
   profiles?: {
     id: string;
     anonymous_username: string;
@@ -157,6 +162,7 @@ export const useCreateStory = () => {
       subjectName,
       subjectPhone,
       verdict,
+      asAlias = false,
     }: {
       content: string;
       tags: string[];
@@ -167,6 +173,12 @@ export const useCreateStory = () => {
       subjectPhone?: string;
       /** The single green/red verdict: +1 juice, -1 milk, 0 none. */
       verdict?: number;
+      /**
+       * Operator posting: publish under a fresh random codename with no profile or
+       * owner attached, instead of the poster's own handle. Admin-only — the RPC
+       * re-checks the role server-side, this flag only picks the path.
+       */
+      asAlias?: boolean;
     }) => {
       // Validate and sanitize input
       const contentValidation = validateStoryContent(content);
@@ -195,6 +207,32 @@ export const useCreateStory = () => {
       // Get current user
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User must be authenticated');
+
+      if (asAlias) {
+        // Everything happens inside the RPC — the row, its tags, and the peppered
+        // subject-phone hash. Once user_id is NULL the client can't write the last two
+        // itself (both policies key on user_id = auth.uid()). No rate-limit check:
+        // that bucket exists to keep members from flooding the moderation queue, and
+        // these publish approved, by the operator, on purpose.
+        const { data, error } = await supabase.rpc('create_aliased_story', {
+          p_content: sanitizedContent,
+          p_image_url: imageUrl,
+          p_subject_name: sanitizedSubjectName,
+          p_subject_phone: sanitizedSubjectPhone,
+          p_location: location ? sanitizeText(location) : null,
+          p_city_id: city_id || null,
+          p_verdict: verdict ?? 0,
+          p_tags: sanitizedTags,
+        });
+        if (error) throw error;
+        const row = data?.[0];
+        if (!row) throw new Error('Story was not created.');
+        return {
+          id: row.story_id,
+          subject_name: sanitizedSubjectName,
+          author_alias: row.alias,
+        };
+      }
 
       // Server-side rate limit on posting. The bucket key + limits are enforced
       // server-side in check_rate_limit (keyed on auth.uid() here); the args are the
@@ -268,8 +306,12 @@ export const useCreateStory = () => {
       return story;
     },
     onSuccess: (story) => {
-      // Activation signal: a real (non-seed) post was submitted.
-      void track("post_created", { story_id: story?.id, has_subject: !!story?.subject_name });
+      // Activation signal: a real (non-seed) post was submitted. Aliased operator
+      // posts are seeded content — counting them would inflate the one number that
+      // tells us whether members are actually posting.
+      if (!story?.author_alias) {
+        void track("post_created", { story_id: story?.id, has_subject: !!story?.subject_name });
+      }
       queryClient.invalidateQueries({ queryKey: ['stories'] });
       queryClient.invalidateQueries({ queryKey: ['stories', 'mine'] });
       queryClient.invalidateQueries({ queryKey: ['has-approved-post'] });
