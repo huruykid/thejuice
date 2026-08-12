@@ -47,8 +47,20 @@ const Index = () => {
   // user is verified, so a shared /story/:id link survives the login round-trip.
   // Only same-origin paths are allowed — no protocol-relative or absolute URLs.
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const returnTo = searchParams.get("returnTo");
+
+  // /app?compose=1 opens the composer straight away — this is what the installed
+  // app's "Post the juice" home-screen shortcut points at (public/manifest.webmanifest),
+  // and it works as a plain link too. The param is consumed immediately so a reload
+  // or a back-navigation doesn't pop the composer open again.
+  useEffect(() => {
+    if (!user || searchParams.get("compose") !== "1") return;
+    setShowCreateStory(true);
+    const next = new URLSearchParams(searchParams);
+    next.delete("compose");
+    setSearchParams(next, { replace: true });
+  }, [user, searchParams, setSearchParams]);
   useEffect(() => {
     if (verificationLoading || !isVerified || !returnTo) return;
     if (returnTo.startsWith("/") && !returnTo.startsWith("//")) {

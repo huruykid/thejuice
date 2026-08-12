@@ -42,10 +42,15 @@
     <meta name="ICBM" content="39.8283, -98.5795" />
     
     <!-- Theme & Mobile -->
-    <meta name="theme-color" content="#F8B23A" />
+    <!-- Two theme-colors: the amber brand chrome in light, near-black in dark, so an
+         installed app's status/title bar matches the page instead of glowing amber
+         above a black feed. -->
+    <meta name="theme-color" content="#F8B23A" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: dark)" />
     <!-- Manifest makes the PWA installable on Android/desktop Chrome; the
          apple-mobile-web-app tags below cover iOS Add to Home Screen. -->
     <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="Juice" />
@@ -53,9 +58,12 @@
     <!-- Google Search Console verification -->
     <meta name="google-site-verification" content="KoPqufrqlSK5XZioUJfZpWzHugkc63gTIzULux0onCE" />
     
-    <!-- Favicons -->
+    <!-- Favicons. The apple-touch-icon MUST be the opaque generated one: iOS
+         composites transparency onto black, so pointing this at the transparent
+         source logo ships a black home-screen tile.
+         Regenerate with `node scripts/generate-pwa-icons.mjs`. -->
     <link rel="icon" href="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" type="image/png">
-    <link rel="apple-touch-icon" href="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />

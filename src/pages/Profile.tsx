@@ -17,6 +17,7 @@ import { useUserStats } from "@/hooks/useUserStats";
 import { useToast } from "@/hooks/use-toast";
 import { useStoriesByProfile } from "@/hooks/useStories";
 import { useBookmarkedStories } from "@/hooks/useBookmarks";
+import { getStoryAuthorName } from "@/lib/storyAuthor";
 
 type ProfileTab = "stories" | "saved";
 
@@ -206,7 +207,7 @@ const Profile = () => {
                 <StoryCard
                   key={story.id}
                   story={story}
-                  authorName={(story as any).profiles?.anonymous_username ?? "anonymous"}
+                  authorName={getStoryAuthorName(story as any, "anonymous")}
                   subjectName={story.subject_name ?? undefined}
                   user_id={user?.id}
                 />

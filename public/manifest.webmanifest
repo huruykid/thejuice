@@ -5,15 +5,54 @@
   "start_url": "/app",
   "scope": "/",
   "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "portrait",
+  "lang": "en-US",
+  "dir": "ltr",
   "background_color": "#ffffff",
   "theme_color": "#F8B23A",
+  "categories": ["social", "lifestyle"],
   "description": "Verified men share honest reviews of the women they've dated. Look someone up before your next date.",
   "icons": [
     {
-      "src": "/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png",
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
+    },
+    {
+      "src": "/icons/maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Post the juice",
+      "short_name": "Post",
+      "description": "Open the composer straight away",
+      "url": "/app?compose=1",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Look someone up",
+      "short_name": "Search",
+      "description": "Search a name before your next date",
+      "url": "/explore",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" }]
     }
   ]
 }

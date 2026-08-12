@@ -3,6 +3,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import StoryCard from "@/components/StoryCard";
 import type { Story } from "@/hooks/useStories";
+import { getStoryAuthorName } from "@/lib/storyAuthor";
 
 interface StoryModalProps {
   story: (Story & {
@@ -26,7 +27,7 @@ interface StoryModalProps {
 export const StoryModal = ({ story, isOpen, onClose, userId }: StoryModalProps) => {
   if (!story) return null;
 
-  const authorName = story.profiles?.anonymous_username || 'Anonymous';
+  const authorName = getStoryAuthorName(story);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>

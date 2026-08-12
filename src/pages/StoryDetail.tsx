@@ -8,6 +8,7 @@ import QueryError from "@/components/QueryError";
 import Navigation from "@/components/Navigation";
 import { useAuth } from "@/hooks/useAuth";
 import type { Story } from "@/hooks/useStories";
+import { getStoryAuthorName } from "@/lib/storyAuthor";
 
 const StoryDetail = () => {
   const { storyId } = useParams<{ storyId: string }>();
@@ -49,7 +50,7 @@ const StoryDetail = () => {
   const description = story
     ? `${String(rawText).replace(/\s+/g, " ").trim().slice(0, 155)}`
     : "Read an anonymous, verified dating story from a real man on Juice.";
-  const authorName = story?.profiles?.anonymous_username ?? "Anonymous";
+  const authorName = getStoryAuthorName(story);
   const title = story
     ? `${authorName}'s anonymous dating story — Juice`
     : "Story — Juice";
@@ -115,7 +116,7 @@ const StoryDetail = () => {
           <>
             <StoryCard
               story={story}
-              authorName={story.profiles?.anonymous_username ?? "Anonymous"}
+              authorName={getStoryAuthorName(story)}
               user_id={user?.id}
             />
             {/* Same removal affordance as /share/:id — the subject shouldn't need to

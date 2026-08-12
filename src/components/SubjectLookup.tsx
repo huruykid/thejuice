@@ -7,6 +7,7 @@ import { JuiceIcon, MilkIcon } from "@/components/icons/BrandVoteIcons";
 import { useSubjectLookup, type SubjectGroup } from "@/hooks/useSubjectLookup";
 import { useDebounce } from "@/hooks/useDebounce";
 import { track } from "@/lib/analytics";
+import { getStoryAuthorName } from "@/lib/storyAuthor";
 
 /**
  * The verified-member magic moment: look her up by name, right on Home.
@@ -136,7 +137,7 @@ const SubjectLookup = ({ user_id, onCreateStory, onActiveChange }: SubjectLookup
                           <StoryCard
                             key={story.id}
                             story={story}
-                            authorName={story.profiles?.anonymous_username || "Anonymous"}
+                            authorName={getStoryAuthorName(story)}
                             user_id={user_id}
                           />
                         ))}

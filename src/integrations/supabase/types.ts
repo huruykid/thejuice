@@ -674,6 +674,7 @@ export type Database = {
         Row: {
           approved_at: string | null
           approved_by: string | null
+          author_alias: string | null
           city_id: string | null
           comments_count: number
           communication_rating: number | null
@@ -703,6 +704,7 @@ export type Database = {
         Insert: {
           approved_at?: string | null
           approved_by?: string | null
+          author_alias?: string | null
           city_id?: string | null
           comments_count?: number
           communication_rating?: number | null
@@ -732,6 +734,7 @@ export type Database = {
         Update: {
           approved_at?: string | null
           approved_by?: string | null
+          author_alias?: string | null
           city_id?: string | null
           comments_count?: number
           communication_rating?: number | null
@@ -987,6 +990,22 @@ export type Database = {
         }
         Returns: boolean
       }
+      create_aliased_story: {
+        Args: {
+          p_city_id?: string
+          p_content: string
+          p_image_url: string
+          p_location?: string
+          p_subject_name?: string
+          p_subject_phone?: string
+          p_tags?: string[]
+          p_verdict?: number
+        }
+        Returns: {
+          alias: string
+          story_id: string
+        }[]
+      }
       current_user_has_role: {
         Args: { _role: Database["public"]["Enums"]["app_role"] }
         Returns: boolean
@@ -995,6 +1014,7 @@ export type Database = {
         Args: { p_activity_type: string; p_details?: Json; p_user_id: string }
         Returns: undefined
       }
+      generate_author_alias: { Args: never; Returns: string }
       generate_city_slug: { Args: { city_name_param: string }; Returns: string }
       generate_slug: { Args: { title_text: string }; Returns: string }
       get_search_miss_candidates: {
@@ -1054,6 +1074,7 @@ export type Database = {
         Returns: {
           approved_at: string | null
           approved_by: string | null
+          author_alias: string | null
           city_id: string | null
           comments_count: number
           communication_rating: number | null

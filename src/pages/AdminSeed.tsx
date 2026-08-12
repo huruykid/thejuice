@@ -22,6 +22,7 @@ interface SeedStory {
   subject_name: string | null;
   location: string | null;
   overall_vibe_rating: number | null;
+  author_alias: string | null;
   created_at: string;
 }
 
@@ -58,7 +59,7 @@ const AdminSeed = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("stories")
-        .select("id, content, subject_name, location, overall_vibe_rating, created_at")
+        .select("id, content, subject_name, location, overall_vibe_rating, author_alias, created_at")
         .eq("is_seed", true)
         .order("created_at", { ascending: false })
         .limit(100);
@@ -237,6 +238,7 @@ const AdminSeed = () => {
                       <div className="min-w-0">
                         <p className="text-sm text-foreground line-clamp-2">{s.content}</p>
                         <p className="text-xs text-muted-foreground mt-1">
+                          {s.author_alias ? `@${s.author_alias} · ` : ""}
                           {s.subject_name ? `${s.subject_name} · ` : ""}{s.location ?? "—"}
                           {s.overall_vibe_rating != null ? ` · vibe ${s.overall_vibe_rating}/5` : ""}
                         </p>
