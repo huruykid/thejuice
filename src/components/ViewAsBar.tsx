@@ -1,84 +1,46 @@
-import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { useRealIsAdmin } from "@/hooks/useRealIsAdmin";
-import { useViewAs, ViewAsMode } from "@/contexts/ViewAsContext";
-import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Eye, X } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { useRealAdmin } from "@/hooks/useRealAdmin";
+import { useViewAs, ViewAsMode } from "@/contexts/ViewAsContext";
 
 const LABELS: Record<Exclude<ViewAsMode, null>, string> = {
-  logged_out: "Logged-out visitor",
-  unverified_user: "Unverified user",
-  verified_user: "Verified user",
+  logged_out: "logged-out visitor",
+  unverified_user: "unverified user",
+  verified_user: "verified user",
 };
 
+/**
+ * The exit hatch for an active "Preview as" session — and nothing else.
+ *
+ * It used to render permanently, including a full role picker, which meant an
+ * always-on bar sitting over the bottom-right of the feed for the ~99% of the time
+ * nobody was previewing anything. The picker now lives in the admin menus
+ * (ViewAsMenu); this is what remains, and only while a preview is running.
+ *
+ * It cannot move into a menu itself. Previewing the logged-out visitor takes away
+ * the sidebar, the bottom nav, and /admin (useAuth reports no user, so AdminRoute
+ * bounces to login) — with no floating control there is no way back out short of
+ * clearing sessionStorage by hand.
+ *
+ * Sits bottom-LEFT: the create button and the feed's action row own the right side,
+ * and `bottom-16` clears the mobile bottom nav where one is rendered.
+ */
 export const ViewAsBar = () => {
-  // Read the *real* session straight from Supabase so the bar still works when
-  // an admin is previewing "logged_out" (which nulls out useAuth().user).
-  const [realUserId, setRealUserId] = useState<string | undefined>(undefined);
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => setRealUserId(data.session?.user?.id));
-    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
-      setRealUserId(session?.user?.id);
-    });
-    return () => sub.subscription.unsubscribe();
-  }, []);
-  const { isAdmin: realIsAdmin } = useRealIsAdmin(realUserId);
+  const { isAdmin: realIsAdmin } = useRealAdmin();
   const { viewAs, setViewAs } = useViewAs();
 
-  // Don't render unless the real user is an admin.
-  if (!realIsAdmin) return null;
-
-  const active = viewAs !== null;
+  if (!realIsAdmin || viewAs === null) return null;
 
   return (
-    <div
-      className={cn(
-        "fixed bottom-4 right-4 z-[60] flex items-center gap-2 rounded-full border px-3 py-2 shadow-lg backdrop-blur",
-        active
-          ? "border-primary bg-primary/10/95 text-amber-900"
-          : "border-border bg-card/95 text-foreground"
-      )}
+    <button
+      type="button"
+      onClick={() => setViewAs(null)}
+      aria-label={`Exit preview — you are viewing as a ${LABELS[viewAs]}`}
+      className="fixed bottom-16 left-3 lg:bottom-4 lg:left-4 z-[60] flex items-center gap-1.5 rounded-full border border-primary bg-card/95 px-2.5 py-1.5 text-xs font-medium text-foreground shadow-lg backdrop-blur transition-colors hover:bg-muted"
     >
-      <Eye className="h-4 w-4 shrink-0" />
-      <span className="text-xs font-medium whitespace-nowrap">
-        {active ? `Previewing: ${LABELS[viewAs!]}` : "Viewing as Admin"}
-      </span>
-      <Select
-        value={viewAs ?? "admin"}
-        onValueChange={(v) =>
-          setViewAs(v === "admin" ? null : (v as Exclude<ViewAsMode, null>))
-        }
-      >
-        <SelectTrigger className="h-7 w-[160px] text-xs">
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="admin">Admin (real)</SelectItem>
-          <SelectItem value="verified_user">Verified user</SelectItem>
-          <SelectItem value="unverified_user">Unverified user</SelectItem>
-          <SelectItem value="logged_out">Logged-out visitor</SelectItem>
-        </SelectContent>
-      </Select>
-      {active && (
-        <Button
-          size="icon"
-          variant="ghost"
-          className="h-6 w-6"
-          aria-label="Exit preview"
-          onClick={() => setViewAs(null)}
-        >
-          <X className="h-3.5 w-3.5" />
-        </Button>
-      )}
-    </div>
+      <Eye className="h-3.5 w-3.5 shrink-0 text-primary" />
+      <span className="whitespace-nowrap">Previewing: {LABELS[viewAs]}</span>
+      <X className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+    </button>
   );
 };
 

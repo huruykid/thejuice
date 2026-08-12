@@ -5,6 +5,7 @@ import { User, Session } from '@supabase/supabase-js';
 import { useSecurityMonitoring } from './useSecurityMonitoring';
 import { useViewAs } from '@/contexts/ViewAsContext';
 import { useRealIsAdmin } from './useRealIsAdmin';
+import { activePreview } from '@/lib/viewAs';
 
 export const useAuth = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -118,8 +119,9 @@ export const useAuth = () => {
   };
 
   // Apply "View as" override (admins only).
-  const effectiveUser = realIsAdmin && viewAs === 'logged_out' ? null : user;
-  const effectiveSession = realIsAdmin && viewAs === 'logged_out' ? null : session;
+  const previewingLoggedOut = activePreview(realIsAdmin, viewAs) === 'logged_out';
+  const effectiveUser = previewingLoggedOut ? null : user;
+  const effectiveSession = previewingLoggedOut ? null : session;
 
   return {
     user: effectiveUser,
