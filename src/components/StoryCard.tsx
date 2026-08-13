@@ -396,7 +396,7 @@ const StoryCard = ({
                 selected one is the strong, non-color-alone "your vote" cue. */}
             <button
               onClick={() => handleReaction('green_flag')}
-              aria-label="She got the juice (green flag)"
+              aria-label="Green flag — she got the juice"
               aria-pressed={isGreenFlagged}
               className={`min-h-11 -ml-1 flex items-center gap-1.5 px-3 rounded-full border transition-all active:scale-95 ${
                 isGreenFlagged
@@ -411,14 +411,16 @@ const StoryCard = ({
               >
                 <JuiceIcon className="h-5 w-5" />
               </span>
+              {/* Flag name on the primary line, slang under it — same order the
+                  composer teaches, so voting doesn't ask you to re-translate. */}
               <span className="flex flex-col items-start leading-tight">
-                <span className="text-sm font-semibold">Juice</span>
-                <span className="text-[9px] font-medium opacity-70">green flag</span>
+                <span className="text-sm font-semibold">Green flag</span>
+                <span className="text-[9px] font-medium opacity-70">juice</span>
               </span>
             </button>
             <button
               onClick={() => handleReaction('red_flag')}
-              aria-label="Spoiled milk (red flag)"
+              aria-label="Red flag — spoiled milk"
               aria-pressed={isRedFlagged}
               className={`min-h-11 flex items-center gap-1.5 px-3 rounded-full border transition-all active:scale-95 ${
                 isRedFlagged
@@ -434,8 +436,8 @@ const StoryCard = ({
                 <MilkIcon className="h-5 w-5" />
               </span>
               <span className="flex flex-col items-start leading-tight">
-                <span className="text-sm font-semibold">Milk</span>
-                <span className="text-[9px] font-medium opacity-70">red flag</span>
+                <span className="text-sm font-semibold">Red flag</span>
+                <span className="text-[9px] font-medium opacity-70">milk</span>
               </span>
             </button>
             <button
