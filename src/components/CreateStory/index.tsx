@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { useCreateStory } from "@/hooks/useStories";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
@@ -9,6 +10,9 @@ import { useRealIsAdmin } from "@/hooks/useRealIsAdmin";
 import { supabase } from "@/integrations/supabase/client";
 import Composer from "./Composer";
 import SuccessAnimation from "./SuccessAnimation";
+
+/** Kept in step with the sheet's exit transition duration below. */
+const EXIT_MS = 220;
 
 export interface StoryData {
   content: string;
@@ -34,6 +38,26 @@ const CreateStory = ({
   const [uploadedImages, setUploadedImages] = useState<File[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
+  // The parent unmounts this component the instant onClose fires, so the sheet has
+  // to play its exit *before* saying so — otherwise it slides up on open and then
+  // vanishes on close, which reads as a glitch rather than a dismissal.
+  const [closing, setClosing] = useState(false);
+  const closeTimer = useRef<number | null>(null);
+
+  const handleClose = useCallback(() => {
+    if (closeTimer.current !== null) return; // already on the way out
+    setClosing(true);
+    closeTimer.current = window.setTimeout(onClose, EXIT_MS);
+  }, [onClose]);
+
+  // A close in flight when this unmounts (publish success races the X button)
+  // would otherwise fire onClose against a dead component.
+  useEffect(
+    () => () => {
+      if (closeTimer.current !== null) window.clearTimeout(closeTimer.current);
+    },
+    []
+  );
   
   const [storyData, setStoryData] = useState<StoryData>({
     content: '',
@@ -206,12 +230,41 @@ const CreateStory = ({
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-4">
-      <Card className="w-full max-w-md bg-background rounded-t-3xl sm:rounded-3xl max-h-[90vh] overflow-hidden">
+    <div
+      className={cn(
+        "fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-4",
+        "transition-opacity duration-200 motion-reduce:transition-none",
+        closing ? "opacity-0" : "opacity-100"
+      )}
+    >
+      <Card
+        className={cn(
+          "w-full max-w-md bg-background rounded-t-3xl sm:rounded-3xl max-h-[90vh] overflow-hidden",
+          // Rises off the bottom edge on phones, where the sheet is flush with the
+          // ground; on sm+ it is a centered dialog, so a full-height slide would
+          // read as the card falling out of the viewport — it scales in instead.
+          // Durations are spelled out rather than using duration-*: tailwindcss-animate
+          // redefines that utility to set animation-duration, so a `duration-200` and a
+          // `duration-300` on the same element fight over BOTH properties and whichever
+          // lands later in the sheet wins. Exit must stay in step with EXIT_MS above.
+          "will-change-transform transition-transform [transition-duration:200ms] ease-in motion-reduce:transition-none",
+          closing
+            ? "translate-y-full sm:translate-y-0 sm:scale-95"
+            : "translate-y-0 sm:scale-100",
+          !closing &&
+            "animate-in slide-in-from-bottom-full sm:slide-in-from-bottom-0 sm:zoom-in-95 [animation-duration:300ms] ease-out motion-reduce:animate-none"
+        )}
+      >
+        {/* Grab handle. Purely a signifier — this sheet isn't drag-dismissible — but
+            it's the standard cue that the panel came up from the bottom edge. */}
+        <div className="sm:hidden flex justify-center pt-2.5" aria-hidden="true">
+          <span className="h-1 w-9 rounded-full bg-muted-foreground/30" />
+        </div>
+
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-primary/10">
+        <div className="flex items-center justify-between p-6 pt-4 sm:pt-6 border-b border-primary/10">
           <h2 className="text-xl font-bold text-foreground">Share the Juice</h2>
-          <Button variant="ghost" size="icon" onClick={onClose}>
+          <Button variant="ghost" size="icon" onClick={handleClose}>
             <X className="h-5 w-5" />
           </Button>
         </div>
@@ -225,7 +278,7 @@ const CreateStory = ({
             imagePreviews={imagePreviews}
             setImagePreviews={setImagePreviews}
             onPublish={handlePublish}
-            onClose={onClose}
+            onClose={handleClose}
             isLoading={createStory.isPending || uploading}
             uploading={uploading}
             postAsAlias={postAsAlias}

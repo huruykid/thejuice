@@ -202,9 +202,14 @@ const Composer = ({
             )}
           >
             <JuiceIcon className="h-5 w-5" />
+            {/* Flag name leads, slang follows. At the moment of judgement the user
+                is answering "was she good or bad", not recalling what Juice means —
+                so the plain word takes the primary line. The slang stays underneath
+                because the feed votes in it and the app is named after it; teaching
+                only "green flag" here would just move the translation downstream. */}
             <span className="flex flex-col items-start leading-tight">
-              <span>Juice</span>
-              <span className="text-[10px] font-medium opacity-70">green flag</span>
+              <span>Green flag</span>
+              <span className="text-[10px] font-medium opacity-70">juice</span>
             </span>
           </button>
           <button
@@ -220,8 +225,8 @@ const Composer = ({
           >
             <MilkIcon className="h-5 w-5" />
             <span className="flex flex-col items-start leading-tight">
-              <span>Milk</span>
-              <span className="text-[10px] font-medium opacity-70">red flag</span>
+              <span>Red flag</span>
+              <span className="text-[10px] font-medium opacity-70">milk</span>
             </span>
           </button>
         </div>
