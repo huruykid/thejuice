@@ -148,7 +148,7 @@ const MensDatingAdvice = () => {
             Practical advice from verified men — not coaches, not influencers, not theory.
           </p>
           <div className="flex flex-col sm:flex-row gap-3">
-            <Button size="xl" variant="juice" asChild className="font-bold">
+            <Button size="xl" asChild className="font-bold">
               <Link to="/app">
                 Read Advice from Verified Men
                 <ArrowRight className="ml-2 h-5 w-5" />
@@ -263,7 +263,7 @@ const MensDatingAdvice = () => {
             Real dating experience and advice from a verified community of men.
           </p>
           <div className="flex flex-col sm:flex-row sm:items-center gap-5">
-            <Button size="xl" variant="juice" asChild className="font-bold w-fit">
+            <Button size="xl" asChild className="font-bold w-fit">
               <Link to="/app">
                 Read Verified Advice
                 <ArrowRight className="ml-2 h-5 w-5" />

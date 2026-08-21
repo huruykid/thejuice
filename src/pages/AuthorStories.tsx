@@ -1,11 +1,9 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import Navigation from "@/components/Navigation";
+import PageScaffold from "@/components/layout/PageScaffold";
 import StoryCard from "@/components/StoryCard";
+import StoryCardSkeleton from "@/components/StoryCardSkeleton";
 import { useStoriesByProfile } from "@/hooks/useStories";
 import { useAuth } from "@/hooks/useAuth";
-import { getStoryAuthorName } from "@/lib/storyAuthor";
 
 const AuthorStories = () => {
   const { profileId } = useParams<{ profileId: string }>();
@@ -15,72 +13,64 @@ const AuthorStories = () => {
 
   const { data: stories, isLoading: storiesLoading, isError } = useStoriesByProfile(profileId || '');
 
-  const authorName = getStoryAuthorName(stories?.[0], 'Unknown Author');
+  const authorName = stories?.[0]?.profiles?.anonymous_username;
+  const count = stories?.length || 0;
 
   return (
-    <div className="min-h-screen bg-gradient-soft">
-      <Navigation />
-      
-      <div className="max-w-2xl mx-auto px-4 py-6">
-        {/* Header */}
-        <div className="flex items-center gap-4 mb-6">
-          <Button 
-            variant="ghost" 
-            size="icon"
-            onClick={() => navigate(-1)}
-            className="shrink-0"
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <div>
-            <h1 className="text-2xl font-bold text-foreground">
-              Stories by {authorName}
-            </h1>
-            <p className="text-muted-foreground">
-              {stories?.length || 0} {stories?.length === 1 ? 'story' : 'stories'}
-            </p>
-          </div>
+    <PageScaffold
+      title={
+        <span className="flex items-baseline gap-1.5">
+          <span className="truncate">{authorName ? `@${authorName}` : "Stories"}</span>
+          {count > 0 && (
+            <span className="text-xs font-normal text-muted-foreground">
+              {count} {count === 1 ? "story" : "stories"}
+            </span>
+          )}
+        </span>
+      }
+      back
+      maxWidth="xl"
+    >
+      {storiesLoading ? (
+        <div>
+          {Array.from({ length: 3 }).map((_, i) => (
+            <StoryCardSkeleton key={i} />
+          ))}
         </div>
-
-        {/* Stories */}
-        {storiesLoading ? (
-          <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-            <p className="text-muted-foreground mt-4">Loading stories...</p>
-          </div>
-        ) : isError || !profileId ? (
-          <div className="text-center py-12">
-            <p className="text-muted-foreground">
-              Couldn't load stories. The profile may not exist.
-            </p>
-            <button
-              onClick={() => navigate(-1)}
-              className="mt-4 text-sm text-primary underline"
-            >
-              Go back
-            </button>
-          </div>
-        ) : stories && stories.length > 0 ? (
-          <div className="space-y-4">
-            {stories.map((story) => (
-              <StoryCard
-                key={story.id}
-                story={story}
-                authorName={getStoryAuthorName(story)}
-                subjectName={story.subject_name}
-                user_id={currentUserId}
-              />
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-12">
-            <p className="text-muted-foreground">
-              This author hasn't posted any stories yet.
-            </p>
-          </div>
-        )}
-      </div>
-    </div>
+      ) : isError || !profileId ? (
+        <div className="px-6 py-20 text-center">
+          <h3 className="mb-1 text-lg font-semibold">Couldn't load stories</h3>
+          <p className="mb-6 text-sm text-muted-foreground">
+            The profile may not exist, or something went wrong.
+          </p>
+          <button
+            onClick={() => navigate(-1)}
+            className="rounded-lg border border-border px-5 py-2.5 text-sm font-semibold text-foreground transition-colors hover:bg-muted"
+          >
+            Go back
+          </button>
+        </div>
+      ) : stories && stories.length > 0 ? (
+        <div>
+          {stories.map((story) => (
+            <StoryCard
+              key={story.id}
+              story={story}
+              authorName={story.profiles?.anonymous_username || 'Anonymous'}
+              subjectName={story.subject_name}
+              user_id={currentUserId}
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="px-6 py-20 text-center">
+          <h3 className="mb-1 text-lg font-semibold">Nothing here yet</h3>
+          <p className="text-sm text-muted-foreground">
+            This author hasn't posted any stories yet.
+          </p>
+        </div>
+      )}
+    </PageScaffold>
   );
 };
 

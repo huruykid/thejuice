@@ -77,7 +77,7 @@ const RefactoredSelfieCapture: React.FC<RefactoredSelfieCaptureProps> = ({ onCom
   // If camera fails, show error message and retry option
   if (cameraError && retryCount >= 2) {
     return (
-      <div className="min-h-screen bg-gradient-soft flex items-center justify-center p-4">
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center space-y-4">
             <BrandLockup variant="mark" size="lg" className="mx-auto" />
@@ -104,7 +104,7 @@ const RefactoredSelfieCapture: React.FC<RefactoredSelfieCaptureProps> = ({ onCom
   }
 
   return (
-    <div className="min-h-screen bg-gradient-soft flex items-center justify-center p-4">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center space-y-4">
           <BrandLockup variant="mark" size="lg" className="mx-auto" />

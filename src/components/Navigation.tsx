@@ -21,7 +21,7 @@ const Navigation = ({ onCreateStory }: NavigationProps) => {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur border-t border-border lg:hidden">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur border-t border-border pb-[env(safe-area-inset-bottom,0px)] lg:hidden">
       <div className="grid grid-cols-4 h-12 max-w-md mx-auto">
         {tabs.map((tab, i) => {
           if (tab.kind === "create") {

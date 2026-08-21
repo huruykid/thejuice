@@ -108,7 +108,7 @@ const TeaOnHerAlternative = () => {
             red flags — and it runs right in your browser. No download, nothing to take down.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 mb-4">
-            <Button size="xl" variant="juice" asChild className="font-bold">
+            <Button size="xl" asChild className="font-bold">
               <Link to="/app">Join Juice free <ArrowRight className="ml-2 h-5 w-5" /></Link>
             </Button>
             <Button size="xl" variant="outline" asChild>
@@ -170,7 +170,7 @@ const TeaOnHerAlternative = () => {
             ))}
           </div>
           <div className="mt-10">
-            <Button size="xl" variant="juice" asChild className="font-bold">
+            <Button size="xl" asChild className="font-bold">
               <Link to="/app">Look someone up now <ArrowRight className="ml-2 h-5 w-5" /></Link>
             </Button>
           </div>
@@ -211,7 +211,7 @@ const TeaOnHerAlternative = () => {
             <span className="flex items-center gap-2 text-sm font-semibold"><Check className="h-4 w-4 text-primary" /> Anonymous to post</span>
             <span className="flex items-center gap-2 text-sm font-semibold"><Check className="h-4 w-4 text-primary" /> No download needed</span>
           </div>
-          <Button size="xl" variant="juice" asChild className="font-bold w-fit">
+          <Button size="xl" asChild className="font-bold w-fit">
             <Link to="/app">Get the Juice <ArrowRight className="ml-2 h-5 w-5" /></Link>
           </Button>
         </div>

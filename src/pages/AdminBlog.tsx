@@ -73,7 +73,7 @@ const AdminBlog = () => {
   };
 
   return (
-    <div className="bg-gradient-soft p-4">
+    <div className="bg-background p-4">
       <div className="max-w-5xl mx-auto space-y-6">
         <AdminPageHeader
           title="Blog"

@@ -16,7 +16,7 @@ const Blog = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-soft p-4">
+      <div className="min-h-screen bg-background p-4">
         <div className="max-w-4xl mx-auto">
           <div className="text-center py-8">Loading blog posts...</div>
         </div>
@@ -25,7 +25,7 @@ const Blog = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-soft p-4">
+    <div className="min-h-screen bg-background p-4">
       <Helmet>
         <title>Juice Blog — Men's Dating Stories, Advice & Reviews</title>
         <meta name="description" content="Anonymous dating stories, honest reviews, and real advice from verified men. No fluff, no filters." />

@@ -61,7 +61,7 @@ const ResetPassword = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-soft flex items-center justify-center px-4 py-8">
+    <div className="min-h-screen bg-background flex items-center justify-center px-4 py-8">
       <div className="w-full max-w-md flex flex-col items-center gap-6">
         <button onClick={() => navigate("/")} className="flex flex-col items-center gap-3 hover:opacity-80 transition-opacity">
           <BrandLockup variant="stacked" size="lg" />
@@ -113,7 +113,7 @@ const ResetPassword = () => {
                   required
                   minLength={8}
                 />
-                <Button type="submit" variant="juice" size="lg" className="w-full h-14 text-base" disabled={loading}>
+                <Button type="submit" size="lg" className="w-full h-14 text-base" disabled={loading}>
                   {loading ? "Saving…" : "Update password"}
                 </Button>
               </form>

@@ -1,8 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { X } from "lucide-react";
-import { cn } from "@/lib/utils";
+import BottomSheet from "@/components/ui/bottom-sheet";
 import { useCreateStory } from "@/hooks/useStories";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
@@ -11,8 +8,8 @@ import { supabase } from "@/integrations/supabase/client";
 import Composer from "./Composer";
 import SuccessAnimation from "./SuccessAnimation";
 
-/** Kept in step with the sheet's exit transition duration below. */
-const EXIT_MS = 220;
+/** Parent unmounts on onClose, so give vaul's exit animation time to play first. */
+const EXIT_MS = 450;
 
 export interface StoryData {
   content: string;
@@ -38,15 +35,20 @@ const CreateStory = ({
   const [uploadedImages, setUploadedImages] = useState<File[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
-  // The parent unmounts this component the instant onClose fires, so the sheet has
-  // to play its exit *before* saying so — otherwise it slides up on open and then
-  // vanishes on close, which reads as a glitch rather than a dismissal.
-  const [closing, setClosing] = useState(false);
+  // The parent mounts/unmounts this component, but vaul animates on open-state
+  // transitions — so open starts false, flips true on the next frame (slide-in),
+  // and the close path flips it false and defers onClose until the slide-out ends.
+  const [open, setOpen] = useState(false);
   const closeTimer = useRef<number | null>(null);
+
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setOpen(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
 
   const handleClose = useCallback(() => {
     if (closeTimer.current !== null) return; // already on the way out
-    setClosing(true);
+    setOpen(false);
     closeTimer.current = window.setTimeout(onClose, EXIT_MS);
   }, [onClose]);
 
@@ -58,7 +60,7 @@ const CreateStory = ({
     },
     []
   );
-  
+
   const [storyData, setStoryData] = useState<StoryData>({
     content: '',
     selectedTags: [],
@@ -204,9 +206,9 @@ const CreateStory = ({
       }, 2500);
     } catch (error: any) {
       console.error('Error publishing story:', error);
-      
+
       let errorMessage = "Failed to publish story. Please try again.";
-      
+
       if (error?.message?.includes('verification')) {
         errorMessage = "You need to complete account verification before posting stories.";
       } else if (error?.message?.includes('Invalid story content')) {
@@ -216,7 +218,7 @@ const CreateStory = ({
       } else if (error?.message?.includes('authentication')) {
         errorMessage = "Please log in to post a story.";
       }
-      
+
       toast({
         title: "Error",
         description: errorMessage,
@@ -230,63 +232,22 @@ const CreateStory = ({
   }
 
   return (
-    <div
-      className={cn(
-        "fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-4",
-        "transition-opacity duration-200 motion-reduce:transition-none",
-        closing ? "opacity-0" : "opacity-100"
-      )}
-    >
-      <Card
-        className={cn(
-          "w-full max-w-md bg-background rounded-t-3xl sm:rounded-3xl max-h-[90vh] overflow-hidden",
-          // Rises off the bottom edge on phones, where the sheet is flush with the
-          // ground; on sm+ it is a centered dialog, so a full-height slide would
-          // read as the card falling out of the viewport — it scales in instead.
-          // Durations are spelled out rather than using duration-*: tailwindcss-animate
-          // redefines that utility to set animation-duration, so a `duration-200` and a
-          // `duration-300` on the same element fight over BOTH properties and whichever
-          // lands later in the sheet wins. Exit must stay in step with EXIT_MS above.
-          "will-change-transform transition-transform [transition-duration:200ms] ease-in motion-reduce:transition-none",
-          closing
-            ? "translate-y-full sm:translate-y-0 sm:scale-95"
-            : "translate-y-0 sm:scale-100",
-          !closing &&
-            "animate-in slide-in-from-bottom-full sm:slide-in-from-bottom-0 sm:zoom-in-95 [animation-duration:300ms] ease-out motion-reduce:animate-none"
-        )}
-      >
-        {/* Grab handle. Purely a signifier — this sheet isn't drag-dismissible — but
-            it's the standard cue that the panel came up from the bottom edge. */}
-        <div className="sm:hidden flex justify-center pt-2.5" aria-hidden="true">
-          <span className="h-1 w-9 rounded-full bg-muted-foreground/30" />
-        </div>
-
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 pt-4 sm:pt-6 border-b border-primary/10">
-          <h2 className="text-xl font-bold text-foreground">Share the Juice</h2>
-          <Button variant="ghost" size="icon" onClick={handleClose}>
-            <X className="h-5 w-5" />
-          </Button>
-        </div>
-
-        <div className="overflow-y-auto max-h-[calc(90vh-88px)]">
-          <Composer
-            storyData={storyData}
-            setStoryData={setStoryData}
-            uploadedImages={uploadedImages}
-            setUploadedImages={setUploadedImages}
-            imagePreviews={imagePreviews}
-            setImagePreviews={setImagePreviews}
-            onPublish={handlePublish}
-            onClose={handleClose}
-            isLoading={createStory.isPending || uploading}
-            uploading={uploading}
-            postAsAlias={postAsAlias}
-            publishBlocked={roleUnresolved}
-          />
-        </div>
-      </Card>
-    </div>
+    <BottomSheet open={open} onClose={handleClose} title="Share the Juice">
+      <Composer
+        storyData={storyData}
+        setStoryData={setStoryData}
+        uploadedImages={uploadedImages}
+        setUploadedImages={setUploadedImages}
+        imagePreviews={imagePreviews}
+        setImagePreviews={setImagePreviews}
+        onPublish={handlePublish}
+        onClose={handleClose}
+        isLoading={createStory.isPending || uploading}
+        uploading={uploading}
+        postAsAlias={postAsAlias}
+        publishBlocked={roleUnresolved}
+      />
+    </BottomSheet>
   );
 };
 

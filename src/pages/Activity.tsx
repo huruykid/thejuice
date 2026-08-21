@@ -1,154 +1,101 @@
 import { useNavigate } from "react-router-dom";
-import { Card, CardContent } from "@/components/ui/card";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Separator } from "@/components/ui/separator";
-import { Bell, User, MessageCircle, ArrowLeft } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import Navigation from "@/components/Navigation";
-import LoadingSkeleton from "@/components/ui/loading-skeleton";
+import { MessageCircle, ChevronRight } from "lucide-react";
+import PageScaffold from "@/components/layout/PageScaffold";
 import { useUserActivity } from "@/hooks/useUserActivity";
 import { formatDistanceToNow } from "date-fns";
+
+/**
+ * Activity feed — IG-bones: flush hairline rows inside the shared PageScaffold.
+ * (Replaced the legacy gradient-card layout so the tap from Home's heart icon
+ * lands in the same design language it left.)
+ */
 const Activity = () => {
   const navigate = useNavigate();
-  const {
-    activities,
-    isLoading
-  } = useUserActivity();
+  const { activities, isLoading } = useUserActivity();
+
   const handleActivityTap = (storyId: string) => {
-    // Navigate to the specific story - you might want to create a story detail page
-    // For now, navigate to explore with the story in focus
     navigate(`/explore?story=${storyId}`);
   };
-  const getInitials = (username: string) => {
-    return username.split(' ').map(word => word[0]).join('').toUpperCase().substring(0, 2);
-  };
-  if (isLoading) {
-    return <div className="min-h-screen bg-gradient-to-br from-primary/5 to-primary/5 pb-20">
-        <div className="container mx-auto px-4 py-6 max-w-md lg:max-w-2xl">
-          {/* Header */}
-          <div className="flex items-center mb-6">
-            <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="mr-3">
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-            <div className="flex items-center gap-2">
-              <Bell className="h-6 w-6 text-primary" />
-              <h1 className="text-2xl font-bold text-foreground">Activity</h1>
+
+  const getInitials = (username: string) =>
+    username
+      .split(" ")
+      .map((word) => word[0])
+      .join("")
+      .toUpperCase()
+      .substring(0, 2);
+
+  return (
+    <PageScaffold title="Activity" back>
+      {isLoading ? (
+        <div className="divide-y divide-border">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div key={i} className="flex items-start gap-3 px-4 py-3">
+              <div className="h-10 w-10 shrink-0 animate-pulse rounded-full bg-muted" />
+              <div className="flex-1 space-y-2 py-0.5">
+                <div className="h-3.5 w-2/5 animate-pulse rounded bg-muted" />
+                <div className="h-3 w-4/5 animate-pulse rounded bg-muted" />
+                <div className="h-3 w-1/3 animate-pulse rounded bg-muted/60" />
+              </div>
             </div>
-          </div>
-
-          {/* Loading skeletons */}
-          <div className="space-y-4">
-            {[1, 2, 3, 4, 5].map(i => <Card key={i} className="border-primary/20">
-                <CardContent className="p-4">
-                  <div className="flex items-start gap-3">
-                    <div className="h-10 w-10 bg-muted rounded-full animate-pulse" />
-                    <div className="flex-1 space-y-2">
-                      <div className="h-4 bg-muted rounded animate-pulse" />
-                      <div className="h-3 bg-muted rounded animate-pulse w-3/4" />
-                      <div className="h-8 bg-muted/50 rounded animate-pulse" />
-                      <div className="h-2 bg-muted rounded animate-pulse w-1/2" />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>)}
-          </div>
+          ))}
         </div>
-        <Navigation />
-      </div>;
-  }
-  return <div className="min-h-screen bg-gradient-to-br from-primary/5 to-primary/5 pb-20">
-      <div className="container mx-auto px-4 py-6 max-w-md lg:max-w-2xl">
-        {/* Header */}
-        <div className="flex items-center mb-6">
-          <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="mr-3">
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <div className="flex items-center gap-2">
-            <Bell className="h-6 w-6 text-primary" />
-            <h1 className="text-2xl font-bold text-foreground">Activity</h1>
+      ) : activities.length === 0 ? (
+        <div className="px-6 py-20 text-center">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-muted">
+            <MessageCircle className="h-7 w-7 text-muted-foreground" />
           </div>
+          <h3 className="mb-1 text-lg font-semibold">No activity yet</h3>
+          <p className="text-sm text-muted-foreground">
+            When someone flags or comments on your stories, you'll see it here.
+          </p>
         </div>
-
-        {/* Subtitle */}
-        <div className="text-center mb-6">
-          
-        </div>
-
-        {/* Activity Feed */}
-        <div className="space-y-3">
-          {activities.length === 0 ? <Card className="border-primary/20">
-              <CardContent className="p-8 text-center">
-                <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-primary/20 rounded-full mx-auto mb-4 flex items-center justify-center">
-                  <MessageCircle className="h-8 w-8 text-primary" />
+      ) : (
+        <>
+          <div className="divide-y divide-border">
+            {activities.map((activity) => (
+              <button
+                key={activity.id}
+                onClick={() => handleActivityTap(activity.story_id)}
+                className="flex w-full items-start gap-3 px-4 py-3 text-left transition-colors hover:bg-card-hover"
+              >
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-muted text-sm font-semibold text-foreground">
+                  {getInitials(activity.commenter_username)}
                 </div>
-                <h3 className="text-lg font-semibold mb-2">No activity yet</h3>
-                <p className="text-muted-foreground text-sm">
-                  When someone comments on your stories, you'll see the activity here.
-                </p>
-              </CardContent>
-            </Card> : activities.map((activity, index) => <Card key={activity.id} className="border-primary/20 hover:border-primary/40 transition-colors cursor-pointer animate-fade-in" style={{
-          animationDelay: `${index * 50}ms`
-        }} onClick={() => handleActivityTap(activity.story_id)}>
-                <CardContent className="p-4">
-                  <div className="flex items-start gap-3">
-                    {/* Avatar */}
-                    <Avatar className="h-10 w-10 border-2 border-gradient-primary">
-                      <AvatarFallback className="bg-gradient-to-br from-primary to-primary text-white text-sm font-medium">
-                        {getInitials(activity.commenter_username)}
-                      </AvatarFallback>
-                    </Avatar>
 
-                    {/* Content */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="font-semibold text-foreground">
-                          {activity.commenter_username}
-                        </span>
-                        <span className="text-muted-foreground text-sm">
-                          commented
-                        </span>
-                      </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm">
+                    <span className="font-semibold text-foreground">
+                      {activity.commenter_username}
+                    </span>{" "}
+                    <span className="text-muted-foreground">commented</span>{" "}
+                    <span className="text-xs text-muted-foreground">
+                      ·{" "}
+                      {formatDistanceToNow(new Date(activity.created_at), {
+                        addSuffix: true,
+                      })}
+                    </span>
+                  </p>
+                  <p className="mt-0.5 line-clamp-2 text-sm text-foreground">
+                    “{activity.comment_content}”
+                  </p>
+                  <p className="mt-1 line-clamp-1 text-xs text-muted-foreground">
+                    On your story: {activity.story_content_preview}
+                  </p>
+                </div>
 
-                      {/* Comment preview */}
-                      <p className="text-sm text-foreground mb-2 line-clamp-2">
-                        "{activity.comment_content}"
-                      </p>
+                <ChevronRight className="mt-2 h-4 w-4 shrink-0 text-muted-foreground" />
+              </button>
+            ))}
+          </div>
 
-                      {/* Story preview */}
-                      <div className="bg-muted/30 rounded-lg p-2 mb-2">
-                        <p className="text-xs text-muted-foreground line-clamp-2">
-                          On your story: {activity.story_content_preview}
-                        </p>
-                      </div>
-
-                      {/* Timestamp */}
-                      <p className="text-xs text-muted-foreground">
-                        {formatDistanceToNow(new Date(activity.created_at), {
-                    addSuffix: true
-                  })}
-                      </p>
-                    </div>
-
-                    {/* Arrow indicator */}
-                    <div className="flex-shrink-0 text-muted-foreground">
-                      <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>)}
-        </div>
-
-        {/* Show more indicator */}
-        {activities.length > 0 && <div className="text-center mt-6">
-            <p className="text-sm text-muted-foreground">
-              Showing recent activity
-            </p>
-          </div>}
-      </div>
-
-      <Navigation />
-    </div>;
+          <div className="py-6 text-center text-xs text-muted-foreground">
+            Showing recent activity
+          </div>
+        </>
+      )}
+    </PageScaffold>
+  );
 };
+
 export default Activity;

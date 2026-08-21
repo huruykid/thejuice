@@ -1,14 +1,20 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import BrandLockup from "@/components/BrandLockup";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
+import OnboardingScaffold from "@/components/layout/OnboardingScaffold";
 import OnboardingTips from '@/components/OnboardingTips';
 
 interface EnhancedWelcomeScreenProps {
   onComplete: () => void;
 }
+
+const GUIDELINES = [
+  ["Be honest and respectful", "Share authentic experiences and treat others with respect"],
+  ["No harassment, slander, or doxxing", "Keep the community safe and supportive"],
+  ["One profile per person", "Maintain authentic community connections"],
+  ["Violations may lead to permanent bans", "Help us maintain a positive environment"],
+] as const;
 
 const EnhancedWelcomeScreen = ({ onComplete }: EnhancedWelcomeScreenProps) => {
   const [agreed, setAgreed] = useState(false);
@@ -22,78 +28,64 @@ const EnhancedWelcomeScreen = ({ onComplete }: EnhancedWelcomeScreenProps) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-soft flex items-center justify-center p-4">
-      <Card className="w-full max-w-md mx-auto">
-        <CardHeader className="text-center space-y-4">
-          <BrandLockup variant="mark" size="lg" className="mx-auto" />
-          <div>
-            <CardTitle className="text-2xl font-bold">Welcome to the Community</CardTitle>
-            <CardDescription className="text-muted-foreground">
-              Almost done! Please review and agree to our community standards to complete your setup.
-            </CardDescription>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="space-y-4">
-            <h3 className="font-semibold text-lg">Community Guidelines</h3>
-            
-            <div className="space-y-3 text-sm">
-              <div className="flex items-start space-x-3">
-                <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
-                <p><strong>Be honest and respectful</strong> - Share authentic experiences and treat others with respect</p>
-              </div>
-              
-              <div className="flex items-start space-x-3">
-                <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
-                <p><strong>No harassment, slander, or doxxing</strong> - Keep the community safe and supportive</p>
-              </div>
-              
-              <div className="flex items-start space-x-3">
-                <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
-                <p><strong>One profile per person</strong> - Maintain authentic community connections</p>
-              </div>
-              
-              <div className="flex items-start space-x-3">
-                <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
-                <p><strong>Violations may lead to permanent bans</strong> - Help us maintain a positive environment</p>
-              </div>
-            </div>
-          </div>
+    <OnboardingScaffold
+      step={1}
+      cta={
+        <Button
+          onClick={handleContinue}
+          disabled={!agreed}
+          size="lg"
+          className="w-full"
+          aria-label={agreed ? "Enter the community" : "Please agree to terms first"}
+        >
+          Enter Community
+        </Button>
+      }
+    >
+      <div className="space-y-6">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold">Welcome to the Community</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Almost done! Please review and agree to our community standards to complete your setup.
+          </p>
+        </div>
 
-          <div className="bg-muted p-4 rounded-lg">
-            <p className="text-sm text-muted-foreground">
-              This is a private community focused on authentic connections and honest sharing. 
-              By agreeing to these terms, you help us maintain a safe and supportive environment for everyone.
-            </p>
-          </div>
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold">Community Guidelines</h3>
 
-          <div className="flex items-center space-x-2">
-            <Checkbox 
-              id="terms" 
-              checked={agreed}
-              onCheckedChange={(checked) => setAgreed(checked as boolean)}
-            />
-            <label 
-              htmlFor="terms" 
-              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-            >
-              I agree to the terms and community standards
-            </label>
+          <div className="space-y-3 text-sm">
+            {GUIDELINES.map(([title, detail]) => (
+              <div key={title} className="flex items-start gap-3">
+                <div className="mt-2 h-2 w-2 flex-shrink-0 rounded-full bg-primary" />
+                <p>
+                  <strong>{title}</strong> — {detail}
+                </p>
+              </div>
+            ))}
           </div>
+        </div>
 
-          <Button 
-            onClick={handleContinue}
-            disabled={!agreed}
-            className="w-full"
-            aria-label={agreed ? "Enter the community" : "Please agree to terms first"}
-          >
-            Enter Community
-          </Button>
-          
-          <OnboardingTips step="guidelines" />
-        </CardContent>
-      </Card>
-    </div>
+        <div className="rounded-lg border border-border bg-muted p-4">
+          <p className="text-sm text-muted-foreground">
+            This is a private community focused on authentic connections and honest sharing.
+            By agreeing to these terms, you help us maintain a safe and supportive environment for everyone.
+          </p>
+        </div>
+
+        <label className="flex cursor-pointer items-center gap-2 py-1">
+          <Checkbox
+            id="terms"
+            checked={agreed}
+            onCheckedChange={(checked) => setAgreed(checked as boolean)}
+          />
+          <span className="text-sm font-medium leading-none">
+            I agree to the terms and community standards
+          </span>
+        </label>
+
+        <OnboardingTips step="guidelines" />
+      </div>
+    </OnboardingScaffold>
   );
 };
 

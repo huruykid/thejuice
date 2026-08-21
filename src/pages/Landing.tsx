@@ -158,7 +158,7 @@ const Landing = () => {
                       className="w-full h-12 pl-10 pr-3 rounded-lg bg-input border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary"
                     />
                   </div>
-                  <Button type="submit" size="lg" variant="juice" className="h-12 font-bold shrink-0">
+                  <Button type="submit" size="lg" className="h-12 font-bold shrink-0">
                     Look her up
                   </Button>
                 </div>
@@ -168,7 +168,7 @@ const Landing = () => {
               </form>
 
               <div className="flex flex-col sm:flex-row gap-3 mb-5">
-                <Button size="xl" variant="juice" asChild className="font-bold">
+                <Button size="xl" asChild className="font-bold">
                   <Link to="/app">
                     Join free
                     <ArrowRight className="ml-2 h-5 w-5" />
@@ -384,7 +384,7 @@ const Landing = () => {
               Juice is the only verified, anonymous space built for men to share and read real dating stories.
             </p>
             <div className="flex flex-col sm:flex-row sm:items-center gap-5">
-              <Button size="xl" variant="juice" asChild className="font-bold w-fit">
+              <Button size="xl" asChild className="font-bold w-fit">
                 <Link to="/app">
                   Join free
                   <ArrowRight className="ml-2 h-5 w-5" />

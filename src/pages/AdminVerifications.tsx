@@ -465,7 +465,7 @@ const AdminVerifications = () => {
   // Show loading while checking auth or fetching data
   if (authLoading || isLoading) {
     return (
-      <div className="bg-gradient-soft flex items-center justify-center">
+      <div className="bg-background flex items-center justify-center">
         <div className="text-center space-y-4">
           <BrandLockup variant="mark" size="lg" className="mx-auto animate-pulse" />
           <p className="text-muted-foreground">Loading verifications...</p>
@@ -480,7 +480,7 @@ const AdminVerifications = () => {
   }
 
   return (
-    <div className="bg-gradient-soft p-4">
+    <div className="bg-background p-4">
       <div className="max-w-5xl mx-auto space-y-6">
         <AdminPageHeader title="Verifications" subtitle="Review and approve user verifications." />
 
