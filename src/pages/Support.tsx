@@ -67,7 +67,7 @@ const Support = () => {
               {" "}
               <a className="underline underline-offset-4 story-link" href="mailto:support@sipjuice.app">support@sipjuice.app</a>.
             </p>
-            <Button asChild variant="juice" className="mt-3">
+            <Button asChild className="mt-3">
               <a href="mailto:support@sipjuice.app">Email Support</a>
             </Button>
           </div>

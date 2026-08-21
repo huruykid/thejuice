@@ -211,7 +211,7 @@ const HowItWorks = () => {
               Join a verified community of men sharing honest dating experiences.
             </p>
             <div className="flex flex-col sm:flex-row sm:items-center gap-5">
-              <Button size="xl" variant="juice" asChild className="font-bold w-fit">
+              <Button size="xl" asChild className="font-bold w-fit">
                 <Link to="/app">
                   Join free
                   <ArrowRight className="ml-2 h-5 w-5" />

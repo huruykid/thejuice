@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import BottomSheet from "@/components/ui/bottom-sheet";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Trash2, Send } from "lucide-react";
 import { useComments, useCreateComment, useDeleteComment } from "@/hooks/useComments";
 import { formatDistanceToNow } from "date-fns";
@@ -17,6 +16,11 @@ interface CommentsModalProps {
   storyPreview: string;
 }
 
+/**
+ * Comments as a bottom sheet (IG pattern). The composer lives in the sheet's
+ * pinned footer so the iOS keyboard pushes it up instead of covering it —
+ * the old centered dialog hid the input behind the keyboard.
+ */
 const CommentsModal = ({ isOpen, onClose, storyId, storyPreview }: CommentsModalProps) => {
   const [newComment, setNewComment] = useState("");
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
@@ -58,85 +62,84 @@ const CommentsModal = ({ isOpen, onClose, storyId, storyPreview }: CommentsModal
 
   const handleUsernameClick = (profileId: string) => {
     onClose();
-    // Defer navigation one tick so the Dialog close animation can begin before
-    // the route transition — avoids racing the modal unmount.
+    // Defer navigation one tick so the sheet's close animation can begin before
+    // the route transition — avoids racing the unmount.
     setTimeout(() => navigate(`/author/${profileId}`), 0);
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-md mx-auto h-[80vh] flex flex-col">
-        <DialogHeader>
-          <DialogTitle>Comments</DialogTitle>
-          <div className="text-sm text-muted-foreground line-clamp-2">
-            {storyPreview}
-          </div>
-        </DialogHeader>
-
-        <ScrollArea className="flex-1 pr-4">
-          {isLoading ? (
-            <div className="text-center py-8 text-sm text-muted-foreground">Loading…</div>
-          ) : comments.length === 0 ? (
-            <div className="text-center py-8">
-              <p className="text-muted-foreground text-sm">No comments yet. Be the first!</p>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {comments.map((comment) => (
-                <div key={comment.id} className="py-2 border-b border-border last:border-0">
-                  <div className="flex items-center justify-between mb-1">
-                    <div className="flex items-center gap-2">
-                      {comment.profiles ? (
-                        <button
-                          onClick={() => handleUsernameClick(comment.profiles!.id)}
-                          className="text-sm font-semibold text-foreground hover:text-primary transition-colors"
-                        >
-                          @{comment.profiles.anonymous_username}
-                        </button>
-                      ) : (
-                        <span className="text-sm font-semibold text-muted-foreground">@anonymous</span>
-                      )}
-                      <span className="text-xs text-muted-foreground">
-                        {formatDistanceToNow(new Date(comment.created_at), { addSuffix: true })}
-                      </span>
-                    </div>
-                    {currentUserId && comment.user_id === currentUserId && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-6 w-6 p-0 text-destructive hover:text-destructive hover:bg-destructive/10"
-                        onClick={() => handleDeleteComment(comment.id)}
-                        disabled={deleteComment.isPending}
-                      >
-                        <Trash2 className="h-3 w-3" />
-                      </Button>
-                    )}
-                  </div>
-                  <p className="text-sm text-foreground">{comment.content}</p>
-                </div>
-              ))}
-            </div>
-          )}
-        </ScrollArea>
-
-        <form onSubmit={handleSubmitComment} className="flex gap-2 mt-4">
+    <BottomSheet
+      open={isOpen}
+      onClose={onClose}
+      title="Comments"
+      description={storyPreview}
+      height="tall"
+      footer={
+        <form onSubmit={handleSubmitComment} className="flex items-end gap-2">
           <Textarea
             placeholder="Write a comment..."
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
-            className="min-h-[60px] resize-none"
+            rows={1}
+            className="min-h-[44px] max-h-28 flex-1 resize-none"
             disabled={createComment.isPending}
           />
           <Button
             type="submit"
+            size="icon"
+            aria-label="Post comment"
             disabled={!newComment.trim() || createComment.isPending}
-            className="self-end"
           >
             <Send className="h-4 w-4" />
           </Button>
         </form>
-      </DialogContent>
-    </Dialog>
+      }
+    >
+      <div className="px-4">
+        {isLoading ? (
+          <div className="py-8 text-center text-sm text-muted-foreground">Loading…</div>
+        ) : comments.length === 0 ? (
+          <div className="py-8 text-center">
+            <p className="text-sm text-muted-foreground">No comments yet. Be the first!</p>
+          </div>
+        ) : (
+          <div>
+            {comments.map((comment) => (
+              <div key={comment.id} className="border-b border-border py-3 last:border-0">
+                <div className="mb-1 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    {comment.profiles ? (
+                      <button
+                        onClick={() => handleUsernameClick(comment.profiles!.id)}
+                        className="text-sm font-semibold text-foreground transition-colors hover:text-primary"
+                      >
+                        @{comment.profiles.anonymous_username}
+                      </button>
+                    ) : (
+                      <span className="text-sm font-semibold text-muted-foreground">@anonymous</span>
+                    )}
+                    <span className="text-xs text-muted-foreground">
+                      {formatDistanceToNow(new Date(comment.created_at), { addSuffix: true })}
+                    </span>
+                  </div>
+                  {currentUserId && comment.user_id === currentUserId && (
+                    <button
+                      aria-label="Delete comment"
+                      className="flex h-11 w-11 items-center justify-center rounded-full text-destructive transition-colors hover:bg-destructive/10 disabled:opacity-50"
+                      onClick={() => handleDeleteComment(comment.id)}
+                      disabled={deleteComment.isPending}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  )}
+                </div>
+                <p className="text-sm text-foreground">{comment.content}</p>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </BottomSheet>
   );
 };
 

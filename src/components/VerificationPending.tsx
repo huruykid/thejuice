@@ -1,5 +1,4 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import BrandLockup from "@/components/BrandLockup";
+import OnboardingScaffold from "@/components/layout/OnboardingScaffold";
 import { Button } from "@/components/ui/button";
 import { Clock, RefreshCw } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -43,83 +42,79 @@ const VerificationPending = ({ onRefresh, submittedAt }: VerificationPendingProp
   };
 
   return (
-    <div className="min-h-screen bg-gradient-soft flex flex-col items-center p-4 py-8 gap-5">
-      <Card className="w-full max-w-md mx-auto">
-        <CardHeader className="text-center space-y-4">
-          <BrandLockup variant="mark" size="lg" className="mx-auto" />
-          <div className="space-y-2">
-            <div className="mx-auto w-16 h-16 bg-primary/15 rounded-full flex items-center justify-center">
-              <Clock className="w-8 h-8 text-primary" />
-            </div>
-            <CardTitle className="text-2xl font-bold">Selfie received</CardTitle>
-            <CardDescription className="text-muted-foreground">
-              You're in the review queue — nothing more to do right now.
-            </CardDescription>
+    <OnboardingScaffold>
+      <div className="space-y-6">
+        <div className="space-y-3 text-center">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/15">
+            <Clock className="h-8 w-8 text-primary" />
           </div>
-        </CardHeader>
-        <CardContent className="space-y-6 text-center">
-          <div className="space-y-3">
-            <p className="text-muted-foreground">
-              We review every verification by hand &mdash; usually within{" "}
-              <strong className="text-foreground">24&ndash;48 hours</strong>. You'll get an email the
-              moment you're approved, and then every story unlocks.
-            </p>
+          <h2 className="text-2xl font-bold">Selfie received</h2>
+          <p className="text-sm text-muted-foreground">
+            You're in the review queue — nothing more to do right now.
+          </p>
+        </div>
+
+        <div className="space-y-3 text-center">
+          <p className="text-sm text-muted-foreground">
+            We review every verification by hand &mdash; usually within{" "}
+            <strong className="text-foreground">24&ndash;48 hours</strong>. You'll get an email the
+            moment you're approved, and then every story unlocks.
+          </p>
+          <p className="text-sm text-muted-foreground">
+            No need to keep checking back &mdash; we'll come to you.
+          </p>
+          {overdue && (
             <p className="text-sm text-muted-foreground">
-              No need to keep checking back &mdash; we'll come to you.
+              Taking longer than 48 hours?{" "}
+              <a href="/support" className="font-semibold text-primary hover:underline">
+                Contact support
+              </a>{" "}
+              and we'll chase it down.
             </p>
-            {overdue && (
-              <p className="text-sm text-muted-foreground">
-                Taking longer than 48 hours?{" "}
-                <a href="/support" className="text-primary font-semibold hover:underline">
-                  Contact support
-                </a>{" "}
-                and we'll chase it down.
-              </p>
+          )}
+        </div>
+
+        <div className="space-y-3">
+          <Button
+            onClick={handleRefresh}
+            disabled={isRefreshing}
+            variant="outline"
+            className="w-full"
+          >
+            {isRefreshing ? (
+              <>
+                <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                Checking...
+              </>
+            ) : (
+              <>
+                <RefreshCw className="mr-2 h-4 w-4" />
+                Check Status
+              </>
             )}
-          </div>
+          </Button>
 
-          <div className="space-y-3">
-            <Button 
-              onClick={handleRefresh} 
-              disabled={isRefreshing}
-              variant="outline"
-              className="w-full"
-            >
-              {isRefreshing ? (
-                <>
-                  <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
-                  Checking...
-                </>
-              ) : (
-                <>
-                  <RefreshCw className="mr-2 h-4 w-4" />
-                  Check Status
-                </>
-              )}
-            </Button>
+          <Button
+            onClick={handleSignOut}
+            variant="ghost"
+            className="w-full text-muted-foreground"
+            aria-label="Sign out of your account"
+          >
+            Sign Out
+          </Button>
+        </div>
 
-            <Button 
-              onClick={handleSignOut}
-              variant="ghost"
-              className="w-full text-muted-foreground"
-              aria-label="Sign out of your account"
-            >
-              Sign Out
-            </Button>
-          </div>
-          
-          <OnboardingTips step="pending" />
-        </CardContent>
-      </Card>
+        <OnboardingTips step="pending" />
 
-      {/* While you wait — let pending users explore who already has tea */}
-      <div className="w-full max-w-md">
-        <p className="text-sm font-semibold text-foreground text-center mb-2">
-          While you wait — look someone up
-        </p>
-        <SubjectSearch pending />
+        {/* While you wait — let pending users explore who already has tea */}
+        <div className="border-t border-border pt-5">
+          <p className="mb-2 text-center text-sm font-semibold text-foreground">
+            While you wait — look someone up
+          </p>
+          <SubjectSearch pending />
+        </div>
       </div>
-    </div>
+    </OnboardingScaffold>
   );
 };
 

@@ -91,7 +91,7 @@ const AnonymousDatingReviews = () => {
             Read honest date reviews from verified men. Write your own anonymously — no names, no trace.
           </p>
           <div className="flex flex-col sm:flex-row gap-3">
-            <Button size="xl" variant="juice" asChild className="font-bold">
+            <Button size="xl" asChild className="font-bold">
               <Link to="/app">
                 Browse Verified Reviews
                 <ArrowRight className="ml-2 h-5 w-5" />
@@ -234,7 +234,7 @@ const AnonymousDatingReviews = () => {
             Join a verified community of men sharing honest dating reviews.
           </p>
           <div className="flex flex-col sm:flex-row sm:items-center gap-5">
-            <Button size="xl" variant="juice" asChild className="font-bold w-fit">
+            <Button size="xl" asChild className="font-bold w-fit">
               <Link to="/app">
                 Browse Reviews
                 <ArrowRight className="ml-2 h-5 w-5" />

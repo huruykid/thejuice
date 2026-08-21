@@ -27,7 +27,7 @@ const NotFound = () => {
           No tea here — this page doesn't exist or has been removed.
         </p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
-          <Button asChild variant="juice" className="font-bold">
+          <Button asChild className="font-bold">
             <Link to="/app">
               Look someone up
               <ArrowRight className="ml-2 h-4 w-4" />

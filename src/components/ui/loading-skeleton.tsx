@@ -51,7 +51,7 @@ const LoadingSkeleton = ({ type = 'general', message }: LoadingSkeletonProps) =>
   };
 
   return (
-    <div className="min-h-screen bg-gradient-soft flex items-center justify-center p-4">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <Card className="w-full max-w-md mx-auto">
         <CardHeader className="text-center space-y-4">
           {getSkeletonContent()}

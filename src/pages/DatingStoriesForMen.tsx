@@ -72,7 +72,7 @@ const DatingStoriesForMen = () => {
             Read anonymous dating experiences from verified men. Honest, unrated by influencers, unsponsored.
           </p>
           <div className="flex flex-col sm:flex-row gap-3">
-            <Button size="xl" variant="juice" asChild className="font-bold">
+            <Button size="xl" asChild className="font-bold">
               <Link to="/app">
                 Browse Stories
                 <ArrowRight className="ml-2 h-5 w-5" />
@@ -161,7 +161,7 @@ const DatingStoriesForMen = () => {
             Join a verified community of men sharing authentic dating experiences.
           </p>
           <div className="flex flex-col sm:flex-row sm:items-center gap-5">
-            <Button size="xl" variant="juice" asChild className="font-bold w-fit">
+            <Button size="xl" asChild className="font-bold w-fit">
               <Link to="/app">
                 Browse Stories
                 <ArrowRight className="ml-2 h-5 w-5" />

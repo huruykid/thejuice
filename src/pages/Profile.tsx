@@ -63,7 +63,7 @@ const Profile = () => {
 
   if (statsLoading) {
     return (
-      <div className="min-h-screen bg-background pb-20">
+      <div className="min-h-screen bg-background pb-[calc(5rem+env(safe-area-inset-bottom,0px))]">
         <div className="container mx-auto px-4 py-6 max-w-md lg:max-w-2xl">
           <LoadingSkeleton type="profile" message="Loading your profile..." />
         </div>
@@ -75,9 +75,9 @@ const Profile = () => {
   const username = profile?.anonymous_username || "your_profile";
 
   return (
-    <div className="min-h-screen bg-background pb-20 lg:pb-8">
+    <div className="min-h-screen bg-background pb-[calc(5rem+env(safe-area-inset-bottom,0px))] lg:pb-8">
       {/* IG-style sticky header */}
-      <header className="sticky top-0 z-40 bg-background/95 backdrop-blur border-b border-border">
+      <header className="sticky top-0 z-40 pt-[env(safe-area-inset-top,0px)] bg-background/95 backdrop-blur border-b border-border">
         <div className="flex items-center justify-between px-4 h-12 max-w-md mx-auto">
           <h1 className="text-base font-semibold truncate">@{username}</h1>
           <button

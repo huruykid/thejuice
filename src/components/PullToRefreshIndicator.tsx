@@ -19,7 +19,7 @@ const PullToRefreshIndicator = ({ pullDistance, status }: Props) => {
 
   return (
     <div
-      className="pointer-events-none fixed left-1/2 top-16 z-50 -translate-x-1/2"
+      className="pointer-events-none fixed left-1/2 top-[calc(4rem+env(safe-area-inset-top,0px))] z-50 -translate-x-1/2"
       style={{
         transform: `translate(-50%, ${translate}px)`,
         opacity,

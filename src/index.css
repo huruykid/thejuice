@@ -201,16 +201,8 @@
        actually prevent screenshots, so it was only costing copy/accessibility everywhere. */
   }
 
-  h1, h2 {
-    @apply font-display tracking-tight uppercase;
-    font-weight: 800;
-    line-height: 0.95;
-  }
-
-  h3, h4, h5, h6 {
-    @apply font-sans tracking-tight;
-    font-weight: 700;
-  }
+  /* Headings are styled once, in the components layer below (Barlow, 700).
+     Display/condensed type is opt-in via `font-display` classes on marketing pages. */
 
   /* Modern Scrollbar */
   ::-webkit-scrollbar {

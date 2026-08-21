@@ -1,4 +1,3 @@
-import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -72,7 +71,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-soft flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center space-y-4">
           <img src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" alt="Juice dating app logo" className="h-16 w-16 mx-auto animate-pulse" />
           <p className="text-muted-foreground">Loading...</p>
@@ -99,7 +98,7 @@ const VerifiedRoute = ({ children }: { children: React.ReactNode }) => {
 
   if (loading || (user && verificationLoading)) {
     return (
-      <div className="min-h-screen bg-gradient-soft flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center space-y-4">
           <img src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" alt="Juice dating app logo" className="h-16 w-16 mx-auto animate-pulse" />
           <p className="text-muted-foreground">Loading...</p>
@@ -125,7 +124,7 @@ const AdminRoute = ({ children }: { children: React.ReactNode }) => {
 
   if (loading || (user && adminLoading)) {
     return (
-      <div className="min-h-screen bg-gradient-soft flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center space-y-4">
           <img src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" alt="Juice dating app logo" className="h-16 w-16 mx-auto animate-pulse" />
           <p className="text-muted-foreground">Loading...</p>
@@ -142,7 +141,7 @@ const AdminRoute = ({ children }: { children: React.ReactNode }) => {
 
 /** Shown while a lazily-loaded route chunk is being fetched. */
 const RouteFallback = () => (
-  <div className="min-h-screen bg-gradient-soft flex items-center justify-center">
+  <div className="min-h-screen bg-background flex items-center justify-center">
     <div className="text-center space-y-4">
       <img src="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" alt="Juice dating app logo" className="h-16 w-16 mx-auto animate-pulse" />
       <p className="text-muted-foreground">Loading...</p>
@@ -189,7 +188,6 @@ const App = () => {
     <QueryClientProvider client={queryClient}>
       <SecurityProvider sessionTimeoutMinutes={30}>
         <TooltipProvider>
-        <Toaster />
         <Sonner />
         <BrowserRouter>
         <AppOpenTracker />

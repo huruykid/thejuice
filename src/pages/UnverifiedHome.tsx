@@ -54,9 +54,9 @@ const UnverifiedHome = ({ onCreateStory, onStartVerification, resumeVerification
   };
 
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <div className="min-h-screen bg-background pb-[calc(5rem+env(safe-area-inset-bottom,0px))]">
       {/* Header */}
-      <header className="sticky top-0 z-40 bg-background/95 backdrop-blur border-b border-border">
+      <header className="sticky top-0 z-40 pt-[env(safe-area-inset-top,0px)] bg-background/95 backdrop-blur border-b border-border">
         <div className="flex items-center justify-between px-4 h-12 max-w-xl mx-auto">
           <Link to="/app" aria-label="Juice home">
             <BrandLockup variant="inline" size="sm" />

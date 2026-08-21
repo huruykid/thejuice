@@ -166,12 +166,12 @@ const AuthScreen = ({ onAuthSuccess }: AuthScreenProps) => {
 
   if (showForgotPassword) {
     return (
-      <div className="relative min-h-screen bg-gradient-soft flex items-center justify-center px-4 py-8 sm:py-12">
+      <div className="relative min-h-screen bg-background flex items-center justify-center px-4 pb-8 pt-[calc(2rem+env(safe-area-inset-top,0px))] sm:py-12">
         <div className="w-full max-w-md flex flex-col items-center gap-6">
           <button onClick={() => navigate("/")} className="flex flex-col items-center gap-3 hover:opacity-80 transition-opacity">
             <BrandLockup variant="stacked" size="lg" />
           </button>
-          <Card className="w-full bg-white/90 backdrop-blur-sm rounded-3xl shadow-soft border-0">
+          <Card className="w-full bg-card border border-border rounded-2xl">
             <div className="p-6 sm:p-8 space-y-6">
               <div className="text-center space-y-2">
                 <h2 className="text-2xl font-bold text-foreground">Reset password</h2>
@@ -189,10 +189,10 @@ const AuthScreen = ({ onAuthSuccess }: AuthScreenProps) => {
                     onChange={(e) => setResetEmail(e.target.value)}
                     placeholder="Email"
                     aria-label="Email address"
-                    className="rounded-2xl border-primary/30 focus:border-primary"
+                   
                     required
                   />
-                  <Button type="submit" variant="juice" size="lg" className="w-full h-14 text-base" disabled={loading}>
+                  <Button type="submit" size="lg" className="w-full" disabled={loading}>
                     {loading ? "Sending…" : "Send reset link"}
                   </Button>
                 </form>
@@ -211,7 +211,7 @@ const AuthScreen = ({ onAuthSuccess }: AuthScreenProps) => {
   }
 
   return (
-    <div className="relative min-h-screen bg-gradient-soft flex items-center justify-center px-4 py-8 sm:py-12">
+    <div className="relative min-h-screen bg-background flex items-center justify-center px-4 pb-8 pt-[calc(2rem+env(safe-area-inset-top,0px))] sm:py-12">
       {/* Desktop top bar */}
       <header className="hidden sm:flex absolute top-0 left-0 right-0 items-center justify-between px-6 lg:px-10 py-5">
         <button
@@ -233,7 +233,7 @@ const AuthScreen = ({ onAuthSuccess }: AuthScreenProps) => {
       {/* Mobile back chevron */}
       <button
         onClick={() => navigate("/")}
-        className="sm:hidden absolute top-4 left-4 flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+        className="sm:hidden absolute top-[calc(1rem+env(safe-area-inset-top,0px))] left-4 flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
         aria-label="Back to landing"
       >
         <ArrowLeft className="h-4 w-4" />
@@ -252,7 +252,7 @@ const AuthScreen = ({ onAuthSuccess }: AuthScreenProps) => {
           </p>
         </button>
 
-        <Card className="w-full bg-white/90 backdrop-blur-sm rounded-3xl shadow-soft border-0">
+        <Card className="w-full bg-card border border-border rounded-2xl">
           <div className="p-6 sm:p-8 space-y-6">
             {/* Segmented tabs */}
             <div className="grid grid-cols-2 gap-1 p-1 bg-muted rounded-full">
@@ -301,7 +301,7 @@ const AuthScreen = ({ onAuthSuccess }: AuthScreenProps) => {
                 size="lg"
                 onClick={handleGoogleAuth}
                 disabled={loading}
-                className="w-full h-14 text-base rounded-2xl bg-white hover:bg-muted/50 border-border gap-3"
+                className="w-full h-14 text-base rounded-lg bg-background hover:bg-muted/50 border-border gap-3"
               >
                 <svg className="h-5 w-5" viewBox="0 0 24 24" aria-hidden="true">
                   <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -338,7 +338,7 @@ const AuthScreen = ({ onAuthSuccess }: AuthScreenProps) => {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Email"
                   aria-label="Email address"
-                  className="rounded-2xl border-primary/30 focus:border-primary"
+                 
                   required
                 />
               </div>
@@ -350,7 +350,7 @@ const AuthScreen = ({ onAuthSuccess }: AuthScreenProps) => {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Password"
                   aria-label="Password"
-                  className="rounded-2xl border-primary/30 focus:border-primary pr-12"
+                  className="pr-12"
                   required
                 />
                 <Button
@@ -387,9 +387,8 @@ const AuthScreen = ({ onAuthSuccess }: AuthScreenProps) => {
 
               <Button
                 type="submit"
-                variant="juice"
                 size="lg"
-                className="w-full h-14 text-base"
+                className="w-full"
                 disabled={loading || (isSignUp && !agreed)}
               >
                 {loading ? "Please wait..." : (isSignUp ? "Create Account" : "Sign In")}

@@ -81,11 +81,11 @@ const Home = ({ onCreateStory }: HomeProps) => {
   }, [hasNextPage, isFetchingNextPage, fetchNextPage, stories.length]);
 
   return (
-    <div className="min-h-screen bg-background pb-20 lg:pb-8">
+    <div className="min-h-screen bg-background pb-[calc(5rem+env(safe-area-inset-bottom,0px))] lg:pb-8">
       <PullToRefreshIndicator pullDistance={pullDistance} status={status} />
 
       {/* IG-style sticky header */}
-      <header className="sticky top-0 z-40 bg-background/95 backdrop-blur border-b border-border lg:hidden">
+      <header className="sticky top-0 z-40 pt-[env(safe-area-inset-top,0px)] bg-background/95 backdrop-blur border-b border-border lg:hidden">
         <div className="flex items-center justify-between px-4 h-12 max-w-md mx-auto">
           <Link to="/app" aria-label="Juice home">
             <BrandLockup variant="inline" size="sm" />

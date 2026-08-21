@@ -16,7 +16,7 @@ const BlogPost = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-soft p-4">
+      <div className="min-h-screen bg-background p-4">
         <div className="max-w-4xl mx-auto">
           <div className="text-center py-8">Loading blog post...</div>
         </div>
@@ -71,7 +71,7 @@ const BlogPost = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-soft">
+    <div className="min-h-screen bg-background">
       <Helmet>
         <title>{post.title.length > 57 ? `${post.title.slice(0, 54)}… | Juice` : `${post.title} | Juice`}</title>
         {post.excerpt && <meta name="description" content={post.excerpt.slice(0, 160)} />}

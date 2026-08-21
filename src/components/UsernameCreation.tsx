@@ -162,7 +162,7 @@ const UsernameCreation = ({ onComplete }: UsernameCreationProps) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-soft flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col">
       {/* Logo */}
       <div className="flex flex-col items-center justify-center pt-16 pb-8">
         <div className="flex flex-col items-center gap-3">
@@ -227,7 +227,6 @@ const UsernameCreation = ({ onComplete }: UsernameCreationProps) => {
               <Button
                 onClick={createProfile}
                 disabled={!username || username.length < 3 || isAvailable !== true || isCreating}
-                variant="juice"
                 size="lg"
                 className="w-full"
               >

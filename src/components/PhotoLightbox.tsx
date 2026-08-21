@@ -145,13 +145,13 @@ const PhotoLightbox = ({ urls, initialIndex = 0, onClose }: PhotoLightboxProps) 
         ref={closeButtonRef}
         onClick={onClose}
         aria-label="Close photo viewer"
-        className="absolute top-3 right-3 z-10 min-h-11 min-w-11 flex items-center justify-center rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors"
+        className="absolute top-[calc(0.75rem+env(safe-area-inset-top,0px))] right-3 z-10 min-h-11 min-w-11 flex items-center justify-center rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors"
       >
         <X className="h-5 w-5" />
       </button>
 
       {urls.length > 1 && (
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 text-white/80 text-sm font-medium">
+        <div className="absolute top-[calc(1rem+env(safe-area-inset-top,0px))] left-1/2 -translate-x-1/2 text-white/80 text-sm font-medium">
           {index + 1} / {urls.length}
         </div>
       )}

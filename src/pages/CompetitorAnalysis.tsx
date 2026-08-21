@@ -60,7 +60,7 @@ const CompetitorAnalysis = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-soft">
+    <div className="min-h-screen bg-background">
       <Helmet>
         <title>Juice vs. Tea App — The Male Dating Review Alternative</title>
         <meta name="description" content="Juice is the first verified, anonymous dating review platform built for men — where Tea App left a gap." />

@@ -12,13 +12,19 @@ const config: CapacitorConfig = {
   ios: {
     // Camera capture is our only image source (no photo-library picker), so the
     // app doesn't need NSPhotoLibraryUsageDescription — keeps the review surface small.
-    contentInset: 'always',
+    // 'never' + viewport-fit=cover in index.html: the web layer owns safe areas
+    // via env(safe-area-inset-*), so fixed chrome (tab bar, sheets, lightbox)
+    // pads itself. 'always' inset scroll content but left fixed elements flush
+    // against the Dynamic Island / home indicator.
+    contentInset: 'never',
   },
 
   plugins: {
     SplashScreen: {
-      launchShowDuration: 2000,
-      backgroundColor: '#ff6b35',
+      launchShowDuration: 1500,
+      // Brand amber (matches --primary / theme-color). Was the retired orange #ff6b35,
+      // which flashed the wrong brand on every cold start.
+      backgroundColor: '#f8b038',
       showSpinner: false,
     },
     PushNotifications: {

@@ -102,7 +102,6 @@ const DesktopSidebar = ({ onCreateStory }: DesktopSidebarProps) => {
         {onCreateStory && (
           <div className="pt-4">
             <Button
-              variant="juice"
               className="w-full rounded-xl h-12 shadow-glow"
               onClick={onCreateStory}
             >

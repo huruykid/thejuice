@@ -124,10 +124,10 @@ const Explore = ({ onCreateStory }: ExploreProps) => {
   const isLoading = allStoriesLoading || searchLoading;
 
   return (
-    <div className="min-h-screen bg-background pb-20 lg:pb-8">
+    <div className="min-h-screen bg-background pb-[calc(5rem+env(safe-area-inset-bottom,0px))] lg:pb-8">
       <PullToRefreshIndicator pullDistance={pullDistance} status={status} />
 
-      <header className="sticky top-0 z-40 bg-background/95 backdrop-blur border-b border-border">
+      <header className="sticky top-0 z-40 pt-[env(safe-area-inset-top,0px)] bg-background/95 backdrop-blur border-b border-border">
         <div className="px-3 py-2 max-w-3xl mx-auto">
           <form onSubmit={(e) => e.preventDefault()} className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />

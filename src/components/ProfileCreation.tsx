@@ -1,5 +1,4 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import BrandLockup from "@/components/BrandLockup";
+import OnboardingScaffold from "@/components/layout/OnboardingScaffold";
 import { useProfileForm } from '@/hooks/useProfileForm';
 import { useProfileCreation } from '@/hooks/useProfileCreation';
 import { useUsernameValidation } from '@/hooks/useUsernameValidation';
@@ -24,39 +23,35 @@ const ProfileCreation = ({ onComplete }: ProfileCreationProps) => {
     await createProfile(formData, onComplete);
   };
 
-  const isFormValid = formData.username && 
-    isAvailable && 
-    formData.dateOfBirth && 
-    formData.city.trim() && 
+  const isFormValid = formData.username &&
+    isAvailable &&
+    formData.dateOfBirth &&
+    formData.city.trim() &&
     formData.relationshipStatus &&
     calculateAge(formData.dateOfBirth) >= 18;
 
   return (
-    <div className="min-h-screen bg-gradient-soft flex items-center justify-center p-4">
-      <Card className="w-full max-w-md mx-auto">
-        <CardHeader className="text-center space-y-4">
-          <BrandLockup variant="mark" size="lg" className="mx-auto" />
-          <div>
-            <CardTitle className="text-2xl font-bold">Create Your Profile</CardTitle>
-            <CardDescription className="text-muted-foreground">
-              Tell us about yourself to get started sharing and discovering stories
-            </CardDescription>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <ProfileForm
-            formData={formData}
-            onUpdateField={updateField}
-            onUpdateUsername={updateUsername}
-            onSubmit={handleSubmit}
-            isValid={isFormValid}
-            isSubmitting={isCreating}
-          />
-          
-          <OnboardingTips step="profile" />
-        </CardContent>
-      </Card>
-    </div>
+    <OnboardingScaffold step={2}>
+      <div className="space-y-6">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold">Create Your Profile</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Tell us about yourself to get started sharing and discovering stories
+          </p>
+        </div>
+
+        <ProfileForm
+          formData={formData}
+          onUpdateField={updateField}
+          onUpdateUsername={updateUsername}
+          onSubmit={handleSubmit}
+          isValid={isFormValid}
+          isSubmitting={isCreating}
+        />
+
+        <OnboardingTips step="profile" />
+      </div>
+    </OnboardingScaffold>
   );
 };
 
