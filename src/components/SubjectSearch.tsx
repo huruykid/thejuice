@@ -113,13 +113,13 @@ const SubjectSearch = ({ onStartVerification, onCreateStory, pending = false }: 
                   ? "Post it now — it goes live the moment you're approved."
                   : "Post it now — it's saved and goes live once your selfie is approved."}
               </p>
-              <Button size="sm" onClick={() => onCreateStory(debounced)}>
+              <Button onClick={() => onCreateStory(debounced)} className="w-full">
                 Dated her? Be the first
               </Button>
               {!pending && onStartVerification && (
                 <button
                   onClick={onStartVerification}
-                  className="mt-3 block w-full min-h-9 text-xs font-medium text-muted-foreground hover:text-foreground"
+                  className="mt-1 block w-full min-h-11 text-xs font-medium text-muted-foreground hover:text-foreground"
                 >
                   Just want to read? Verify with a selfie
                 </button>
@@ -132,7 +132,7 @@ const SubjectSearch = ({ onStartVerification, onCreateStory, pending = false }: 
           ) : (
             <>
               <p className="text-sm text-muted-foreground mt-1 mb-3">Be the first to share your experience.</p>
-              <Button size="sm" onClick={onStartVerification}>Verify to be the first</Button>
+              <Button onClick={onStartVerification} className="w-full">Verify to be the first</Button>
             </>
           )}
         </Card>

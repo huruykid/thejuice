@@ -164,7 +164,7 @@ const SubjectLookup = ({ user_id, onCreateStory, onActiveChange }: SubjectLookup
               </p>
               <button
                 onClick={() => onCreateStory?.(debounced.trim())}
-                className="bg-primary text-primary-foreground rounded-lg px-5 py-2.5 text-sm font-semibold hover:bg-primary-dark transition-colors"
+                className="min-h-11 bg-primary text-primary-foreground rounded-lg px-5 text-sm font-semibold hover:bg-primary-dark transition-colors"
               >
                 Dated her? Be the first
               </button>
