@@ -11,9 +11,11 @@ interface VerificationPendingProps {
   onRefresh: () => void;
   /** When the selfie was submitted — drives the "taking longer than expected" escape hatch. */
   submittedAt?: string | null;
+  /** Opens the composer with the searched name prefilled — posting doesn't wait on approval. */
+  onCreateStory?: (subjectName?: string) => void;
 }
 
-const VerificationPending = ({ onRefresh, submittedAt }: VerificationPendingProps) => {
+const VerificationPending = ({ onRefresh, submittedAt, onCreateStory }: VerificationPendingProps) => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const overdue =
     !!submittedAt && Date.now() - new Date(submittedAt).getTime() > 48 * 60 * 60 * 1000;
@@ -106,12 +108,13 @@ const VerificationPending = ({ onRefresh, submittedAt }: VerificationPendingProp
 
         <OnboardingTips step="pending" />
 
-        {/* While you wait — let pending users explore who already has tea */}
+        {/* While you wait — look someone up, and if she's not here yet, post now.
+            The review is held and goes live the moment the selfie is approved. */}
         <div className="border-t border-border pt-5">
           <p className="mb-2 text-center text-sm font-semibold text-foreground">
             While you wait — look someone up
           </p>
-          <SubjectSearch pending />
+          <SubjectSearch pending onCreateStory={onCreateStory} />
         </div>
       </div>
     </OnboardingScaffold>

@@ -21,18 +21,23 @@ interface SubjectPreview {
  * Type a name → see whether tea EXISTS, without reading real content:
  *  - seed (fictional) people show a full preview (safe taste),
  *  - real people come back content-free (locked) → "Verify to read",
- *  - no match → "No tea yet" → "Verify to be the first".
+ *  - no match → "No juice on her yet" → "Dated her? Be the first" opens the composer
+ *    with the name prefilled. Posting doesn't wait on verification: the review is held
+ *    and publishes once the selfie is approved. (Every search in the app's first month
+ *    was a miss, and the old miss screen sent people to verify instead of to post.)
  * Reading real content stays gated by RLS; this only ever shows counts + verdicts + a
  * snippet for fictional seed entries (see search_subject_preview).
  */
 interface SubjectSearchProps {
   /** Called when an unverified user taps a locked/verify CTA. Omitted for pending users. */
   onStartVerification?: () => void;
+  /** Opens the composer with the searched name prefilled. */
+  onCreateStory?: (subjectName: string) => void;
   /** Pending users have already submitted — show "unlocks when approved" instead of verify CTAs. */
   pending?: boolean;
 }
 
-const SubjectSearch = ({ onStartVerification, pending = false }: SubjectSearchProps) => {
+const SubjectSearch = ({ onStartVerification, onCreateStory, pending = false }: SubjectSearchProps) => {
   // Email nudges deep-link here as /app?q=<name> so the prompt continues the moment.
   const [searchParams] = useSearchParams();
   const [query, setQuery] = useState(() => searchParams.get("q") ?? "");
@@ -64,16 +69,22 @@ const SubjectSearch = ({ onStartVerification, pending = false }: SubjectSearchPr
 
   const searching = debounced.length > 0;
   const noResults = searching && !isFetching && results.length === 0;
+  const hasResults = searching && !isFetching && results.length > 0;
 
-  // Log a search_miss once per name. Powers the "still no tea on {name}" email nudge —
-  // the highest-intent posting prompt in the app. De-duped so keystrokes don't spam.
-  const missLoggedRef = useRef<string | null>(null);
+  // Log search_hit / search_miss once per name. The miss powers the "still no tea on
+  // {name}" email nudge; together they give the miss rate as content grows. De-duped
+  // so keystrokes don't spam.
+  const loggedRef = useRef<string | null>(null);
   useEffect(() => {
-    if (noResults && debounced.length >= 2 && missLoggedRef.current !== debounced) {
-      missLoggedRef.current = debounced;
+    if (debounced.length < 2 || loggedRef.current === debounced) return;
+    if (noResults) {
+      loggedRef.current = debounced;
       void track("search_miss", { name: debounced });
+    } else if (hasResults) {
+      loggedRef.current = debounced;
+      void track("search_hit", { name: debounced, results: results.length });
     }
-  }, [noResults, debounced]);
+  }, [noResults, hasResults, debounced, results.length]);
 
   return (
     <div className="space-y-3">
@@ -89,11 +100,32 @@ const SubjectSearch = ({ onStartVerification, pending = false }: SubjectSearchPr
         />
       </div>
 
-      {/* Miss state */}
+      {/* Miss state — the moment of disappointment becomes the moment of contribution */}
       {noResults && (
         <Card className="p-5 text-center bg-card border-border">
-          <p className="text-sm font-semibold text-foreground">No tea on "{debounced}" yet.</p>
-          {pending ? (
+          <p className="text-sm font-semibold text-foreground">
+            No one has passed on the Juice about "{debounced}" yet.
+          </p>
+          {onCreateStory ? (
+            <>
+              <p className="text-sm text-muted-foreground mt-1 mb-3">
+                {pending
+                  ? "Post it now — it goes live the moment you're approved."
+                  : "Post it now — it's saved and goes live once your selfie is approved."}
+              </p>
+              <Button size="sm" onClick={() => onCreateStory(debounced)}>
+                Dated her? Be the first
+              </Button>
+              {!pending && onStartVerification && (
+                <button
+                  onClick={onStartVerification}
+                  className="mt-3 block w-full min-h-9 text-xs font-medium text-muted-foreground hover:text-foreground"
+                >
+                  Just want to read? Verify with a selfie
+                </button>
+              )}
+            </>
+          ) : pending ? (
             <p className="text-sm text-muted-foreground mt-1">
               You'll be able to be the first once your account is approved.
             </p>

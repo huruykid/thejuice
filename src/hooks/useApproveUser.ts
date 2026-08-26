@@ -58,11 +58,28 @@ export const useApproveUser = () => {
         console.error('Failed to send approval push:', e)
       );
 
+      // Reviews they wrote before verifying are held pending on their selfie. Tell
+      // them by name in the approval email — "your review of X" is a far stronger
+      // reason to come back than "you're in". Best-effort: the RPC is admin-only and
+      // an empty list just means the generic email.
+      let heldSubjects: string[] = [];
+      try {
+        const { data: held } = await supabase.rpc('admin_held_reviews_for_user', {
+          _user_id: userId,
+        });
+        heldSubjects = (held ?? [])
+          .map((h: { subject_name: string | null }) => h.subject_name?.trim() ?? '')
+          .filter((n: string) => n.length > 0);
+      } catch (e) {
+        console.error('Failed to load held reviews:', e);
+      }
+
       // Send approval email
       const { error: emailError } = await supabase.functions.invoke('send-approval-email', {
         body: { 
           email, 
-          username 
+          username,
+          heldSubjects,
         }
       });
 
@@ -88,6 +105,8 @@ export const useApproveUser = () => {
       queryClient.invalidateQueries({ queryKey: ['admin-verifications'] });
       // Refresh the sidebar pending-count badge immediately.
       queryClient.invalidateQueries({ queryKey: ['admin-pending-counts'] });
+      // Their held reviews just became approvable — refresh the posts queue badges.
+      queryClient.invalidateQueries({ queryKey: ['admin-posts'] });
     },
     onError: (error: Error) => {
       toast({

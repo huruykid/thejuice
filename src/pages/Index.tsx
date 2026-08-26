@@ -18,9 +18,13 @@ import { useProfile } from "@/hooks/useProfile";
 import { useVerification } from "@/hooks/useVerification";
 import { useOnboardingState } from "@/hooks/useOnboardingState";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
+import { track } from "@/lib/analytics";
 
 const Index = () => {
   const [showCreateStory, setShowCreateStory] = useState(false);
+  // Name to prefill in the composer — set when a search miss opens it ("Dated her?
+  // Be the first"), so the user doesn't retype the name they just searched for.
+  const [composePrefill, setComposePrefill] = useState<string>("");
   const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
   const queryClient = useQueryClient();
   // True once the user opts into the verification flow from UnverifiedHome.
@@ -56,11 +60,27 @@ const Index = () => {
   // or a back-navigation doesn't pop the composer open again.
   useEffect(() => {
     if (!user || searchParams.get("compose") !== "1") return;
+    setComposePrefill("");
     setShowCreateStory(true);
+    void track("review_started", { prefilled: false, source: "shortcut" });
     const next = new URLSearchParams(searchParams);
     next.delete("compose");
     setSearchParams(next, { replace: true });
   }, [user, searchParams, setSearchParams]);
+
+  // One entry point for the composer. `subjectName` comes from a search miss —
+  // the moment of highest intent in the app — and lands prefilled in the composer.
+  // Guarded against being wired straight into an onClick (which passes an event).
+  const openComposer = (subjectName?: string) => {
+    const prefill = typeof subjectName === "string" ? subjectName.trim() : "";
+    setComposePrefill(prefill);
+    setShowCreateStory(true);
+    void track("review_started", { prefilled: prefill.length > 0, verified: isVerified });
+  };
+  const closeComposer = () => {
+    setShowCreateStory(false);
+    setComposePrefill("");
+  };
   useEffect(() => {
     if (verificationLoading || !isVerified || !returnTo) return;
     if (returnTo.startsWith("/") && !returnTo.startsWith("//")) {
@@ -76,6 +96,9 @@ const Index = () => {
     if (!localStorage.getItem(key)) {
       localStorage.setItem(key, "1");
       setShowSuccessAnimation(true);
+      // Client-side "approved" signal — fires the first time this browser sees the
+      // account verified. Approval itself happens in admin, where GA can't see it.
+      void track("verification_approved");
     }
   }, [isVerified, verificationLoading, user]);
 
@@ -127,20 +150,34 @@ const Index = () => {
       return <OnboardingSuccess onContinue={() => setShowSuccessAnimation(false)} />;
     }
     return (
-      <AppShell onCreateStory={() => setShowCreateStory(true)}>
-        <Home onCreateStory={() => setShowCreateStory(true)} />
-        {showCreateStory && <CreateStory onClose={() => setShowCreateStory(false)} />}
+      <AppShell onCreateStory={() => openComposer()}>
+        <Home onCreateStory={openComposer} />
+        {showCreateStory && (
+          <CreateStory onClose={closeComposer} initialSubjectName={composePrefill} />
+        )}
       </AppShell>
     );
   }
 
-  // Submitted verification: pending / rejected
+  // Submitted verification: pending / rejected.
+  // Pending users can post (it's held until they're approved) — the search miss on
+  // this screen is the moment they're most motivated, so the composer lives here too.
   if (hasVerification && isPending && !resubmitting) {
     return (
-      <VerificationPending
-        onRefresh={refreshVerificationStatus}
-        submittedAt={verification?.created_at}
-      />
+      <>
+        <VerificationPending
+          onRefresh={refreshVerificationStatus}
+          submittedAt={verification?.created_at}
+          onCreateStory={openComposer}
+        />
+        {showCreateStory && (
+          <CreateStory
+            onClose={closeComposer}
+            isUnverified
+            initialSubjectName={composePrefill}
+          />
+        )}
+      </>
     );
   }
   if (hasVerification && isRejected && !resubmitting) {
@@ -174,12 +211,16 @@ const Index = () => {
   return (
     <>
       <UnverifiedHome
-        onCreateStory={() => setShowCreateStory(true)}
+        onCreateStory={openComposer}
         onStartVerification={startVerification}
         resumeVerification={hasProfile && !hasVerification}
       />
       {showCreateStory && (
-        <CreateStory onClose={() => setShowCreateStory(false)} isUnverified />
+        <CreateStory
+          onClose={closeComposer}
+          isUnverified
+          initialSubjectName={composePrefill}
+        />
       )}
     </>
   );

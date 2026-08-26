@@ -11,7 +11,6 @@ import ScrollToTopButton from "@/components/ScrollToTopButton";
 import PullToRefreshIndicator from "@/components/PullToRefreshIndicator";
 import { usePullToRefresh } from "@/hooks/usePullToRefresh";
 import { useInfiniteStories } from "@/hooks/useStories";
-import { useFeedGate } from "@/hooks/useFeedGate";
 import ReferralPrompt from "@/components/ReferralPrompt";
 import SubjectLookup from "@/components/SubjectLookup";
 import CityFilterChips, { FeedScope } from "@/components/CityFilterChips";
@@ -21,15 +20,14 @@ import { useProfile } from "@/hooks/useProfile";
 import { getStoryAuthorName } from "@/lib/storyAuthor";
 
 interface HomeProps {
-  onCreateStory?: () => void;
+  /** Opens the composer; a lookup miss passes the searched name so it lands prefilled. */
+  onCreateStory?: (subjectName?: string) => void;
 }
 
 const Home = ({ onCreateStory }: HomeProps) => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-
-  const { feedMode, isLoading: gateLoading } = useFeedGate(user?.id);
 
   // "All" vs "my city" feed scope. City comes from the user's profile;
   // CityFilterChips opens the picker when no city is saved yet.
@@ -50,13 +48,13 @@ const Home = ({ onCreateStory }: HomeProps) => {
     fetchNextPage,
     hasNextPage,
     refetch: refetchInfinite,
-  } = useInfiniteStories(undefined, feedMode, true, cityFilterId);
+  } = useInfiniteStories(undefined, true, cityFilterId);
 
   const stories = useMemo(
     () => infiniteData?.pages?.flatMap((p) => p) ?? [],
     [infiniteData]
   );
-  const storiesLoading = infiniteLoading || gateLoading;
+  const storiesLoading = infiniteLoading;
 
   const handleRefresh = useCallback(async () => {
     await queryClient.resetQueries({ queryKey: ["stories", "infinite"] });
@@ -158,12 +156,12 @@ const Home = ({ onCreateStory }: HomeProps) => {
         ) : (
           <div className="px-6 py-20 text-center">
             <h3 className="text-lg font-semibold mb-1">
-              {scope === "city" ? "No stories in your city yet" : "No stories yet"}
+              {scope === "city" ? "No stories in your city yet" : "Nothing in the feed yet"}
             </h3>
             <p className="text-sm text-muted-foreground mb-6">
               {scope === "city"
                 ? "Be the first to share the Juice in your city — or browse everywhere."
-                : "Be the first to share your dating story."}
+                : "Look her up by name above — and if nobody has passed on the Juice about her, be the first."}
             </p>
             {scope === "city" && (
               <button
@@ -174,7 +172,7 @@ const Home = ({ onCreateStory }: HomeProps) => {
               </button>
             )}
             <button
-              onClick={onCreateStory}
+              onClick={() => onCreateStory?.()}
               className="bg-primary text-primary-foreground rounded-lg px-5 py-2.5 text-sm font-semibold hover:bg-primary-dark transition-colors"
             >
               Share the Juice
@@ -185,7 +183,7 @@ const Home = ({ onCreateStory }: HomeProps) => {
         )}
       </div>
 
-      <Navigation onCreateStory={onCreateStory} />
+      <Navigation onCreateStory={() => onCreateStory?.()} />
       <ScrollToTopButton />
     </div>
   );

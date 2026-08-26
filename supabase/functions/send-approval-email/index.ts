@@ -8,7 +8,18 @@ const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 interface ApprovalEmailRequest {
   email: string;
   username?: string;
+  /**
+   * Subject names of reviews this member wrote BEFORE verifying. They were held
+   * pending on the selfie; now that it's approved they're one moderation pass
+   * from live. Naming them is the strongest come-back hook we have.
+   */
+  heldSubjects?: string[];
 }
+
+const APP_URL = "https://sipjuice.app";
+
+/** Deep link to the lookup for a name — the same link the search-miss nudge uses. */
+const lookupLink = (name: string) => `${APP_URL}/app?q=${encodeURIComponent(name)}`;
 
 const handler = async (req: Request): Promise<Response> => {
   // Handle CORS preflight requests
@@ -22,15 +33,46 @@ const handler = async (req: Request): Promise<Response> => {
     const adminCheck = await requireAdmin(auth.userId);
     if (adminCheck) return adminCheck;
 
-    const { email, username }: ApprovalEmailRequest = await req.json();
+    const body: ApprovalEmailRequest = await req.json();
+    const { email, username } = body;
+    // Defensive: only strings, trimmed, capped — this lands in an email body.
+    const heldSubjects = (Array.isArray(body.heldSubjects) ? body.heldSubjects : [])
+      .filter((n): n is string => typeof n === "string")
+      .map((n) => n.trim())
+      .filter((n) => n.length > 0 && n.length <= 80)
+      .slice(0, 5);
 
-    console.log(`Sending approval email to: ${email}`);
+    console.log(`Sending approval email to: ${email} (held reviews: ${heldSubjects.length})`);
 
     const greeting = username ? `Hey ${esc(username)},` : "Hey,";
+    const first = heldSubjects[0];
+    const subject = first
+      ? `You're in — your review of ${first} goes live next`
+      : "You're in — look her up";
+
+    // Two versions of the middle: "your review is about to publish" vs. the
+    // generic "look someone up / be the first". No more "post one story to
+    // unlock the feed" — that gate was removed in June and the copy outlived it.
+    const heldBlock = first
+      ? `
+                        <p style="margin:0 0 16px 0;">
+                          <strong>Your review${heldSubjects.length > 1 ? "s" : ""} of ${heldSubjects.map(esc).join(", ")}</strong>
+                          ${heldSubjects.length > 1 ? "were" : "was"} saved while you waited. Now that you're verified,
+                          ${heldSubjects.length > 1 ? "they go" : "it goes"} through one quick moderation check and then
+                          ${heldSubjects.length > 1 ? "they're" : "it's"} live for every other member who looks her up.
+                        </p>`
+      : `
+                        <p style="margin:0 0 16px 0;">
+                          Every story is unlocked. Look up a name before the date — and if nobody has
+                          passed on the Juice about her yet, be the first.
+                        </p>`;
+    const ctaHref = first ? lookupLink(first) : `${APP_URL}/app`;
+    const ctaLabel = first ? `See your review of ${esc(first)}` : "Look her up";
+
     const emailResponse = await resend.emails.send({
       from: "Juice <noreply@sipjuice.app>",
       to: [email],
-      subject: "You're in — post one story to unlock the Juice feed",
+      subject,
       html: `
         <!DOCTYPE html>
         <html>
@@ -53,21 +95,17 @@ const handler = async (req: Request): Promise<Response> => {
                     <tr>
                       <td style="padding:20px 32px 0 32px;font-size:15px;line-height:1.55;color:#333;">
                         <p style="margin:0 0 16px 0;">${greeting}</p>
-                        <p style="margin:0 0 16px 0;">Your account is approved. Welcome to the inside.</p>
-                        <p style="margin:0 0 16px 0;">
-                          <strong>One thing first:</strong> to unlock the full community feed, post at least one story.
-                          Until you do, you'll see our editorial seed posts only.
-                        </p>
+                        <p style="margin:0 0 16px 0;">Your selfie checked out. Welcome to the inside.</p>${heldBlock}
                         <p style="margin:0 0 24px 0;color:#555;">
-                          Every post is reviewed by us before it goes live — usually within 24 hours.
+                          Posts are checked by a person before they go live — usually the same day.
                         </p>
                       </td>
                     </tr>
                     <tr>
                       <td style="padding:0 32px 8px 32px;" align="left">
-                        <a href="https://sipjuice.app/app"
+                        <a href="${ctaHref}"
                            style="display:inline-block;background:#f57c00;color:#ffffff;text-decoration:none;font-weight:600;font-size:15px;padding:12px 22px;border-radius:10px;">
-                          Post your first story
+                          ${ctaLabel}
                         </a>
                       </td>
                     </tr>
