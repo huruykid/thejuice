@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Eye, EyeOff } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { isPasswordLeaked } from "@/lib/passwordCheck";
 import { useToast } from "@/hooks/use-toast";
 
 /**
@@ -48,6 +49,15 @@ const ResetPassword = () => {
     }
     setLoading(true);
     try {
+      // Same leaked-password gate as signup (HIBP k-anonymity, fails open).
+      if (await isPasswordLeaked(password)) {
+        toast({
+          title: "That password has appeared in a known data breach",
+          description: "Please choose a different password.",
+          variant: "destructive",
+        });
+        return;
+      }
       const { error } = await supabase.auth.updateUser({ password });
       if (error) {
         toast({ title: "Error", description: error.message, variant: "destructive" });
