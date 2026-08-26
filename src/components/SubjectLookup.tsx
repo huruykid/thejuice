@@ -18,7 +18,8 @@ import { getStoryAuthorName } from "@/lib/storyAuthor";
  */
 interface SubjectLookupProps {
   user_id?: string;
-  onCreateStory?: () => void;
+  /** Opens the composer; a miss passes the searched name so it lands prefilled. */
+  onCreateStory?: (subjectName?: string) => void;
   /** Fires with true while a search is active so the parent can hide the feed. */
   onActiveChange?: (active: boolean) => void;
 }
@@ -56,15 +57,21 @@ const SubjectLookup = ({ user_id, onCreateStory, onActiveChange }: SubjectLookup
     if (!active) setExpandedKey(null);
   }, [active, onActiveChange]);
 
-  // Log a search_miss once per name — highest-intent posting prompt in the app.
-  const missLoggedRef = useRef<string | null>(null);
+  // Log search_hit / search_miss once per name — the miss is the highest-intent
+  // posting prompt in the app; the pair gives the miss rate as content grows.
+  const loggedRef = useRef<string | null>(null);
   const isMiss = active && !isFetching && groups.length === 0;
+  const isHit = active && !isFetching && groups.length > 0;
   useEffect(() => {
-    if (isMiss && missLoggedRef.current !== debounced) {
-      missLoggedRef.current = debounced;
+    if (!active || loggedRef.current === debounced) return;
+    if (isMiss) {
+      loggedRef.current = debounced;
       void track("search_miss", { name: debounced });
+    } else if (isHit) {
+      loggedRef.current = debounced;
+      void track("search_hit", { name: debounced, results: groups.length });
     }
-  }, [isMiss, debounced]);
+  }, [active, isMiss, isHit, debounced, groups.length]);
 
   return (
     <div className="px-4 pt-3 pb-1">
@@ -150,16 +157,16 @@ const SubjectLookup = ({ user_id, onCreateStory, onActiveChange }: SubjectLookup
           ) : (
             <div className="px-2 py-10 text-center">
               <h3 className="text-base font-semibold mb-1">
-                No juice on “{debounced.trim()}” yet
+                No one has passed on the Juice about “{debounced.trim()}” yet
               </h3>
               <p className="text-sm text-muted-foreground mb-5">
-                Dated her? You'd be the first to pass it on.
+                Green flag or red flag — the next guy who looks her up will thank you.
               </p>
               <button
-                onClick={onCreateStory}
+                onClick={() => onCreateStory?.(debounced.trim())}
                 className="bg-primary text-primary-foreground rounded-lg px-5 py-2.5 text-sm font-semibold hover:bg-primary-dark transition-colors"
               >
-                Share the Juice
+                Dated her? Be the first
               </button>
             </div>
           )}

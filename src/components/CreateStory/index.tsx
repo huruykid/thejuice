@@ -27,9 +27,13 @@ export interface StoryData {
 const CreateStory = ({
   onClose,
   isUnverified = false,
+  initialSubjectName = "",
 }: {
   onClose: () => void;
+  /** Not yet approved: the post is held until their selfie is, and the copy says so. */
   isUnverified?: boolean;
+  /** Prefilled from a search miss — the name the user just looked for and didn't find. */
+  initialSubjectName?: string;
 }) => {
   const [showSuccess, setShowSuccess] = useState(false);
   const [uploadedImages, setUploadedImages] = useState<File[]>([]);
@@ -68,7 +72,7 @@ const CreateStory = ({
       location: '',
       city_id: null,
     },
-    personName: '',
+    personName: initialSubjectName,
     personPhone: '',
     verdict: 0,
   });
@@ -171,6 +175,7 @@ const CreateStory = ({
         subjectPhone: storyData.personPhone,
         verdict: storyData.verdict,
         asAlias: postAsAlias,
+        verified: !isUnverified,
       };
 
       const published = await createStory.mutateAsync(storyPayload);
@@ -196,9 +201,9 @@ const CreateStory = ({
       }
       if (isUnverified) {
         toast({
-          title: "Submitted!",
+          title: "Saved — one step left",
           description:
-            "An admin will review it before it goes live. Verify your account to read everyone else's stories.",
+            "Your review goes live once your selfie is approved. Verify now and it publishes with your account.",
         });
       }
       setTimeout(() => {

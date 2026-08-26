@@ -19,7 +19,8 @@ import SubjectSearch from "@/components/SubjectSearch";
 import TeaserFeed from "@/components/TeaserFeed";
 
 interface UnverifiedHomeProps {
-  onCreateStory: () => void;
+  /** Opens the composer; a search miss passes the name so it lands prefilled. */
+  onCreateStory: (subjectName?: string) => void;
   onStartVerification: () => void;
   /**
    * True when the user created a profile earlier but never submitted the
@@ -42,6 +43,9 @@ const UnverifiedHome = ({ onCreateStory, onStartVerification, resumeVerification
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const { data: submissions = [] } = useMySubmissions(user?.id);
+  // A review that's waiting on the selfie is the strongest reason to verify —
+  // it's their own words, held one step from live.
+  const heldReview = submissions.find((s) => s.status === "pending");
 
   // First-visit orientation: name the two paths explicitly, dismissible forever.
   const orientationKey = `juice_orientation_dismissed_${user?.id ?? "anon"}`;
@@ -91,9 +95,36 @@ const UnverifiedHome = ({ onCreateStory, onStartVerification, resumeVerification
       </header>
 
       <div className="max-w-xl mx-auto px-4 py-4 space-y-4">
+        {/* Held-review card — they posted before verifying. Their review is saved and
+            publishes once the selfie is approved; this is the one thing standing between
+            them and being live. Outranks the generic resume pitch. */}
+        {heldReview && (
+          <Card className="p-4 border-primary/40 bg-primary/5">
+            <div className="flex items-start gap-3">
+              <div className="h-10 w-10 rounded-full bg-primary/15 flex items-center justify-center shrink-0">
+                <ShieldCheck className="h-5 w-5 text-primary" />
+              </div>
+              <div className="flex-1">
+                <h2 className="text-base font-semibold text-foreground">
+                  {heldReview.subject_name
+                    ? `Your review of ${heldReview.subject_name} is one selfie from live`
+                    : "Your review is one selfie from live"}
+                </h2>
+                <p className="text-sm text-muted-foreground mt-0.5 mb-3">
+                  It's saved. A 30-second selfie proves you're a real guy — then it publishes
+                  and every other story unlocks.
+                </p>
+                <Button onClick={onStartVerification} className="w-full">
+                  Verify to publish it
+                </Button>
+              </div>
+            </div>
+          </Card>
+        )}
+
         {/* Resume card — user finished the profile but stalled at the selfie.
             Shown first: they already opted in, one step re-engages them. */}
-        {resumeVerification && (
+        {resumeVerification && !heldReview && (
           <Card className="p-4 border-primary/40 bg-primary/5">
             <div className="flex items-start gap-3">
               <div className="h-10 w-10 rounded-full bg-primary/15 flex items-center justify-center shrink-0">
@@ -116,7 +147,7 @@ const UnverifiedHome = ({ onCreateStory, onStartVerification, resumeVerification
         )}
 
         {/* Search-led magic moment — look someone up before anything else */}
-        <SubjectSearch onStartVerification={onStartVerification} />
+        <SubjectSearch onStartVerification={onStartVerification} onCreateStory={onCreateStory} />
 
         {/* Orientation — make the two unverified paths explicit, once */}
         {showOrientation && (
@@ -142,8 +173,8 @@ const UnverifiedHome = ({ onCreateStory, onStartVerification, resumeVerification
               <li className="flex gap-2">
                 <Sparkles className="h-4 w-4 text-primary shrink-0 mt-0.5" aria-hidden />
                 <span>
-                  <span className="text-foreground font-medium">Or post right now</span> — no
-                  verification needed; an admin reviews it before it's published.
+                  <span className="text-foreground font-medium">Or post right now</span> — it's
+                  saved immediately and goes live once you're verified.
                 </span>
               </li>
             </ul>
@@ -160,19 +191,19 @@ const UnverifiedHome = ({ onCreateStory, onStartVerification, resumeVerification
               <Sparkles className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <h2 className="text-base font-semibold text-foreground">Share the Juice — no verification needed</h2>
+              <h2 className="text-base font-semibold text-foreground">Share the Juice — post first, verify after</h2>
               <p className="text-sm text-muted-foreground mt-0.5">
-                You can post right now. An admin reviews every story before it's published on the site.
+                Post right now. It's saved, and goes live once your selfie is approved.
               </p>
             </div>
           </div>
-          <Button onClick={onCreateStory} className="w-full">
+          <Button onClick={() => onCreateStory()} className="w-full">
             Share the Juice
           </Button>
         </Card>
 
-        {/* Verify card (hidden when the resume card is already pitching it) */}
-        {!resumeVerification && (
+        {/* Verify card (hidden when the resume/held-review card is already pitching it) */}
+        {!resumeVerification && !heldReview && (
         <Card className="p-5 bg-card border-border">
           <div className="flex items-start gap-3 mb-3">
             <div className="h-10 w-10 rounded-full bg-primary/15 flex items-center justify-center shrink-0">
@@ -206,10 +237,15 @@ const UnverifiedHome = ({ onCreateStory, onStartVerification, resumeVerification
               {submissions.map((s) => (
                 <Card key={s.id} className="p-3 bg-card border-border">
                   <div className="flex items-start justify-between gap-3">
-                    <p className="text-sm text-foreground line-clamp-2 flex-1">{s.content}</p>
+                    <div className="flex-1 min-w-0">
+                      {s.subject_name && (
+                        <p className="text-sm font-semibold text-foreground truncate">{s.subject_name}</p>
+                      )}
+                      <p className="text-sm text-foreground line-clamp-2">{s.content}</p>
+                    </div>
                     {s.status === 'pending' && (
                       <Badge variant="secondary" className="shrink-0">
-                        <Clock className="h-3 w-3 mr-1" /> Pending
+                        <Clock className="h-3 w-3 mr-1" /> Held until verified
                       </Badge>
                     )}
                     {s.status === 'approved' && (
@@ -231,7 +267,7 @@ const UnverifiedHome = ({ onCreateStory, onStartVerification, resumeVerification
 
       </div>
 
-      <Navigation onCreateStory={onCreateStory} />
+      <Navigation onCreateStory={() => onCreateStory()} />
     </div>
   );
 };

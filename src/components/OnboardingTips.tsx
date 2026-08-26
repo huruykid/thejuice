@@ -44,6 +44,7 @@ const OnboardingTips = ({ step }: OnboardingTipsProps) => {
         "Our team reviews all new accounts manually",
         "This process usually takes 24-48 hours",
         "You'll receive an email notification when approved",
+        "Post now if you want — it's saved and goes live the moment you're approved",
         "Check your spam folder if you don't see our email"
       ]
     }

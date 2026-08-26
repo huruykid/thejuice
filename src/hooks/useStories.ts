@@ -74,11 +74,8 @@ export const useStories = () => {
  */
 export const STORIES_PAGE_SIZE = 12;
 
-export type FeedMode = "community" | "seed";
-
 export const useInfiniteStories = (
   pageSize: number = STORIES_PAGE_SIZE,
-  mode: FeedMode = "community",
   enabled: boolean = true,
   /** When set, only stories tagged to this city are returned. */
   cityId: string | null = null
@@ -164,6 +161,8 @@ export const useCreateStory = () => {
       verdict,
       asAlias = false,
     }: {
+      /** Analytics only — whether the poster is a verified member. */
+      verified?: boolean;
       content: string;
       tags: string[];
       city_id?: string | null;
@@ -305,16 +304,19 @@ export const useCreateStory = () => {
 
       return story;
     },
-    onSuccess: (story) => {
+    onSuccess: (story, variables) => {
       // Activation signal: a real (non-seed) post was submitted. Aliased operator
       // posts are seeded content — counting them would inflate the one number that
       // tells us whether members are actually posting.
       if (!story?.author_alias) {
-        void track("post_created", { story_id: story?.id, has_subject: !!story?.subject_name });
+        void track("post_created", {
+          story_id: story?.id,
+          has_subject: !!story?.subject_name,
+          verified: variables.verified !== false,
+        });
       }
       queryClient.invalidateQueries({ queryKey: ['stories'] });
       queryClient.invalidateQueries({ queryKey: ['stories', 'mine'] });
-      queryClient.invalidateQueries({ queryKey: ['has-approved-post'] });
     },
   });
 };
@@ -330,13 +332,14 @@ export const useMySubmissions = (userId?: string) => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('stories')
-        .select('id, content, status, created_at, image_url')
+        .select('id, content, subject_name, status, created_at, image_url')
         .eq('user_id', userId)
         .order('created_at', { ascending: false });
       if (error) throw error;
       return data as Array<{
         id: string;
         content: string;
+        subject_name: string | null;
         status: 'pending' | 'approved' | 'rejected';
         created_at: string;
         image_url: string | null;

@@ -4,6 +4,31 @@ We now log four events to `public.analytics_events` (append-only; users insert t
 admins read). Events: `signup`, `verification_submitted`, `post_created`, `app_open`
 (`app_open` is de-duped to once per browser session).
 
+**STATUS 2026-08-26 — funnel instrumented end to end.** Added `search_hit`, `search_miss`,
+`review_started` (composer opened; `props.prefilled` = came from a search miss) and
+`verification_approved` (client-side, first time the browser sees the account approved).
+Every event is also mirrored to Google Analytics (`src/lib/analytics.ts`) as
+`sign_up`, `search` (`result: hit|miss` — **never** the name), `verification_submitted`,
+`verification_approved`, `review_started`, `review_submitted`. Mark `review_submitted` as
+a **key event** in GA Admin → Events; that is the conversion. Before this, GA had only
+automatic events and the funnel existed nowhere but this table.
+
+## 0. Search miss rate (does content growth close the gap?)
+
+```sql
+select date_trunc('week', created_at) as week,
+       count(*) filter (where event = 'search_hit')  as hits,
+       count(*) filter (where event = 'search_miss') as misses,
+       round(100.0 * count(*) filter (where event = 'search_miss')
+             / nullif(count(*) filter (where event in ('search_hit','search_miss')), 0), 1)
+         as miss_pct,
+       count(*) filter (where event = 'review_started' and (props->>'prefilled')::boolean)
+         as misses_turned_into_composer_opens
+from public.analytics_events
+group by 1
+order by 1 desc;
+```
+
 > Note: events are **forward-looking** — they start accumulating from the deploy date
 > (2026-06-26). Cohort/return numbers only become meaningful once a week of data exists.
 > Run these in the Supabase SQL editor (admin).

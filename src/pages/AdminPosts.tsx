@@ -46,6 +46,8 @@ interface PendingPost {
   location: string | null;
   overall_vibe_rating: number | null;
   profiles: { anonymous_username: string } | null;
+  /** False when the author hasn't passed verification yet — the post is held. */
+  author_verified?: boolean;
 }
 
 const AdminPosts = () => {
@@ -86,7 +88,27 @@ const AdminPosts = () => {
       if (filter !== "all") q = q.eq("status", filter);
       const { data, error } = await q;
       if (error) throw error;
-      return data as PendingPost[];
+      const rows = (data ?? []) as PendingPost[];
+
+      // Members can post before they're verified (the review is held on the selfie).
+      // The DB refuses to approve those, so flag them here instead of letting the
+      // admin find out from the error toast. One extra query, admin-readable.
+      const authorIds = Array.from(
+        new Set(rows.map((r) => r.user_id).filter((id): id is string => !!id))
+      );
+      const verified = new Set<string>();
+      if (authorIds.length > 0) {
+        const { data: v } = await supabase
+          .from("user_verifications")
+          .select("user_id, verification_status")
+          .in("user_id", authorIds)
+          .eq("verification_status", "approved");
+        for (const row of v ?? []) verified.add(row.user_id);
+      }
+      return rows.map((r) => ({
+        ...r,
+        author_verified: !r.user_id || r.submitted_anonymously || verified.has(r.user_id),
+      }));
     },
   });
 
@@ -488,6 +510,11 @@ const PostRow = ({
               {post.location ? ` · ${post.location}` : ""} ·{" "}
               {new Date(post.created_at).toLocaleString()}
             </span>
+            {post.author_verified === false && post.status === "pending" && (
+              <Badge variant="outline" className="text-muted-foreground font-normal">
+                Held — author not verified yet
+              </Badge>
+            )}
           </CardTitle>
           {badge(post.status)}
         </div>

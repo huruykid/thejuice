@@ -968,6 +968,14 @@ export type Database = {
         Returns: number
       }
       admin_delete_seed_story: { Args: { p_id: string }; Returns: undefined }
+      admin_held_reviews_for_user: {
+        Args: { _user_id: string }
+        Returns: {
+          story_id: string
+          subject_name: string | null
+          created_at: string
+        }[]
+      }
       admin_list_members: {
         Args: never
         Returns: {
