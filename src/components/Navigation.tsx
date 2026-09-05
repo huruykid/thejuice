@@ -1,5 +1,7 @@
 import { Home, Search, PlusSquare, User } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
+import { useVerification } from "@/hooks/useVerification";
 
 interface NavigationProps {
   onCreateStory?: () => void;
@@ -8,6 +10,15 @@ interface NavigationProps {
 const Navigation = ({ onCreateStory }: NavigationProps) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user } = useAuth();
+  const { isVerified, isLoading: verificationLoading } = useVerification(user?.id);
+
+  // The Explore tab (search icon) points at /explore, which VerifiedRoute bounces
+  // straight back to /app for anyone unverified — making the tap a no-op from the
+  // user's seat. For those users, send the search icon to the home search box they
+  // CAN use (SubjectSearch) instead. Only override once verification is known, so a
+  // verified user isn't briefly routed to /app during the status fetch.
+  const unverified = !!user && !verificationLoading && !isVerified;
 
   type Tab =
     | { kind: "nav"; icon: typeof Home; label: string; path: string }
@@ -37,11 +48,15 @@ const Navigation = ({ onCreateStory }: NavigationProps) => {
             );
           }
           const Icon = tab.icon;
+          // Unverified users can't reach /explore; the search tab instead focuses
+          // the home search box via the #search hash (SubjectSearch handles it).
+          const isSearchTab = tab.path === "/explore";
+          const to = isSearchTab && unverified ? "/app#search" : tab.path;
           const active = location.pathname === tab.path;
           return (
             <button
               key={i}
-              onClick={() => navigate(tab.path)}
+              onClick={() => navigate(to)}
               aria-label={tab.label}
               className="relative flex items-center justify-center transition-colors"
             >

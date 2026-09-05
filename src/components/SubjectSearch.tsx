@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Search, Lock, Flag, CheckCircle2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -35,6 +35,8 @@ interface SubjectSearchProps {
 const SubjectSearch = ({ onStartVerification, pending = false }: SubjectSearchProps) => {
   // Email nudges deep-link here as /app?q=<name> so the prompt continues the moment.
   const [searchParams] = useSearchParams();
+  const location = useLocation();
+  const inputRef = useRef<HTMLInputElement>(null);
   const [query, setQuery] = useState(() => searchParams.get("q") ?? "");
   const [debounced, setDebounced] = useState(() => (searchParams.get("q") ?? "").trim());
 
@@ -42,6 +44,16 @@ const SubjectSearch = ({ onStartVerification, pending = false }: SubjectSearchPr
     const t = setTimeout(() => setDebounced(query.trim()), 250);
     return () => clearTimeout(t);
   }, [query]);
+
+  // The bottom-nav search icon deep-links unverified users here as /app#search
+  // (see Navigation.tsx), since /explore is gated. Focus + reveal the input so the
+  // tap lands on the search box they can actually use.
+  useEffect(() => {
+    if (location.hash === "#search") {
+      inputRef.current?.scrollIntoView({ block: "center", behavior: "smooth" });
+      inputRef.current?.focus();
+    }
+  }, [location.hash]);
 
   const { data: results = [], isFetching } = useQuery({
     queryKey: ["subject-search", debounced],
@@ -81,6 +93,7 @@ const SubjectSearch = ({ onStartVerification, pending = false }: SubjectSearchPr
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
         <input
+          ref={inputRef}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Look someone up…"
