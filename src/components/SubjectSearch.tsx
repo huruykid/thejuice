@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useSearchParams, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { Search, Lock, Flag, CheckCircle2 } from "lucide-react";
+import { Search, Lock, Flag, CheckCircle2, Scale } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { track } from "@/lib/analytics";
 import { Card } from "@/components/ui/card";
@@ -76,7 +76,8 @@ const SubjectSearch = ({ onStartVerification, onCreateStory, pending = false }: 
     if (v == null) return null;
     if (v < 0) return { label: "mostly red flags", icon: <Flag className="h-3.5 w-3.5" style={{ color: "hsl(var(--destructive))" }} /> };
     if (v > 0) return { label: "mostly green flags", icon: <CheckCircle2 className="h-3.5 w-3.5" style={{ color: "hsl(var(--success))" }} /> };
-    return { label: "mixed", icon: <Flag className="h-3.5 w-3.5 text-muted-foreground" /> };
+    // Neutral shape for a tie — not the red Flag, which would read "mixed" as negative.
+    return { label: "mixed", icon: <Scale className="h-3.5 w-3.5 text-muted-foreground" /> };
   };
 
   const searching = debounced.length > 0;

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Search, X, ChevronDown } from "lucide-react";
+import { Search, X, ChevronDown, Scale } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import StoryCard from "@/components/StoryCard";
 import { JuiceIcon, MilkIcon } from "@/components/icons/BrandVoteIcons";
@@ -30,7 +30,9 @@ const roomVerdict = (g: SubjectGroup) => {
     return { icon: <JuiceIcon className="h-4 w-4 shrink-0" />, label: "mostly green flags" };
   if (g.red > g.green)
     return { icon: <MilkIcon className="h-4 w-4 shrink-0" />, label: "mostly red flags" };
-  return { icon: <MilkIcon className="h-4 w-4 shrink-0" />, label: "mixed" };
+  // A tied record is neither verdict — give it its own neutral shape rather than
+  // borrowing the red/Milk icon, which would read a mixed result as negative.
+  return { icon: <Scale className="h-4 w-4 shrink-0 text-muted-foreground" />, label: "mixed" };
 };
 
 const SubjectLookup = ({ user_id, onCreateStory, onActiveChange }: SubjectLookupProps) => {
