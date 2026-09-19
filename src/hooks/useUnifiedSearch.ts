@@ -84,6 +84,7 @@ export const useUnifiedSearch = () => {
             .from('stories')
             .select(STORY_SELECT)
             .eq('status', 'approved')
+            .eq('is_hidden', false)
             .ilike('content', `%${term}%`)
             .order('created_at', { ascending: false })
             .limit(10),
@@ -91,6 +92,7 @@ export const useUnifiedSearch = () => {
             .from('stories')
             .select(STORY_SELECT)
             .eq('status', 'approved')
+            .eq('is_hidden', false)
             .ilike('subject_name', `%${term}%`)
             .order('created_at', { ascending: false })
             .limit(10),
@@ -98,6 +100,7 @@ export const useUnifiedSearch = () => {
             .from('stories')
             .select(STORY_SELECT)
             .eq('status', 'approved')
+            .eq('is_hidden', false)
             .ilike('normalized_location', `%${normalizeCityName(term)}%`)
             .order('created_at', { ascending: false })
             .limit(10),

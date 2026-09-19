@@ -69,6 +69,7 @@ export const useSubjectLookup = (query: string) => {
           )
         `)
         .eq('status', 'approved')
+        .eq('is_hidden', false)
         .not('subject_name', 'is', null)
         .ilike('subject_name', `%${q.replace(/[%_]/g, '')}%`)
         .order('created_at', { ascending: false })

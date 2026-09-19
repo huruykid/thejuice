@@ -47,6 +47,9 @@ export const useStories = () => {
           )
         `)
         .eq('status', 'approved')
+        // Belt-and-braces with RLS: admins bypass the policy, so filter here too so
+        // a hidden post never shows in the normal feed for anyone.
+        .eq('is_hidden', false)
         .not('image_url', 'is', null)
         .order('created_at', { ascending: false })
         // Explore grid — cap it. Unbounded, this query grows with every story
@@ -99,6 +102,9 @@ export const useInfiniteStories = (
           )
         `)
         .eq('status', 'approved')
+        // Belt-and-braces with RLS: admins bypass the policy, so filter here too so
+        // a hidden post never shows in the normal feed for anyone.
+        .eq('is_hidden', false)
         .not('image_url', 'is', null)
         .order('created_at', { ascending: false })
         .range(from, to);
@@ -136,6 +142,7 @@ export const useStoriesByProfile = (profileId: string) => {
         `)
         .eq('profile_id', profileId)
         .eq('status', 'approved')
+        .eq('is_hidden', false)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -288,7 +295,7 @@ export const useMySubmissions = (userId?: string) => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('stories')
-        .select('id, content, status, created_at, image_url')
+        .select('id, content, status, created_at, image_url, is_hidden')
         .eq('user_id', userId)
         .order('created_at', { ascending: false });
       if (error) throw error;
@@ -298,6 +305,8 @@ export const useMySubmissions = (userId?: string) => {
         status: 'pending' | 'approved' | 'rejected';
         created_at: string;
         image_url: string | null;
+        /** Admin took it off the feed; the author still sees it here, labeled. */
+        is_hidden: boolean;
       }>;
     },
   });

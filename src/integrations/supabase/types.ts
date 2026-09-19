@@ -680,9 +680,12 @@ export type Database = {
           content: string
           created_at: string
           emotional_safety_rating: number | null
+          hidden_at: string | null
+          hidden_by: string | null
           id: string
           image_url: string | null
           is_flagged: boolean
+          is_hidden: boolean
           is_seed: boolean
           location: string | null
           loyalty_rating: number | null
@@ -709,9 +712,12 @@ export type Database = {
           content: string
           created_at?: string
           emotional_safety_rating?: number | null
+          hidden_at?: string | null
+          hidden_by?: string | null
           id?: string
           image_url?: string | null
           is_flagged?: boolean
+          is_hidden?: boolean
           is_seed?: boolean
           location?: string | null
           loyalty_rating?: number | null
@@ -738,9 +744,12 @@ export type Database = {
           content?: string
           created_at?: string
           emotional_safety_rating?: number | null
+          hidden_at?: string | null
+          hidden_by?: string | null
           id?: string
           image_url?: string | null
           is_flagged?: boolean
+          is_hidden?: boolean
           is_seed?: boolean
           location?: string | null
           loyalty_rating?: number | null
@@ -1060,9 +1069,12 @@ export type Database = {
           content: string
           created_at: string
           emotional_safety_rating: number | null
+          hidden_at: string | null
+          hidden_by: string | null
           id: string
           image_url: string | null
           is_flagged: boolean
+          is_hidden: boolean
           is_seed: boolean
           location: string | null
           loyalty_rating: number | null

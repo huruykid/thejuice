@@ -24,6 +24,7 @@ export const useTrendingStories = () => {
         `)
         .gte('created_at', twoDaysAgo.toISOString())
         .eq('status', 'approved')
+        .eq('is_hidden', false)
         .not('image_url', 'is', null)
         .order('reactions_count', { ascending: false })
         .order('comments_count', { ascending: false })

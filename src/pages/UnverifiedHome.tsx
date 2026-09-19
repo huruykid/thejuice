@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import BrandLockup from "@/components/BrandLockup";
-import { ShieldCheck, Sparkles, Clock, CheckCircle2, XCircle, User, LogOut, X } from "lucide-react";
+import { ShieldCheck, Sparkles, Clock, CheckCircle2, XCircle, User, LogOut, X, EyeOff } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -220,6 +220,12 @@ const UnverifiedHome = ({ onCreateStory, onStartVerification, resumeVerification
                     {s.status === 'rejected' && (
                       <Badge variant="destructive" className="shrink-0">
                         <XCircle className="h-3 w-3 mr-1" /> Rejected
+                      </Badge>
+                    )}
+                    {/* Honest signal: the post exists but an admin took it off the feed. */}
+                    {s.is_hidden && (
+                      <Badge variant="outline" className="shrink-0 text-muted-foreground">
+                        <EyeOff className="h-3 w-3 mr-1" /> Hidden by moderators
                       </Badge>
                     )}
                   </div>

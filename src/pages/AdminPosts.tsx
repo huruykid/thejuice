@@ -15,7 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CheckCircle, XCircle, Clock, UserX, User, Trash2, Mail } from "lucide-react";
+import { CheckCircle, XCircle, Clock, UserX, User, Trash2, Mail, Eye, EyeOff } from "lucide-react";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import QueryError from "@/components/QueryError";
 import { useConfirm } from "@/components/ConfirmDialog";
@@ -42,6 +42,8 @@ interface PendingPost {
   rejection_reason: string | null;
   rejected_at: string | null;
   is_seed: boolean;
+  /** Off the feed but not deleted or re-moderated; reversible via "Show in feed". */
+  is_hidden: boolean;
   image_url: string | null;
   location: string | null;
   overall_vibe_rating: number | null;
@@ -53,7 +55,7 @@ const AdminPosts = () => {
   const { isAdmin, isLoading: roleLoading } = useUserRole(user?.id);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const [filter, setFilter] = useState<"pending" | "approved" | "rejected" | "all">(
+  const [filter, setFilter] = useState<"pending" | "approved" | "rejected" | "hidden" | "all">(
     "pending"
   );
   const [sort, setSort] = useState<"newest" | "oldest">("newest");
@@ -76,14 +78,16 @@ const AdminPosts = () => {
       let q = supabase
         .from("stories")
         .select(
-          "id, content, subject_name, created_at, status, user_id, submitted_anonymously, rejection_reason, rejected_at, is_seed, image_url, location, overall_vibe_rating, profiles ( anonymous_username )"
+          "id, content, subject_name, created_at, status, user_id, submitted_anonymously, rejection_reason, rejected_at, is_seed, is_hidden, image_url, location, overall_vibe_rating, profiles ( anonymous_username )"
         )
         .eq("is_seed", false)
         .order("created_at", { ascending: sort === "oldest" })
         // Keep the queue snappy as volume grows; oldest/newest sort still
         // surfaces whichever end matters.
         .limit(200);
-      if (filter !== "all") q = q.eq("status", filter);
+      // "Hidden" is a visibility flag, not a moderation status — it cuts across statuses.
+      if (filter === "hidden") q = q.eq("is_hidden", true);
+      else if (filter !== "all") q = q.eq("status", filter);
       const { data, error } = await q;
       if (error) throw error;
       return data as PendingPost[];
@@ -188,6 +192,29 @@ const AdminPosts = () => {
       queryClient.invalidateQueries({ queryKey: ["admin-pending-counts"] });
     },
     onError: (e: any) => toast.error(e?.message || "Delete failed"),
+  });
+
+  // Show/hide — reversible and separate from moderation status. The DB trigger
+  // stamps hidden_at/hidden_by for admins and refuses the flag from anyone else.
+  const setHidden = useMutation({
+    mutationFn: async ({ id, hidden }: { id: string; hidden: boolean }) => {
+      const { error } = await supabase
+        .from("stories")
+        .update({ is_hidden: hidden })
+        .eq("id", id);
+      if (error) throw error;
+      return hidden;
+    },
+    onSuccess: (hidden) => {
+      toast.success(
+        hidden ? "Post hidden — it's off the feed until you show it again" : "Post visible again"
+      );
+      queryClient.invalidateQueries({ queryKey: ["admin-posts"] });
+      // Public feed/search caches must drop (or restore) it as well.
+      queryClient.invalidateQueries({ queryKey: ["stories"] });
+      queryClient.invalidateQueries({ queryKey: ["subject-lookup"] });
+    },
+    onError: (e: any) => toast.error(e?.message || "Couldn't update visibility"),
   });
 
   const emailPhotoless = useMutation({
@@ -308,6 +335,7 @@ const AdminPosts = () => {
                 <SelectItem value="pending">Pending</SelectItem>
                 <SelectItem value="approved">Approved</SelectItem>
                 <SelectItem value="rejected">Rejected</SelectItem>
+                <SelectItem value="hidden">Hidden</SelectItem>
                 <SelectItem value="all">All</SelectItem>
               </SelectContent>
             </Select>
@@ -399,6 +427,7 @@ const AdminPosts = () => {
               onToggle={() => toggleOne(p.id)}
               onApprove={() => approve.mutate(p.id)}
               onReject={(reasonLabel) => reject.mutate({ id: p.id, reasonLabel })}
+              onToggleHidden={() => setHidden.mutate({ id: p.id, hidden: !p.is_hidden })}
               onDelete={async () => {
                 if (
                   await confirm({
@@ -436,6 +465,7 @@ const PostRow = ({
   onToggle,
   onApprove,
   onReject,
+  onToggleHidden,
   onDelete,
 }: {
   post: PendingPost;
@@ -445,6 +475,7 @@ const PostRow = ({
   onToggle: () => void;
   onApprove: () => void;
   onReject: (reasonLabel: string) => void;
+  onToggleHidden: () => void;
   onDelete: () => void;
 }) => {
   const [reasonId, setReasonId] = useState(REJECTION_REASONS[0].id);
@@ -489,7 +520,15 @@ const PostRow = ({
               {new Date(post.created_at).toLocaleString()}
             </span>
           </CardTitle>
-          {badge(post.status)}
+          <div className="flex items-center gap-2">
+            {post.is_hidden && (
+              <Badge variant="outline" className="text-muted-foreground">
+                <EyeOff className="w-3 h-3 mr-1" />
+                Hidden
+              </Badge>
+            )}
+            {badge(post.status)}
+          </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-3">
@@ -573,7 +612,23 @@ const PostRow = ({
           </div>
         )}
         {post.status !== "pending" && (
-          <div className="flex justify-end pt-2 border-t border-border">
+          <div className="flex items-center justify-end gap-2 pt-2 border-t border-border">
+            {/* Only approved posts are on the feed, so only they can be hidden. */}
+            {post.status === "approved" && (
+              <Button size="sm" variant="outline" onClick={onToggleHidden}>
+                {post.is_hidden ? (
+                  <>
+                    <Eye className="w-4 h-4 mr-1" />
+                    Show in feed
+                  </>
+                ) : (
+                  <>
+                    <EyeOff className="w-4 h-4 mr-1" />
+                    Hide from feed
+                  </>
+                )}
+              </Button>
+            )}
             <Button
               size="sm"
               variant="ghost"

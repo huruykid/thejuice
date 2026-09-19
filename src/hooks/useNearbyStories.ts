@@ -41,6 +41,7 @@ export const useNearbyStories = (
           cities:city_id (city_name, state_province, latitude, longitude)
         `)
         .eq("status", "approved")
+        .eq("is_hidden", false)
         .eq("is_seed", false)
         .not("image_url", "is", null)
         .order("created_at", { ascending: false });

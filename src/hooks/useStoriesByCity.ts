@@ -25,6 +25,7 @@ export const useStoriesByCity = (cityId: string | null | undefined) => {
         )
         .eq("city_id", cityId!)
         .eq("status", "approved")
+        .eq("is_hidden", false)
         .not("image_url", "is", null)
         .order("created_at", { ascending: false })
         .range(from, to);
