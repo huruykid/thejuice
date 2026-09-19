@@ -60,18 +60,25 @@ const Landing = () => {
     },
   ];
 
-  const testimonials = [
+  // What a lookup returns — an honest product walkthrough in place of invented quotes.
+  // (Fabricated testimonials are off-limits: see CLAUDE.md "No fabricated numbers or
+  // testimonials." Names and counts in the illustration are labeled as examples.)
+  const lookupAnatomy = [
     {
-      quote: "Finally an app where I can get honest dating advice from men who've actually been there.",
-      codename: "late_checkout",
+      title: "Her first name is enough.",
+      description: "Type a first name. Every story about her lines up in one place.",
     },
     {
-      quote: "The verification system makes all the difference. These are real stories from real men.",
-      codename: "quietly_done",
+      title: "Every review is from a verified man.",
+      description: "Each one comes from a member who passed a human-reviewed selfie check.",
     },
     {
-      quote: "Wish I had this before my last relationship. The red flags were all there in other men's stories.",
-      codename: "third_strike",
+      title: "The room's verdict, at a glance.",
+      description: "Mostly green flags, mostly red, or mixed — the community's read before you open a single story.",
+    },
+    {
+      title: "Then read everything.",
+      description: "Tap through for the full accounts, posted under codenames. Her name shows. Theirs never do.",
     },
   ];
 
@@ -317,26 +324,77 @@ const Landing = () => {
           </div>
         </section>
 
-        {/* From the feed — pull-quotes under codenames, consistent with the product's anonymity */}
+        {/* What a lookup returns — the product artifact, shown honestly. Replaces the
+            old pull-quote testimonials, which were invented. */}
         <section className="px-4 py-16 md:py-20">
           <div className="max-w-6xl mx-auto">
-            <div className="border-t-2 border-foreground pt-4 mb-10">
+            <div className="border-t-2 border-foreground pt-4 mb-10 flex items-baseline justify-between gap-4 flex-wrap">
               <h2 className="font-display font-extrabold uppercase tracking-tight text-3xl md:text-4xl text-foreground">
-                From verified members
+                What a lookup returns
               </h2>
+              <p className="text-sm text-muted-foreground">Type a name. This is what comes back.</p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-              {testimonials.map((testimonial, index) => (
-                <figure key={index} className="border-l-2 border-primary pl-5">
-                  <blockquote className="text-lg font-medium text-foreground leading-snug mb-4">
-                    "{testimonial.quote}"
-                  </blockquote>
-                  <figcaption className="text-sm text-muted-foreground">
-                    <span className="font-semibold text-foreground">@{testimonial.codename}</span> · verified member
-                  </figcaption>
-                </figure>
-              ))}
+            <div className="grid grid-cols-1 lg:grid-cols-[0.9fr,1.1fr] gap-10 lg:gap-16 items-start">
+              {/* The artifact — mirrors the real result row in the app */}
+              <div className="max-w-md">
+                <div className="border border-border rounded-2xl overflow-hidden bg-background">
+                  <div className="px-4 py-3 border-b border-border flex items-center gap-2 text-muted-foreground">
+                    <Search className="h-4 w-4" aria-hidden />
+                    <span className="text-sm">Maya</span>
+                  </div>
+                  <div className="px-4 py-3 flex items-center gap-3">
+                    <div
+                      className="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-primary-dark flex items-center justify-center text-primary-foreground text-sm font-semibold shrink-0"
+                      aria-hidden
+                    >
+                      M
+                    </div>
+                    <div className="min-w-0 flex-1 leading-tight">
+                      <p className="text-sm font-semibold text-foreground">Maya</p>
+                      <p className="text-xs text-muted-foreground flex items-center gap-1.5">
+                        12 reviews
+                        <span aria-hidden>·</span>
+                        <Flag className="h-3.5 w-3.5 text-success fill-success" aria-hidden />
+                        mostly green flags
+                      </p>
+                    </div>
+                    <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0" aria-hidden />
+                  </div>
+                  <div className="px-4 pb-4 pt-3 border-t border-border">
+                    <p className="text-xs text-muted-foreground mb-2">@weekend_plans · 3d ago</p>
+                    <div className="space-y-1.5" aria-hidden>
+                      <div className="h-2 bg-muted rounded w-full" />
+                      <div className="h-2 bg-muted rounded w-11/12" />
+                      <div className="h-2 bg-muted rounded w-2/3" />
+                    </div>
+                  </div>
+                </div>
+                <p className="text-[11px] text-muted-foreground mt-3">
+                  Illustration — names and counts are examples, not member quotes.
+                </p>
+              </div>
+
+              {/* The anatomy — same numbered editorial index as the features section */}
+              <div>
+                {lookupAnatomy.map((item, index) => (
+                  <div
+                    key={index}
+                    className="border-t border-border py-5 flex gap-5 first:border-t-0 first:pt-0"
+                  >
+                    <span
+                      className="font-display font-extrabold text-2xl text-primary leading-none pt-0.5 w-10 shrink-0"
+                      aria-hidden
+                    >
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+                    <div>
+                      <h3 className="text-base font-bold text-foreground mb-1">{item.title}</h3>
+                      <p className="text-sm text-muted-foreground leading-relaxed">{item.description}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </section>
