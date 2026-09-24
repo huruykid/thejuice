@@ -62,5 +62,8 @@ and `vite preview --host 127.0.0.1` — plain `preview` fails on IPv6).
   actual searcher phrasing ("tea app for men" family) with FAQPage JSON-LD; CTAs are crawlable
   `<Link>`s, not onClick buttons; gated routes stay out of `public/sitemap.xml` and are
   disallowed in `public/robots.txt`.
+- **Growth experiments** are registered in `public.growth_experiments` and gated client-side with
+  `useExperiment("<key>")`; readout at `/admin/growth`; hypotheses + weekly log in
+  `GROWTH_EXPERIMENTS.md`. New growth mechanics get a key + kill switch, not a hardcode.
 - Commit messages explain the why; audits live in repo docs (`SECURITY_AUDIT_*.md`,
   `UX_AUDIT.md`, `DESIGN_AUDIT.md`) with STATUS notes when items are applied.

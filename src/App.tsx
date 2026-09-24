@@ -28,6 +28,7 @@ const AdminOverview = lazy(() => import("./pages/AdminOverview"));
 const AdminBlog = lazy(() => import("./pages/AdminBlog"));
 const AdminMembers = lazy(() => import("./pages/AdminMembers"));
 const AdminSeed = lazy(() => import("./pages/AdminSeed"));
+const AdminGrowth = lazy(() => import("./pages/AdminGrowth"));
 const SharePublic = lazy(() => import("./pages/SharePublic"));
 const DisputeRequest = lazy(() => import("./pages/DisputeRequest"));
 const PrivacySettings = lazy(() => import("./pages/PrivacySettings"));
@@ -49,7 +50,12 @@ const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 import { useAuth } from "./hooks/useAuth";
 import { useVerification } from "./hooks/useVerification";
 import { useRealIsAdmin } from "./hooks/useRealIsAdmin";
-import { trackAppOpenOnce } from "./lib/analytics";
+import { trackAppOpenOnce, track } from "./lib/analytics";
+import { captureAttribution, getAttribution } from "./lib/attribution";
+
+// First-touch attribution (?ref / utm / referrer) is read before anything can navigate
+// away from the landing URL. Kept in localStorage; attached to the `signup` event.
+captureAttribution();
 import { useScreenshotProtection } from "./hooks/useScreenshotProtection";
 import { useIosCaptureProtection } from "./hooks/useIosCaptureProtection";
 import { useTheme } from "./hooks/useTheme";
@@ -169,7 +175,18 @@ const ExploreWrapper = () => {
 const AppOpenTracker = () => {
   const { user } = useAuth();
   useEffect(() => {
-    if (user) trackAppOpenOnce();
+    if (!user) return;
+    trackAppOpenOnce();
+    // A referred visitor who signed in: log the ref once per browser so the invite
+    // loop can be measured even when the signup happened on another device/session.
+    try {
+      const a = getAttribution();
+      const KEY = "juice_ref_landed_logged";
+      if (a?.ref && !localStorage.getItem(KEY)) {
+        localStorage.setItem(KEY, "1");
+        void track("ref_landed", { ref: a.ref });
+      }
+    } catch { /* private mode */ }
   }, [user]);
   return null;
 };
@@ -252,6 +269,11 @@ const App = () => {
           <Route path="/admin/seed" element={
             <AdminRoute>
               <AdminLayout><AdminSeed /></AdminLayout>
+            </AdminRoute>
+          } />
+          <Route path="/admin/growth" element={
+            <AdminRoute>
+              <AdminLayout><AdminGrowth /></AdminLayout>
             </AdminRoute>
           } />
           <Route path="/admin/disputes" element={

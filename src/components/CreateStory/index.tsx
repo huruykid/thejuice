@@ -7,6 +7,25 @@ import { useRealIsAdmin } from "@/hooks/useRealIsAdmin";
 import { supabase } from "@/integrations/supabase/client";
 import Composer from "./Composer";
 import SuccessAnimation from "./SuccessAnimation";
+import { track } from "@/lib/analytics";
+import { shareInvite } from "@/lib/share";
+import { useExperiment } from "@/hooks/useExperiments";
+
+/**
+ * Draft persistence (composer_ladder experiment). The photo requirement sends people out
+ * to their camera roll — on iOS that can background the PWA and drop React state. The
+ * text fields are mirrored to sessionStorage per user so a re-open resumes where they
+ * left off. Photos (File objects) can't be persisted; the draft is cleared on publish.
+ */
+const draftKey = (userId?: string) => `juice_composer_draft_${userId ?? "anon"}`;
+const readDraft = (userId?: string): Partial<StoryData> | null => {
+  try {
+    const raw = sessionStorage.getItem(draftKey(userId));
+    return raw ? (JSON.parse(raw) as Partial<StoryData>) : null;
+  } catch {
+    return null;
+  }
+};
 
 /** Parent unmounts on onClose, so give vaul's exit animation time to play first. */
 const EXIT_MS = 450;
@@ -65,21 +84,61 @@ const CreateStory = ({
     []
   );
 
-  const [storyData, setStoryData] = useState<StoryData>({
-    content: '',
-    selectedTags: [],
-    metadata: {
-      location: '',
-      city_id: null,
-    },
-    personName: initialSubjectName,
-    personPhone: '',
-    verdict: 0,
-  });
-
   const createStory = useCreateStory();
   const { toast } = useToast();
   const { user: authUser } = useAuth();
+
+  const [storyData, setStoryData] = useState<StoryData>(() => {
+    const draft = readDraft(authUser?.id);
+    // A prefilled name (from a search miss) wins over a stale draft's name; the rest of
+    // the draft (verdict, story) carries over only when it was about the same person.
+    const sameSubject =
+      !!draft && (!initialSubjectName || (draft.personName ?? "").trim().toLowerCase() === initialSubjectName.trim().toLowerCase());
+    return {
+      content: sameSubject ? draft?.content ?? '' : '',
+      selectedTags: [],
+      metadata: { location: '', city_id: null },
+      personName: initialSubjectName || (draft?.personName ?? ''),
+      personPhone: '',
+      verdict: sameSubject ? draft?.verdict ?? 0 : 0,
+    };
+  });
+
+  // Mirror the text fields to sessionStorage as they change.
+  useEffect(() => {
+    try {
+      const { personName, verdict, content } = storyData;
+      if (!personName && !verdict && !content) sessionStorage.removeItem(draftKey(authUser?.id));
+      else sessionStorage.setItem(draftKey(authUser?.id), JSON.stringify({ personName, verdict, content }));
+    } catch { /* private mode */ }
+  }, [storyData, authUser?.id]);
+
+  // Abandonment logging: if this unmounts without a publish, record which required
+  // fields were still empty and how long it was open. This is the number that tells us
+  // whether the photo, the text, or the verdict is what stops people (6% of opens publish).
+  const publishedRef = useRef(false);
+  const openedAtRef = useRef(Date.now());
+  const latestRef = useRef({ storyData, images: 0 });
+  latestRef.current = { storyData, images: uploadedImages.length };
+  useEffect(
+    () => () => {
+      if (publishedRef.current) return;
+      const { storyData: d, images } = latestRef.current;
+      const missing: string[] = [];
+      if (!d.personName.trim()) missing.push("name");
+      if (!d.verdict) missing.push("verdict");
+      if (!d.content.trim()) missing.push("story");
+      if (images === 0) missing.push("photo");
+      void track("composer_abandoned", {
+        missing,
+        seconds: Math.round((Date.now() - openedAtRef.current) / 1000),
+        prefilled: initialSubjectName.length > 0,
+        verified: !isUnverified,
+      });
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
   // Operator posts publish under a fresh random codename instead of the admin's own
   // handle, so the feed doesn't read as one person talking to himself. The real role
   // check (not the "View as" override) decides; the RPC re-checks it server-side.
@@ -90,6 +149,18 @@ const CreateStory = ({
   // useAuth primes the same query key before this modal can open.
   const { isAdmin: postAsAlias, isLoading: roleLoading } = useRealIsAdmin(authUser?.id);
   const roleUnresolved = !authUser || roleLoading;
+  // post_share: keep the success screen up with a share button instead of auto-closing.
+  const postShare = useExperiment("post_share") && !!authUser && !postAsAlias;
+
+  const handleShare = async () => {
+    if (!authUser) return;
+    const result = await shareInvite({
+      userId: authUser.id,
+      surface: "post",
+      text: "Verified guys only. Look her up before the date — and pass on the Juice after:",
+    });
+    if (result === "copied") toast({ title: "Link copied", description: "Paste it in the group chat." });
+  };
 
   const uploadImageToStorage = async (file: File): Promise<string | null> => {
     try {
@@ -179,6 +250,8 @@ const CreateStory = ({
       };
 
       const published = await createStory.mutateAsync(storyPayload);
+      publishedRef.current = true;
+      try { sessionStorage.removeItem(draftKey(authUser?.id)); } catch { /* private mode */ }
 
       // Reset form state so re-opening the modal starts fresh.
       setStoryData({
@@ -206,9 +279,11 @@ const CreateStory = ({
             "Your review goes live once your selfie is approved. Verify now and it publishes with your account.",
         });
       }
-      setTimeout(() => {
-        onClose();
-      }, 2500);
+      if (!postShare) {
+        setTimeout(() => {
+          onClose();
+        }, 2500);
+      }
     } catch (error: any) {
       console.error('Error publishing story:', error);
 
@@ -233,7 +308,11 @@ const CreateStory = ({
   };
 
   if (showSuccess) {
-    return <SuccessAnimation />;
+    return postShare ? (
+      <SuccessAnimation held={isUnverified} onShare={handleShare} onDone={onClose} />
+    ) : (
+      <SuccessAnimation held={isUnverified} />
+    );
   }
 
   return (

@@ -8,6 +8,7 @@ import { useSubjectLookup, type SubjectGroup } from "@/hooks/useSubjectLookup";
 import { useDebounce } from "@/hooks/useDebounce";
 import { track } from "@/lib/analytics";
 import { getStoryAuthorName } from "@/lib/storyAuthor";
+import SearchMissCard from "@/components/SearchMissCard";
 
 /**
  * The verified-member magic moment: look her up by name, right on Home.
@@ -155,19 +156,13 @@ const SubjectLookup = ({ user_id, onCreateStory, onActiveChange }: SubjectLookup
               })}
             </div>
           ) : (
-            <div className="px-2 py-10 text-center">
-              <h3 className="text-base font-semibold mb-1">
-                No one has passed on the Juice about “{debounced.trim()}” yet
-              </h3>
-              <p className="text-sm text-muted-foreground mb-5">
-                Green flag or red flag — the next guy who looks her up will thank you.
-              </p>
-              <button
-                onClick={() => onCreateStory?.(debounced.trim())}
-                className="min-h-11 bg-primary text-primary-foreground rounded-lg px-5 text-sm font-semibold hover:bg-primary-dark transition-colors"
-              >
-                Dated her? Be the first
-              </button>
+            <div className="py-4">
+              <SearchMissCard
+                name={debounced.trim()}
+                userId={user_id}
+                onCreateStory={onCreateStory ? (n) => onCreateStory(n) : undefined}
+                variant="verified"
+              />
             </div>
           )}
         </div>

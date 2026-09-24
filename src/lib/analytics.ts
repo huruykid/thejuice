@@ -24,7 +24,13 @@ export type AnalyticsEvent =
   | "post_created"
   | "search_hit"            // user searched a name and something came back
   | "search_miss"           // user searched a name with no results (drives the email nudge)
-  | "search_miss_emailed";  // server: we sent the "be the first" nudge for that name
+  | "search_miss_emailed"   // server: we sent the "be the first" nudge for that name
+  // Growth round 1 (2026-09-24, see GROWTH_EXPERIMENTS.md):
+  | "composer_abandoned"    // composer closed without publishing; props.missing = required fields still empty
+  | "search_alert_created"  // "alert me when someone posts about her" on a miss
+  | "share_clicked"         // any share/copy of an invite link; props.surface = miss|post|home
+  | "ref_landed"            // a visitor arrived with ?ref= (logged once they're signed in)
+  | "search_alert_emailed"; // server: alert payoff email sent
 
 /**
  * GA event names. `sign_up` is GA's recommended name; `search` is GA's too, but we
@@ -39,6 +45,9 @@ const GA_EVENT: Partial<Record<AnalyticsEvent, string>> = {
   post_created: "review_submitted",
   search_hit: "search",
   search_miss: "search",
+  composer_abandoned: "composer_abandoned",
+  search_alert_created: "search_alert_created",
+  share_clicked: "share",
 };
 
 /** Props that are safe to forward to GA, per event. Everything else stays in Supabase. */
@@ -47,6 +56,9 @@ const GA_PARAMS: Partial<Record<AnalyticsEvent, (props?: Record<string, unknown>
   search_miss: () => ({ result: "miss" }),
   review_started: (p) => ({ prefilled: p?.prefilled ? 1 : 0, verified: p?.verified ? 1 : 0 }),
   post_created: (p) => ({ has_subject: p?.has_subject ? 1 : 0, verified: p?.verified ? 1 : 0 }),
+  composer_abandoned: (p) => ({ missing: Array.isArray(p?.missing) ? (p!.missing as string[]).join(",") : "", seconds: p?.seconds ?? 0 }),
+  search_alert_created: () => ({}),
+  share_clicked: (p) => ({ surface: String(p?.surface ?? ""), method: String(p?.method ?? "") }),
 };
 
 type Gtag = (...args: unknown[]) => void;

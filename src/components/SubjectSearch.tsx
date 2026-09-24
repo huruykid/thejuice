@@ -6,6 +6,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { track } from "@/lib/analytics";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import SearchMissCard from "@/components/SearchMissCard";
+import { useAuth } from "@/hooks/useAuth";
 
 interface SubjectPreview {
   subject_name: string;
@@ -38,6 +40,7 @@ interface SubjectSearchProps {
 }
 
 const SubjectSearch = ({ onStartVerification, onCreateStory, pending = false }: SubjectSearchProps) => {
+  const { user } = useAuth();
   // Email nudges deep-link here as /app?q=<name> so the prompt continues the moment.
   const [searchParams] = useSearchParams();
   const [query, setQuery] = useState(() => searchParams.get("q") ?? "");
@@ -100,42 +103,35 @@ const SubjectSearch = ({ onStartVerification, onCreateStory, pending = false }: 
         />
       </div>
 
-      {/* Miss state — the moment of disappointment becomes the moment of contribution */}
+      {/* Miss state — the moment of disappointment becomes the moment of contribution.
+          Social proof + alert + share live in SearchMissCard (growth round 1). */}
       {noResults && (
-        <Card className="p-5 text-center bg-card border-border">
-          <p className="text-sm font-semibold text-foreground">
-            No one has passed on the Juice about "{debounced}" yet.
-          </p>
-          {onCreateStory ? (
-            <>
-              <p className="text-sm text-muted-foreground mt-1 mb-3">
-                {pending
-                  ? "Post it now — it goes live the moment you're approved."
-                  : "Post it now — it's saved and goes live once your selfie is approved."}
-              </p>
-              <Button onClick={() => onCreateStory(debounced)} className="w-full">
-                Dated her? Be the first
-              </Button>
-              {!pending && onStartVerification && (
-                <button
-                  onClick={onStartVerification}
-                  className="mt-1 block w-full min-h-11 text-xs font-medium text-muted-foreground hover:text-foreground"
-                >
-                  Just want to read? Verify with a selfie
-                </button>
-              )}
-            </>
-          ) : pending ? (
-            <p className="text-sm text-muted-foreground mt-1">
-              You'll be able to be the first once your account is approved.
+        onCreateStory ? (
+          <SearchMissCard
+            name={debounced}
+            userId={user?.id}
+            onCreateStory={onCreateStory}
+            pending={pending}
+            onStartVerification={onStartVerification}
+            variant="gated"
+          />
+        ) : (
+          <Card className="p-5 text-center bg-card border-border">
+            <p className="text-sm font-semibold text-foreground">
+              No one has passed on the Juice about "{debounced}" yet.
             </p>
-          ) : (
-            <>
-              <p className="text-sm text-muted-foreground mt-1 mb-3">Be the first to share your experience.</p>
-              <Button onClick={onStartVerification} className="w-full">Verify to be the first</Button>
-            </>
-          )}
-        </Card>
+            {pending ? (
+              <p className="text-sm text-muted-foreground mt-1">
+                You'll be able to be the first once your account is approved.
+              </p>
+            ) : (
+              <>
+                <p className="text-sm text-muted-foreground mt-1 mb-3">Be the first to share your experience.</p>
+                <Button onClick={onStartVerification} className="w-full">Verify to be the first</Button>
+              </>
+            )}
+          </Card>
+        )
       )}
 
       {/* Results / taste feed */}

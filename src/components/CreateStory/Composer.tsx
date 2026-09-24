@@ -11,6 +11,23 @@ import { useCities } from "@/hooks/useCities";
 import PhoneInput, { parsePhoneNumber, type Country } from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 import type { StoryData } from "./index";
+import { useExperiment } from "@/hooks/useExperiments";
+
+/**
+ * Quick-fill phrases (composer_ladder experiment). Tapping one appends a sentence so the
+ * story starts itself; the member edits from there. Chosen to be concrete and verdict-
+ * neutral — they lower the cost of the first sentence, not steer the verdict.
+ */
+const QUICK_FILLS: Array<{ label: string; text: string }> = [
+  { label: "Exactly like her photos", text: "She looked exactly like her photos." },
+  { label: "Nothing like her photos", text: "She looked nothing like her photos." },
+  { label: "Ghosted after", text: "She ghosted after " },
+  { label: "Showed up late", text: "She showed up late and " },
+  { label: "Great conversation", text: "Great conversation — " },
+  { label: "Only talked about her ex", text: "She only talked about her ex." },
+  { label: "Asked to split the bill", text: "She asked to split the bill, " },
+  { label: "Wanted a free meal", text: "Felt like she was there for a free meal. " },
+];
 
 /**
  * Single-screen composer — IG-style "everything at capture".
@@ -54,6 +71,7 @@ const Composer = ({
   publishBlocked = false,
 }: ComposerProps) => {
   const { toast } = useToast();
+  const ladder = useExperiment("composer_ladder");
   const [ack, setAck] = useState(false);
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [phoneError, setPhoneError] = useState("");
@@ -245,6 +263,26 @@ const Composer = ({
           className="min-h-[110px] resize-none"
           maxLength={5000}
         />
+        {ladder && (
+          <div className="mt-2 flex gap-1.5 overflow-x-auto pb-1 -mx-1 px-1" aria-label="Quick starts">
+            {QUICK_FILLS.map((q) => (
+              <button
+                key={q.label}
+                type="button"
+                onClick={() =>
+                  setStoryData((prev) => {
+                    const cur = prev.content;
+                    const sep = cur.length === 0 ? "" : /\s$/.test(cur) ? "" : " ";
+                    return { ...prev, content: `${cur}${sep}${q.text}` };
+                  })
+                }
+                className="shrink-0 min-h-9 rounded-full border border-border bg-background px-3 text-xs font-medium text-foreground hover:border-primary hover:bg-primary/10 transition-colors"
+              >
+                {q.label}
+              </button>
+            ))}
+          </div>
+        )}
         <p className="text-xs text-muted-foreground mt-1">{storyData.content.length}/5000</p>
       </div>
 

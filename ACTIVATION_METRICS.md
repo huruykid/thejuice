@@ -13,6 +13,14 @@ Every event is also mirrored to Google Analytics (`src/lib/analytics.ts`) as
 a **key event** in GA Admin → Events; that is the conversion. Before this, GA had only
 automatic events and the funnel existed nowhere but this table.
 
+**STATUS 2026-09-24 — growth experimentation system.** New events: `composer_abandoned`
+(props.missing = required fields still empty), `search_alert_created`, `share_clicked`
+(props.surface), `ref_landed`, `search_alert_emailed`; `signup` now carries attribution props
+(`ref`, `utm_*`, `referrer_host`). `verification_submitted` finally fires (it was wired into the
+unused `useVerification` mutation, not the selfie upload path). Weekly funnel + experiment
+switches at `/admin/growth` (`growth_weekly_funnel()`, `growth_composer_abandon_reasons()`).
+Hypotheses, targets and the weekly log live in `GROWTH_EXPERIMENTS.md`.
+
 ## 0. Search miss rate (does content growth close the gap?)
 
 ```sql

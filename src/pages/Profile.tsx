@@ -18,6 +18,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useStoriesByProfile } from "@/hooks/useStories";
 import { useBookmarkedStories } from "@/hooks/useBookmarks";
 import { getStoryAuthorName } from "@/lib/storyAuthor";
+import { shareInvite } from "@/lib/share";
 import ViewAsMenu from "@/components/ViewAsMenu";
 
 type ProfileTab = "stories" | "saved";
@@ -245,8 +246,14 @@ const Profile = () => {
             <span className="text-muted-foreground">›</span>
           </button>
           <button
-            onClick={() => {
-              navigator.share?.({ title: 'The Juice', url: 'https://sipjuice.app' });
+            onClick={async () => {
+              if (!user) return;
+              const r = await shareInvite({
+                userId: user.id,
+                surface: "profile",
+                text: "Verified guys only. Look her up before the date:",
+              });
+              if (r === "copied") toast({ title: "Link copied", description: "Paste it in the group chat." });
             }}
             className="w-full flex items-center justify-between px-1 py-3 text-sm hover:text-primary transition-colors"
           >

@@ -58,6 +58,22 @@ describe("analytics: GA mirror", () => {
     expect(gtag).toHaveBeenCalledWith("event", "review_submitted", { has_subject: 1, verified: 0 });
   });
 
+  it("growth events: abandon reasons and share surface reach GA, subject names never do", async () => {
+    await track("composer_abandoned", { missing: ["story", "photo"], seconds: 42, prefilled: true, verified: false });
+    await track("search_alert_created", { name: "Jane Doe" });
+    await track("share_clicked", { surface: "miss", method: "native" });
+
+    expect(gtag).toHaveBeenCalledWith("event", "composer_abandoned", { missing: "story,photo", seconds: 42 });
+    expect(gtag).toHaveBeenCalledWith("event", "search_alert_created", {});
+    expect(gtag).toHaveBeenCalledWith("event", "share", { surface: "miss", method: "native" });
+    for (const call of gtag.mock.calls) {
+      expect(JSON.stringify(call)).not.toContain("Jane");
+    }
+    expect(insert).toHaveBeenCalledWith(
+      expect.objectContaining({ event: "search_alert_created", props: { name: "Jane Doe" } })
+    );
+  });
+
   it("events without a GA mapping stay Supabase-only", async () => {
     await track("app_open");
     expect(gtag).not.toHaveBeenCalled();

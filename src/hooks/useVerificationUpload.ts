@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useSecurityEventLogger } from './useSecurityAudit';
+import { track } from '@/lib/analytics';
 import type { ImageQuality } from './useImageProcessing';
 
 export const useVerificationUpload = () => {
@@ -57,6 +58,9 @@ export const useVerificationUpload = () => {
 
       // Log the verification submission for security audit
       logVerificationSubmission(fileName);
+      // Activation signal. This is the path the selfie screen actually uses — the same
+      // event in useVerification's mutation never fired (0 rows since June).
+      void track("verification_submitted");
 
       toast({
         title: "✨ Photo Submitted Successfully!",
