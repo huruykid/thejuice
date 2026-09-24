@@ -149,6 +149,67 @@ where a.event = 'search_alert_emailed';
    dominates → a flag-only rung (verdict + one chip, no prose) — needs the DB
    `validate_story_content` minimum relaxed.
 
+### Cycle 1 — 2026-09-24 (first readout; experiments live since 16:38 UTC today)
+Data pulled 16:57 UTC via `growth_weekly_funnel` (body re-run without the role clause),
+`analytics_events`, `stories`, `search_alerts`, Lovable analytics. All six round-1 rows
+in `growth_experiments` have `started_at = 2026-09-24 16:38`, so **no post-launch events
+exist yet** (1 `app_open` since the flip). Everything below is the pre-launch week.
+
+1. **Tested:** round 1 (§3) went live today — `miss_interest`, `search_alerts`, `miss_share`,
+   `composer_ladder`, `post_share`, `attribution`. Zero exposure so far.
+2. **Happened (week of Sep 21, Mon→Thu partial, vs. baseline §1):**
+   - Visitors (Lovable, Sep 17–24): 138 / 8 days ≈ 120/wk (baseline ~150). Direct 54%,
+     Google+accounts.google 32%, DDG/Bing 12%. 74% mobile. `/tea-app-comparison` and
+     `/teaonher-alternative` drew 14 views — the SEO pages are getting found.
+   - Signups 8 (prior weeks 16, 14, 11) · selfies submitted 8/8 · weekly active 22 · searchers 18.
+   - Search misses **200** vs 1 hit (99.5% miss). Prior 3 full weeks: 394 / 376 / 443.
+   - Composer opens 5 (4 members) → **2.5% of misses**, exactly baseline · posts **0**.
+   - Full weeks since Aug 17: opens 0 / 4 / 18 / 12 / 5 / 5 → posts 0 / 0 / 0 / 0 / 1 / 0.
+     One genuine post in 6 weeks (Sep 14). Completion over that span: 1 / 44 = 2.3%,
+     below the 6% we wrote in §1 (that figure counted since Aug 24 with a smaller sample).
+   - Alerts 0 · shares 0 · ref signups 0 · attributed signups 0 (today's 3 signups all
+     predate the 16:38 flip) · `composer_abandoned` 0 rows · alert payoff 0 emailed.
+   - W1 return of last week's cohort: 3/16 = 19% (Sep 14 cohort); Sep 21 cohort too young.
+3. **Outperformed baseline:** not enough data yet — every experiment has 0 exposures.
+   No experiment gets a verdict, and none is anywhere near a kill criterion, so
+   `growth_experiments` was **not** changed.
+4. **Learned:**
+   - The definitional gap: only 1 story in `stories` has `user_id` set and `is_seed=false`;
+     the other 2 "real" stories from §1 have `user_id = null`, so the goal query
+     (`user_id is not null`) counts them out. Fine for the 45-day goal (it starts today),
+     but don't compare "3 real stories" to this count.
+   - Miss volume is holding at ~55–60 per weekday even with fewer signups, so the
+     denominator for `miss_interest` / `search_alerts` (≥200 misses) will be met within
+     ~4 days of live traffic — Oct 1 will be a real readout for those two.
+   - `composer_ladder` and `post_share` will be slow: at 5–12 opens/week we won't hit the
+     ≥20 minimum for completion until ~Oct 8, and the ≥10-posts denominator for
+     `post_share` is the goal itself.
+5. **Keep/remove/change:** no changes. All six stay `running`/`enabled`. One request:
+   verify by eye tomorrow that `search_miss` events now carry the interest count and that
+   `composer_abandoned` fires (open composer, leave) — an instrumentation miss on day 1
+   would cost a full cycle.
+6. **Next:** Oct 1 readout is the first with real exposure. Decide `miss_interest` and
+   `search_alerts` on ≥200 misses; read the `composer_abandoned` split; pick round 2 from
+   the proposal below.
+
+**Checkpoint pace:** day 0 of 45. Goal posts since 2026-09-24: **0**. Day-15 (Oct 9) needs
+≥3 → ~1.5/week from here vs. a trailing rate of 1 per 6 weeks. On the current
+run-rate the day-15 checkpoint is **not on pace**; the round-1 mechanics have to move
+opens and completion this week or the Oct 9 readout goes 100% supply-side (§5).
+
+### Round 2 proposal — from the 2026-09-24 readout (not implemented; say go)
+Picked so that a missed Oct 9 checkpoint already has its supply play instrumented.
+
+| # | Experiment | Hypothesis | Metric | Target | Kill if |
+|---|---|---|---|---|---|
+| R2-1 | **Metro instrumentation → one-metro list** (candidate 1, step 1 only): add `profiles.city` (or geo from `app_open`) to `search_miss` props; publish the top-5 miss cities on `/admin/growth` | We can't hand-recruit founding members without knowing where the misses are; the top city likely holds ≥30% of misses | share of misses with a city; misses in top city | ≥80% of misses tagged within 7 days; a top city named by Oct 9 | never — it's the fallback's prerequisite |
+| R2-2 | **Flag-only rung** (candidate 2), gated on Oct 1 abandon data: verdict + ≥1 chip publishes; prose optional; `validate_story_content` minimum relaxed | The "story" field is the leak; a 10-second flag is the 1/10/100 lower rung | `review_started → post_created` | 2.3% → **10%** by day 30 (≥20 opens) | <5% after 2 weeks with ≥20 opens, or "story" is not a top-2 abandon reason on Oct 1 (then don't build it) |
+| R2-3 | **Founding-member badge** (candidate 4): first 10 posters per city get a visible badge + name on the city's "founding members" strip | Status, not money, is the reward that makes a 1%-er post twice | posts per poster; 2nd post within 14 days | ≥30% of founders post a 2nd time | <10% repeat after 10 founders |
+
+Held back: give-to-get on alerts (only if `search_alerts` opt-in ≥15% but posts flat by
+Oct 24), the digest (needs ≥5 posts in a city), the 7-second creator test (needs the loop
+to hold first).
+
 ### Round 2 candidates (pick ≤3 on Oct 1 based on cycle-1 data)
 - **One-metro launch:** add the searcher's profile city to `search_miss` props, pick the top
   city, hand-recruit 5 founding members there, seed 20–30 real posts, market only there.
