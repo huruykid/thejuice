@@ -185,6 +185,13 @@ const Landing = () => {
                   Log in
                 </Link>
               </p>
+              <p className="text-sm text-muted-foreground -mt-7 mb-10">
+                Looking for an{" "}
+                <Link to="/are-we-dating-the-same-girl" className="text-primary font-semibold hover:underline">
+                  "Are We Dating the Same Girl" group
+                </Link>
+                ? This is the men's version.
+              </p>
 
               {/* The product's core primitive, stated plainly — every story ends one of two ways */}
               <div className="border-t border-border pt-5 max-w-xl">
