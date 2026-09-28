@@ -55,7 +55,10 @@
     
     <!-- Favicons -->
     <link rel="icon" href="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png" type="image/png">
-    <link rel="apple-touch-icon" href="/lovable-uploads/cf8e88b6-e6aa-4e2a-b0da-abdcf3e4641f.png">
+    <!-- Add to Home Screen. iOS ignores alpha (it composites transparent pixels onto
+         BLACK) and masks the icon to a squircle, so this one is opaque and inset —
+         the bare logo PNG is edge-to-edge artwork on transparency and got clipped. -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
