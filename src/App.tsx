@@ -17,6 +17,7 @@ import RouteMeta from "./components/RouteMeta";
 const HowItWorks = lazy(() => import("./pages/HowItWorks"));
 const TeaAppComparison = lazy(() => import("./pages/TeaAppComparison"));
 const TeaOnHerAlternative = lazy(() => import("./pages/TeaOnHerAlternative"));
+const AreWeDatingTheSameGirl = lazy(() => import("./pages/AreWeDatingTheSameGirl"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const Explore = lazy(() => import("./pages/Explore"));
 const Profile = lazy(() => import("./pages/Profile"));
@@ -216,6 +217,7 @@ const App = () => {
           <Route path="/how-it-works" element={<PublicLayout><HowItWorks /></PublicLayout>} />
           <Route path="/tea-app-comparison" element={<PublicLayout><TeaAppComparison /></PublicLayout>} />
           <Route path="/teaonher-alternative" element={<PublicLayout><TeaOnHerAlternative /></PublicLayout>} />
+          <Route path="/are-we-dating-the-same-girl" element={<PublicLayout><AreWeDatingTheSameGirl /></PublicLayout>} />
           <Route path="/app" element={<><RouteMeta path="/app" title="Your Feed | Juice" description="Sign in to Juice to read and share anonymous dating reviews from verified men." noindex /><Index /></>} />
           <Route path="/explore" element={
             <VerifiedRoute>
