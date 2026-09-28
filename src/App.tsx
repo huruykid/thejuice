@@ -11,6 +11,7 @@ import CreateStory from "./components/CreateStory";
 // Entry routes stay eager so first paint isn't gated on a chunk fetch.
 import Index from "./pages/Index";
 import Landing from "./pages/Landing";
+import RouteMeta from "./components/RouteMeta";
 // Everything else is code-split: admin, marketing/SEO, blog, and secondary
 // pages no longer ship in the initial bundle (they loaded on every first paint).
 const HowItWorks = lazy(() => import("./pages/HowItWorks"));
@@ -215,7 +216,7 @@ const App = () => {
           <Route path="/how-it-works" element={<PublicLayout><HowItWorks /></PublicLayout>} />
           <Route path="/tea-app-comparison" element={<PublicLayout><TeaAppComparison /></PublicLayout>} />
           <Route path="/teaonher-alternative" element={<PublicLayout><TeaOnHerAlternative /></PublicLayout>} />
-          <Route path="/app" element={<Index />} />
+          <Route path="/app" element={<><RouteMeta path="/app" title="Your Feed | Juice" description="Sign in to Juice to read and share anonymous dating reviews from verified men." noindex /><Index /></>} />
           <Route path="/explore" element={
             <VerifiedRoute>
               <ExploreWrapper />
@@ -281,7 +282,7 @@ const App = () => {
               <AdminLayout><AdminDisputes /></AdminLayout>
             </AdminRoute>
           } />
-          <Route path="/share" element={<SharePublic />} />
+          <Route path="/share" element={<><RouteMeta path="/share" title="Share a Dating Story Anonymously | Juice" description="Share an anonymous dating review on Juice — green flag (Juice) or red flag (Milk). No account needed to submit." /><SharePublic /></>} />
           <Route path="/dispute" element={<PublicLayout><DisputeRequest /></PublicLayout>} />
           <Route path="/privacy-settings" element={
             <ProtectedRoute>
