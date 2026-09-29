@@ -190,7 +190,11 @@ const Landing = () => {
                 <Link to="/are-we-dating-the-same-girl" className="text-primary font-semibold hover:underline">
                   "Are We Dating the Same Girl" group
                 </Link>
-                ? This is the men's version.
+                ? This is the men's version. Or read the{" "}
+                <Link to="/mens-groups-faq" className="text-primary font-semibold hover:underline">
+                  men's groups FAQ
+                </Link>
+                .
               </p>
 
               {/* The product's core primitive, stated plainly — every story ends one of two ways */}
