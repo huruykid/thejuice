@@ -124,6 +124,10 @@ where a.event = 'search_alert_emailed';
 - **Rule:** max 3 new experiments per round. A mechanic becomes permanent (`status='kept'`) only
   after it beats baseline for two consecutive weeks with the minimum denominator.
 
+### Founder decisions (don't re-propose)
+- **No posting cap on new accounts** (2026-09-29). Supply is the constraint; a day-old member
+  who searches 15 names and posts 8 is the loop working, not abuse. Moderation, not throttling.
+
 ## 6. Cycle questions (answer every week)
 
 1. What did we test?
@@ -209,6 +213,33 @@ Picked so that a missed Oct 9 checkpoint already has its supply play instrumente
 Held back: give-to-get on alerts (only if `search_alerts` opt-in ≥15% but posts flat by
 Oct 24), the digest (needs ≥5 posts in a city), the 7-second creator test (needs the loop
 to hold first).
+
+### Interim — 2026-09-29 (day 5)
+9 posts from 2 posters: one March member (Sep 24, shared after publishing), one new member
+who signed up Sep 28, missed on 15 names, then posted 8 red flags across 8 subjects in ~21 h
+and shared 3×. The miss → post loop works for a motivated member. Count vs goal: 9/10, but
+breadth is 2 posters — **"≥5 distinct posters" is the real bar.** 0 search alerts on 130
+misses (14 people) — watch Thursday. Attribution is live: 5/5 new signups have a source
+(Google, Ecosia, **chatgpt.com** — ChatGPT is now a referrer).
+
+### Round 2 — `creator_video` (started 2026-09-29)
+Three 8-second, 9:16, silent text-on-screen clips in `marketing/hook-clips/` (Tea's breakout
+format: text overlay + trending sound added on-platform + app named in the caption):
+
+| Clip | Angle | Caption (first line) |
+|---|---|---|
+| `hook_a_look_her_up` | the habit | "I look up every girl before the first date. Verified guys only — sipjuice.app (link in bio)" |
+| `hook_b_they_have_tea` | the gender flip | "They got the Tea app. We got Juice. Verified men only — link in bio" |
+| `hook_c_ask_the_room` | the ask (AWDTSG) | "Before you take her out, ask the room. Anyone got juice on her? — link in bio" |
+
+**How to run it as an experiment (one variable at a time):**
+1. Post ONE clip per 3–4 days on TikTok + Reels (same clip both), with a trending sound.
+2. Bio link for that window: `https://sipjuice.app/?utm_source=tiktok&utm_medium=video&utm_campaign=hook_a`
+   (change `hook_a` → `hook_b` → `hook_c` per window; use `utm_source=instagram` on IG).
+3. Read on `/admin/growth`: attributed signups with that campaign, and whether they searched
+   or posted. Hashtags: #teaapp #teaappformen #datingadvice #redflags #greenflags.
+4. Kill: <2 attributed signups per 1,000 views after two clips. Scale: whichever hook wins
+   gets 3 more variants of the same angle; consider one paid male creator on that hook.
 
 ### Round 2 candidates (pick ≤3 on Oct 1 based on cycle-1 data)
 - **One-metro launch:** add the searcher's profile city to `search_miss` props, pick the top
