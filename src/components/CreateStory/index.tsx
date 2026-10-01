@@ -47,12 +47,15 @@ const CreateStory = ({
   onClose,
   isUnverified = false,
   initialSubjectName = "",
+  source = "direct",
 }: {
   onClose: () => void;
   /** Not yet approved: the post is held until their selfie is, and the copy says so. */
   isUnverified?: boolean;
   /** Prefilled from a search miss — the name the user just looked for and didn't find. */
   initialSubjectName?: string;
+  /** Where the composer was opened from — analytics only (`review_started.props.source`). */
+  source?: "miss" | "direct" | "shortcut" | "explore" | "profile";
 }) => {
   const [showSuccess, setShowSuccess] = useState(false);
   const [uploadedImages, setUploadedImages] = useState<File[]>([]);
@@ -113,6 +116,22 @@ const CreateStory = ({
     } catch { /* private mode */ }
   }, [storyData, authUser?.id]);
 
+  // `review_started` is logged here, on mount, not by whoever opened the composer. The
+  // Explore and Profile entry points never logged it, so posts and abandons showed up
+  // with no matching open and the completion rate couldn't be trusted. Logging on mount
+  // pairs every open with exactly one outcome: a post or a `composer_abandoned`.
+  const startedRef = useRef(false);
+  useEffect(() => {
+    if (startedRef.current) return; // StrictMode re-runs effects in dev; refs survive it
+    startedRef.current = true;
+    void track("review_started", {
+      prefilled: initialSubjectName.length > 0,
+      verified: !isUnverified,
+      source,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Abandonment logging: if this unmounts without a publish, record which required
   // fields were still empty and how long it was open. This is the number that tells us
   // whether the photo, the text, or the verdict is what stops people (6% of opens publish).
@@ -134,6 +153,7 @@ const CreateStory = ({
         seconds: Math.round((Date.now() - openedAtRef.current) / 1000),
         prefilled: initialSubjectName.length > 0,
         verified: !isUnverified,
+        source,
       });
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps

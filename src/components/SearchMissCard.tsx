@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Bell, BellRing, Send } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -55,7 +55,7 @@ const SearchMissCard = ({
 
   const norm = name.trim();
 
-  const { data: interest } = useQuery({
+  const { data: interest, isFetched: interestFetched } = useQuery({
     queryKey: ["subject-interest", norm.toLowerCase()],
     enabled: showInterest && norm.length >= 2,
     staleTime: 5 * 60_000,
@@ -120,6 +120,28 @@ const SearchMissCard = ({
       : showInterest && interest && interest.alerts > 0
         ? `${interest.alerts} member${interest.alerts === 1 ? " is" : "s are"} waiting on a post about her.`
         : null;
+
+  // Exposure log — one `miss_card_viewed` per name, once the interest lookup has settled.
+  // `search_miss` only carries the name, so until now "did the social-proof line show?"
+  // had to be reconstructed in SQL; this records it (and whether the post button was on
+  // the card) at the moment the member saw it. Supabase only — the name never goes to GA.
+  const interestSettled = !showInterest || interestFetched;
+  const interestShown = interestLine !== null;
+  const hasPostCta = !!onCreateStory;
+  const viewedRef = useRef<string | null>(null);
+  useEffect(() => {
+    const key = norm.toLowerCase();
+    if (norm.length < 2 || !interestSettled || viewedRef.current === key) return;
+    viewedRef.current = key;
+    void track("miss_card_viewed", {
+      name: norm,
+      interest_shown: interestShown,
+      searchers: interest?.searchers ?? 0,
+      alerts: interest?.alerts ?? 0,
+      variant,
+      post_cta: hasPostCta,
+    });
+  }, [norm, interestSettled, interestShown, interest?.searchers, interest?.alerts, variant, hasPostCta]);
 
   const wide = variant === "verified";
 

@@ -10,8 +10,6 @@ import { useToast } from "@/hooks/use-toast";
 import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { Eye, EyeOff, ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { track } from "@/lib/analytics";
-import { attributionProps } from "@/lib/attribution";
 import BrandLockup from "@/components/BrandLockup";
 import SelfieCapture from './RefactoredSelfieCapture';
 
@@ -78,8 +76,8 @@ const AuthScreen = ({ onAuthSuccess }: AuthScreenProps) => {
             });
           }
         } else {
-          // Activation signal: new account created.
-          void track("signup", attributionProps());
+          // The `signup` event is logged by AppOpenTracker (App.tsx) on the new
+          // account's first session, so Google and email signups are counted alike.
           // For now, proceed to onboarding since we disabled email verification
           onAuthSuccess();
         }

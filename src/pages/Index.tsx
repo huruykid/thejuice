@@ -25,6 +25,8 @@ const Index = () => {
   // Name to prefill in the composer — set when a search miss opens it ("Dated her?
   // Be the first"), so the user doesn't retype the name they just searched for.
   const [composePrefill, setComposePrefill] = useState<string>("");
+  // Where the composer was opened from. CreateStory logs `review_started` with it on mount.
+  const [composeSource, setComposeSource] = useState<"miss" | "direct" | "shortcut">("direct");
   const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
   const queryClient = useQueryClient();
   // True once the user opts into the verification flow from UnverifiedHome.
@@ -61,8 +63,8 @@ const Index = () => {
   useEffect(() => {
     if (!user || searchParams.get("compose") !== "1") return;
     setComposePrefill("");
+    setComposeSource("shortcut");
     setShowCreateStory(true);
-    void track("review_started", { prefilled: false, source: "shortcut" });
     const next = new URLSearchParams(searchParams);
     next.delete("compose");
     setSearchParams(next, { replace: true });
@@ -74,8 +76,8 @@ const Index = () => {
   const openComposer = (subjectName?: string) => {
     const prefill = typeof subjectName === "string" ? subjectName.trim() : "";
     setComposePrefill(prefill);
+    setComposeSource(prefill.length > 0 ? "miss" : "direct");
     setShowCreateStory(true);
-    void track("review_started", { prefilled: prefill.length > 0, verified: isVerified });
   };
   const closeComposer = () => {
     setShowCreateStory(false);
@@ -153,7 +155,7 @@ const Index = () => {
       <AppShell onCreateStory={() => openComposer()}>
         <Home onCreateStory={openComposer} />
         {showCreateStory && (
-          <CreateStory onClose={closeComposer} initialSubjectName={composePrefill} />
+          <CreateStory onClose={closeComposer} initialSubjectName={composePrefill} source={composeSource} />
         )}
       </AppShell>
     );
@@ -175,6 +177,7 @@ const Index = () => {
             onClose={closeComposer}
             isUnverified
             initialSubjectName={composePrefill}
+            source={composeSource}
           />
         )}
       </>
@@ -220,6 +223,7 @@ const Index = () => {
           onClose={closeComposer}
           isUnverified
           initialSubjectName={composePrefill}
+          source={composeSource}
         />
       )}
     </>

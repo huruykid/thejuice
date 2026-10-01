@@ -30,7 +30,11 @@ export type AnalyticsEvent =
   | "search_alert_created"  // "alert me when someone posts about her" on a miss
   | "share_clicked"         // any share/copy of an invite link; props.surface = miss|post|home
   | "ref_landed"            // a visitor arrived with ?ref= (logged once they're signed in)
-  | "search_alert_emailed"; // server: alert payoff email sent
+  | "search_alert_emailed"  // server: alert payoff email sent
+  // Round 3 (2026-10-01): exposure for the miss-card experiments. props.interest_shown says
+  // whether the "N other members looked her up" line rendered, so miss_interest can be
+  // read on the misses that actually showed it instead of being reconstructed in SQL.
+  | "miss_card_viewed";
 
 /**
  * GA event names. `sign_up` is GA's recommended name; `search` is GA's too, but we

@@ -275,7 +275,7 @@ const Profile = () => {
 
       <Navigation onCreateStory={() => setShowCreateStory(true)} />
       <CitySheet open={cityOpen} onClose={() => setCityOpen(false)} currentCityId={cityId} />
-      {showCreateStory && <CreateStory onClose={() => setShowCreateStory(false)} isUnverified={!isVerified} />}
+      {showCreateStory && <CreateStory onClose={() => setShowCreateStory(false)} isUnverified={!isVerified} source="profile" />}
     </div>
   );
 };

@@ -54,7 +54,7 @@ import { useAuth } from "./hooks/useAuth";
 import { useVerification } from "./hooks/useVerification";
 import { useRealIsAdmin } from "./hooks/useRealIsAdmin";
 import { trackAppOpenOnce, track } from "./lib/analytics";
-import { captureAttribution, getAttribution } from "./lib/attribution";
+import { captureAttribution, claimSignupEvent, getAttribution } from "./lib/attribution";
 
 // First-touch attribution (?ref / utm / referrer) is read before anything can navigate
 // away from the landing URL. Kept in localStorage; attached to the `signup` event.
@@ -165,20 +165,25 @@ const ExploreWrapper = () => {
     <AppShell onCreateStory={() => setShowCreateStory(true)}>
       <Explore onCreateStory={() => setShowCreateStory(true)} />
       {showCreateStory && (
-        <CreateStory onClose={() => setShowCreateStory(false)} />
+        <CreateStory onClose={() => setShowCreateStory(false)} source="explore" />
       )}
     </AppShell>
   );
 };
 
 /**
- * Retention signal: logs one `app_open` event per browser session, once a user is present.
- * Mounted once near the router root. Renders nothing.
+ * Retention signal: logs one `app_open` event per browser session, once a user is present,
+ * and `signup` once for a brand-new account. Mounted once near the router root. Renders nothing.
  */
 const AppOpenTracker = () => {
   const { user } = useAuth();
   useEffect(() => {
     if (!user) return;
+    // `signup` is logged here — on a new account's first authenticated session — so it
+    // fires for every provider. Google sign-in redirects away and back, so nothing in
+    // the auth screen runs after it; logging there only ever covered email signups.
+    const signupProps = claimSignupEvent(user);
+    if (signupProps) void track("signup", signupProps);
     trackAppOpenOnce();
     // A referred visitor who signed in: log the ref once per browser so the invite
     // loop can be measured even when the signup happened on another device/session.

@@ -364,6 +364,63 @@ abandons were empty composers; revisit once per-field touches are logged), **one
 (no metro stands out; 41% of misses have no city), the digest (needs ≥5 posts in a city),
 give-to-get on alerts (opt-in is 0.4%, so there is nothing to gate).
 
+### Round 3 — R3-1 built 2026-10-01 (attribution on every sign-in + event repairs)
+Huruy's call was "you pick". R3-1 goes first because the other two can't be read without it:
+R3-2 is judged on composer opens by new accounts, R3-3 on `ref` signups, and both were
+uncounted for anyone who signs in with Google (18 of 26 new accounts last week).
+
+What changed (code only — no migration, no new experiment key; this is instrumentation):
+- **`signup` fires for every provider.** It moved from the email branch of `AuthScreen` to
+  `AppOpenTracker` (`App.tsx`): logged on a new account's first authenticated session
+  (account ≤24 h old, once per browser), with the stored first-touch source plus
+  `provider` (`google` / `email`). Logic and tests: `claimSignupEvent` in `src/lib/attribution.ts`.
+- **The sign-in round-trip is not a referral.** `accounts.google.com`, `appleid.apple.com` and
+  `*.supabase.co` are ignored as referrers. Without this, fixing the line above would have
+  tagged every direct Google signup as "referred by accounts.google.com".
+- **`review_started` fires from the composer itself**, on mount, with `source` =
+  `miss` | `direct` | `shortcut` | `explore` | `profile`. The Explore and Profile entry points
+  never logged it — that is where the posts and abandons with no matching open came from.
+  `composer_abandoned` carries the same `source`.
+- **New event `miss_card_viewed`** — one per name once the card has settled:
+  `interest_shown`, `searchers`, `alerts`, `variant`, `post_cta`. `miss_interest` can now be
+  read on the misses that showed the line.
+- **Checked while in there:** both search surfaces pass the typed name through
+  "Dated her? Be the first" into the composer. The wiring is intact, so last week's drop in
+  prefilled opens (0.4% of misses vs. 1.9%) is behaviour, not a tracking bug. That answers
+  hand-check (a) from Cycle 2.
+
+How to read it from the deploy date:
+```sql
+-- R3-1 target: attributed ≥70% of new accounts, over ≥20 accounts
+select count(*) accounts,
+       count(*) filter (where s.user_id is not null) with_signup_event,
+       count(*) filter (where s.src) attributed
+from auth.users u
+left join lateral (
+  select e.user_id, bool_or(e.props ? 'ref' or e.props ? 'utm_source' or e.props ? 'referrer_host') as src
+  from analytics_events e where e.user_id = u.id and e.event = 'signup' group by 1
+) s on true
+where u.created_at >= '<deploy time>';
+
+-- miss_interest on exposed misses; composer opens by entry point
+select (props->>'interest_shown')::boolean shown, count(*) cards, count(distinct user_id) members
+from analytics_events where event = 'miss_card_viewed' group by 1;
+select props->>'source' source, count(*) opens
+from analytics_events where event = 'review_started' and created_at >= '<deploy time>' group by 1;
+```
+
+Caveats for the next readout:
+- **Baselines reset at deploy.** `review_started` will rise because Explore and Profile opens
+  now count; don't compare opens or completion across the deploy date. `with_signup_event`
+  should reach ~100% of new accounts — if it doesn't, the fix isn't live.
+- A truly direct signup still has no source. "Attributed" can't reach 100%; the 70% target
+  assumes roughly the email path's mix.
+- `growth_weekly_funnel` divides `signup` events by *profiles*; with every account now firing
+  `signup`, that ratio can exceed 100%. Read attribution with the query above until the
+  function counts `auth.users`.
+- Verified by typecheck, 197 unit tests, design check and a production build. Not exercised
+  against a live Google sign-in — the first Google signup after deploy is the real test.
+
 ### Round 2 candidates (pick ≤3 on Oct 1 based on cycle-1 data)
 - **One-metro launch:** add the searcher's profile city to `search_miss` props, pick the top
   city, hand-recruit 5 founding members there, seed 20–30 real posts, market only there.
