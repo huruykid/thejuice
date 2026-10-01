@@ -420,6 +420,48 @@ export type Database = {
         }
         Relationships: []
       }
+      growth_experiments: {
+        Row: {
+          enabled: boolean
+          ended_at: string | null
+          hypothesis: string
+          key: string
+          name: string
+          primary_metric: string
+          result_notes: string | null
+          started_at: string
+          status: string
+          target: string
+          updated_at: string
+        }
+        Insert: {
+          enabled?: boolean
+          ended_at?: string | null
+          hypothesis: string
+          key: string
+          name: string
+          primary_metric: string
+          result_notes?: string | null
+          started_at?: string
+          status?: string
+          target: string
+          updated_at?: string
+        }
+        Update: {
+          enabled?: boolean
+          ended_at?: string | null
+          hypothesis?: string
+          key?: string
+          name?: string
+          primary_metric?: string
+          result_notes?: string | null
+          started_at?: string
+          status?: string
+          target?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           anonymous_username: string
@@ -610,6 +652,44 @@ export type Database = {
         }
         Relationships: []
       }
+      search_alerts: {
+        Row: {
+          created_at: string
+          id: string
+          norm_name: string | null
+          notified_at: string | null
+          story_id: string | null
+          subject_name: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          norm_name?: string | null
+          notified_at?: string | null
+          story_id?: string | null
+          subject_name: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          norm_name?: string | null
+          notified_at?: string | null
+          story_id?: string | null
+          subject_name?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "search_alerts_story_id_fkey"
+            columns: ["story_id"]
+            isOneToOne: false
+            referencedRelation: "stories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       security_audit_logs: {
         Row: {
           action: string
@@ -681,9 +761,12 @@ export type Database = {
           content: string
           created_at: string
           emotional_safety_rating: number | null
+          hidden_at: string | null
+          hidden_by: string | null
           id: string
           image_url: string | null
           is_flagged: boolean
+          is_hidden: boolean
           is_seed: boolean
           location: string | null
           loyalty_rating: number | null
@@ -711,9 +794,12 @@ export type Database = {
           content: string
           created_at?: string
           emotional_safety_rating?: number | null
+          hidden_at?: string | null
+          hidden_by?: string | null
           id?: string
           image_url?: string | null
           is_flagged?: boolean
+          is_hidden?: boolean
           is_seed?: boolean
           location?: string | null
           loyalty_rating?: number | null
@@ -741,9 +827,12 @@ export type Database = {
           content?: string
           created_at?: string
           emotional_safety_rating?: number | null
+          hidden_at?: string | null
+          hidden_by?: string | null
           id?: string
           image_url?: string | null
           is_flagged?: boolean
+          is_hidden?: boolean
           is_seed?: boolean
           location?: string | null
           loyalty_rating?: number | null
@@ -950,6 +1039,11 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      active_experiment_keys: { Args: never; Returns: string[] }
+      admin_create_seed_stories_bulk: {
+        Args: { p_stories: Json }
+        Returns: number
+      }
       admin_create_seed_story: {
         Args: {
           p_communication?: number
@@ -963,17 +1057,13 @@ export type Database = {
         }
         Returns: string
       }
-      admin_create_seed_stories_bulk: {
-        Args: { p_stories: Json }
-        Returns: number
-      }
       admin_delete_seed_story: { Args: { p_id: string }; Returns: undefined }
       admin_held_reviews_for_user: {
         Args: { _user_id: string }
         Returns: {
-          story_id: string
-          subject_name: string | null
           created_at: string
+          story_id: string
+          subject_name: string
         }[]
       }
       admin_list_members: {
@@ -1025,6 +1115,15 @@ export type Database = {
       generate_author_alias: { Args: never; Returns: string }
       generate_city_slug: { Args: { city_name_param: string }; Returns: string }
       generate_slug: { Args: { title_text: string }; Returns: string }
+      get_search_alert_matches: {
+        Args: { max_rows?: number }
+        Returns: {
+          alert_id: string
+          story_id: string
+          subject_name: string
+          user_id: string
+        }[]
+      }
       get_search_miss_candidates: {
         Args: { max_rows?: number }
         Returns: {
@@ -1034,6 +1133,38 @@ export type Database = {
         }[]
       }
       get_story_owner: { Args: { _story_id: string }; Returns: string }
+      growth_composer_abandon_reasons: {
+        Args: { days?: number }
+        Returns: {
+          abandons: number
+          missing: string
+        }[]
+      }
+      growth_weekly_funnel: {
+        Args: { weeks?: number }
+        Returns: {
+          active_users: number
+          alerts_created: number
+          attributed_signups: number
+          composer_abandons: number
+          composer_openers: number
+          composer_opens: number
+          median_hours_signup_to_post: number
+          posters: number
+          posts_approved: number
+          posts_submitted: number
+          ref_signups: number
+          search_hits: number
+          search_misses: number
+          searchers: number
+          shares: number
+          signups: number
+          verif_approved: number
+          verif_submitted: number
+          w1_returned: number
+          week: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -1089,9 +1220,12 @@ export type Database = {
           content: string
           created_at: string
           emotional_safety_rating: number | null
+          hidden_at: string | null
+          hidden_by: string | null
           id: string
           image_url: string | null
           is_flagged: boolean
+          is_hidden: boolean
           is_seed: boolean
           location: string | null
           loyalty_rating: number | null
@@ -1129,6 +1263,13 @@ export type Database = {
       set_story_subject_phone_hash: {
         Args: { p_phone: string; p_story_id: string }
         Returns: undefined
+      }
+      subject_search_interest: {
+        Args: { q: string }
+        Returns: {
+          alerts: number
+          searchers: number
+        }[]
       }
       user_has_approved_post: { Args: { _user_id: string }; Returns: boolean }
       validate_file_upload: {
@@ -1168,12 +1309,12 @@ export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -1197,11 +1338,11 @@ export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -1222,11 +1363,11 @@ export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -1247,11 +1388,11 @@ export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
     | { schema: keyof DatabaseWithoutInternals },
-  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+  EnumName extends (DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -1264,11 +1405,11 @@ export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof DatabaseWithoutInternals },
-  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never = never,
+    : never) = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
