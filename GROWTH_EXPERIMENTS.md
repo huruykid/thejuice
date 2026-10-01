@@ -241,6 +241,129 @@ format: text overlay + trending sound added on-platform + app named in the capti
 4. Kill: <2 attributed signups per 1,000 views after two clips. Scale: whichever hook wins
    gets 3 more variants of the same angle; consider one paid male creator on that hook.
 
+### Cycle 2 — 2026-10-01 (day 7; first readout with real exposure)
+Data pulled 20:55–21:00 UTC via the `growth_weekly_funnel` body (role clause removed),
+`analytics_events`, `stories`, `search_alerts`, `auth.users`, Lovable analytics.
+**Experiment window = 2026-09-24 16:38 UTC → pull time (7.2 days).** The admin account's own
+events (2 composer opens, 2 abandons) are excluded from the experiment figures.
+
+1. **Tested:** all six round-1 mechanics (§3), live for the full window, plus `creator_video`
+   (running since Sep 29).
+2. **Happened (window vs. baseline §1):**
+   - **Posts: 9** from **2 posters**, 9 different subjects, all approved, all red flags, all with
+     a photo. One from a March member (Sep 24); eight from one member who joined Sep 28. **None
+     since Sep 28 21:51 UTC** (3 days).
+   - Visitors (Lovable, Sep 25–Oct 1): 149 (baseline ~150; prior 7 days 116). 72% mobile.
+     Direct 77, Google sign-in redirect 31, google.com 12, DDG 7, Bing 4.
+   - New accounts (`auth.users`): **26** — 18 Google, 8 email. The four weeks to Sep 20 ran
+     38–42 new accounts/week on similar traffic. Profiles created: 14 (baseline ~12/wk);
+     selfie submitted by 13 of the 14.
+   - Active members 29, of whom **3** existed before the window. That ratio is not new: the
+     last five weeks had 1–4 returning members each. "Weekly active" is new signups.
+   - Searches: 274 misses by 27 members on 203 names (baseline ~400/wk); 20 of the 27 missed on
+     ≥3 names. Hits 26 = 8.7% of searches (baseline ~4%). 13 of those hits matched one of the
+     nine new posts, from 5 members other than the author (substring match on the name, so
+     some are same-first-name coincidences).
+   - Composer: 19 opens by 5 members → 23 abandons, 9 posts. 7 members touched the composer;
+     2 posted.
+   - W1 return: Sep 14 cohort 3/16 (19%); Sep 21 cohort 1/12 so far (9 matured).
+   - Search-miss nudge email: 44 members emailed, 3 opened the app within 3 days (7%;
+     baseline ~9%). Alert payoff: 0 emails sent — the one alert has no matching post yet.
+
+   | Week (Mon) | Signups | Selfies | Active | Searchers | Hits | Misses | Alerts | Opens (members) | Abandons | Posts (posters) | Shares |
+   |---|---|---|---|---|---|---|---|---|---|---|---|
+   | Sep 28 (Mon–Thu) | 10 | 9 | 22 | 20 | 15 | 195 | 1 | 16 (4) | 15 | 8 (1) | 4 |
+   | Sep 21 | 12 | 12 | 30 | 25 | 12 | 279 | 0 | 10 (5) | 10 | 1 (1) | 1 |
+   | Sep 14 | 16 | 15 | 42 | 38 | 15 | 394 | 0 | 5 (5) | — | 1 (1) | 0 |
+   | Sep 7 | 14 | 11 | 42 | 34 | 8 | 376 | 0 | 12 (8) | — | 0 | 0 |
+
+   | Experiment | Primary metric | Baseline → target | This window | Denominator | Verdict |
+   |---|---|---|---|---|---|
+   | `miss_interest` | misses → prefilled `review_started` | 2.5% → 5% | **1 / 274 = 0.4%** | only ~21 misses (8 members) qualified to show the line (≥2 other searchers); need ≥100 | not enough data yet; kill check Oct 8 |
+   | `search_alerts` | alerts / miss; W1 return of creators | ≥15%; ≥30% | **1 / 274 = 0.4%** (1 of 27 missers); W1 n=1, not matured | 274 misses | below the 5% kill line, but the criterion needs 2 weeks — decide Oct 8 |
+   | `miss_share` | share taps / miss; ref signups | ≥5%; ≥2/wk | **2 / 274 = 0.7%** (2 of 27 missers); 0 ref signups | 274 misses | below the 1% kill line, 1 week in — decide Oct 8 |
+   | `composer_ladder` | `review_started` → `post_created` | 6% → 15% | 9 / 19 = 47%, but 8 of the posts and 10 of the opens are one member; without him 1 / 9 | 19 opens, 7 members (<20) | not enough data yet |
+   | `post_share` | posters who share; ref signups | ≥30% | 2 of 2 posters tapped share (3 taps on 9 posts); 0 ref signups | 9 posts (<10) | not enough data yet; at target so far |
+   | `attribution` | signups with a known source | ≥40% | **7 / 26 new accounts = 27%**; 7 / 8 on the email path, 0 / 18 on Google | 26 accounts | below target because of a tracking gap, not the mechanic (see 4) |
+   | `creator_video` | tiktok/instagram signups per 1,000 views | ≥5 / 1,000 | 0 signups with `utm_source` tiktok/instagram, 0 with any `utm_campaign` | no view counts available to this readout | not enough data yet |
+
+   Composer abandon reasons (23 member abandons): **21 left with all four fields empty, after
+   2–19 seconds** (most under 5). One left a prefilled composer after 2 s. One real abandon:
+   222 s in, name + verdict + photo done, story empty — and that member published minutes later.
+   Raw 14-day counts including admin: photo 24, story 24, verdict 24, name 23.
+3. **Outperformed baseline:** posts did (9 in a week vs. <1/week), and the hit rate doubled
+   because there is now something to find. But no experiment can be credited: **none of the 9
+   posts came through the miss card** (all 9 composer opens that led to a post were direct,
+   not prefilled), and the completion jump is one member. No experiment has a verdict.
+   `growth_experiments` was **not** changed.
+4. **Learned:**
+   - **Supply came from members who arrived wanting to post, not from converted searchers.**
+     The 8-post member opened the composer 25 seconds after his first app open, published at
+     minute 9 — before searching and before he was verified — then ran 15 searches in 47
+     seconds. Seven more posts followed about 20 hours later, once his selfie was approved.
+     *Correction to the
+     Sep 29 interim note:* it read this as "missed on 15 names, then posted"; the order was
+     post first.
+   - **The miss → composer path got weaker, not stronger.** In the four full weeks before
+     launch, 29 of 39 composer opens were prefilled from a miss (1.9% of 1,493 misses). Since
+     the new miss card shipped: 1 of 274 (0.4%). Either the alert/share/interest rows are
+     pulling attention from "Dated her? Be the first", or the prefill flag is not being set
+     from one of the two search surfaces. Needs a check by eye before Oct 8.
+   - **The abandon log can't yet say which field stops people.** No field stands out: 21 of
+     23 abandons are an empty composer closed within seconds. Two of those fired during a new
+     account's first two minutes, so some may be the composer mounting in onboarding rather
+     than a member choosing to open it. Either way there is no evidence here for a flag-only
+     rung or for a photo problem.
+   - **Attribution misses every Google signup.** `signup` fires only in the email branch of
+     `AuthScreen.tsx`; the OAuth redirect never fires it. 18 of 26 new accounts are invisible,
+     which also blinds `creator_video` and the `ref` links from `post_share` / `miss_share`.
+   - **ChatGPT is the top known source:** 5 of the 8 tracked signups carried
+     `utm_source=chatgpt.com` (one landed on `/tea-app-comparison`). Small sample, and email
+     signups only.
+   - **Event pairing is loose.** At least 2 posts and 13 abandons have no `review_started`
+     before them, so some composer entry point doesn't fire it. Posts + abandons (32 sessions,
+     28% published) is a steadier denominator until that is fixed. `search_miss` still logs
+     only the name — not whether the interest line showed — so `miss_interest` exposure has to
+     be reconstructed.
+   - **There is no top-miss metro to pick.** This window, 41% of misses (113) came from members
+     with no city on file, and every named city has one member. Over 30 days Los Angeles is
+     the only city with three (74 of 1,506 misses). The one-metro launch can't be chosen from
+     this data yet.
+   - **Nobody comes back.** 1–4 returning members a week out of 350+. Alerts were the bet on
+     that, and one person opted in.
+5. **Keep/remove/change:** keep all seven `running`/`enabled` — nothing has met a kill
+   criterion, because the three miss-card mechanics need two weeks (Oct 8). On current numbers
+   `search_alerts` (0.4% vs. kill <5%) and `miss_share` (0.7% vs. kill <1%) will both be turned
+   off next Thursday, and `miss_interest` (0.4% vs. kill <3%) with them unless the prefilled
+   path recovers. Two things to do by hand this week: (a) run a miss on both search surfaces and
+   confirm "Dated her? Be the first" opens the composer with the name filled; (b) hold the
+   TikTok/Reels clips, or expect their signups to be uncounted, until Google signups carry a
+   source. Watch item: new accounts fell from ~40/week to 26 on flat traffic — cause unknown.
+6. **Next:** the proposal below. Oct 8 readout applies the kill criteria to the three miss-card
+   mechanics.
+
+**Checkpoint pace:** day 7 of 45. Goal posts since 2026-09-24: **9 of 10.** Day-15 (Oct 9, ≥3)
+and day-30 (Oct 24, ≥6) are already cleared on count; day-45 (Nov 8, ≥10) needs one more post.
+**On pace — no checkpoint missed, so the 100%-supply rule (§5) is not triggered.** The count
+overstates the loop, though: 2 posters against the "≥5 distinct posters" bar set on Sep 29, 8 of
+9 posts from one evening, and nothing in the last 3 days. Track distinct posters as the real
+checkpoint: ≥3 by Oct 9, ≥5 by Oct 24.
+
+### Round 3 proposal — from the 2026-10-01 readout (not implemented; say go)
+Picked because every post so far came from someone who arrived with a story, and because we
+can't see where two-thirds of signups come from.
+
+| # | Experiment | Hypothesis | Metric | Target | Kill if |
+|---|---|---|---|---|---|
+| R3-1 | **Attribution on Google sign-in + event repairs** (`attribution` v2) | 18 of 26 new accounts used Google and none fired `signup`. Firing it on a new account's first authenticated session, with the stored first-touch props, makes the source known whatever the provider. Same pass: log whether the interest line showed on `search_miss`; fire `review_started` from every composer entry | attributed share of new accounts (`auth.users`, not profiles) | **≥70%** over ≥20 new accounts (the email path is at 7 of 8) | never — instrumentation. `creator_video` and both share mechanics can't be read without it |
+| R3-2 | **Poster-first entry** (`poster_first`) | Some men arrive with a story to tell — all 9 posts came from direct composer opens — but the landing page and first screen only offer search. Giving "Post about someone" equal weight with "Look someone up" raises day-one composer opens and brings in posters | new accounts opening the composer within 24 h; new distinct posters per week | day-one opens 19% (5 of 26) → **35%**; **≥2 new distinct posters / week** | <1 new poster after 2 weeks with ≥20 new accounts exposed |
+| R3-3 | **Founding posters, by hand** (`founding_posters`; the founding-member badge candidate, done manually first) | Posters recruit posters. Both posters tapped share after publishing, yet 0 signups arrived with a `ref`. A personal note from Huruy to each — founding-member badge, plus "bring one friend who has a story", with their ref link — converts better than the passive success screen. Start with the Bay Area, where the only supply so far sits | distinct posters; `ref` signups that post | **≥3 new distinct posters by Oct 15** (total ≥5); ≥2 ref signups | 0 posts from referred accounts after 2 weeks. Depends on R3-1 to be measurable |
+
+Held back: **flag-only rung** (the abandon data does not single out the story field — 22 of 23
+abandons were empty composers; revisit once per-field touches are logged), **one-metro launch**
+(no metro stands out; 41% of misses have no city), the digest (needs ≥5 posts in a city),
+give-to-get on alerts (opt-in is 0.4%, so there is nothing to gate).
+
 ### Round 2 candidates (pick ≤3 on Oct 1 based on cycle-1 data)
 - **One-metro launch:** add the searcher's profile city to `search_miss` props, pick the top
   city, hand-recruit 5 founding members there, seed 20–30 real posts, market only there.
